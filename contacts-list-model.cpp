@@ -77,10 +77,18 @@ ContactsListModel::~ContactsListModel()
     kDebug();
 }
 
-int ContactsListModel::rowCount(const QModelIndex &index) const
+int ContactsListModel::columnCount(const QModelIndex &parent) const
+{
+    Q_UNUSED(parent);
+
+    // List view, so all items have the same number of columns
+    return 1;
+}
+
+int ContactsListModel::rowCount(const QModelIndex &parent) const
 {
     // If the index is the root item, then return the row count.
-    if (index == QModelIndex()) {
+    if (parent == QModelIndex()) {
        return m_contactItems.size();
     }
 
@@ -91,8 +99,11 @@ int ContactsListModel::rowCount(const QModelIndex &index) const
 
 QVariant ContactsListModel::data(const QModelIndex &index, int role) const
 {
-    QVariant data;
+    if (index.column() != 0) {
+        return QVariant();
+    }
 
+    QVariant data;
     switch(role)
     {
     case Qt::DisplayRole:
@@ -108,6 +119,46 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags ContactsListModel::flags(const QModelIndex &index) const
 {
     return QAbstractItemModel::flags(index);
+}
+
+QModelIndex ContactsListModel::parent(const QModelIndex &index) const
+{
+    Q_UNUSED(index);
+
+    // This is a list model, so all items are children of the root item.
+    return QModelIndex();
+}
+
+QModelIndex ContactsListModel::index(int row, int column, const QModelIndex &parent) const
+{
+    // List view, so all items are children of the root item.
+    if (parent.isValid()) {
+        return QModelIndex();
+    }
+
+    // Only 1 column
+    if (column != 0) {
+        return QModelIndex();
+    }
+
+    // Check the row is within the range of the list.
+    if (row >= m_contactItems.size()) {
+        return QModelIndex();
+    }
+
+    // Return the index to the item.
+    return createIndex(row, column, 0);
+}
+
+QVariant ContactsListModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    Q_UNUSED(section);
+
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+        return QVariant("Contact Name");
+    }
+
+    return QVariant();
 }
 
 

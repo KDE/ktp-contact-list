@@ -24,6 +24,7 @@
 #include "contacts-list-model.h"
 
 #include <KDebug>
+#include <QtGui/QSortFilterProxyModel>
 
 MainWidget::MainWidget(QWidget *parent)
  : QWidget(parent),
@@ -32,9 +33,12 @@ MainWidget::MainWidget(QWidget *parent)
     kDebug();
 
     setupUi(this);
-    
+
     m_model = new ContactsListModel(this);
-    m_contactsListView->setModel(m_model);
+    m_sortFilterProxyModel = new QSortFilterProxyModel(this);
+    m_sortFilterProxyModel->setSourceModel(m_model);
+    m_contactsListView->setSortingEnabled(true);
+    m_contactsListView->setModel(m_sortFilterProxyModel);
 }
 
 MainWidget::~MainWidget()

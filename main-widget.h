@@ -27,6 +27,7 @@
 #include <QtGui/QWidget>
 
 class ContactsListModel;
+class QSortFilterProxyModel;
 
 class MainWidget : public QWidget, Ui::MainWidget
 {
@@ -35,9 +36,11 @@ class MainWidget : public QWidget, Ui::MainWidget
 public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
-    
+
 private:
     ContactsListModel *m_model;
+    QSortFilterProxyModel *m_sortFilterProxyModel;
+
 };
 
 
