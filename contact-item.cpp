@@ -28,9 +28,12 @@ ContactItem::ContactItem(Nepomuk::PersonContact personContact,
                          QObject *parent)
   : QObject(parent),
     m_personContact(personContact),
-    m_imAccount(imAccount)
+    m_imAccount(imAccount),
+    m_presenceIcon(new KIcon)
 {
     kDebug() << this << ": New ContactItem: " << personContact.uri() << imAccount.uri();
+
+    updatePresenceIcon();
 }
 
 ContactItem::~ContactItem()
@@ -42,6 +45,54 @@ QString ContactItem::displayName() const
 {
     // Use the IM Account Nick Name for now.
     return m_imAccount.imNicknames().first();
+}
+
+void ContactItem::updatePresenceIcon()
+{
+    // First, delete the old Icon.
+    delete m_presenceIcon;
+
+    // Now find out the current status.
+    QList<qint64> statusTypes = m_imAccount.statusTypes();
+
+    // If no presenceType set, then null KIcon.
+    if (statusTypes.size() == 0) {
+        m_presenceIcon = new KIcon();
+        return;
+    }
+
+    // Get the presence type and set the icon appropriately from it.
+    QString iconName;
+
+    switch (statusTypes.first()) {
+    case 2:
+        iconName = "user-online";
+        break;
+    case 3:
+        iconName = "user-away";
+        break;
+    case 4:
+        iconName = "user-away-extended";
+        break;
+    case 5:
+        iconName = "user-invisible";
+        break;
+    case 6:
+        iconName = "user-busy";
+        break;
+    default:
+        iconName = "user-offline";
+        break;
+    }
+
+    m_presenceIcon = new KIcon(iconName);
+}
+
+const KIcon& ContactItem::presenceIcon() const
+{
+    Q_ASSERT(m_presenceIcon != 0);
+
+    return *m_presenceIcon;
 }
 
 

@@ -25,6 +25,8 @@
 #include "imaccount.h"
 #include "personcontact.h"
 
+#include <KIcon>
+
 #include <QObject>
 
 class ContactItem : public QObject {
@@ -38,12 +40,18 @@ public:
     ~ContactItem();
 
     QString displayName() const;
+    const KIcon& presenceIcon() const;
+
+private Q_SLOTS:
+    void updatePresenceIcon();
 
 private:
     Q_DISABLE_COPY(ContactItem);
 
     Nepomuk::PersonContact m_personContact;
     Nepomuk::IMAccount m_imAccount;
+
+    KIcon *m_presenceIcon;
 };
 
 #endif // Header guard

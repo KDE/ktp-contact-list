@@ -109,6 +109,9 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
     case Qt::DisplayRole:
         data.setValue<QString>(m_contactItems.at(index.row())->displayName());
         break;
+    case Qt::DecorationRole:
+        data.setValue<QIcon>(m_contactItems.at(index.row())->presenceIcon());
+        break;
     default:
         break;
     }
