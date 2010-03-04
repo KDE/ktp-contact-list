@@ -31,7 +31,7 @@ ContactItem::ContactItem(Nepomuk::PersonContact personContact,
     m_imAccount(imAccount),
     m_presenceIcon(new KIcon)
 {
-    kDebug() << this << ": New ContactItem: " << personContact.uri() << imAccount.uri();
+    kDebug() << this << ": New ContactItem: " << personContact.resourceType().toString() << imAccount.resourceType().toString();
 
     updatePresenceIcon();
 }
