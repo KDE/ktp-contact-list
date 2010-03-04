@@ -8,7 +8,7 @@ nepomuk_add_ontology_classes (nie_SRCS
                               ${CMAKE_CURRENT_SOURCE_DIR}/nfo.rdfs
                               ${CMAKE_CURRENT_SOURCE_DIR}/nco.rdfs
                               ${CMAKE_CURRENT_SOURCE_DIR}/nmo.rdfs
-                              ${CMAKE_CURRENT_SOURCE_DIR}/../telepathy.trig
+                              ${TELEPATHY_TRIG_SOURCE}
 )
 
 kde4_add_library (nie

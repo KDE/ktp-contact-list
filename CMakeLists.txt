@@ -43,6 +43,22 @@ if (NOT NCO_TRIG_SOURCE)
     )
 endif (NOT NCO_TRIG_SOURCE)
 
+# Find telepathy.trig, which is installed already by telepathy-integration-daemon.
+find_file (TELEPATHY_TRIG_SOURCE
+           telepathy.trig
+           PATHS "${DATA_INSTALL_DIR}" "${KDE4_DATA_DIR}"
+           ENV XDG_DATA_DIRS
+           PATH_SUFFIXES "ontology/telepathy"
+)
+
+# We depend on telepathy.trig, so fail horribly if it's not found.${CMAKE_MODULE_PATH}
+if (NOT TELEPATHY_TRIG_SOURCE)
+    message (ERROR_FATAL
+             "Could not find telepathy.trig Telepathy source file. You must install telepathy-integration-daemon before trying to build this program."
+    )
+endif (NOT TELEPATHY_TRIG_SOURCE)
+
+
 add_definitions (${KDE4_DEFINITIONS})
 
 include_directories (${KDE4_INCLUDES}
@@ -73,7 +89,7 @@ nepomuk_add_ontology_classes (contactlist_NEPOMUK_SRCS
 
 soprano_add_ontology(nco_SRCS ${NCO_TRIG_SOURCE} "NCO" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(pimo_SRCS ${PIMO_TRIG_SOURCE} "PIMO" "Nepomuk::Vocabulary" "trig")
-soprano_add_ontology(telepathy_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/telepathy.trig "Telepathy" "Nepomuk::Vocabulary" "trig")
+soprano_add_ontology(telepathy_SRCS ${TELEPATHY_TRIG_SOURCE} "Telepathy" "Nepomuk::Vocabulary" "trig")
 
 kde4_add_executable (telepathy_contactlist_prototype
                      ${contactlist_SRCS}
