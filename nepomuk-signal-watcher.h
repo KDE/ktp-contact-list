@@ -24,7 +24,7 @@
 
 #include <Nepomuk/Resource>
 
-#include <QtCore/QMap>
+#include <QtCore/QHash>
 #include <QtCore/QObject>
 #include <QtCore/QPair>
 
@@ -78,7 +78,7 @@ private:
 
     Soprano::Util::SignalCacheModel *m_sopranoModel;
 
-    QMap<QString, NepomukSignalWatcher::Watcher*> m_subjectCallbacks;
+    QHash<QString, NepomukSignalWatcher::Watcher*> m_subjectCallbacks;
 };
 
 
