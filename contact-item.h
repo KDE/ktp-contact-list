@@ -22,6 +22,8 @@
 #ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACT_ITEM_H
 #define TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACT_ITEM_H
 
+#include "nepomuk-signal-watcher.h"
+
 #include "imaccount.h"
 #include "personcontact.h"
 
@@ -29,7 +31,7 @@
 
 #include <QObject>
 
-class ContactItem : public QObject {
+class ContactItem : public QObject, NepomukSignalWatcher::Watcher {
 
     Q_OBJECT
 
@@ -41,6 +43,8 @@ public:
 
     QString displayName() const;
     const KIcon& presenceIcon() const;
+
+    virtual void onStatementAdded(const Soprano::Statement &statement);
 
 private Q_SLOTS:
     void updatePresenceIcon();

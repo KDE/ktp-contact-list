@@ -74,6 +74,7 @@ set (contactlist_SRCS
      contacts-list-model.cpp
      contact-item.cpp
      main-widget.cpp
+     nepomuk-signal-watcher.cpp
 )
 
 kde4_add_ui_files (contactlist_SRCS

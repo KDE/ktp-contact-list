@@ -33,6 +33,11 @@ ContactItem::ContactItem(Nepomuk::PersonContact personContact,
 {
     kDebug() << this << ": New ContactItem: " << personContact.resourceType().toString() << imAccount.resourceType().toString();
 
+    // Subscribe to Nepomuk change signals for our Nepomuk Resources.
+    NepomukSignalWatcher *watcher = NepomukSignalWatcher::instance();
+    watcher->registerCallbackOnSubject(m_imAccount, this);
+    watcher->registerCallbackOnSubject(m_personContact, this);
+
     updatePresenceIcon();
 }
 
@@ -93,6 +98,11 @@ const KIcon& ContactItem::presenceIcon() const
     Q_ASSERT(m_presenceIcon != 0);
 
     return *m_presenceIcon;
+}
+
+void ContactItem::onStatementAdded(const Soprano::Statement &statement)
+{
+    kDebug() << "Statement added called.";
 }
 
 

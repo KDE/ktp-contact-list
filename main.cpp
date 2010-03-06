@@ -40,6 +40,7 @@ namespace
         if ((signal == SIGTERM) || (signal == SIGINT)) {
             QCoreApplication * const app(QCoreApplication::instance());
             if (app != 0) {
+                kDebug() << "Signal Handler Called. Exiting...";
                 app->quit();
             }
         }
