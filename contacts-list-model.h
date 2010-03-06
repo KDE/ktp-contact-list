@@ -46,6 +46,9 @@ public:
      virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
      virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 
+private Q_SLOTS:
+    void onItemDirty();
+
 private:
     Q_DISABLE_COPY(ContactsListModel);
 

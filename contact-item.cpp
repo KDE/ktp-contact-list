@@ -103,6 +103,8 @@ const KIcon& ContactItem::presenceIcon() const
 void ContactItem::onStatementAdded(const Soprano::Statement &statement)
 {
     kDebug() << "Statement added called.";
+
+    Q_EMIT dirty();
 }
 
 

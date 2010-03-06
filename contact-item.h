@@ -46,6 +46,9 @@ public:
 
     virtual void onStatementAdded(const Soprano::Statement &statement);
 
+Q_SIGNALS:
+    void dirty();
+
 private Q_SLOTS:
     void updatePresenceIcon();
 

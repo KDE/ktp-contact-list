@@ -68,7 +68,9 @@ ContactsListModel::ContactsListModel(QObject *parent)
         kDebug() << this << ": Found Contact:" << foundIMAccount.imIDs().first();
 
         // And create a ContactItem for each one.
-        m_contactItems.append(new ContactItem(foundPersonContact, foundIMAccount, this));
+        ContactItem *item = new ContactItem(foundPersonContact, foundIMAccount, this);
+        m_contactItems.append(item);
+        connect(item, SIGNAL(dirty()), SLOT(onItemDirty()));
     }
 }
 
@@ -164,6 +166,18 @@ QVariant ContactsListModel::headerData(int section, Qt::Orientation orientation,
     return QVariant();
 }
 
+void ContactsListModel::onItemDirty()
+{
+    ContactItem *item = qobject_cast<ContactItem*>(sender());
+
+    Q_ASSERT(item);
+    if (!item) {
+        kWarning() << "Invalid sender.";
+    }
+
+    QModelIndex itemIndex = index(m_contactItems.indexOf(item), 0, QModelIndex());
+    Q_EMIT dataChanged(itemIndex, itemIndex);
+}
 
 #include "contacts-list-model.moc"
 
