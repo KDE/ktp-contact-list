@@ -31,6 +31,11 @@ class ContactsListModel : public QAbstractListModel
     Q_OBJECT
 
 public:
+    enum {
+        PresenceTypeRole = Qt::UserRole,
+        GroupsRole
+    };
+
     explicit ContactsListModel(QObject *parent = 0);
     virtual ~ContactsListModel();
 

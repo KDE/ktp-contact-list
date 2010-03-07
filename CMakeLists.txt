@@ -81,13 +81,6 @@ kde4_add_ui_files (contactlist_SRCS
                    main-widget.ui
 )
 
-nepomuk_add_ontology_classes (contactlist_NEPOMUK_SRCS 
-                              ONTOLOGIES
-                              ${NCO_TRIG_SOURCE}
-                              CLASSES
-                              "http://www.semanticdesktop.org/ontologies/2007/03/22/nco#PersonContact"
-)
-
 soprano_add_ontology(nco_SRCS ${NCO_TRIG_SOURCE} "NCO" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(pimo_SRCS ${PIMO_TRIG_SOURCE} "PIMO" "Nepomuk::Vocabulary" "trig")
 soprano_add_ontology(telepathy_SRCS ${TELEPATHY_TRIG_SOURCE} "Telepathy" "Nepomuk::Vocabulary" "trig")

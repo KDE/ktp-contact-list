@@ -114,6 +114,12 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
     case Qt::DecorationRole:
         data.setValue<QIcon>(m_contactItems.at(index.row())->presenceIcon());
         break;
+    case ContactsListModel::PresenceTypeRole:
+        data.setValue<qint64>(m_contactItems.at(index.row())->presenceType());
+        break;
+    case ContactsListModel::GroupsRole:
+        data.setValue<QStringList>(m_contactItems.at(index.row())->groups());
+        break;
     default:
         break;
     }

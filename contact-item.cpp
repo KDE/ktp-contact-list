@@ -21,6 +21,8 @@
 
 #include "contact-item.h"
 
+#include "contactgroup.h"
+
 #include <KDebug>
 
 ContactItem::ContactItem(Nepomuk::PersonContact personContact,
@@ -98,6 +100,30 @@ const KIcon& ContactItem::presenceIcon() const
     Q_ASSERT(m_presenceIcon != 0);
 
     return *m_presenceIcon;
+}
+
+qint64 ContactItem::presenceType() const
+{
+    QList<qint64> statusTypes = m_imAccount.statusTypes();
+
+    if (statusTypes.size() == 0) {
+        return 1;
+    }
+
+    return statusTypes.first();
+}
+
+QStringList ContactItem::groups() const
+{
+    QList<Nepomuk::ContactGroup> groups = m_personContact.belongsToGroups();
+
+    QStringList groupNames;
+
+    foreach (const Nepomuk::ContactGroup &group, groups) {
+        groupNames << group.contactGroupName();
+    }
+
+    return groupNames;
 }
 
 void ContactItem::onStatementAdded(const Soprano::Statement &statement)
