@@ -43,6 +43,51 @@ if (NOT NCO_TRIG_SOURCE)
     )
 endif (NOT NCO_TRIG_SOURCE)
 
+# Find nfo.trig, which is installed already by kdebase.
+find_file (NFO_TRIG_SOURCE
+           nfo.trig
+           PATHS "${DATA_INSTALL_DIR}" "${KDE4_DATA_DIR}"
+           ENV XDG_DATA_DIRS
+           PATH_SUFFIXES "ontology/nie"
+)
+
+# We depend on nfo.trig, so fail horribly if it's not found.
+if (NOT NFO_TRIG_SOURCE)
+    message (ERROR_FATAL
+             "Could not find nfo.trig NFO source file. Is kdebase-runtime installed?"
+    )
+endif (NOT NFO_TRIG_SOURCE)
+
+# Find nie.trig, which is installed already by kdebase.
+find_file (NIE_TRIG_SOURCE
+           nie.trig
+           PATHS "${DATA_INSTALL_DIR}" "${KDE4_DATA_DIR}"
+           ENV XDG_DATA_DIRS
+           PATH_SUFFIXES "ontology/nie"
+)
+
+# We depend on nie.trig, so fail horribly if it's not found.
+if (NOT NIE_TRIG_SOURCE)
+    message (ERROR_FATAL
+             "Could not find nie.trig NIE source file. Is kdebase-runtime installed?"
+    )
+endif (NOT NIE_TRIG_SOURCE)
+
+# Find nmo.trig, which is installed already by kdebase.
+find_file (NMO_TRIG_SOURCE
+           nmo.trig
+           PATHS "${DATA_INSTALL_DIR}" "${KDE4_DATA_DIR}"
+           ENV XDG_DATA_DIRS
+           PATH_SUFFIXES "ontology/nie"
+)
+
+# We depend on nmo.trig, so fail horribly if it's not found.
+if (NOT NMO_TRIG_SOURCE)
+    message (ERROR_FATAL
+             "Could not find nmo.trig NMO source file. Is kdebase-runtime installed?"
+    )
+endif (NOT NMO_TRIG_SOURCE)
+
 # Find telepathy.trig, which is installed already by telepathy-integration-daemon.
 find_file (TELEPATHY_TRIG_SOURCE
            telepathy.trig
@@ -67,7 +112,30 @@ include_directories (${KDE4_INCLUDES}
                      ${CMAKE_CURRENT_BINARY_DIR}/nie
 )
 
-add_subdirectory(nie)
+###################################
+# First target - NIE static library
+
+nepomuk_add_ontology_classes (nie_SRCS
+                              ONTOLOGIES
+                              ${NIE_TRIG_SOURCE}
+                              ${NFO_TRIG_SOURCE}
+                              ${NCO_TRIG_SOURCE}
+                              ${NMO_TRIG_SOURCE}
+                              ${TELEPATHY_TRIG_SOURCE}
+)
+
+kde4_add_library (nie
+                  STATIC
+                  ${nie_SRCS}
+)
+
+target_link_libraries (nie
+                       ${QT_QTCORE_LIBRARY}
+                       ${NEPOMUK_LIBRARIES}
+)
+
+################################
+# Second target - ContatList App
 
 set (contactlist_SRCS
      main.cpp
