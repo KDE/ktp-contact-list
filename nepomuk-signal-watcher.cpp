@@ -80,6 +80,6 @@ void NepomukSignalWatcher::registerCallbackOnSubject(const Nepomuk::Resource &re
 {
     // Add this subject to the list.
     m_subjectCallbacks.insertMulti(resource.resourceUri().toString(), callback);
-    kDebug() << "Registering callback:" << resource.resourceUri() << callback;
+   // kDebug() << "Registering callback:" << resource.resourceUri() << callback;
 }
 

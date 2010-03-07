@@ -143,6 +143,7 @@ set (contactlist_SRCS
      contact-item.cpp
      main-widget.cpp
      nepomuk-signal-watcher.cpp
+     grouped-contacts-proxy-model.cpp
 )
 
 kde4_add_ui_files (contactlist_SRCS

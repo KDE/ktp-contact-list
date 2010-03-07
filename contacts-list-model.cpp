@@ -65,7 +65,7 @@ ContactsListModel::ContactsListModel(QObject *parent)
     while(it.next()) {
         Nepomuk::PersonContact foundPersonContact(it.binding("a").uri());
         Nepomuk::IMAccount foundIMAccount(it.binding("b").uri());
-        kDebug() << this << ": Found Contact:" << foundIMAccount.imIDs().first();
+      //  kDebug() << this << ": Found Contact:" << foundIMAccount.imIDs().first();
 
         // And create a ContactItem for each one.
         ContactItem *item = new ContactItem(foundPersonContact, foundIMAccount, this);

@@ -22,13 +22,16 @@
 #include "main-widget.h"
 
 #include "contacts-list-model.h"
+#include "grouped-contacts-proxy-model.h"
 
 #include <KDebug>
 #include <QtGui/QSortFilterProxyModel>
 
 MainWidget::MainWidget(QWidget *parent)
  : QWidget(parent),
-   m_model(0)
+   m_model(0),
+   m_groupedContactsProxyModel(0),
+   m_sortFilterProxyModel(0)
 {
     kDebug();
 
@@ -37,8 +40,12 @@ MainWidget::MainWidget(QWidget *parent)
     m_model = new ContactsListModel(this);
     m_sortFilterProxyModel = new QSortFilterProxyModel(this);
     m_sortFilterProxyModel->setSourceModel(m_model);
+
+    m_groupedContactsProxyModel = new GroupedContactsProxyModel(this);
+    m_groupedContactsProxyModel->setSourceModel(m_model);
+
     m_contactsListView->setSortingEnabled(true);
-    m_contactsListView->setModel(m_sortFilterProxyModel);
+    m_contactsListView->setModel(m_groupedContactsProxyModel);
 }
 
 MainWidget::~MainWidget()
