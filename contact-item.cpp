@@ -128,6 +128,8 @@ QStringList ContactItem::groups() const
 
 void ContactItem::onStatementAdded(const Soprano::Statement &statement)
 {
+    Q_UNUSED(statement);
+
     kDebug() << "Statement added called.";
 
     Q_EMIT dirty();
