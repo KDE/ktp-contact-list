@@ -21,6 +21,7 @@
 
 #include "contacts-list-model.h"
 
+#include "abstract-tree-item.h"
 #include "contact-item.h"
 #include "meta-contact-item.h"
 
@@ -44,47 +45,6 @@
 
 #include <unistd.h>
 
-ContactsListModelItem::ContactsListModelItem(QObject *parent)
- : QObject(parent),
-   m_parent(0)
-{
-
-}
-
-ContactsListModelItem::~ContactsListModelItem()
-{
-
-}
-
-QList<ContactsListModelItem*> ContactsListModelItem::childItems() const
-{
-    return m_children;
-}
-
-ContactsListModelItem *ContactsListModelItem::parentItem() const
-{
-    return m_parent;
-}
-
-void ContactsListModelItem::appendChildItem(ContactsListModelItem *child)
-{
-    m_children.append(child);
-}
-
-void ContactsListModelItem::removeChildItem(ContactsListModelItem *child)
-{
-    m_children.removeOne(child);
-}
-
-void ContactsListModelItem::setParentItem(ContactsListModelItem *parent)
-{
-    m_parent = parent;
-}
-
-
-// -------------------------------------------------------------------------------------------------
-
-
 ContactsListModel::ContactsListModel(QObject *parent)
  : QAbstractItemModel(parent),
    m_rootItem(0)
@@ -92,7 +52,7 @@ ContactsListModel::ContactsListModel(QObject *parent)
     kDebug();
 
     // Create the root Item.
-    m_rootItem = new ContactsListModelItem;
+    m_rootItem = new AbstractTreeItem;
 
     // FIXME: Get the Nepomuk Resource for myself in the standardised way, once it is standardised.
     Nepomuk::Resource me(QUrl::fromEncoded("nepomuk:/myself"));
@@ -167,7 +127,7 @@ int ContactsListModel::rowCount(const QModelIndex &parent) const
     }
 
     // Get the item from the internal pointer of the ModelIndex.
-    ContactsListModelItem *item = static_cast<ContactsListModelItem*>(parent.internalPointer());
+    AbstractTreeItem *item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
     // If the item is valid, return the number of children it has.
     if (item) {
@@ -192,8 +152,8 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
     }
 
     // Check what type of item we have here.
-    ContactsListModelItem *clmItem = static_cast<ContactItem*>(index.internalPointer());
-    ContactItem *contactItem = qobject_cast<ContactItem*>(clmItem);
+    AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
+    ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 
     kDebug() << contactItem;
 
@@ -221,7 +181,7 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
         return data;
     }
 
-    MetaContactItem *metaContactItem = qobject_cast<MetaContactItem*>(clmItem);
+    MetaContactItem *metaContactItem = dynamic_cast<MetaContactItem*>(abstractItem);
 
     if (metaContactItem) {
         QVariant data;
@@ -265,8 +225,8 @@ QModelIndex ContactsListModel::parent(const QModelIndex &index) const
     }
 
     // Get the item we have been passed, and it's parent
-    ContactsListModelItem *childItem = item(index);
-    ContactsListModelItem *parentItem = childItem->parentItem();
+    AbstractTreeItem *childItem = item(index);
+    AbstractTreeItem *parentItem = childItem->parentItem();
 
     // If the parent is the root item, then the parent index of the index we were passed is
     // by definition an invalid index.
@@ -275,7 +235,7 @@ QModelIndex ContactsListModel::parent(const QModelIndex &index) const
     }
 
     // The parent of the item is not the root item, meaning that the parent must have a parent too.
-    ContactsListModelItem *parentOfParentItem = parentItem->parentItem();
+    AbstractTreeItem *parentOfParentItem = parentItem->parentItem();
 
     // As stated in the previous comment, something is really wrong if it doesn't have a parent.
     Q_ASSERT(parentOfParentItem);
@@ -298,10 +258,10 @@ QModelIndex ContactsListModel::index(int row, int column, const QModelIndex &par
     }
 
     // Get the parent item.
-    ContactsListModelItem *parentItem = item(parent);
+    AbstractTreeItem *parentItem = item(parent);
 
     // Get all the parent's children.
-    QList<ContactsListModelItem*> children = parentItem->childItems();
+    QList<AbstractTreeItem*> children = parentItem->childItems();
 
     // Check the row doesn't go beyond the end of the list of children.
     if (row >= children.length()) {
@@ -314,10 +274,10 @@ QModelIndex ContactsListModel::index(int row, int column, const QModelIndex &par
     return createIndex(row, column, children.at(row));
 }
 
-ContactsListModelItem* ContactsListModel::item(const QModelIndex &index) const
+AbstractTreeItem* ContactsListModel::item(const QModelIndex &index) const
 {
     if (index.isValid()) {
-        ContactsListModelItem *item = static_cast<ContactsListModelItem*>(index.internalPointer());
+        AbstractTreeItem *item = static_cast<AbstractTreeItem*>(index.internalPointer());
          if (item) {
              return item;
          }
@@ -350,6 +310,7 @@ void ContactsListModel::onItemDirty()
    // QModelIndex itemIndex = index(m_contactItems.indexOf(item), 0, QModelIndex());
    // Q_EMIT dataChanged(itemIndex, itemIndex);
 }
+
 
 #include "contacts-list-model.moc"
 

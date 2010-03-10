@@ -22,8 +22,8 @@
 #ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACT_ITEM_H
 #define TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACT_ITEM_H
 
+#include "abstract-tree-item.h"
 #include "nepomuk-signal-watcher.h"
-#include "contacts-list-model.h"
 
 #include "imaccount.h"
 #include "personcontact.h"
@@ -32,7 +32,10 @@
 
 #include <QObject>
 
-class ContactItem : public ContactsListModelItem, NepomukSignalWatcher::Watcher {
+class ContactItem : public QObject,
+                    public AbstractTreeItem,
+                    protected NepomukSignalWatcher::Watcher
+{
 
     Q_OBJECT
 
@@ -63,6 +66,7 @@ private:
 
     KIcon *m_presenceIcon;
 };
+
 
 #endif // Header guard
 

@@ -24,28 +24,7 @@
 
 #include <QtCore/QAbstractItemModel>
 
-class ContactItem;
-
-class ContactsListModelItem : public QObject
-{
-    Q_OBJECT
-
-public:
-    ContactsListModelItem(QObject *parent = 0);
-    virtual ~ContactsListModelItem();
-
-    virtual void appendChildItem(ContactsListModelItem *child);
-    virtual void removeChildItem(ContactsListModelItem *child);
-
-    virtual void setParentItem(ContactsListModelItem *parent);
-
-    virtual QList<ContactsListModelItem*> childItems() const;
-    virtual ContactsListModelItem *parentItem() const;
-
-private:
-    QList<ContactsListModelItem*> m_children;
-    ContactsListModelItem *m_parent;
-};
+class AbstractTreeItem;
 
 class ContactsListModel : public QAbstractItemModel
 {
@@ -78,9 +57,9 @@ private Q_SLOTS:
 private:
     Q_DISABLE_COPY(ContactsListModel);
 
-    ContactsListModelItem *item(const QModelIndex &index) const;
+    AbstractTreeItem *item(const QModelIndex &index) const;
 
-    ContactsListModelItem *m_rootItem;
+    AbstractTreeItem *m_rootItem;
 };
 
 

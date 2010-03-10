@@ -26,7 +26,8 @@
 #include <KDebug>
 
 MetaContactItem::MetaContactItem(MetaContactType type, QObject *parent)
-  : ContactsListModelItem(parent),
+  : QObject(parent),
+    AbstractTreeItem(),
     m_type(type)
 {
     if (type == RealMetaContact) {
@@ -69,7 +70,7 @@ QString MetaContactItem::displayName() const
         return QString();
     }
 
-    ContactItem *item = qobject_cast<ContactItem*>(childItems().first());
+    ContactItem *item = dynamic_cast<ContactItem*>(childItems().first());
 
     if (!item) {
         return QString();

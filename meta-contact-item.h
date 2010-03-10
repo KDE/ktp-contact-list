@@ -22,15 +22,18 @@
 #ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_META_CONTACT_ITEM_H
 #define TELEPATHY_CONTACTSLIST_PROTOTYPE_META_CONTACT_ITEM_H
 
+#include "abstract-tree-item.h"
 #include "nepomuk-signal-watcher.h"
-#include "contacts-list-model.h"
 
 #include "person.h"
 #include "personcontact.h"
 
 #include <QObject>
 
-class MetaContactItem : public ContactsListModelItem, NepomukSignalWatcher::Watcher {
+class MetaContactItem : public QObject,
+                        public AbstractTreeItem,
+                        protected NepomukSignalWatcher::Watcher
+{
 
     Q_OBJECT
 
