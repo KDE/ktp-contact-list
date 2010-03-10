@@ -41,7 +41,7 @@
 #include <Soprano/QueryResultIterator>
 
 ContactsListModel::ContactsListModel(QObject *parent)
- : QAbstractListModel(parent)
+ : QAbstractItemModel(parent)
 {
     kDebug();
 

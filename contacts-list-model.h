@@ -22,11 +22,11 @@
 #ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACTS_LIST_MODEL_H
 #define TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACTS_LIST_MODEL_H
 
-#include <QtCore/QAbstractListModel>
+#include <QtCore/QAbstractItemModel>
 
 class ContactItem;
 
-class ContactsListModel : public QAbstractListModel
+class ContactsListModel : public QAbstractItemModel
 {
     Q_OBJECT
 
