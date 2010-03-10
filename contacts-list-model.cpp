@@ -46,16 +46,15 @@ ContactsListModel::ContactsListModel(QObject *parent)
     kDebug();
 
     // FIXME: Get the Nepomuk Resource for myself in the standardised way, once it is standardised.
-    Nepomuk::Resource me("nepomuk://myself");
+    Nepomuk::Resource me(QUrl::fromEncoded("nepomuk:/myself"));
 
-    // FIXME: Make it check if the found PersonContacts are grounding occurrences of me.
-    QString query = QString("select distinct ?a ?b where { ?a a %1 . ?a %2 ?b . ?b a %3 . ?b %4 ?r . ?r a %3 . ?s %2 ?r . ?s a %1 . }") // %5 %6 ?s }")
+    QString query = QString("select distinct ?a ?b where { ?a a %1 . ?a %2 ?b . ?b a %3 . ?b %4 ?r . ?r a %3 . ?s %2 ?r . ?s a %1 . %5 %6 ?s }")
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::PersonContact()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()));
-//            .arg(Soprano::Node::resourceToN3(me.resourceUri()))
-//            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()));
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()))
+            .arg(Soprano::Node::resourceToN3(me.resourceUri()))
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()));
 
     Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
 
