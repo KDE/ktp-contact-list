@@ -34,8 +34,6 @@ ContactItem::ContactItem(Nepomuk::PersonContact personContact,
     m_imAccount(imAccount),
     m_presenceIcon(new KIcon)
 {
-   // kDebug() << this << ": New ContactItem: " << personContact.resourceType().toString() << imAccount.resourceType().toString();
-
     // Subscribe to Nepomuk change signals for our Nepomuk Resources.
     NepomukSignalWatcher *watcher = NepomukSignalWatcher::instance();
     watcher->registerCallbackOnSubject(m_imAccount, this);
@@ -121,6 +119,7 @@ QStringList ContactItem::groups() const
     QStringList groupNames;
 
     if (groups.isEmpty()) {
+        // FIXME: What do we do if there is no group?
         return QStringList() << "No Group";
     }
 
@@ -135,8 +134,7 @@ void ContactItem::onStatementAdded(const Soprano::Statement &statement)
 {
     Q_UNUSED(statement);
 
-    kDebug() << "Statement added called.";
-
+    updatePresenceIcon();
     Q_EMIT dirty();
 }
 

@@ -47,10 +47,6 @@ public:
     ~MetaContactItem();
 
     QString displayName() const;
-/*    const KIcon& presenceIcon() const;
-    qint64 presenceType() const;
-    QStringList groups() const;
-*/
 
     void setPimoPerson(const Nepomuk::Person &pimoPerson);
 

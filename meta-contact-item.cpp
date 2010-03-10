@@ -33,11 +33,11 @@ MetaContactItem::MetaContactItem(MetaContactType type, QObject *parent)
     if (type == RealMetaContact) {
         // A Real metacontact. Wait for the setPimoPerson to be called before
         // setting everything up.
-        kDebug() << "Constructing new Real MetaContact.";
+ 
     } else if (type == FakeMetaContact) {
         // A fake Meta-Contact. There is no PIMO:Person, so wait for setPersonContact()
         // to be called before doing the setup.
-        kDebug() << "Constructing new Fake MetaContact.";
+
     }
 }
 
@@ -49,8 +49,6 @@ MetaContactItem::~MetaContactItem()
 void MetaContactItem::onStatementAdded(const Soprano::Statement &statement)
 {
     Q_UNUSED(statement);
-
-    kDebug() << "Statement added called.";
 
     Q_EMIT dirty();
 }
@@ -66,6 +64,7 @@ void MetaContactItem::setPimoPerson(const Nepomuk::Person& pimoPerson)
 
 QString MetaContactItem::displayName() const
 {
+    // FIXME: What should we actually return here?
     if (childItems().isEmpty()) {
         return QString();
     }
@@ -78,26 +77,7 @@ QString MetaContactItem::displayName() const
 
     return item->displayName();
 }
-/*
-void MetaContactItem::setPersonContact(const Nepomuk::PersonContact &personContact)
-{
-    // This should only be called if the meta contact is fake.
-    Q_ASSERT(m_type == FakeMetaContact);
-    if (m_type != FakeMetaContact) {
-        kWarning() << "setPersonContact called on real meta contact. This should not happen.";
-        return;
-    }
 
-    // The list of personContacts should be empty when this is called.
-    Q_ASSERT(!m_personContacts.isEmpty());
-    if (!m_personContacts.isEmpty()) {
-        kWarning() << "We already have a person contact set for this fake meta contact.";
-        return;
-    }
-
-    m_personContacts.insert(personContact);
-}
-*/
 
 #include "meta-contact-item.moc"
 

@@ -57,19 +57,13 @@ ContactsListModel::ContactsListModel(QObject *parent)
     // FIXME: Get the Nepomuk Resource for myself in the standardised way, once it is standardised.
     Nepomuk::Resource me(QUrl::fromEncoded("nepomuk:/myself"));
 
+    // Get the Nepomuk model to query.
+    Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
+
     // Get ALL THE METACONTACT!!!!11!!111!!11one111!!!!eleven!!!1!
+    // FIXME: Actually make this code do something.
     QString metaContactquery = QString("select distinct ?a where { ?a a %7 . }")
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
-
-    QString query = QString("select distinct ?a ?b where { ?a a %1 . ?a %2 ?b . ?b a %3 . ?b %4 ?r . ?r a %3 . ?s %2 ?r . ?s a %1 . %5 %6 ?s }")
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::PersonContact()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()))
-            .arg(Soprano::Node::resourceToN3(me.resourceUri()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()));
-
-    Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
 
     Soprano::QueryResultIterator metaIt = model->executeQuery(metaContactquery, Soprano::Query::QueryLanguageSparql);
 
@@ -83,20 +77,30 @@ ContactsListModel::ContactsListModel(QObject *parent)
    //     connect(item, SIGNAL(dirty()), SLOT(onItemDirty()));
     }
 
+    // Get all the Telepathy PersonContacts that are not in a metacontact
+    // FIXME: At the moment, this just gets all Telepathy PersonContacts.
+    QString query = QString("select distinct ?a ?b where { ?a a %1 . ?a %2 ?b . ?b a %3 . ?b %4 ?r . ?r a %3 . ?s %2 ?r . ?s a %1 . %5 %6 ?s }")
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::PersonContact()))
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()))
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()))
+            .arg(Soprano::Node::resourceToN3(me.resourceUri()))
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()));
+
     Soprano::QueryResultIterator it = model->executeQuery(query, Soprano::Query::QueryLanguageSparql);
 
     // Iterate over all the IMAccounts/PersonContacts found.
     while(it.next()) {
         Nepomuk::PersonContact foundPersonContact(it.binding("a").uri());
         Nepomuk::IMAccount foundIMAccount(it.binding("b").uri());
-      //  kDebug() << this << ": Found Contact:" << foundIMAccount.imIDs().first();
 
-        // And create a ContactItem for each one.
+        // Create a fake metacontact to hold this item.
         MetaContactItem *metaContactItem = new MetaContactItem(MetaContactItem::FakeMetaContact, 0);
         metaContactItem->setParentItem(m_rootItem);
         m_rootItem->appendChildItem(metaContactItem);
         connect(metaContactItem, SIGNAL(dirty()), SLOT(onItemDirty()));
 
+        // And create the contact item itself, parenting it to the fake meta contact we just created.
         ContactItem *item = new ContactItem(foundPersonContact, foundIMAccount, 0);
         item->setParentItem(metaContactItem);
         metaContactItem->appendChildItem(item);
@@ -113,53 +117,25 @@ int ContactsListModel::columnCount(const QModelIndex &parent) const
 {
     Q_UNUSED(parent);
 
-    // List view, so all items have the same number of columns
+    // All items have the same number of columns
     return 1;
-}
-
-int ContactsListModel::rowCount(const QModelIndex &parent) const
-{
-    kDebug();
-
-    // If the parent is invalid, then this request is for the root item.
-    if (!parent.isValid()) {
-        return m_rootItem->childItems().length();
-    }
-
-    // Get the item from the internal pointer of the ModelIndex.
-    AbstractTreeItem *item = static_cast<AbstractTreeItem*>(parent.internalPointer());
-
-    // If the item is valid, return the number of children it has.
-    if (item) {
-        kDebug() << item->childItems().length();
-        return item->childItems().length();
-    }
-
-    // Otherwise, return 0
-    return 0;
 }
 
 QVariant ContactsListModel::data(const QModelIndex &index, int role) const
 {
-    kDebug() << "index:" << index << "parent:" << index.parent();
     // Only column 0 is valid.
     if (index.column() != 0) {
         return QVariant();
-    }
-
-    if (index.internalPointer() == m_rootItem) {
-        kDebug() << "Internal root item pointe rwtf?";
     }
 
     // Check what type of item we have here.
     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 
-    kDebug() << contactItem;
-
     if (contactItem) {
-        kDebug() << "Is a contact Item." << contactItem;
+
         QVariant data;
+
         switch(role)
         {
         case Qt::DisplayRole:
@@ -187,6 +163,7 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
         QVariant data;
         switch(role)
         {
+            // FIXME: Implement all the roles properly for meta contacts.
         case Qt::DisplayRole:
             data.setValue<QString>(metaContactItem->displayName());
             break;
@@ -215,6 +192,39 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
 Qt::ItemFlags ContactsListModel::flags(const QModelIndex &index) const
 {
     return QAbstractItemModel::flags(index);
+}
+
+QVariant ContactsListModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    Q_UNUSED(section);
+
+    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
+        return QVariant("Contact Name");
+    }
+
+    return QVariant();
+}
+
+QModelIndex ContactsListModel::index(int row, int column, const QModelIndex &parent) const
+{
+    // 1 column list, so invalid index if the column is not 1.
+    if (parent.isValid() && parent.column() != 0) {
+        return QModelIndex();
+    }
+
+    // Get the parent item.
+    AbstractTreeItem *parentItem = item(parent);
+
+    // Get all the parent's children.
+    QList<AbstractTreeItem*> children = parentItem->childItems();
+
+    // Check the row doesn't go beyond the end of the list of children.
+    if (row >= children.length()) {
+        return QModelIndex();
+    }
+
+    // Return the index to the item.
+    return createIndex(row, column, children.at(row));
 }
 
 QModelIndex ContactsListModel::parent(const QModelIndex &index) const
@@ -248,53 +258,23 @@ QModelIndex ContactsListModel::parent(const QModelIndex &index) const
     return createIndex(parentOfParentItem->childItems().lastIndexOf(parentItem), 0, parentItem);
 }
 
-QModelIndex ContactsListModel::index(int row, int column, const QModelIndex &parent) const
+int ContactsListModel::rowCount(const QModelIndex &parent) const
 {
-    kDebug();
-    // 1 column list, so invalid index if the column is not 1.
-    if (parent.isValid() && parent.column() != 0) {
-        kDebug() << "Wrong column";
-        return QModelIndex();
+    // If the parent is invalid, then this request is for the root item.
+    if (!parent.isValid()) {
+        return m_rootItem->childItems().length();
     }
 
-    // Get the parent item.
-    AbstractTreeItem *parentItem = item(parent);
+    // Get the item from the internal pointer of the ModelIndex.
+    AbstractTreeItem *item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
-    // Get all the parent's children.
-    QList<AbstractTreeItem*> children = parentItem->childItems();
-
-    // Check the row doesn't go beyond the end of the list of children.
-    if (row >= children.length()) {
-        kDebug() << "Bounds error";
-        return QModelIndex();
+    // If the item is valid, return the number of children it has.
+    if (item) {
+        return item->childItems().length();
     }
 
-    // Return the index to the item.
-    kDebug() << "AOK:" << row << column << children.at(row);
-    return createIndex(row, column, children.at(row));
-}
-
-AbstractTreeItem* ContactsListModel::item(const QModelIndex &index) const
-{
-    if (index.isValid()) {
-        AbstractTreeItem *item = static_cast<AbstractTreeItem*>(index.internalPointer());
-         if (item) {
-             return item;
-         }
-     }
-
-     return m_rootItem;
-}
-
-QVariant ContactsListModel::headerData(int section, Qt::Orientation orientation, int role) const
-{
-    Q_UNUSED(section);
-
-    if (orientation == Qt::Horizontal && role == Qt::DisplayRole) {
-        return QVariant("Contact Name");
-    }
-
-    return QVariant();
+    // Otherwise, return 0
+    return 0;
 }
 
 void ContactsListModel::onItemDirty()
@@ -309,6 +289,18 @@ void ContactsListModel::onItemDirty()
     // FIXME: Port this stuff to new tree structure.
    // QModelIndex itemIndex = index(m_contactItems.indexOf(item), 0, QModelIndex());
    // Q_EMIT dataChanged(itemIndex, itemIndex);
+}
+
+AbstractTreeItem* ContactsListModel::item(const QModelIndex &index) const
+{
+    if (index.isValid()) {
+        AbstractTreeItem *item = static_cast<AbstractTreeItem*>(index.internalPointer());
+         if (item) {
+             return item;
+         }
+     }
+
+     return m_rootItem;
 }
 
 
