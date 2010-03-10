@@ -121,6 +121,7 @@ nepomuk_add_ontology_classes (nie_SRCS
                               ${NFO_TRIG_SOURCE}
                               ${NCO_TRIG_SOURCE}
                               ${NMO_TRIG_SOURCE}
+                              ${PIMO_TRIG_SOURCE}
                               ${TELEPATHY_TRIG_SOURCE}
 )
 
@@ -144,6 +145,7 @@ set (contactlist_SRCS
      main-widget.cpp
      nepomuk-signal-watcher.cpp
      grouped-contacts-proxy-model.cpp
+     meta-contact-item.cpp
 )
 
 kde4_add_ui_files (contactlist_SRCS

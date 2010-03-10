@@ -1,7 +1,7 @@
 /*
  * This file is part of telepathy-contactslist-prototype
  *
- * Copyright (C) 2009-2010 Collabora Ltd. <info@collabora.co.uk>
+ * Copyright (C) 2010 Collabora Ltd. <info@collabora.co.uk>
  *   @Author George Goldberg <george.goldberg@collabora.co.uk>
  *
  * This library is free software; you can redistribute it and/or
@@ -19,33 +19,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACT_ITEM_H
-#define TELEPATHY_CONTACTSLIST_PROTOTYPE_CONTACT_ITEM_H
+#ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_META_CONTACT_ITEM_H
+#define TELEPATHY_CONTACTSLIST_PROTOTYPE_META_CONTACT_ITEM_H
 
 #include "nepomuk-signal-watcher.h"
 #include "contacts-list-model.h"
 
-#include "imaccount.h"
+#include "person.h"
 #include "personcontact.h"
-
-#include <KIcon>
 
 #include <QObject>
 
-class ContactItem : public ContactsListModelItem, NepomukSignalWatcher::Watcher {
+class MetaContactItem : public ContactsListModelItem, NepomukSignalWatcher::Watcher {
 
     Q_OBJECT
 
 public:
-    ContactItem(Nepomuk::PersonContact personContact,
-                Nepomuk::IMAccount imAccount,
-                QObject *parent = 0);
-    ~ContactItem();
+    enum MetaContactType {
+        RealMetaContact = 0,
+        FakeMetaContact = 1
+    };
+
+    MetaContactItem(MetaContactType type, QObject *parent = 0);
+    ~MetaContactItem();
 
     QString displayName() const;
-    const KIcon& presenceIcon() const;
+/*    const KIcon& presenceIcon() const;
     qint64 presenceType() const;
     QStringList groups() const;
+*/
+
+    void setPimoPerson(const Nepomuk::Person &pimoPerson);
 
     virtual void onStatementAdded(const Soprano::Statement &statement);
 
@@ -53,16 +57,15 @@ Q_SIGNALS:
     void dirty();
 
 private Q_SLOTS:
-    void updatePresenceIcon();
+//    void updatePresenceIcon();
 
 private:
-    Q_DISABLE_COPY(ContactItem);
+    Q_DISABLE_COPY(MetaContactItem);
 
-    Nepomuk::PersonContact m_personContact;
-    Nepomuk::IMAccount m_imAccount;
-
-    KIcon *m_presenceIcon;
+    MetaContactType m_type;
+    Nepomuk::Person m_pimoPerson;
 };
+
 
 #endif // Header guard
 

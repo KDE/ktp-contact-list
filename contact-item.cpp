@@ -28,7 +28,7 @@
 ContactItem::ContactItem(Nepomuk::PersonContact personContact,
                          Nepomuk::IMAccount imAccount,
                          QObject *parent)
-  : QObject(parent),
+  : ContactsListModelItem(parent),
     m_personContact(personContact),
     m_imAccount(imAccount),
     m_presenceIcon(new KIcon)
