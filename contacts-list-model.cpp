@@ -26,7 +26,7 @@
 #include "meta-contact-item.h"
 
 // Nepomuk Vocabulary URIs
-#include "nepomuk/pimo.h"
+#include "pimo.h"
 #include "nco.h"
 #include "telepathy.h"
 
