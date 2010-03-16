@@ -22,6 +22,8 @@
 #ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_GROUPED_CONTACTS_PROXY_MODEL_H
 #define TELEPATHY_CONTACTSLIST_PROTOTYPE_GROUPED_CONTACTS_PROXY_MODEL_H
 
+#include "abstract-tree-item.h"
+
 #include <QtGui/QAbstractProxyModel>
 
 class ContactsListModel;
@@ -54,14 +56,15 @@ private Q_SLOTS:
     void onSourceReset();
 
 private:
-    struct Item {
-        Item *parent;
-        QList<Item*> children;
+    class Item : public AbstractTreeItem {
+    public:
         QString name;
         QModelIndex sourceIndex;
 
-        Item() : parent(0) { }
+        Item() { }
     };
+
+    Item *item(const QModelIndex &index) const;
 
     ContactsListModel *m_sourceModel;
     Item *m_rootItem;

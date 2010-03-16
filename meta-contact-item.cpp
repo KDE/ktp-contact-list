@@ -96,6 +96,22 @@ const KIcon &MetaContactItem::presenceIcon() const
     return item->presenceIcon();
 }
 
+QStringList MetaContactItem::groups() const
+{
+    // FIXME: What should we actually return here?
+    if (childItems().isEmpty()) {
+        return QStringList();
+    }
+
+    ContactItem *item = dynamic_cast<ContactItem*>(childItems().first());
+
+    if (!item) {
+        return QStringList();
+    }
+
+    return item->groups();
+}
+
 
 #include "meta-contact-item.moc"
 

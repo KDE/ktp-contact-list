@@ -41,11 +41,11 @@ MainWidget::MainWidget(QWidget *parent)
     m_sortFilterProxyModel = new QSortFilterProxyModel(this);
     m_sortFilterProxyModel->setSourceModel(m_model);
 
-   // m_groupedContactsProxyModel = new GroupedContactsProxyModel(this);
-   // m_groupedContactsProxyModel->setSourceModel(m_model);
+    m_groupedContactsProxyModel = new GroupedContactsProxyModel(this);
+    m_groupedContactsProxyModel->setSourceModel(m_model);
 
     m_contactsListView->setSortingEnabled(true);
-    m_contactsListView->setModel(m_sortFilterProxyModel);
+    m_contactsListView->setModel(m_groupedContactsProxyModel);
 }
 
 MainWidget::~MainWidget()

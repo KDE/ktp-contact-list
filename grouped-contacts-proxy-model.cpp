@@ -57,7 +57,7 @@ QVariant GroupedContactsProxyModel::data(const QModelIndex &index, int role) con
 
         // Return the group data.
         QVariant data;
-        Item *item = m_rootItem->children.at(index.row());
+        Item *item = dynamic_cast<Item*>(m_rootItem->childItems().at(index.row()));
 
         Q_ASSERT(item);
         if (!item) {
@@ -80,69 +80,73 @@ QVariant GroupedContactsProxyModel::data(const QModelIndex &index, int role) con
 
 QModelIndex GroupedContactsProxyModel::index(int row, int column, const QModelIndex &parent) const
 {
-//    kWarning() << "index called";
-    if (parent.isValid() && parent.parent().isValid()) {
+    // 1 column list, so invalid index if the column is not 1.
+    if (parent.isValid() && parent.column() != 0) {
         return QModelIndex();
     }
 
-    // Only 1 column
-    if (column != 0) {
+    // Get the parent item.
+    Item *parentItem = item(parent);
+
+    // Get all the parent's children.
+    QList<AbstractTreeItem*> children = parentItem->childItems();
+
+    // Check the row doesn't go beyond the end of the list of children.
+    if (row >= children.length()) {
         return QModelIndex();
-    }
-
-    if (parent.isValid()) {
-        if (row >= m_rootItem->children.at(parent.row())->children.length()) {
-            return QModelIndex();
-        }
-
-        return createIndex(row, column, m_rootItem->children.at(parent.row())->children.at(row));
     }
 
     // Return the index to the item.
-    if (row >= m_rootItem->children.length()) {
-        return QModelIndex();
-    }
-
-    return createIndex(row, column, m_rootItem->children.at(row));
+    return createIndex(row, column, children.at(row));
 }
 
 QModelIndex GroupedContactsProxyModel::parent(const QModelIndex &index) const
 {
-//    kWarning() << "Parent called. Argh";
-
-    Item *item = static_cast<Item*>(index.internalPointer());
-
-    Q_ASSERT(item);
-    if (!item) {
-        kWarning() << "Not a valid internal pointer. Argh :/";
+    // If the index is invalid, return an invalid parent index.
+    if (!index.isValid()) {
         return QModelIndex();
     }
 
-    if (item->parent == m_rootItem) {
+    // Get the item we have been passed, and it's parent
+    Item *childItem = item(index);
+    Item *parentItem = dynamic_cast<Item*>(childItem->parentItem());
+
+    // If the parent is the root item, then the parent index of the index we were passed is
+    // by definition an invalid index.
+    if (parentItem == m_rootItem) {
         return QModelIndex();
     }
 
-    return this->index(m_rootItem->children.lastIndexOf(item->parent), 0, QModelIndex());
+    // The parent of the item is not the root item, meaning that the parent must have a parent too.
+    Item *parentOfParentItem = dynamic_cast<Item*>(parentItem->parentItem());
+
+    // As stated in the previous comment, something is really wrong if it doesn't have a parent.
+    Q_ASSERT(parentOfParentItem);
+    if (!parentOfParentItem) {
+        kWarning() << "Impossible parent situation occurred!";
+        return createIndex(0, 0, parentItem);
+    }
+
+    // Return the model index of the parent item.
+    return createIndex(parentOfParentItem->childItems().lastIndexOf(parentItem), 0, parentItem);
 }
 
 int GroupedContactsProxyModel::rowCount(const QModelIndex &parent) const
 {
-    if (parent == QModelIndex()) {
-        return m_rootItem->children.length();
+    // If the parent is invalid, then this request is for the root item.
+    if (!parent.isValid()) {
+        return m_rootItem->childItems().length();
     }
 
-    if (parent.parent() == QModelIndex()) {
-        Item *item = static_cast<Item*>(parent.internalPointer());
+    // Get the item from the internal pointer of the ModelIndex.
+    AbstractTreeItem *item = static_cast<AbstractTreeItem*>(parent.internalPointer());
 
-        Q_ASSERT(item);
-        if (!item) {
-            kWarning() << "Not a valid internal pointer. Argh :/";
-            return 0;
-        }
-
-        return item->children.length();
+    // If the item is valid, return the number of children it has.
+    if (item) {
+        return item->childItems().length();
     }
 
+    // Otherwise, return 0
     return 0;
 }
 
@@ -218,8 +222,11 @@ void GroupedContactsProxyModel::onSourceReset()
 
     // Reset the internal data-layout of this model.
     if (m_rootItem) {
-        foreach (Item *item, m_rootItem->children) {
-            foreach (Item *i, item->children) {
+        foreach (AbstractTreeItem *item, m_rootItem->childItems()) {
+            foreach (AbstractTreeItem *i, item->childItems()) {
+                foreach (AbstractTreeItem *i3, i->childItems()) {
+                    delete i3;
+                }
                 delete i;
             }
             delete item;
@@ -237,7 +244,12 @@ void GroupedContactsProxyModel::onSourceReset()
 
         foreach (const QString &group, groups) {
             Item *item = 0;
-            foreach (Item *i, m_rootItem->children) {
+            foreach (AbstractTreeItem *ii, (m_rootItem->childItems())) {
+                Item *i = dynamic_cast<Item*>(ii);
+                if (!i) {
+                    continue;
+                }
+
                 if (i->name == group) {
                     item = i;
                     break;
@@ -246,15 +258,23 @@ void GroupedContactsProxyModel::onSourceReset()
 
             if (!item) {
                 item = new Item;
-                item->parent = m_rootItem;
-                m_rootItem->children.append(item);
+                item->setParentItem(m_rootItem);
+                m_rootItem->appendChildItem(item);
                 item->name = group;
             }
 
             Item *childItem = new Item;
             childItem->sourceIndex = index;
-            item->children.append(childItem);
-            childItem->parent = item;
+            item->appendChildItem(childItem);
+            childItem->setParentItem(item);
+
+            for (int j=0; j < m_sourceModel->rowCount(index); ++j) {
+                QModelIndex childIndex = m_sourceModel->index(j, 0, index);
+                Item *childChildItem = new Item;
+                childChildItem->sourceIndex = childIndex;
+                childChildItem->setParentItem(childItem);
+                childItem->appendChildItem(childChildItem);
+            }
         }
     }
 
@@ -272,6 +292,18 @@ void GroupedContactsProxyModel::onSourceRowsRemoved(const QModelIndex &parent, i
 {
     kDebug() << "Rows Removed";
     // TODO: Invalidate All Mappings
+}
+
+GroupedContactsProxyModel::Item* GroupedContactsProxyModel::item(const QModelIndex &index) const
+{
+    if (index.isValid()) {
+        Item *item = static_cast<Item*>(index.internalPointer());
+         if (item) {
+             return item;
+         }
+     }
+
+     return m_rootItem;
 }
 
 

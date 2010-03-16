@@ -50,6 +50,7 @@ public:
 
     QString displayName() const;
     const KIcon &presenceIcon() const;
+    QStringList groups() const;
 
     void setPimoPerson(const Nepomuk::Person &pimoPerson);
 

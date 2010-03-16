@@ -174,7 +174,7 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
 //            data.setValue<qint64>(contactItem->presenceType());
             break;
         case ContactsListModel::GroupsRole:
-//            data.setValue<QStringList>(contactItem->groups());
+            data.setValue<QStringList>(metaContactItem->groups());
             break;
         default:
             break;
