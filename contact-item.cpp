@@ -53,6 +53,12 @@ QString ContactItem::displayName() const
     return m_imAccount.imNicknames().first();
 }
 
+QString ContactItem::accountIdentifier() const
+{
+    // Return the IM Account Identifier.
+    return m_imAccount.imIDs().first();
+}
+
 void ContactItem::updatePresenceIcon()
 {
     // First, delete the old Icon.

@@ -24,11 +24,13 @@
 #include "contact-item.h"
 
 #include <KDebug>
+#include <KIcon>
 
 MetaContactItem::MetaContactItem(MetaContactType type, QObject *parent)
   : QObject(parent),
     AbstractTreeItem(),
-    m_type(type)
+    m_type(type),
+    m_invalidPresenceIcon(new KIcon())
 {
     if (type == RealMetaContact) {
         // A Real metacontact. Wait for the setPimoPerson to be called before
@@ -76,6 +78,22 @@ QString MetaContactItem::displayName() const
     }
 
     return item->displayName();
+}
+
+const KIcon &MetaContactItem::presenceIcon() const
+{
+    // FIXME: What should we actually return here?
+    if (childItems().isEmpty()) {
+        return *m_invalidPresenceIcon;
+    }
+
+    ContactItem *item = dynamic_cast<ContactItem*>(childItems().first());
+
+    if (!item) {
+        return *m_invalidPresenceIcon;
+    }
+
+    return item->presenceIcon();
 }
 
 

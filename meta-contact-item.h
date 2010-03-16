@@ -30,6 +30,8 @@
 
 #include <QObject>
 
+class KIcon;
+
 class MetaContactItem : public QObject,
                         public AbstractTreeItem,
                         protected NepomukSignalWatcher::Watcher
@@ -47,6 +49,7 @@ public:
     ~MetaContactItem();
 
     QString displayName() const;
+    const KIcon &presenceIcon() const;
 
     void setPimoPerson(const Nepomuk::Person &pimoPerson);
 
@@ -63,6 +66,7 @@ private:
 
     MetaContactType m_type;
     Nepomuk::Person m_pimoPerson;
+    KIcon *m_invalidPresenceIcon;
 };
 
 

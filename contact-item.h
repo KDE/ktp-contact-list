@@ -46,6 +46,7 @@ public:
     ~ContactItem();
 
     QString displayName() const;
+    QString accountIdentifier() const;
     const KIcon& presenceIcon() const;
     qint64 presenceType() const;
     QStringList groups() const;

@@ -139,7 +139,7 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
         switch(role)
         {
         case Qt::DisplayRole:
-            data.setValue<QString>(contactItem->displayName());
+            data.setValue<QString>(contactItem->accountIdentifier());
             break;
         case Qt::DecorationRole:
             data.setValue<QIcon>(contactItem->presenceIcon());
@@ -168,7 +168,7 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
             data.setValue<QString>(metaContactItem->displayName());
             break;
         case Qt::DecorationRole:
-//            data.setValue<QIcon>(contactItem->presenceIcon());
+            data.setValue<QIcon>(metaContactItem->presenceIcon());
             break;
         case ContactsListModel::PresenceTypeRole:
 //            data.setValue<qint64>(contactItem->presenceType());
