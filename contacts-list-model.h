@@ -33,7 +33,8 @@ class ContactsListModel : public QAbstractItemModel
 public:
     enum {
         PresenceTypeRole = Qt::UserRole,
-        GroupsRole
+        GroupsRole,
+        AvatarRole
     };
 
     explicit ContactsListModel(QObject *parent = 0);

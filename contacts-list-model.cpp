@@ -150,6 +150,9 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
         case ContactsListModel::GroupsRole:
             data.setValue<QStringList>(contactItem->groups());
             break;
+        case ContactsListModel::AvatarRole:
+            data.setValue<QPixmap>(contactItem->avatar());
+            break;
         default:
             break;
         }
@@ -175,6 +178,9 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
             break;
         case ContactsListModel::GroupsRole:
             data.setValue<QStringList>(metaContactItem->groups());
+            break;
+        case ContactsListModel::AvatarRole:
+            data.setValue<QPixmap>(metaContactItem->avatar());
             break;
         default:
             break;

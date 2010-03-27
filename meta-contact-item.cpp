@@ -112,6 +112,22 @@ QStringList MetaContactItem::groups() const
     return item->groups();
 }
 
+const QPixmap& MetaContactItem::avatar() const
+{
+    // FIXME: What should we actually return here?
+    if (childItems().isEmpty()) {
+        return m_invalidPixmap;
+    }
+
+    ContactItem *item = dynamic_cast<ContactItem*>(childItems().first());
+
+    if (!item) {
+        return m_invalidPixmap;
+    }
+
+    return item->avatar();
+}
+
 
 #include "meta-contact-item.moc"
 

@@ -24,6 +24,9 @@
 #include "contactgroup.h"
 
 #include <KDebug>
+#include <dataobject.h>
+#include <QPainter>
+#include <kiconloader.h>
 
 ContactItem::ContactItem(Nepomuk::PersonContact personContact,
                          Nepomuk::IMAccount imAccount,
@@ -98,6 +101,49 @@ void ContactItem::updatePresenceIcon()
     }
 
     m_presenceIcon = new KIcon(iconName);
+
+    kDebug() << "Attempt to build the avatar" << m_personContact.resourceUri();
+    // Ok, now build the avatar
+    m_pixmap = QPixmap();
+    if (!m_personContact.avatarTokens().isEmpty()) {
+        // Load the image then
+        if (!m_personContact.photos().isEmpty()) {
+            if (!m_personContact.photos().first().interpretedAses().isEmpty()) {
+                QByteArray imgdata =
+                QByteArray::fromBase64(
+                                m_personContact.photos().first().interpretedAses().first().plainTextContents().first().toUtf8());
+                QImage image = QImage::fromData(imgdata);
+                m_pixmap = QPixmap::fromImage(image);
+                m_pixmap = m_pixmap.scaled(32,32);
+            }
+        }
+    }
+
+    if (m_pixmap.isNull()) {
+        // try to load the action icon
+        m_pixmap = KIconLoader::global()->loadIcon("im-user",
+                                                   KIconLoader::NoGroup,
+                                                   32,
+                                                   KIconLoader::DefaultState,
+                                                   QStringList(),
+                                                   0,
+                                                   true);
+    }
+
+    // create a painter to paint the action icon over the key icon
+    QPainter painter(&m_pixmap);
+    // the the emblem icon to size 12
+    int overlaySize = 12;
+    // try to load the action icon
+    const QPixmap iconPixmap = m_presenceIcon->pixmap(overlaySize);
+    // if we're able to load the action icon paint it over
+    if (!m_pixmap.isNull()) {
+        QPoint startPoint;
+        // bottom right corner
+        startPoint = QPoint(32 - overlaySize - 1,
+                            32 - overlaySize - 1);
+        painter.drawPixmap(startPoint, iconPixmap);
+    }
 }
 
 const KIcon& ContactItem::presenceIcon() const
@@ -143,7 +189,10 @@ void ContactItem::onStatementAdded(const Soprano::Statement &statement)
     updatePresenceIcon();
     Q_EMIT dirty();
 }
-
+const QPixmap& ContactItem::avatar() const
+{
+    return m_pixmap;
+}
 
 #include "contact-item.moc"
 

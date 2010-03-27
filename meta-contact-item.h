@@ -29,6 +29,7 @@
 #include "personcontact.h"
 
 #include <QObject>
+#include <QPixmap>
 
 class KIcon;
 
@@ -50,6 +51,7 @@ public:
 
     QString displayName() const;
     const KIcon &presenceIcon() const;
+    const QPixmap& avatar() const;
     QStringList groups() const;
 
     void setPimoPerson(const Nepomuk::Person &pimoPerson);
@@ -68,6 +70,7 @@ private:
     MetaContactType m_type;
     Nepomuk::Person m_pimoPerson;
     KIcon *m_invalidPresenceIcon;
+    QPixmap m_invalidPixmap;
 };
 
 

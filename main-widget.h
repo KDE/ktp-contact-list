@@ -25,15 +25,27 @@
 #include "ui_main-widget.h"
 
 #include <QtGui/QWidget>
+#include <QtGui/QStyledItemDelegate>
 
 class ContactsListModel;
 class GroupedContactsProxyModel;
 class QSortFilterProxyModel;
 
+class ContactDelegate : public QStyledItemDelegate
+{
+    Q_OBJECT
+    public:
+        ContactDelegate(QObject * parent = 0);
+        ~ContactDelegate();
+
+        virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+        virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+};
+
 class MainWidget : public QWidget, Ui::MainWidget
 {
     Q_OBJECT
-    
+
 public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();

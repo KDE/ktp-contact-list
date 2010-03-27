@@ -48,6 +48,7 @@ public:
     QString displayName() const;
     QString accountIdentifier() const;
     const KIcon& presenceIcon() const;
+    const QPixmap& avatar() const;
     qint64 presenceType() const;
     QStringList groups() const;
 
@@ -66,6 +67,7 @@ private:
     Nepomuk::IMAccount m_imAccount;
 
     KIcon *m_presenceIcon;
+    QPixmap m_pixmap;
 };
 
 
