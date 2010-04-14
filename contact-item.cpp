@@ -50,6 +50,11 @@ ContactItem::~ContactItem()
     kDebug();
 }
 
+Nepomuk::PersonContact ContactItem::personContact() const
+{
+    return m_personContact;
+}
+
 QString ContactItem::displayName() const
 {
     // Use the IM Account Nick Name for now.
@@ -60,6 +65,11 @@ QString ContactItem::accountIdentifier() const
 {
     // Return the IM Account Identifier.
     return m_imAccount.imIDs().first();
+}
+
+QUrl ContactItem::isBuddyOf() const
+{
+    return m_imAccount.isBuddyOfs().first().resourceUri();
 }
 
 void ContactItem::updatePresenceIcon()

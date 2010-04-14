@@ -18,9 +18,19 @@
     <number>0</number>
    </property>
    <item>
+    <widget class="QToolBar" name="widget">
+     <addaction name="actionAdd_contact"/>
+    </widget>
+   </item>
+   <item>
     <widget class="QTreeView" name="m_contactsListView"/>
    </item>
   </layout>
+  <action name="actionAdd_contact">
+   <property name="text">
+    <string>Add contact</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

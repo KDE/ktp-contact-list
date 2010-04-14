@@ -55,6 +55,11 @@ void MetaContactItem::onStatementAdded(const Soprano::Statement &statement)
     Q_EMIT dirty();
 }
 
+Nepomuk::Person MetaContactItem::pimoPerson() const
+{
+    return m_pimoPerson;
+}
+
 void MetaContactItem::setPimoPerson(const Nepomuk::Person& pimoPerson)
 {
     m_pimoPerson = pimoPerson;

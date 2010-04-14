@@ -47,10 +47,13 @@ public:
 
     QString displayName() const;
     QString accountIdentifier() const;
+    QUrl isBuddyOf() const;
     const KIcon& presenceIcon() const;
     const QPixmap& avatar() const;
     qint64 presenceType() const;
     QStringList groups() const;
+
+    Nepomuk::PersonContact personContact() const;
 
     virtual void onStatementAdded(const Soprano::Statement &statement);
 

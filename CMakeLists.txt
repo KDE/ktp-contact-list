@@ -70,6 +70,13 @@ set (contactlist_SRCS
      grouped-contacts-proxy-model.cpp
      meta-contact-item.cpp
      abstract-tree-item.cpp
+     telepathy-bridge.cpp
+     telepathy-account-proxy.cpp
+     telepathy-base-job.cpp
+     add-contacts-to-group-job.cpp
+     remove-contacts-from-group-job.cpp
+     add-contact-job.cpp
+     remove-contacts-job.cpp
 )
 
 kde4_add_ui_files (contactlist_SRCS

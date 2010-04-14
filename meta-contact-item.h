@@ -55,6 +55,7 @@ public:
     QStringList groups() const;
 
     void setPimoPerson(const Nepomuk::Person &pimoPerson);
+    Nepomuk::Person pimoPerson() const;
 
     virtual void onStatementAdded(const Soprano::Statement &statement);
 

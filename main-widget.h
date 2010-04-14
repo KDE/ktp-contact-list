@@ -24,6 +24,8 @@
 
 #include "ui_main-widget.h"
 
+#include <personcontact.h>
+
 #include <QtGui/QWidget>
 #include <QtGui/QStyledItemDelegate>
 
@@ -54,7 +56,16 @@ private:
     ContactsListModel *m_model;
     GroupedContactsProxyModel *m_groupedContactsProxyModel;
     QSortFilterProxyModel *m_sortFilterProxyModel;
+    Nepomuk::PersonContact m_mePersonContact;
 
+public slots:
+    void onCustomContextMenuRequested(const QPoint &point);
+    void onRequestRemoveFromGroup(bool);
+    void onContactRemovalRequest(bool);
+    void onContactBlockRequest(bool);
+    void onHandlerReady(bool);
+    void onRequestAddToGroup(bool);
+    void onAddContactRequest(bool);
 };
 
 
