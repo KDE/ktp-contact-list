@@ -24,6 +24,14 @@
 
 #include <QtCore/QAbstractItemModel>
 
+class ContactItem;
+namespace Nepomuk {
+namespace Query {
+class QueryServiceClient;
+class Result;
+}
+}
+
 class AbstractTreeItem;
 
 class ContactsListModel : public QAbstractItemModel
@@ -34,7 +42,8 @@ public:
     enum {
         PresenceTypeRole = Qt::UserRole,
         GroupsRole,
-        AvatarRole
+        AvatarRole,
+        PersonContactResourceRole
     };
 
     explicit ContactsListModel(QObject *parent = 0);
@@ -51,16 +60,24 @@ public:
                               const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &index) const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual QModelIndexList findContacts(const QUrl &resource);
 
 private Q_SLOTS:
     void onItemDirty();
 
+    void onContactsQueryNewEntries(const QList<Nepomuk::Query::Result>&);
+    void onContactsQueryEntriesRemoved(const QList<QUrl>&);
+
 private:
     Q_DISABLE_COPY(ContactsListModel);
+
+    QModelIndexList findChildrenContacts(const QUrl &resource, const QModelIndex &parent);
 
     AbstractTreeItem *item(const QModelIndex &index) const;
 
     AbstractTreeItem *m_rootItem;
+
+    Nepomuk::Query::QueryServiceClient *m_contactsQuery;
 };
 
 

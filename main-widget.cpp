@@ -41,8 +41,10 @@
 #include <KJob>
 #include <KLineEdit>
 #include <KComboBox>
+#include <KMessageBox>
 
 #include <Nepomuk/ResourceManager>
+#include <Nepomuk/Query/QueryServiceClient>
 
 #include <Soprano/QueryResultIterator>
 
@@ -119,6 +121,14 @@ MainWidget::MainWidget(QWidget *parent)
    m_sortFilterProxyModel(0)
 {
     kDebug();
+
+    // Check if Nepomuk Query service client is up and running
+    if (!Nepomuk::Query::QueryServiceClient::serviceAvailable()) {
+        // That's a failure
+        KMessageBox::error(this, i18n("The Nepomuk Query Service client is not available on your system. "
+                                      "Contactlist requires the query service client to be available: please "
+                                      "check your system settings"));
+    }
 
     setupUi(this);
 

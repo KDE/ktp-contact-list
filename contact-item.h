@@ -54,6 +54,7 @@ public:
     QStringList groups() const;
 
     Nepomuk::PersonContact personContact() const;
+    Nepomuk::IMAccount imAccount() const;
 
     virtual void onStatementAdded(const Soprano::Statement &statement);
 

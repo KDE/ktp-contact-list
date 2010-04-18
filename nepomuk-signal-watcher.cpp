@@ -90,3 +90,17 @@ void NepomukSignalWatcher::registerCallbackOnSubject(const Nepomuk::Resource &re
    // kDebug() << "Registering callback:" << resource.resourceUri() << callback;
 }
 
+void NepomukSignalWatcher::unregisterCallbackOnSubject(const Nepomuk::Resource& resource,
+                                                       NepomukSignalWatcher::Watcher *callback)
+{
+    // Use an iterator, since we have to remove an item with a specific key AND value
+    QHash< QString, NepomukSignalWatcher::Watcher *>::iterator i = m_subjectCallbacks.begin();
+    while (i != m_subjectCallbacks.end()) {
+        if (i.key() == resource.resourceUri().toString() && i.value() == callback) {
+            i = m_subjectCallbacks.erase(i);
+        } else {
+            ++i;
+        }
+    }
+}
+

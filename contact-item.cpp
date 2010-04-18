@@ -47,12 +47,20 @@ ContactItem::ContactItem(Nepomuk::PersonContact personContact,
 
 ContactItem::~ContactItem()
 {
+    NepomukSignalWatcher *watcher = NepomukSignalWatcher::instance();
+    watcher->unregisterCallbackOnSubject(m_imAccount, this);
+    watcher->unregisterCallbackOnSubject(m_personContact, this);
     kDebug();
 }
 
 Nepomuk::PersonContact ContactItem::personContact() const
 {
     return m_personContact;
+}
+
+Nepomuk::IMAccount ContactItem::imAccount() const
+{
+    return m_imAccount;
 }
 
 QString ContactItem::displayName() const
@@ -199,10 +207,10 @@ void ContactItem::onStatementAdded(const Soprano::Statement &statement)
     updatePresenceIcon();
     Q_EMIT dirty();
 }
+
 const QPixmap& ContactItem::avatar() const
 {
     return m_pixmap;
 }
 
 #include "contact-item.moc"
-

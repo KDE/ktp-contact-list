@@ -40,10 +40,14 @@
 #include <Nepomuk/ResourceManager>
 #include <Nepomuk/Variant>
 
+#include <Nepomuk/Query/QueryServiceClient>
+#include <Nepomuk/Query/Result>
+
 #include <Soprano/Model>
 #include <Soprano/QueryResultIterator>
 
 #include <unistd.h>
+#include <KMessageBox>
 
 ContactsListModel::ContactsListModel(QObject *parent)
  : QAbstractItemModel(parent),
@@ -61,7 +65,7 @@ ContactsListModel::ContactsListModel(QObject *parent)
     Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
 
     // Get ALL THE METACONTACT!!!!11!!111!!11one111!!!!eleven!!!1!
-    // FIXME: Actually make this code do something.
+    // FIXME: Actually make this code do something, then port it to QueryServiceClient
     QString metaContactquery = QString("select distinct ?a where { ?a a %7 . }")
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
 
@@ -79,20 +83,40 @@ ContactsListModel::ContactsListModel(QObject *parent)
 
     // Get all the Telepathy PersonContacts that are not in a metacontact
     // FIXME: At the moment, this just gets all Telepathy PersonContacts.
-    QString query = QString("select distinct ?a ?b where { ?a a %1 . ?a %2 ?b . ?b a %3 . ?b %4 ?r . ?r a %3 . ?s %2 ?r . ?s a %1 . %5 %6 ?s }")
+    QString query = QString("select distinct ?r ?account where { ?r a %1 . ?r %2 ?account . ?acccount a %3 . "
+                            "?account %4 ?t . ?account %5 ?t . ?t a %3 . ?s %2 ?t . ?s a %1 . %6 %7 ?s }")
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::PersonContact()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()))
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::publishesPresenceTo()))
             .arg(Soprano::Node::resourceToN3(me.resourceUri()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()));
 
-    Soprano::QueryResultIterator it = model->executeQuery(query, Soprano::Query::QueryLanguageSparql);
+    m_contactsQuery = new Nepomuk::Query::QueryServiceClient(this);
+    connect(m_contactsQuery, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
+            this, SLOT(onContactsQueryNewEntries(QList<Nepomuk::Query::Result>)));
+    connect(m_contactsQuery, SIGNAL(entriesRemoved(QList<QUrl>)),
+            this, SLOT(onContactsQueryEntriesRemoved(QList<QUrl>)));
 
+    Nepomuk::Query::RequestPropertyMap rpm;
+    rpm.insert("account", Nepomuk::Vocabulary::NCO::IMAccount());
+    bool queryResult = m_contactsQuery->sparqlQuery(query, rpm);
+    kDebug() << "Query result " << queryResult;
+    if (!queryResult) {
+        KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                   "installation and make sure Nepomuk is running."));
+    }
+}
+
+void ContactsListModel::onContactsQueryNewEntries(const QList<Nepomuk::Query::Result> &entries)
+{
+    kDebug();
     // Iterate over all the IMAccounts/PersonContacts found.
-    while(it.next()) {
-        Nepomuk::PersonContact foundPersonContact(it.binding("a").uri());
-        Nepomuk::IMAccount foundIMAccount(it.binding("b").uri());
+    foreach (const Nepomuk::Query::Result &result, entries) {
+        Nepomuk::PersonContact foundPersonContact(result.resource().resourceUri());
+        Nepomuk::IMAccount foundIMAccount(result.requestProperty(Nepomuk::Vocabulary::NCO::IMAccount()).uri());
+        kDebug() << "New resource added: " << foundPersonContact << foundIMAccount;
 
         // Create a fake metacontact to hold this item.
         MetaContactItem *metaContactItem = new MetaContactItem(MetaContactItem::FakeMetaContact, 0);
@@ -106,11 +130,70 @@ ContactsListModel::ContactsListModel(QObject *parent)
         metaContactItem->appendChildItem(item);
         connect(item, SIGNAL(dirty()), SLOT(onItemDirty()));
     }
+
+    reset();
+}
+
+void ContactsListModel::onContactsQueryEntriesRemoved(const QList< QUrl > &entries)
+{
+    kDebug();
+    // Find and remove
+    foreach (const QUrl &url, entries) {
+        kDebug() << "Attempting to remove resource " << url;
+        foreach (const QModelIndex &index, findContacts(url)) {
+            kDebug() << "Found matching item at" << index;
+            AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
+            ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
+
+            if (contactItem) {
+                // Yeah, we're here. Now let's have a look through metacontacts available
+                AbstractTreeItem *metacontact = contactItem->parentItem();
+                metacontact->removeChildItem(contactItem);
+                delete contactItem;
+                if (metacontact->childItems().isEmpty()) {
+                    // We will have to delete the metacontact as well
+                    m_rootItem->removeChildItem(metacontact);
+                    delete metacontact;
+                }
+            }
+        }
+    }
+
+    reset();
 }
 
 ContactsListModel::~ContactsListModel()
 {
     kDebug();
+}
+
+QModelIndexList ContactsListModel::findContacts(const QUrl& resource)
+{
+    return findChildrenContacts(resource, QModelIndex());
+}
+
+QModelIndexList ContactsListModel::findChildrenContacts(const QUrl& resource, const QModelIndex& parent)
+{
+    QModelIndexList list;
+
+    kDebug() << "Finding contacts in " << parent << rowCount(parent) << columnCount(parent);
+
+    for (int i = 0; i < rowCount(parent); ++i) {
+        for (int j = 0; j < columnCount(parent); ++j) {
+            QModelIndex current = index(i, j, parent);
+
+            if (current.data(PersonContactResourceRole) == resource) {
+                list << current;
+            }
+
+            // Iterate over children, if any
+            if (hasChildren(current)) {
+                list << findChildrenContacts(resource, current);
+            }
+        }
+    }
+
+    return list;
 }
 
 int ContactsListModel::columnCount(const QModelIndex &parent) const
@@ -152,6 +235,9 @@ QVariant ContactsListModel::data(const QModelIndex &index, int role) const
             break;
         case ContactsListModel::AvatarRole:
             data.setValue<QPixmap>(contactItem->avatar());
+            break;
+        case ContactsListModel::PersonContactResourceRole:
+            data.setValue<QUrl>(contactItem->personContact().resourceUri());
             break;
         default:
             break;

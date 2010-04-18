@@ -118,6 +118,7 @@ target_link_libraries (telepathy_contactlist_prototype
                        ${KDE4_KDEUI_LIBS}
                        ${TELEPATHY_QT4_LIBRARIES}
                        ${NEPOMUK_LIBRARIES}
+                       ${NEPOMUK_QUERY_LIBRARIES}
                        nie
 
 )

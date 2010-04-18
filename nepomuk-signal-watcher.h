@@ -66,6 +66,8 @@ public:
 
     void registerCallbackOnSubject(const Nepomuk::Resource &resource,
                                    NepomukSignalWatcher::Watcher *callback);
+    void unregisterCallbackOnSubject(const Nepomuk::Resource &resource,
+                                     NepomukSignalWatcher::Watcher *callback);
 
 private Q_SLOTS:
     void onStatementAdded(const Soprano::Statement &statement);
@@ -74,7 +76,6 @@ private:
     Q_DISABLE_COPY(NepomukSignalWatcher);
 
     NepomukSignalWatcher();
-    static NepomukSignalWatcher *s_self;
 
     Soprano::Util::SignalCacheModel *m_sopranoModel;
 
