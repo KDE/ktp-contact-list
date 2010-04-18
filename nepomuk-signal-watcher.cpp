@@ -22,22 +22,43 @@
 #include "nepomuk-signal-watcher.h"
 
 #include <KDebug>
+#include <KGlobal>
 
 #include <Nepomuk/ResourceManager>
 
 #include <Soprano/Node>
 #include <Soprano/Statement>
 
-NepomukSignalWatcher* NepomukSignalWatcher::s_self = 0;
+class NepomukSignalWatcherHelper
+{
+public:
+    NepomukSignalWatcherHelper() : q(0) {}
+    ~NepomukSignalWatcherHelper() {
+        delete q;
+    }
+    NepomukSignalWatcher *q;
+};
+
+K_GLOBAL_STATIC(NepomukSignalWatcherHelper, s_globalNepomukSignalWatcher)
+
+NepomukSignalWatcher *NepomukSignalWatcher::instance()
+{
+    if (!s_globalNepomukSignalWatcher->q) {
+        new NepomukSignalWatcher;
+    }
+
+    return s_globalNepomukSignalWatcher->q;
+}
 
 NepomukSignalWatcher::NepomukSignalWatcher()
  : m_sopranoModel(new Soprano::Util::SignalCacheModel(
             Nepomuk::ResourceManager::instance()->mainModel()))
 {
-    kDebug();
-
     // Set up the singleton instance
-    s_self = this;
+    Q_ASSERT(!s_globalNepomukSignalWatcher->q);
+    s_globalNepomukSignalWatcher->q = this;
+
+    kDebug();
 
     // Connect to the slots we need to monitor from the Soprano Model.
     connect(m_sopranoModel,
@@ -49,21 +70,7 @@ NepomukSignalWatcher::~NepomukSignalWatcher()
 {
     kDebug();
 
-    delete m_sopranoModel;
-
-    // Delete the singleton instance of this class
-    s_self = 0;
-}
-
-NepomukSignalWatcher *NepomukSignalWatcher::instance()
-{
-    // Construct the singleton if hasn't been already
-    if (!s_self) {
-        s_self = new NepomukSignalWatcher;
-    }
-
-    // Return the singleton instance of this class
-    return s_self;
+    m_sopranoModel->deleteLater();
 }
 
 void NepomukSignalWatcher::onStatementAdded(const Soprano::Statement &statement)
