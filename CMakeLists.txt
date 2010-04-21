@@ -12,7 +12,8 @@ find_package(Nepomuk REQUIRED)
 include (KDE4Defaults)
 include (MacroLibrary)
 
-add_definitions (${KDE4_DEFINITIONS})
+add_definitions (${KDE4_DEFINITIONS}
+                 -DDISABLE_NEPOMUK_LEGACY)
 
 include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
