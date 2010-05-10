@@ -41,10 +41,13 @@
 #include <Nepomuk/Variant>
 
 #include <Nepomuk/Query/QueryServiceClient>
+#include <Nepomuk/Query/Query>
+#include <Nepomuk/Query/ResourceTypeTerm>
+#include <Nepomuk/Query/ResourceTerm>
+#include <Nepomuk/Query/ComparisonTerm>
+#include <Nepomuk/Query/AndTerm>
+#include <Nepomuk/Query/NegationTerm>
 #include <Nepomuk/Query/Result>
-
-#include <Soprano/Model>
-#include <Soprano/QueryResultIterator>
 
 #include <unistd.h>
 #include <KMessageBox>
@@ -61,35 +64,26 @@ ContactsListModel::ContactsListModel(QObject *parent)
     // FIXME: Get the Nepomuk Resource for myself in the standardised way, once it is standardised.
     Nepomuk::Resource me(QUrl::fromEncoded("nepomuk:/myself"));
 
-    // Get ALL THE METACONTACT!!!!11!!111!!11one111!!!!eleven!!!1!
-    QString metaContactQuery = QString("select distinct ?a where { ?a a %1 }")
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
-
     m_metaContactsQuery = new Nepomuk::Query::QueryServiceClient(this);
     connect(m_metaContactsQuery, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
             this, SLOT(onMetaContactsQueryNewEntries(QList<Nepomuk::Query::Result>)));
     connect(m_metaContactsQuery, SIGNAL(entriesRemoved(QList<QUrl>)),
             this, SLOT(onMetaContactsEntriesRemoved(QList<QUrl>)));
 
-    bool queryResult = m_metaContactsQuery->sparqlQuery(metaContactQuery);
-    kDebug() << "Metacontact query result " << queryResult;
-    if (!queryResult) {
-        KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
-                                   "installation and make sure Nepomuk is running."));
-    }
+    // Get all metacontacts
+    {
+        using namespace Nepomuk::Query;
 
-    // Get all the Telepathy PersonContacts which do not belong to any metacontact
-    QString query = QString("select distinct ?r ?account where { ?r a %1 . ?r %2 ?account . "
-                            "?acccount a %3 . ?account %4 ?t . ?account %5 ?t . ?t a %3 . ?s %2 ?t . "
-                            "?s a %1 . %6 %7 ?s . optional { ?u a %8 . ?u %7 ?r } . filter(!bound(?u))  }")
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::PersonContact()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::publishesPresenceTo()))
-            .arg(Soprano::Node::resourceToN3(me.resourceUri()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
+        Query query(ResourceTypeTerm(Nepomuk::Vocabulary::PIMO::Person()));
+
+        bool queryResult = m_metaContactsQuery->query(query);
+        kDebug() << "Metacontact query result " << queryResult;
+
+        if (!queryResult) {
+            KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                       "installation and make sure Nepomuk is running."));
+        }
+    }
 
     m_contactsQuery = new Nepomuk::Query::QueryServiceClient(this);
     connect(m_contactsQuery, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
@@ -97,13 +91,60 @@ ContactsListModel::ContactsListModel(QObject *parent)
     connect(m_contactsQuery, SIGNAL(entriesRemoved(QList<QUrl>)),
             this, SLOT(onContactsQueryEntriesRemoved(QList<QUrl>)));
 
-    Nepomuk::Query::RequestPropertyMap rpm;
-    rpm.insert("account", Nepomuk::Vocabulary::NCO::IMAccount());
-    queryResult = m_contactsQuery->sparqlQuery(query, rpm);
-    kDebug() << "Contact query result " << queryResult;
-    if (!queryResult) {
-        KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
-                                   "installation and make sure Nepomuk is running."));
+    // Get all Telepathy PersonContacts which do not belong to any metacontact
+    {
+        using namespace Nepomuk::Query;
+        using namespace Nepomuk::Vocabulary;
+        // subquery to match grouding occurrences of me
+        ComparisonTerm goterm(PIMO::groundingOccurrence(),
+                              ResourceTerm(me));
+        goterm.setInverted(true);
+
+        // combine that with only nco:PersonContacts
+        AndTerm pcgoterm(ResourceTypeTerm(NCO::PersonContact()),
+                         goterm);
+
+        // now look for im accounts of those grounding occurrences (pcgoterm will become the subject of this comparison,
+        // thus the comparison will match the im accounts)
+        ComparisonTerm impcgoterm(NCO::hasIMAccount(),
+                                  pcgoterm);
+        impcgoterm.setInverted(true);
+
+        // now look for all buddies of the accounts
+        ComparisonTerm buddyTerm(Telepathy::isBuddyOf(),
+                                 impcgoterm);
+        // set the name of the variable (i.e. the buddies) to be able to match it later
+        buddyTerm.setVariableName("t");
+
+        // same comparison, other property, but use the same variable name to match them
+        ComparisonTerm ppterm(Telepathy::publishesPresenceTo(),
+                              ResourceTypeTerm(NCO::IMAccount()));
+        ppterm.setVariableName("t");
+
+        // combine both to complete the matching of the im account ?account
+        AndTerm accountTerm(ResourceTypeTerm(NCO::IMAccount()),
+                            buddyTerm, ppterm);
+
+        // match the account and select it for the results
+        ComparisonTerm imaccountTerm(NCO::hasIMAccount(), accountTerm);
+        imaccountTerm.setVariableName("account");
+
+        // and finally the exclusion of those person contacts that already have a pimo person attached
+        ComparisonTerm personTerm(PIMO::groundingOccurrence(),
+                                  ResourceTypeTerm(PIMO::Person()));
+        personTerm.setInverted(true);
+
+        // and all combined
+        Query query(AndTerm(ResourceTypeTerm(Nepomuk::Vocabulary::NCO::PersonContact()),
+                            imaccountTerm, NegationTerm::negateTerm(personTerm)));
+
+        bool queryResult = m_contactsQuery->query(query);
+
+        kDebug() << "Contact query result " << queryResult;
+        if (!queryResult) {
+            KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                       "installation and make sure Nepomuk is running."));
+        }
     }
 }
 
@@ -112,8 +153,8 @@ void ContactsListModel::onContactsQueryNewEntries(const QList<Nepomuk::Query::Re
     kDebug();
     // Iterate over all the IMAccounts/PersonContacts found.
     foreach (const Nepomuk::Query::Result &result, entries) {
-        Nepomuk::PersonContact foundPersonContact(result.resource().resourceUri());
-        Nepomuk::IMAccount foundIMAccount(result.requestProperty(Nepomuk::Vocabulary::NCO::IMAccount()).uri());
+        Nepomuk::PersonContact foundPersonContact(result.resource());
+        Nepomuk::IMAccount foundIMAccount(result.additionalBinding("account").uri());
         kDebug() << "New resource added: " << foundPersonContact << foundIMAccount;
 
         // Create a fake metacontact to hold this item.
@@ -178,8 +219,8 @@ void ContactsListModel::onMetaContactsQueryNewEntries(const QList< Nepomuk::Quer
     kDebug();
     // Iterate over all the IMAccounts/PersonContacts found.
     foreach (const Nepomuk::Query::Result &result, entries) {
-        kDebug()<<result.resource();
-        Nepomuk::Person foundPimoPerson(result.resource().resourceUri());
+        kDebug() << result.resource();
+        Nepomuk::Person foundPimoPerson(result.resource());
         kDebug() << "Found a PIMO Person "<< foundPimoPerson;
         MetaContactItem *item = new MetaContactItem(MetaContactItem::RealMetaContact, 0);
         item->setParentItem(m_rootItem);

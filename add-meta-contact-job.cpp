@@ -23,7 +23,6 @@
 
 #include "telepathy-base-job_p.h"
 #include <QTimer>
-#include <Soprano/Node>
 #include <pimo.h>
 #include <person.h>
 #include <nco.h>

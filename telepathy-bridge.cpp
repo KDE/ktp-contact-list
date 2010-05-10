@@ -46,11 +46,15 @@
 #include <KDebug>
 #include <KGlobal>
 
-#include <Nepomuk/ResourceManager>
-
-#include <Soprano/Node>
-#include <Soprano/QueryResultIterator>
-#include <Soprano/Model>
+#include <Nepomuk/Query/QueryServiceClient>
+#include <Nepomuk/Query/Query>
+#include <Nepomuk/Query/ResourceTypeTerm>
+#include <Nepomuk/Query/ResourceTerm>
+#include <Nepomuk/Query/ComparisonTerm>
+#include <Nepomuk/Query/AndTerm>
+#include <Nepomuk/Query/NegationTerm>
+#include <Nepomuk/Query/Result>
+#include <KMessageBox>
 
 class TelepathyBridgeHelper
 {
@@ -195,24 +199,59 @@ QList< Nepomuk::PersonContact > TelepathyBridgePrivate::contactsForMetaContact(c
 {
     QList< Nepomuk::PersonContact > retlist;
 
-    // We need a query here, go sparql!
-    QString query = QString("select distinct ?a where { ?a a %1 . %2 %3 ?a . ?a %4 ?r . ?r a %5 . ?r %6 ?s . "
-                            "?s a %5 . ?t a %1 . ?t %4 ?s . %7 %3 ?t }")
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::PersonContact()))
-            .arg(Soprano::Node::resourceToN3(metacontact.resourceUri()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()))
-            .arg(Soprano::Node::resourceToN3(mePimoURI));
+    // Get all Telepathy PersonContacts which belong to this metacontact, and match our criteria
+    QList< Nepomuk::Query::Result > results;
+    {
+        using namespace Nepomuk::Query;
+        using namespace Nepomuk::Vocabulary;
+        // subquery to match grouding occurrences of mePimoURI
+        ComparisonTerm goterm(PIMO::groundingOccurrence(),
+                              ResourceTerm(mePimoURI));
+        goterm.setInverted(true);
 
-    // Get the Nepomuk model to query.
-    Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
-    Soprano::QueryResultIterator it = model->executeQuery(query, Soprano::Query::QueryLanguageSparql);
+        // combine that with only nco:PersonContacts
+        AndTerm pcgoterm(ResourceTypeTerm(NCO::PersonContact()),
+                         goterm);
+
+        // now look for im accounts of those grounding occurrences (pcgoterm will become the subject of this comparison,
+        // thus the comparison will match the im accounts)
+        ComparisonTerm impcgoterm(NCO::hasIMAccount(),
+                                  pcgoterm);
+        impcgoterm.setInverted(true);
+
+        // now look for all buddies of the accounts
+        ComparisonTerm buddyTerm(Telepathy::isBuddyOf(),
+                                 impcgoterm);
+
+        // combine that with only IMAccounts
+        AndTerm imbuddyTerm(ResourceTypeTerm(NCO::IMAccount()),
+                            buddyTerm);
+
+        // ensure the result has this IMAccount
+        ComparisonTerm retAccountTerm(NCO::hasIMAccount(),
+                                      imbuddyTerm);
+
+        // match grouding occurrences of metacontact
+        ComparisonTerm retgoterm(PIMO::groundingOccurrence(),
+                                 ResourceTerm(metacontact));
+        goterm.setInverted(true);
+
+        // and all combined
+        Query query(AndTerm(ResourceTypeTerm(Nepomuk::Vocabulary::NCO::PersonContact()),
+                            retAccountTerm, retgoterm));
+
+        bool queryResult = true;
+        results = QueryServiceClient::syncQuery(query, &queryResult);
+
+        if (!queryResult) {
+            KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                       "installation and make sure Nepomuk is running."));
+        }
+    }
 
     // Iterate over all the IMAccounts/PersonContacts found.
-    while(it.next()) {
-        Nepomuk::PersonContact foundPersonContact(it.binding("a").uri());
+    foreach (const Nepomuk::Query::Result &result, results) {
+        Nepomuk::PersonContact foundPersonContact(result.resource());
 
         retlist << foundPersonContact;
     }

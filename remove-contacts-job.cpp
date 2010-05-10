@@ -24,6 +24,8 @@
 #include <person.h>
 #include <personcontact.h>
 #include <imaccount.h>
+#include <pimo.h>
+#include <informationelement.h>
 
 #include <QTimer>
 
@@ -34,16 +36,20 @@
 #include <KLocalizedString>
 #include <KDebug>
 
+#include <KMessageBox>
+
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/AccountManager>
 #include <TelepathyQt4/ContactManager>
 #include <TelepathyQt4/PendingOperation>
-#include <Soprano/Node>
-#include <pimo.h>
-#include <Soprano/Model>
-#include <Nepomuk/ResourceManager>
-#include <Soprano/QueryResultIterator>
-#include <informationelement.h>
+
+#include <Nepomuk/Query/Query>
+#include <Nepomuk/Query/QueryServiceClient>
+#include <Nepomuk/Query/AndTerm>
+#include <Nepomuk/Query/ResourceTerm>
+#include <Nepomuk/Query/ResourceTypeTerm>
+#include <Nepomuk/Query/ComparisonTerm>
+#include <Nepomuk/Query/Result>
 
 class RemoveContactsJobPrivate : public TelepathyBaseJobPrivate
 {
@@ -204,24 +210,32 @@ void RemoveContactsJobPrivate::__k__removeContacts()
             }
         }
         if (removalModes & TelepathyBridge::RemoveFromMetacontactMode) {
-            // Check if this contact is associated to a metacontact
-            Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
-
             // FIXME: Port to new OSCAF standard for accessing "me" as soon as it
             // becomes available.
             Nepomuk::Thing me(QUrl::fromEncoded("nepomuk:/myself"));
 
             foreach (const Nepomuk::PersonContact &contact, proxyToContacts[i.key()]) {
-                QString query = QString("select distinct ?r where { ?r a %1 . ?r %2 %3 }")
-                                .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()))
-                                .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()))
-                                .arg(Soprano::Node::resourceToN3(contact.resourceUri()));
+                QList< Nepomuk::Query::Result > results;
+                // Get metacontacts for a specific contact
+                {
+                    using namespace Nepomuk::Query;
 
+                    ResourceTypeTerm rterm(Nepomuk::Vocabulary::PIMO::Person());
+                    ComparisonTerm cterm(Nepomuk::Vocabulary::PIMO::groundingOccurrence(),
+                                         ResourceTerm(contact));
+                    Query query(AndTerm(rterm, cterm));
 
-                Soprano::QueryResultIterator it = model->executeQuery(query, Soprano::Query::QueryLanguageSparql);
+                    bool queryResult = true;
+                    results = QueryServiceClient::syncQuery(query, &queryResult);
 
-                while (it.next()) {
-                    Nepomuk::Person foundPerson(it.binding("r").uri());
+                    if (!queryResult) {
+                        KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                                   "installation and make sure Nepomuk is running."));
+                    }
+                }
+
+                foreach (const Nepomuk::Query::Result &result, results) {
+                    Nepomuk::Person foundPerson(result.resource());
 
                     if (foundPerson.resourceUri() == me.resourceUri()) {
                         kDebug() << "Skipping myself resource for removing from metacontact";

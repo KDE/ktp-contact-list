@@ -5,7 +5,8 @@ set (CMAKE_MODULE_PATH
      ${CMAKE_MODULE_PATH}
 )
 
-find_package (KDE4 REQUIRED)
+set(KDE_MIN_VERSION "4.4.75")
+find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 REQUIRED)
 find_package(Nepomuk REQUIRED)
 

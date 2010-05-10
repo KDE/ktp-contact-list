@@ -47,11 +47,12 @@
 #include <Nepomuk/Variant>
 #include <Nepomuk/Query/QueryServiceClient>
 #include <Nepomuk/Query/ComparisonTerm>
+#include <Nepomuk/Query/ResourceTerm>
 #include <Nepomuk/Query/ResourceTypeTerm>
 #include <Nepomuk/Query/LiteralTerm>
 #include <Nepomuk/Query/AndTerm>
+#include <Nepomuk/Query/Result>
 
-#include <Soprano/QueryResultIterator>
 #include <pimo.h>
 #include <nao.h>
 
@@ -262,18 +263,27 @@ void MainWidget::onCustomContextMenuRequested(const QPoint& point)
         }
 
         if (canAddToMetaContact) {
-            // Let's list available metacontacts here
-            QString metaContactQuery = QString("select distinct ?a where { ?a a %7 . }")
-                .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
-            Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
-            Soprano::QueryResultIterator it = model->executeQuery(metaContactQuery,
-                                                                  Soprano::Query::QueryLanguageSparql);
+            // List available metacontacts
+            QList<Nepomuk::Query::Result> results;
+            {
+                using namespace Nepomuk::Query;
+
+                Query query(ResourceTypeTerm(Nepomuk::Vocabulary::PIMO::Person()));
+
+                bool queryResult = true;
+                results = QueryServiceClient::syncQuery(query, &queryResult);
+
+                if (!queryResult) {
+                    KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                               "installation and make sure Nepomuk is running."));
+                }
+            }
 
             QMenu *parentAction = new QMenu(i18n("Add to metacontact"));
             menu->addMenu(parentAction);
             // Iterate over all the IMAccounts found.
-            while(it.next()) {
-                Nepomuk::Person foundPerson(it.binding("a").uri());
+            foreach (const Nepomuk::Query::Result &result, results) {
+                Nepomuk::Person foundPerson(result.resource());
                 kDebug() << foundPerson;
                 QAction *action = parentAction->addAction(foundPerson.genericLabel());
                 connect(action, SIGNAL(triggered(bool)),
@@ -574,23 +584,35 @@ void MainWidget::onAddContactRequest(bool )
     lay->addWidget(account);
     lay->addWidget(contactId);
 
-    // Get all valid TP accounts through a sparql query
-    QString query = QString("select distinct ?a where { %1 %2 ?a . ?a a %3 }")
-                            .arg(Soprano::Node::resourceToN3(m_mePersonContact.resourceUri()))
-                            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
-                            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()));
+    // Get all valid Telepathy accounts
+    QList<Nepomuk::Query::Result> results;
+    {
+        using namespace Nepomuk::Query;
 
-    // Get the Nepomuk model to query.
-    Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
+        // me must have an IMAccount
+        ComparisonTerm imterm(Nepomuk::Vocabulary::NCO::hasIMAccount(),
+                              ResourceTerm(m_mePersonContact));
+        imterm.setInverted(true);
 
-    Soprano::QueryResultIterator it = model->executeQuery(query, Soprano::Query::QueryLanguageSparql);
+        // Which must be an IMAccount of course
+        Query query(AndTerm(ResourceTypeTerm(Nepomuk::Vocabulary::NCO::IMAccount()),
+                            imterm));
+
+        bool queryResult = true;
+        results = QueryServiceClient::syncQuery(query, &queryResult);
+
+        if (!queryResult) {
+            KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                        "installation and make sure Nepomuk is running."));
+        }
+    }
 
     // Iterate over all the IMAccounts/PersonContacts found.
-    while(it.next()) {
-        Nepomuk::IMAccount foundIMAccount(it.binding("a").uri());
+    foreach (const Nepomuk::Query::Result &result, results) {
+        Nepomuk::IMAccount foundIMAccount(result.resource());
 
         foreach (const QString &id, foundIMAccount.imIDs()) {
-            account->addItem(id, it.binding("a").uri());
+            account->addItem(id, foundIMAccount.resourceUri());
         }
     }
 
@@ -667,21 +689,28 @@ void MainWidget::onAddToMetaContact(bool )
     }
 
     // Ok, now let's add the contact
-    Soprano::QueryResultIterator it;
+    QList< Nepomuk::Query::Result > results;
     {
         using namespace Nepomuk::Query;
         using namespace Nepomuk::Vocabulary;
+
         ResourceTypeTerm rtterm(PIMO::Person());
         ComparisonTerm cmpterm(NAO::prefLabel(), LiteralTerm(metaContactName));
+
         Query query(AndTerm(cmpterm, rtterm));
-        Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
-        it = model->executeQuery(query.toSparqlQuery(), Soprano::Query::QueryLanguageSparql);
-        kDebug() << query.toSparqlQuery();
+
+        bool queryResult = true;
+        results = QueryServiceClient::syncQuery(query, &queryResult);
+
+        if (!queryResult) {
+            KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                       "installation and make sure Nepomuk is running."));
+        }
     }
 
     // Iterate over all the IMAccounts found.
-    while(it.next()) {
-        Nepomuk::Person foundPerson(it.binding("r").uri());
+    foreach (const Nepomuk::Query::Result &result, results) {
+        Nepomuk::Person foundPerson(result.resource());
         foundPerson.addGroundingOccurrence(contactItem->personContact());
     }
 }
