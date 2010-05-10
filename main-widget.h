@@ -66,6 +66,8 @@ public slots:
     void onHandlerReady(bool);
     void onRequestAddToGroup(bool);
     void onAddContactRequest(bool);
+    void onAddToMetaContact(bool);
+    void onRemoveFromMetacontact(bool);
 };
 
 

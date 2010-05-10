@@ -44,9 +44,16 @@
 #include <KMessageBox>
 
 #include <Nepomuk/ResourceManager>
+#include <Nepomuk/Variant>
 #include <Nepomuk/Query/QueryServiceClient>
+#include <Nepomuk/Query/ComparisonTerm>
+#include <Nepomuk/Query/ResourceTypeTerm>
+#include <Nepomuk/Query/LiteralTerm>
+#include <Nepomuk/Query/AndTerm>
 
 #include <Soprano/QueryResultIterator>
+#include <pimo.h>
+#include <nao.h>
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
@@ -243,6 +250,45 @@ void MainWidget::onCustomContextMenuRequested(const QPoint& point)
                         SLOT(onRequestAddToGroup(bool)));
             }
         }
+
+        // Add/remove to metacontacts
+        // First of all: can it be added to a metacontact?
+        bool canAddToMetaContact = false;
+        MetaContactItem *metaContactItem = dynamic_cast<MetaContactItem*>(contactItem->parentItem());
+        if (metaContactItem) {
+            canAddToMetaContact = metaContactItem->type() == MetaContactItem::FakeMetaContact ? true : false;
+        } else {
+            canAddToMetaContact = true;
+        }
+
+        if (canAddToMetaContact) {
+            // Let's list available metacontacts here
+            QString metaContactQuery = QString("select distinct ?a where { ?a a %7 . }")
+                .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
+            Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
+            Soprano::QueryResultIterator it = model->executeQuery(metaContactQuery,
+                                                                  Soprano::Query::QueryLanguageSparql);
+
+            QMenu *parentAction = new QMenu(i18n("Add to metacontact"));
+            menu->addMenu(parentAction);
+            // Iterate over all the IMAccounts found.
+            while(it.next()) {
+                Nepomuk::Person foundPerson(it.binding("a").uri());
+                kDebug() << foundPerson;
+                QAction *action = parentAction->addAction(foundPerson.genericLabel());
+                connect(action, SIGNAL(triggered(bool)),
+                        this, SLOT(onAddToMetaContact(bool)));
+            }
+
+            QAction *action = parentAction->addAction(i18nc("Adds a new metacontact", "Add new..."));
+            connect(action, SIGNAL(triggered(bool)),
+                    this, SLOT(onAddToMetaContact(bool)));
+        } else {
+            // We can remove it from a metacontact instead
+            QAction *action = menu->addAction(i18n("Remove from metacontact"));
+            connect(action, SIGNAL(triggered(bool)),
+                    this, SLOT(onRemoveFromMetacontact(bool)));
+        }
     }
 
     MetaContactItem *metaContactItem = dynamic_cast<MetaContactItem*>(abstractItem);
@@ -381,6 +427,33 @@ void MainWidget::onRequestAddToGroup(bool )
 void MainWidget::onContactBlockRequest(bool )
 {
 
+}
+
+void MainWidget::onRemoveFromMetacontact(bool )
+{
+    // Pick the current model index
+    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    if (!idx.isValid()) {
+        // Flee
+        kDebug() << "Invalid index";
+        return;
+    }
+
+    // Ok, what is it?
+    AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+    ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
+
+    Q_ASSERT(contactItem);
+
+    KJob *job = TelepathyBridge::instance()->removeContact(contactItem->personContact(),
+                                                           TelepathyBridge::RemoveFromMetacontactMode);
+
+    QEventLoop e;
+    connect(job, SIGNAL(finished(KJob*)), &e, SLOT(quit()));
+    job->start();
+    qDebug() << "Running job...";
+    e.exec();
+    qDebug() << "Job run, "<< job->error();
 }
 
 void MainWidget::onContactRemovalRequest(bool )
@@ -534,6 +607,82 @@ void MainWidget::onAddContactRequest(bool )
         qDebug() << "Running job...";
         e.exec();
         qDebug() << "Job run, "<< job->error();
+    }
+}
+
+void MainWidget::onAddToMetaContact(bool )
+{
+    QAction *action = qobject_cast< QAction* >(sender());
+    if (!action) {
+        kDebug() << "invalid";
+        return;
+    }
+
+    QString metaContactName = action->text();
+    kDebug() << "Request adding to metacontact " << metaContactName;
+
+    // Pick the current model index
+    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    if (!idx.isValid()) {
+        // Flee
+        kDebug() << "Invalid index";
+        return;
+    }
+
+    // Ok, what is it?
+    AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+    ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
+
+    Q_ASSERT(contactItem);
+
+    if (metaContactName == i18nc("Adds a new metacontact", "Add new...")) {
+        // Prompt to create a new metacontact
+        // Let's build a dialog
+        KDialog *dial = new KDialog(this);
+        QWidget *w = new QWidget;
+        QLabel *l = new QLabel(i18n("Please enter a name for this new metacontact"));
+        KLineEdit *contactId = new KLineEdit();
+        QVBoxLayout *lay = new QVBoxLayout;
+        lay->addWidget(l);
+        lay->addWidget(contactId);
+
+        w->setLayout(lay);
+        dial->setMainWidget(w);
+
+        if (dial->exec() == KDialog::Accepted) {
+            // Add the contact
+            metaContactName = contactId->text();
+            KJob *job = TelepathyBridge::instance()->addMetaContact(contactId->text(),
+                                                                    QList< Nepomuk::PersonContact >() <<
+                                                                    contactItem->personContact());
+            QEventLoop e;
+            connect(job, SIGNAL(finished(KJob*)), &e, SLOT(quit()));
+            job->start();
+            qDebug() << "Running job...";
+            e.exec();
+            qDebug() << "Job run, "<< job->error();
+        }
+
+        return;
+    }
+
+    // Ok, now let's add the contact
+    Soprano::QueryResultIterator it;
+    {
+        using namespace Nepomuk::Query;
+        using namespace Nepomuk::Vocabulary;
+        ResourceTypeTerm rtterm(PIMO::Person());
+        ComparisonTerm cmpterm(NAO::prefLabel(), LiteralTerm(metaContactName));
+        Query query(AndTerm(cmpterm, rtterm));
+        Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
+        it = model->executeQuery(query.toSparqlQuery(), Soprano::Query::QueryLanguageSparql);
+        kDebug() << query.toSparqlQuery();
+    }
+
+    // Iterate over all the IMAccounts found.
+    while(it.next()) {
+        Nepomuk::Person foundPerson(it.binding("r").uri());
+        foundPerson.addGroundingOccurrence(contactItem->personContact());
     }
 }
 

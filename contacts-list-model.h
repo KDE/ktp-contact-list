@@ -68,6 +68,9 @@ private Q_SLOTS:
     void onContactsQueryNewEntries(const QList<Nepomuk::Query::Result>&);
     void onContactsQueryEntriesRemoved(const QList<QUrl>&);
 
+    void onMetaContactsQueryNewEntries(const QList< Nepomuk::Query::Result >&);
+    void onMetaContactsEntriesRemoved(const QList<QUrl>&);
+
 private:
     Q_DISABLE_COPY(ContactsListModel);
 
@@ -78,6 +81,7 @@ private:
     AbstractTreeItem *m_rootItem;
 
     Nepomuk::Query::QueryServiceClient *m_contactsQuery;
+    Nepomuk::Query::QueryServiceClient *m_metaContactsQuery;
 };
 
 

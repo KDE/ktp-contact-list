@@ -31,6 +31,13 @@
 #include <QObject>
 #include <QPixmap>
 
+namespace Nepomuk {
+namespace Query {
+class QueryServiceClient;
+class Result;
+}
+}
+
 class KIcon;
 
 class MetaContactItem : public QObject,
@@ -53,6 +60,7 @@ public:
     const KIcon &presenceIcon() const;
     const QPixmap& avatar() const;
     QStringList groups() const;
+    MetaContactType type() const;
 
     void setPimoPerson(const Nepomuk::Person &pimoPerson);
     Nepomuk::Person pimoPerson() const;
@@ -63,6 +71,8 @@ Q_SIGNALS:
     void dirty();
 
 private Q_SLOTS:
+    void onNewEntries(const QList<Nepomuk::Query::Result>&);
+    void onEntriesRemoved(const QList<QUrl>&);
 //    void updatePresenceIcon();
 
 private:
@@ -72,6 +82,7 @@ private:
     Nepomuk::Person m_pimoPerson;
     KIcon *m_invalidPresenceIcon;
     QPixmap m_invalidPixmap;
+    Nepomuk::Query::QueryServiceClient *m_queryClient;
 };
 
 

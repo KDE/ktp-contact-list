@@ -73,10 +73,14 @@ public:
         RemoveSubscriptionMode = 1,
         /** Revokes the contact's subscription to your presence */
         RemovePublicationMode = 2,
+        /** Removes the contact from the corresponding metacontact, if any.
+         *  The metacontact is \b not deleted.
+         */
+        RemoveFromMetacontactMode = 4,
         /** Blocks the contact */
-        BlockMode = 4,
+        BlockMode = 8,
         /** Removes the metacontact only - leaves unaltered the underlying real contacts */
-        RemoveMetaContactMode = 8
+        RemoveMetaContactMode = 16
     };
     Q_DECLARE_FLAGS(RemovalModes, RemovalMode)
 
@@ -111,6 +115,8 @@ public:
         ProtocolNotCapableError = 105,
         /** The operation requested the account to be online, but it is not */
         AccountNotOnlineError = 106,
+        /** An operation attempted to create a nepomuk resource which already exists */
+        ResourceAlreadyExistsError = 107,
         /** Telepathy triggered an error */
         TelepathyErrorError = 200
     };
@@ -404,6 +410,21 @@ public:
      */
     KJob *addContact(const Nepomuk::IMAccount &account, const QString &contactId,
                      const QString &petName, const Nepomuk::Person &metacontact);
+
+    /**
+     * \brief Adds a metacontact
+     *
+     * This function attempts to add a metacontact. It will return a valid KJob ready to be started.
+     *
+     * \param name The name of the new metacontact
+     * \param contacts A list of contacts to be associated to this metacontact
+     *
+     * \returns A valid KJob ready to be started
+     *
+     * \note Please remember that KJob has to be explicitly started using KJob::start(),
+     *       differently from Tp::PendingOperation.
+     */
+    KJob *addMetaContact(const QString &name, const QList< Nepomuk::PersonContact > contacts);
 
     /**
      * \returns whether TelepathyBridge is ready to be used or not. This function will return true after a successful \c init().

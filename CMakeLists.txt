@@ -78,6 +78,7 @@ set (contactlist_SRCS
      remove-contacts-from-group-job.cpp
      add-contact-job.cpp
      remove-contacts-job.cpp
+     add-meta-contact-job.cpp
 )
 
 kde4_add_ui_files (contactlist_SRCS
@@ -99,6 +100,13 @@ soprano_add_ontology (nco_SRCS
                       "trig"
 )
 
+soprano_add_ontology (nao_SRCS
+                      ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nepomuk/nao.trig
+                      "NAO"
+                      "Nepomuk::Vocabulary"
+                      "trig"
+)
+
 soprano_add_ontology (telepathy_SRCS
                       ${TELEPATHY_TRIG_SOURCE}
                       "Telepathy"
@@ -110,6 +118,7 @@ kde4_add_executable (telepathy_contactlist_prototype
                      ${contactlist_SRCS}
                      ${contactlist_NEPOMUK_SRCS}
                      ${nco_SRCS}
+                     ${nao_SRCS}
                      ${pimo_SRCS}
                      ${telepathy_SRCS}
 )

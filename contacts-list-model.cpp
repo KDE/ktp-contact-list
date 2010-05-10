@@ -61,37 +61,35 @@ ContactsListModel::ContactsListModel(QObject *parent)
     // FIXME: Get the Nepomuk Resource for myself in the standardised way, once it is standardised.
     Nepomuk::Resource me(QUrl::fromEncoded("nepomuk:/myself"));
 
-    // Get the Nepomuk model to query.
-    Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
-
     // Get ALL THE METACONTACT!!!!11!!111!!11one111!!!!eleven!!!1!
-    // FIXME: Actually make this code do something, then port it to QueryServiceClient
-    QString metaContactquery = QString("select distinct ?a where { ?a a %7 . }")
+    QString metaContactQuery = QString("select distinct ?a where { ?a a %1 }")
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
 
-    Soprano::QueryResultIterator metaIt = model->executeQuery(metaContactquery, Soprano::Query::QueryLanguageSparql);
+    m_metaContactsQuery = new Nepomuk::Query::QueryServiceClient(this);
+    connect(m_metaContactsQuery, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
+            this, SLOT(onMetaContactsQueryNewEntries(QList<Nepomuk::Query::Result>)));
+    connect(m_metaContactsQuery, SIGNAL(entriesRemoved(QList<QUrl>)),
+            this, SLOT(onMetaContactsEntriesRemoved(QList<QUrl>)));
 
-    while(metaIt.next()) {
-        Nepomuk::Person foundPimoPerson(metaIt.binding("a").uri());
-
-        kDebug() << "Found a PIMO Person.";
-   //     MetaContactItem *item = new MetaContactItem(foundPimoPerson, 0);
-   //     item->setParentItem(m_rootItem);
-   //     m_rootItem->appendChildItem(item);
-   //     connect(item, SIGNAL(dirty()), SLOT(onItemDirty()));
+    bool queryResult = m_metaContactsQuery->sparqlQuery(metaContactQuery);
+    kDebug() << "Metacontact query result " << queryResult;
+    if (!queryResult) {
+        KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
+                                   "installation and make sure Nepomuk is running."));
     }
 
-    // Get all the Telepathy PersonContacts that are not in a metacontact
-    // FIXME: At the moment, this just gets all Telepathy PersonContacts.
-    QString query = QString("select distinct ?r ?account where { ?r a %1 . ?r %2 ?account . ?acccount a %3 . "
-                            "?account %4 ?t . ?account %5 ?t . ?t a %3 . ?s %2 ?t . ?s a %1 . %6 %7 ?s }")
+    // Get all the Telepathy PersonContacts which do not belong to any metacontact
+    QString query = QString("select distinct ?r ?account where { ?r a %1 . ?r %2 ?account . "
+                            "?acccount a %3 . ?account %4 ?t . ?account %5 ?t . ?t a %3 . ?s %2 ?t . "
+                            "?s a %1 . %6 %7 ?s . optional { ?u a %8 . ?u %7 ?r } . filter(!bound(?u))  }")
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::PersonContact()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::hasIMAccount()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::NCO::IMAccount()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::isBuddyOf()))
             .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::Telepathy::publishesPresenceTo()))
             .arg(Soprano::Node::resourceToN3(me.resourceUri()))
-            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()));
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()))
+            .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()));
 
     m_contactsQuery = new Nepomuk::Query::QueryServiceClient(this);
     connect(m_contactsQuery, SIGNAL(newEntries(QList<Nepomuk::Query::Result>)),
@@ -101,8 +99,8 @@ ContactsListModel::ContactsListModel(QObject *parent)
 
     Nepomuk::Query::RequestPropertyMap rpm;
     rpm.insert("account", Nepomuk::Vocabulary::NCO::IMAccount());
-    bool queryResult = m_contactsQuery->sparqlQuery(query, rpm);
-    kDebug() << "Query result " << queryResult;
+    queryResult = m_contactsQuery->sparqlQuery(query, rpm);
+    kDebug() << "Contact query result " << queryResult;
     if (!queryResult) {
         KMessageBox::error(0, i18n("It was not possible to query Nepomuk database. Please check your "
                                    "installation and make sure Nepomuk is running."));
@@ -147,7 +145,13 @@ void ContactsListModel::onContactsQueryEntriesRemoved(const QList< QUrl > &entri
 
             if (contactItem) {
                 // Yeah, we're here. Now let's have a look through metacontacts available
-                AbstractTreeItem *metacontact = contactItem->parentItem();
+                MetaContactItem *metacontact = dynamic_cast<MetaContactItem*>(contactItem->parentItem());
+                if (metacontact->type() != MetaContactItem::FakeMetaContact) {
+                    // Not our business
+                    kDebug() << "Skipping deletion as the metacontact is real";
+                    continue;
+                }
+
                 metacontact->removeChildItem(contactItem);
                 delete contactItem;
                 if (metacontact->childItems().isEmpty()) {
@@ -157,6 +161,31 @@ void ContactsListModel::onContactsQueryEntriesRemoved(const QList< QUrl > &entri
                 }
             }
         }
+    }
+
+    reset();
+}
+
+void ContactsListModel::onMetaContactsEntriesRemoved(const QList< QUrl > &entries)
+{
+    Q_UNUSED(entries)
+    // Not a big deal here actually, deletion is handled in MetaContactItem.
+    // We just keep this slot for the day when it will be useful
+}
+
+void ContactsListModel::onMetaContactsQueryNewEntries(const QList< Nepomuk::Query::Result > &entries)
+{
+    kDebug();
+    // Iterate over all the IMAccounts/PersonContacts found.
+    foreach (const Nepomuk::Query::Result &result, entries) {
+        kDebug()<<result.resource();
+        Nepomuk::Person foundPimoPerson(result.resource().resourceUri());
+        kDebug() << "Found a PIMO Person "<< foundPimoPerson;
+        MetaContactItem *item = new MetaContactItem(MetaContactItem::RealMetaContact, 0);
+        item->setParentItem(m_rootItem);
+        m_rootItem->appendChildItem(item);
+        item->setPimoPerson(foundPimoPerson);
+        connect(item, SIGNAL(dirty()), SLOT(onItemDirty()));
     }
 
     reset();
@@ -377,6 +406,8 @@ void ContactsListModel::onItemDirty()
     if (!item) {
         kWarning() << "Invalid sender.";
     }
+
+    reset();
 
     // FIXME: Port this stuff to new tree structure.
    // QModelIndex itemIndex = index(m_contactItems.indexOf(item), 0, QModelIndex());

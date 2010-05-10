@@ -37,6 +37,7 @@
 #include "add-contacts-to-group-job.h"
 #include "remove-contacts-job.h"
 #include "add-contact-job.h"
+#include "add-meta-contact-job.h"
 
 #include <TelepathyQt4/AccountManager>
 #include <TelepathyQt4/PendingReady>
@@ -414,6 +415,11 @@ KJob* TelepathyBridge::addContact(const Nepomuk::IMAccount& account, const QStri
                                   const Nepomuk::Person& metacontact)
 {
     return new AddContactJob(account, contactId, petName, metacontact, this);
+}
+
+KJob* TelepathyBridge::addMetaContact(const QString& name, const QList< Nepomuk::PersonContact > contacts)
+{
+    return new AddMetaContactJob(name, contacts, this);
 }
 
 

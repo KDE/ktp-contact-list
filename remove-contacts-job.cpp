@@ -38,6 +38,12 @@
 #include <TelepathyQt4/AccountManager>
 #include <TelepathyQt4/ContactManager>
 #include <TelepathyQt4/PendingOperation>
+#include <Soprano/Node>
+#include <pimo.h>
+#include <Soprano/Model>
+#include <Nepomuk/ResourceManager>
+#include <Soprano/QueryResultIterator>
+#include <informationelement.h>
 
 class RemoveContactsJobPrivate : public TelepathyBaseJobPrivate
 {
@@ -144,6 +150,7 @@ void RemoveContactsJobPrivate::__k__removeContacts()
     Q_Q(RemoveContactsJob);
 
     QHash< TelepathyAccountProxy*, QList< Tp::ContactPtr > > tbd;
+    QHash< TelepathyAccountProxy*, QList< Nepomuk::PersonContact > > proxyToContacts;
 
     foreach (const Nepomuk::PersonContact &contact, contacts) {
         // Retrieve IM identifiers first
@@ -154,6 +161,7 @@ void RemoveContactsJobPrivate::__k__removeContacts()
 
         foreach (TelepathyAccountProxy *proxy, TelepathyBridge::instance()->d_func()->accountProxiesForContact(contact)) {
             tbd[proxy] << proxy->contactsForIdentifiers(imIDs);
+            proxyToContacts[proxy] << contact;
         }
     }
 
@@ -193,6 +201,50 @@ void RemoveContactsJobPrivate::__k__removeContacts()
             if (i.key()->account()->connection()->contactManager()->canBlockContacts()) {
                 // Cool, let's go
                 addOperation(i.key()->account()->connection()->contactManager()->blockContacts(i.value()));
+            }
+        }
+        if (removalModes & TelepathyBridge::RemoveFromMetacontactMode) {
+            // Check if this contact is associated to a metacontact
+            Soprano::Model *model = Nepomuk::ResourceManager::instance()->mainModel();
+
+            // FIXME: Port to new OSCAF standard for accessing "me" as soon as it
+            // becomes available.
+            Nepomuk::Thing me(QUrl::fromEncoded("nepomuk:/myself"));
+
+            foreach (const Nepomuk::PersonContact &contact, proxyToContacts[i.key()]) {
+                QString query = QString("select distinct ?r where { ?r a %1 . ?r %2 %3 }")
+                                .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::Person()))
+                                .arg(Soprano::Node::resourceToN3(Nepomuk::Vocabulary::PIMO::groundingOccurrence()))
+                                .arg(Soprano::Node::resourceToN3(contact.resourceUri()));
+
+
+                Soprano::QueryResultIterator it = model->executeQuery(query, Soprano::Query::QueryLanguageSparql);
+
+                while (it.next()) {
+                    Nepomuk::Person foundPerson(it.binding("r").uri());
+
+                    if (foundPerson.resourceUri() == me.resourceUri()) {
+                        kDebug() << "Skipping myself resource for removing from metacontact";
+                        continue;
+                    }
+
+                    // Ok, let's now remove the grounding occurrence
+                    QList< Nepomuk::InformationElement > gOccs = foundPerson.groundingOccurrences();
+                    {
+                        QList< Nepomuk::InformationElement >::iterator it = gOccs.begin();
+                        while (it != gOccs.end()) {
+                            if ((*it).resourceUri() == contact.resourceUri()) {
+                                kDebug() << "Matched groundingOccurrence metacontact->contact, removing";
+                                it = gOccs.erase(it);
+                            } else {
+                                ++it;
+                            }
+                        }
+                    }
+
+                    // Set the new property
+                    foundPerson.setGroundingOccurrences(gOccs);
+                }
             }
         }
     }
