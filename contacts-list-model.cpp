@@ -154,7 +154,7 @@ void ContactsListModel::onContactsQueryNewEntries(const QList<Nepomuk::Query::Re
     // Iterate over all the IMAccounts/PersonContacts found.
     foreach (const Nepomuk::Query::Result &result, entries) {
         Nepomuk::PersonContact foundPersonContact(result.resource());
-        Nepomuk::IMAccount foundIMAccount(result.additionalBinding("account").uri());
+        Nepomuk::IMAccount foundIMAccount(result.additionalBinding("account").toUrl());
         kDebug() << "New resource added: " << foundPersonContact << foundIMAccount;
 
         // Create a fake metacontact to hold this item.
