@@ -29,6 +29,7 @@
 #include "telepathy-bridge.h"
 
 #include <nco.h>
+#include <telepathy.h>
 #include <informationelement.h>
 
 #include <QtGui/QSortFilterProxyModel>
@@ -55,6 +56,8 @@
 
 #include <pimo.h>
 #include <nao.h>
+
+#include <TelepathyQt4/Constants>
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
@@ -610,9 +613,15 @@ void MainWidget::onAddContactRequest(bool )
     // Iterate over all the IMAccounts/PersonContacts found.
     foreach (const Nepomuk::Query::Result &result, results) {
         Nepomuk::IMAccount foundIMAccount(result.resource());
-
-        foreach (const QString &id, foundIMAccount.imIDs()) {
-            account->addItem(id, foundIMAccount.resourceUri());
+        uint statusType = foundIMAccount.statusTypes().first();
+        if( statusType != Tp::ConnectionPresenceTypeUnset   &&
+            statusType != Tp::ConnectionPresenceTypeOffline &&
+            statusType != Tp::ConnectionPresenceTypeUnknown &&
+            statusType != Tp::ConnectionPresenceTypeError)
+        {
+            foreach (const QString &id, foundIMAccount.imIDs()) {
+                account->addItem(id, foundIMAccount.resourceUri());
+            }
         }
     }
 
