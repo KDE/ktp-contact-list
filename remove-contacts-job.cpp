@@ -54,12 +54,11 @@
 class RemoveContactsJobPrivate : public TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(RemoveContactsJob)
-    RemoveContactsJob * const q_ptr;
 
 public:
     RemoveContactsJobPrivate(RemoveContactsJob *parent,
                              RemoveContactsJob::ProcessingMode m, TelepathyBridge::RemovalModes rm)
-        : TelepathyBaseJobPrivate(parent), q_ptr(parent), mode(m), removalModes(rm)
+        : TelepathyBaseJobPrivate(parent), mode(m), removalModes(rm)
     {}
     virtual ~RemoveContactsJobPrivate() {}
 

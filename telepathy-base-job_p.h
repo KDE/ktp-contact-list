@@ -31,6 +31,8 @@ class PendingOperation;
 class TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(TelepathyBaseJob)
+
+protected:
     TelepathyBaseJob * const q_ptr;
 
 public:

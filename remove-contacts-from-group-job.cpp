@@ -42,12 +42,11 @@
 class RemoveContactsFromGroupJobPrivate : public TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(RemoveContactsFromGroupJob)
-    RemoveContactsFromGroupJob * const q_ptr;
 
 public:
     RemoveContactsFromGroupJobPrivate(RemoveContactsFromGroupJob *parent,
                                       RemoveContactsFromGroupJob::ProcessingMode m)
-        : TelepathyBaseJobPrivate(parent), q_ptr(parent), mode(m)
+        : TelepathyBaseJobPrivate(parent), mode(m)
     {}
     virtual ~RemoveContactsFromGroupJobPrivate() {}
 

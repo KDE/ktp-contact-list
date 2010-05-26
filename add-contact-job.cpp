@@ -39,11 +39,10 @@
 class AddContactJobPrivate : public TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(AddContactJob)
-    AddContactJob * const q_ptr;
 
 public:
     AddContactJobPrivate(AddContactJob *parent)
-        : TelepathyBaseJobPrivate(parent), q_ptr(parent)
+        : TelepathyBaseJobPrivate(parent)
     {}
     virtual ~AddContactJobPrivate() {}
 

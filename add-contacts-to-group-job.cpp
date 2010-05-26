@@ -42,12 +42,11 @@
 class AddContactsToGroupJobPrivate : public TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(AddContactsToGroupJob)
-    AddContactsToGroupJob * const q_ptr;
 
 public:
     AddContactsToGroupJobPrivate(AddContactsToGroupJob *parent,
                                       AddContactsToGroupJob::ProcessingMode m)
-        : TelepathyBaseJobPrivate(parent), q_ptr(parent), mode(m)
+        : TelepathyBaseJobPrivate(parent), mode(m)
     {}
     virtual ~AddContactsToGroupJobPrivate() {}
 

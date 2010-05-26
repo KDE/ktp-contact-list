@@ -34,11 +34,10 @@
 class AddMetaContactJobPrivate : public TelepathyBaseJobPrivate
 {
     Q_DECLARE_PUBLIC(AddMetaContactJob)
-    AddMetaContactJob * const q_ptr;
 
 public:
     AddMetaContactJobPrivate(AddMetaContactJob *parent)
-        : TelepathyBaseJobPrivate(parent), q_ptr(parent)
+        : TelepathyBaseJobPrivate(parent)
     {}
     virtual ~AddMetaContactJobPrivate() {}
 
