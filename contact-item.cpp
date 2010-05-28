@@ -28,6 +28,8 @@
 #include <QPainter>
 #include <kiconloader.h>
 
+#include <TelepathyQt4/Constants>
+
 ContactItem::ContactItem(Nepomuk::PersonContact personContact,
                          Nepomuk::IMAccount imAccount,
                          QObject *parent)
@@ -98,19 +100,19 @@ void ContactItem::updatePresenceIcon()
     QString iconName;
 
     switch (statusTypes.first()) {
-    case 2:
+    case Tp::ConnectionPresenceTypeAvailable:
         iconName = "user-online";
         break;
-    case 3:
+    case Tp::ConnectionPresenceTypeAway:
         iconName = "user-away";
         break;
-    case 4:
+    case Tp::ConnectionPresenceTypeExtendedAway:
         iconName = "user-away-extended";
         break;
-    case 5:
+    case Tp::ConnectionPresenceTypeHidden:
         iconName = "user-invisible";
         break;
-    case 6:
+    case Tp::ConnectionPresenceTypeBusy:
         iconName = "user-busy";
         break;
     default:
