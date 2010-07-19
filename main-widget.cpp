@@ -21,12 +21,12 @@
 
 #include "main-widget.h"
 
-#include "contacts-list-model.h"
-#include "grouped-contacts-proxy-model.h"
-#include "contact-item.h"
-#include "meta-contact-item.h"
+#include <KTelepathy/ContactsListModel>
+#include <KTelepathy/GroupedContactsProxyModel>
+#include <KTelepathy/ContactItem>
+#include <KTelepathy/MetaContactItem>
 
-#include "telepathy-bridge.h"
+#include <KTelepathy/TelepathyBridge>
 
 #include <nco.h>
 #include <telepathy.h>

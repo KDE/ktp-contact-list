@@ -8,18 +8,20 @@ set (CMAKE_MODULE_PATH
 set(KDE_MIN_VERSION "4.4.75")
 find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 REQUIRED)
-find_package(Nepomuk REQUIRED)
+find_package (KTelepathy REQUIRED)
+find_package (Nepomuk REQUIRED)
 
 include (KDE4Defaults)
 include (MacroLibrary)
 
 add_definitions (${KDE4_DEFINITIONS}
-                 -DDISABLE_NEPOMUK_LEGACY)
+                 -DDISABLE_NEPOMUK_LEGACY
+)
 
 include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
                      ${NEPOMUK_INCLUDES}
-                     ${CMAKE_CURRENT_BINARY_DIR}/nie
+                     ${KTELEPATHY_INCLUDES}
 )
 
 # Find telepathy.trig, which is installed already by telepathy-integration-daemon.
@@ -37,9 +39,6 @@ if (NOT TELEPATHY_TRIG_SOURCE)
     )
 endif (NOT TELEPATHY_TRIG_SOURCE)
 
-###################################
-# First target - NIE static library
-
 nepomuk_add_ontology_classes (nie_SRCS
                               ONTOLOGIES
                               ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nie.trig
@@ -48,42 +47,6 @@ nepomuk_add_ontology_classes (nie_SRCS
                               ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/nie/nmo.trig
                               ${SHAREDDESKTOPONTOLOGIES_ROOT_DIR}/pimo/pimo.trig
                               ${TELEPATHY_TRIG_SOURCE}
-)
-
-kde4_add_library (nie
-                  STATIC
-                  ${nie_SRCS}
-)
-
-target_link_libraries (nie
-                       ${QT_QTCORE_LIBRARY}
-                       ${NEPOMUK_LIBRARIES}
-)
-
-################################
-# Second target - ContatList App
-
-set (contactlist_SRCS
-     main.cpp
-     contacts-list-model.cpp
-     contact-item.cpp
-     main-widget.cpp
-     nepomuk-signal-watcher.cpp
-     grouped-contacts-proxy-model.cpp
-     meta-contact-item.cpp
-     abstract-tree-item.cpp
-     telepathy-bridge.cpp
-     telepathy-account-proxy.cpp
-     telepathy-base-job.cpp
-     add-contacts-to-group-job.cpp
-     remove-contacts-from-group-job.cpp
-     add-contact-job.cpp
-     remove-contacts-job.cpp
-     add-meta-contact-job.cpp
-)
-
-kde4_add_ui_files (contactlist_SRCS
-                   main-widget.ui
 )
 
 # Add the ontologies we want to build the vocabulary for.
@@ -115,27 +78,31 @@ soprano_add_ontology (telepathy_SRCS
                       "trig"
 )
 
+set (contactlist_SRCS
+     main.cpp
+     main-widget.cpp
+)
+
+kde4_add_ui_files (contactlist_SRCS
+                   main-widget.ui
+)
+
 kde4_add_executable (telepathy_contactlist_prototype
-                     ${contactlist_SRCS}
-                     ${contactlist_NEPOMUK_SRCS}
+                     ${nie_SRCS}
+                     ${pimo_SRCS}
                      ${nco_SRCS}
                      ${nao_SRCS}
-                     ${pimo_SRCS}
                      ${telepathy_SRCS}
+                     ${contactlist_SRCS}
+
 )
 
 target_link_libraries (telepathy_contactlist_prototype
-                       ${QT_LIBRARIES}
+                       ${KTELEPATHY_LIBRARIES}
                        ${KDE4_KDEUI_LIBS}
-                       ${TELEPATHY_QT4_LIBRARIES}
-                       ${NEPOMUK_LIBRARIES}
-                       ${NEPOMUK_QUERY_LIBRARIES}
-                       nie
-
 )
 
 # Install:
 install (TARGETS telepathy_contactlist_prototype
          DESTINATION ${BIN_INSTALL_DIR}
 )
-
