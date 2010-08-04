@@ -1,7 +1,3 @@
-include_directories (${CMAKE_CURRENT_SOURCE_DIR}
-                     ${CMAKE_CURRENT_BINARY_DIR}
-)
-
 # Build the nie static lib here so the tests can use it too.
 nepomuk_add_ontology_classes (telepathynie_SRCS
                               ONTOLOGIES
@@ -50,4 +46,6 @@ kde4_add_library (ontologies
                   ${nao_ontology_SRCS}
                   ${telepathy_ontology_SRCS}
 )
+
+set_property(TARGET ontologies PROPERTY COMPILE_FLAGS -fPIC)
 
