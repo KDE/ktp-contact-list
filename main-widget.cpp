@@ -25,6 +25,7 @@
 #include <KTelepathy/GroupedContactsProxyModel>
 #include <KTelepathy/ContactItem>
 #include <KTelepathy/MetaContactItem>
+#include <KTelepathy/RequestTextChatJob>
 
 #include <KTelepathy/TelepathyBridge>
 
@@ -58,6 +59,8 @@
 #include <nao.h>
 
 #include <TelepathyQt4/Constants>
+
+#define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
@@ -219,6 +222,14 @@ void MainWidget::onCustomContextMenuRequested(const QPoint& point)
     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
     kDebug() << contactItem;
     QMenu *menu = new QMenu;
+
+    // Of course we want to chat!
+    QAction *chatAction = menu->addAction(i18n("Start Chat..."));
+    chatAction->setIcon( KIcon("mail-message-new") );
+    connect(chatAction, SIGNAL(triggered(bool)),
+            this, SLOT(onStartChat(bool)));
+
+    menu->addSeparator();
 
     if (contactItem) {
         kDebug() << "A contactitem";
@@ -723,6 +734,69 @@ void MainWidget::onAddToMetaContact(bool )
         foundPerson.addGroundingOccurrence(contactItem->personContact());
     }
 }
+
+void MainWidget::onStartChat(bool)
+{
+    QAction *action = qobject_cast< QAction* >(sender());
+    if (!action) {
+        kDebug() << "invalid";
+        return;
+    }
+
+    // Pick the current model index
+    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    if (!idx.isValid()) {
+        // Flee
+        kDebug() << "Invalid index";
+        return;
+    }
+
+    RequestTextChatJob* job;
+    // Ok, what is it?
+    AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+    ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
+    MetaContactItem *metacontactItem = dynamic_cast<MetaContactItem*>(abstractItem);
+
+    if (contactItem) {
+        kDebug() << "Request chat to contact";
+        Nepomuk::PersonContact contact = contactItem->personContact();
+        kDebug() << contact.resourceUri() << contact.genericLabel();
+        job = requestTextChat(contact, PREFERRED_TEXTCHAT_HANDLER, this);
+    } else if (metacontactItem && metacontactItem->type() == MetaContactItem::RealMetaContact) {
+        kDebug() << "Request chat to REAL metacontact";
+        Nepomuk::Person metacontact = metacontactItem->pimoPerson();
+        kDebug() << metacontact.resourceUri() << metacontact.genericLabel();
+        job = requestTextChat(metacontact, PREFERRED_TEXTCHAT_HANDLER, this);
+    } else if (metacontactItem && metacontactItem->type() == MetaContactItem::FakeMetaContact) {
+        kDebug() << "Request chat to FAKE metacontact";
+        QList<AbstractTreeItem*> childList = metacontactItem->childItems();
+        kWarning() << "LIST" << childList.size();
+        AbstractTreeItem *childItem = childList.first();
+        kWarning() << "CHILD";
+        if(!childItem)
+            kWarning() << "!childItem";
+        contactItem = dynamic_cast<ContactItem*>(childItem); //It should just have one
+        if (!contactItem) {
+            KMessageBox::error(0, i18n("An error occurred????"));
+            kWarning() << "Cannot dynamic cast child item!";
+        } else {
+            Nepomuk::PersonContact contact = contactItem->personContact();
+            kDebug() << contact.resourceUri() << contact.genericLabel();
+            job = requestTextChat(contact, PREFERRED_TEXTCHAT_HANDLER, this);
+        }
+    } else {
+        KMessageBox::error(0, i18n("An error occurred????"));
+        kWarning() << "This is not a contact or a metacontact!";
+    }
+    if ( !job->exec() ) {
+        // An error occurred
+        KMessageBox::error(0, i18n("Impossible to start a chat"));
+        kWarning() << "Impossible to start a chat";
+    } else {
+        kDebug() << "This should be a success.";
+    }
+}
+
 
 #include "main-widget.moc"
 
