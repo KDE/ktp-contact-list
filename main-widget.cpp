@@ -770,12 +770,9 @@ void MainWidget::onStartChat(bool)
     } else if (metacontactItem && metacontactItem->type() == MetaContactItem::FakeMetaContact) {
         kDebug() << "Request chat to FAKE metacontact";
         QList<AbstractTreeItem*> childList = metacontactItem->childItems();
-        kWarning() << "LIST" << childList.size();
-        AbstractTreeItem *childItem = childList.first();
-        kWarning() << "CHILD";
-        if(!childItem)
-            kWarning() << "!childItem";
-        contactItem = dynamic_cast<ContactItem*>(childItem); //It should just have one
+        AbstractTreeItem *childItem = childList.first(); //It should just have one
+        Q_ASSERT(childItem);
+        contactItem = dynamic_cast<ContactItem*>(childItem);
         if (!contactItem) {
             KMessageBox::error(0, i18n("An error occurred????"));
             kWarning() << "Cannot dynamic cast child item!";
