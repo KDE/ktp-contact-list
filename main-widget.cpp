@@ -147,6 +147,7 @@ MainWidget::MainWidget(QWidget *parent)
     setupUi(this);
     setWindowIcon(KIcon("telepathy"));
     m_actionAdd_contact->setIcon(KIcon("list-add-user"));
+    m_actionGroup_contacts->setIcon(KIcon("user-group-properties"));
 
     // Initialize Telepathy
     TelepathyBridge::instance()->init();
@@ -163,12 +164,15 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_currentModel = m_groupedContactsProxyModel;
     m_contactsListView->setModel(m_groupedContactsProxyModel);
     m_contactsListView->setItemDelegate(new ContactDelegate(this));
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
     connect(m_actionAdd_contact, SIGNAL(triggered(bool)),
             this, SLOT(onAddContactRequest(bool)));
+    connect(m_actionGroup_contacts, SIGNAL(triggered(bool)),
+            this, SLOT(onGroupContacts(bool)));
 
     // Get 'me' as soon as possible
     // FIXME: Port to new OSCAF standard for accessing "me" as soon as it
@@ -211,7 +215,7 @@ void MainWidget::onCustomContextMenuRequested(const QPoint& point)
     }
 
     // Map the index to the real model
-    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(proxyIdx);
+    QModelIndex idx = m_currentModel->mapToSource(proxyIdx);
     if (!idx.isValid()) {
         kDebug() << "Could not map to source";
         // Flee
@@ -379,7 +383,7 @@ void MainWidget::onRequestRemoveFromGroup(bool )
     kDebug() << "Request removal from group " << action->text();
 
     // Pick the current model index
-    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
     if (!idx.isValid()) {
         // Flee
         kDebug() << "Invalid index";
@@ -421,7 +425,7 @@ void MainWidget::onRequestAddToGroup(bool )
     kDebug() << "Request addition group " << action->text();
 
     // Pick the current model index
-    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
     if (!idx.isValid()) {
         // Flee
         kDebug() << "Invalid index";
@@ -458,7 +462,7 @@ void MainWidget::onContactBlockRequest(bool )
 void MainWidget::onRemoveFromMetacontact(bool )
 {
     // Pick the current model index
-    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
     if (!idx.isValid()) {
         // Flee
         kDebug() << "Invalid index";
@@ -493,7 +497,7 @@ void MainWidget::onContactRemovalRequest(bool )
     kDebug() << "Request addition group " << action->text();
 
     // Pick the current model index
-    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
     if (!idx.isValid()) {
         // Flee
         kDebug() << "Invalid index";
@@ -654,6 +658,19 @@ void MainWidget::onAddContactRequest(bool )
     }
 }
 
+void MainWidget::onGroupContacts(bool grouped)
+{
+    if (grouped && m_currentModel != m_groupedContactsProxyModel) {
+        m_currentModel = m_groupedContactsProxyModel;
+        m_contactsListView->setModel(m_groupedContactsProxyModel);
+    }
+    else if(!grouped && m_currentModel != m_sortFilterProxyModel) {
+        m_currentModel = m_sortFilterProxyModel;
+        m_contactsListView->setModel(m_sortFilterProxyModel);
+    }
+
+}
+
 void MainWidget::onAddToMetaContact(bool )
 {
     QAction *action = qobject_cast< QAction* >(sender());
@@ -666,7 +683,7 @@ void MainWidget::onAddToMetaContact(bool )
     kDebug() << "Request adding to metacontact " << metaContactName;
 
     // Pick the current model index
-    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
     if (!idx.isValid()) {
         // Flee
         kDebug() << "Invalid index";
@@ -746,7 +763,7 @@ void MainWidget::onStartChat(bool)
     }
 
     // Pick the current model index
-    QModelIndex idx = m_groupedContactsProxyModel->mapToSource(m_contactsListView->currentIndex());
+    QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
     if (!idx.isValid()) {
         // Flee
         kDebug() << "Invalid index";

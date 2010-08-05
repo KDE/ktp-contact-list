@@ -23,6 +23,7 @@
       <enum>Qt::ToolButtonTextBesideIcon</enum>
      </property>
      <addaction name="m_actionAdd_contact"/>
+     <addaction name="m_actionGroup_contacts"/>
     </widget>
    </item>
    <item>
@@ -32,6 +33,17 @@
   <action name="m_actionAdd_contact">
    <property name="text">
     <string>Add contact</string>
+   </property>
+  </action>
+  <action name="m_actionGroup_contacts">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Group contacts</string>
    </property>
   </action>
  </widget>

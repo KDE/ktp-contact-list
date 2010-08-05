@@ -32,6 +32,7 @@
 class ContactsListModel;
 class GroupedContactsProxyModel;
 class QSortFilterProxyModel;
+class QAbstractProxyModel;
 
 class ContactDelegate : public QStyledItemDelegate
 {
@@ -56,6 +57,7 @@ private:
     ContactsListModel *m_model;
     GroupedContactsProxyModel *m_groupedContactsProxyModel;
     QSortFilterProxyModel *m_sortFilterProxyModel;
+    QAbstractProxyModel *m_currentModel;
     Nepomuk::PersonContact m_mePersonContact;
 
 public slots:
@@ -71,6 +73,7 @@ public slots:
     void onRemoveFromMetacontact(bool);
 //Toolbar actions
     void onAddContactRequest(bool);
+    void onGroupContacts(bool);
 };
 
 
