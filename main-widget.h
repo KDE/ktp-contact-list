@@ -60,15 +60,17 @@ private:
 
 public slots:
     void onCustomContextMenuRequested(const QPoint &point);
+//Menu actions
     void onStartChat(bool);
     void onRequestRemoveFromGroup(bool);
     void onContactRemovalRequest(bool);
     void onContactBlockRequest(bool);
     void onHandlerReady(bool);
     void onRequestAddToGroup(bool);
-    void onAddContactRequest(bool);
     void onAddToMetaContact(bool);
     void onRemoveFromMetacontact(bool);
+//Toolbar actions
+    void onAddContactRequest(bool);
 };
 
 

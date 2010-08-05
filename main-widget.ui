@@ -18,15 +18,18 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QToolBar" name="widget">
-     <addaction name="actionAdd_contact"/>
+    <widget class="QToolBar" name="m_toolBar">
+     <property name="toolButtonStyle">
+      <enum>Qt::ToolButtonTextBesideIcon</enum>
+     </property>
+     <addaction name="m_actionAdd_contact"/>
     </widget>
    </item>
    <item>
     <widget class="QTreeView" name="m_contactsListView"/>
    </item>
   </layout>
-  <action name="actionAdd_contact">
+  <action name="m_actionAdd_contact">
    <property name="text">
     <string>Add contact</string>
    </property>

@@ -145,6 +145,8 @@ MainWidget::MainWidget(QWidget *parent)
     }
 
     setupUi(this);
+    setWindowIcon(KIcon("telepathy"));
+    m_actionAdd_contact->setIcon(KIcon("list-add-user"));
 
     // Initialize Telepathy
     TelepathyBridge::instance()->init();
@@ -165,7 +167,7 @@ MainWidget::MainWidget(QWidget *parent)
     m_contactsListView->setItemDelegate(new ContactDelegate(this));
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
-    connect(actionAdd_contact, SIGNAL(triggered(bool)),
+    connect(m_actionAdd_contact, SIGNAL(triggered(bool)),
             this, SLOT(onAddContactRequest(bool)));
 
     // Get 'me' as soon as possible
