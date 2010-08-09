@@ -36,7 +36,7 @@ add_definitions (${KDE4_DEFINITIONS}
 include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
                      ${NEPOMUK_INCLUDES}
-                     ${KTELEPATHY_INCLUDES}
+                     ${KTELEPATHY_INCLUDE_DIRS}
                      "${CMAKE_CURRENT_BINARY_DIR}/ontologies"
 )
 
