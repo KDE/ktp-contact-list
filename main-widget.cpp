@@ -65,6 +65,14 @@
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
 
+using KTelepathy::ContactsListModel;
+using KTelepathy::GroupedContactsProxyModel;
+using KTelepathy::TelepathyBridge;
+using KTelepathy::AbstractTreeItem;
+using KTelepathy::ContactItem;
+using KTelepathy::MetaContactItem;
+using KTelepathy::RequestTextChatJob;
+
 ContactDelegate::ContactDelegate(QObject * parent)
   : QStyledItemDelegate(parent)
 {
@@ -780,12 +788,12 @@ void MainWidget::onStartChat(bool)
         kDebug() << "Request chat to contact";
         Nepomuk::PersonContact contact = contactItem->personContact();
         kDebug() << contact.resourceUri() << contact.genericLabel();
-        job = requestTextChat(contact, PREFERRED_TEXTCHAT_HANDLER, this);
+        job = KTelepathy::requestTextChat(contact, PREFERRED_TEXTCHAT_HANDLER, this);
     } else if (metacontactItem && metacontactItem->type() == MetaContactItem::RealMetaContact) {
         kDebug() << "Request chat to REAL metacontact";
         Nepomuk::Person metacontact = metacontactItem->pimoPerson();
         kDebug() << metacontact.resourceUri() << metacontact.genericLabel();
-        job = requestTextChat(metacontact, PREFERRED_TEXTCHAT_HANDLER, this);
+        job = KTelepathy::requestTextChat(metacontact, PREFERRED_TEXTCHAT_HANDLER, this);
     } else if (metacontactItem && metacontactItem->type() == MetaContactItem::FakeMetaContact) {
         kDebug() << "Request chat to FAKE metacontact";
         QList<AbstractTreeItem*> childList = metacontactItem->childItems();
@@ -798,7 +806,7 @@ void MainWidget::onStartChat(bool)
         } else {
             Nepomuk::PersonContact contact = contactItem->personContact();
             kDebug() << contact.resourceUri() << contact.genericLabel();
-            job = requestTextChat(contact, PREFERRED_TEXTCHAT_HANDLER, this);
+            job = KTelepathy::requestTextChat(contact, PREFERRED_TEXTCHAT_HANDLER, this);
         }
     } else {
         KMessageBox::error(0, i18n("An error occurred????"));

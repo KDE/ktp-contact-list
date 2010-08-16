@@ -29,10 +29,12 @@
 #include <QtGui/QWidget>
 #include <QtGui/QStyledItemDelegate>
 
-class ContactsListModel;
-class GroupedContactsProxyModel;
 class QSortFilterProxyModel;
 class QAbstractProxyModel;
+namespace KTelepathy {
+    class ContactsListModel;
+    class GroupedContactsProxyModel;
+}
 
 class ContactDelegate : public QStyledItemDelegate
 {
@@ -54,8 +56,8 @@ public:
     ~MainWidget();
 
 private:
-    ContactsListModel *m_model;
-    GroupedContactsProxyModel *m_groupedContactsProxyModel;
+    KTelepathy::ContactsListModel *m_model;
+    KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
     QSortFilterProxyModel *m_sortFilterProxyModel;
     QAbstractProxyModel *m_currentModel;
     Nepomuk::PersonContact m_mePersonContact;
