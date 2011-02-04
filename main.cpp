@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
 
-    Nepomuk::ResourceManager::instance()->init();
+//     Nepomuk::ResourceManager::instance()->init();
 
     // Set up signal handlers.
     if (signal(SIGINT, signal_handler) == SIG_ERR) {

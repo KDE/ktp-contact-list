@@ -24,7 +24,7 @@
 
 #include "ui_main-widget.h"
 
-#include <personcontact.h>
+#include "fakecontactsmodel.h"
 
 #include <QtGui/QWidget>
 #include <QtGui/QStyledItemDelegate>
@@ -56,11 +56,11 @@ public:
     ~MainWidget();
 
 private:
-    KTelepathy::ContactsListModel *m_model;
-    KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
+    FakeContactsModel *m_model;
+    //KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
     QSortFilterProxyModel *m_sortFilterProxyModel;
     QAbstractProxyModel *m_currentModel;
-    Nepomuk::PersonContact m_mePersonContact;
+//     Nepomuk::PersonContact m_mePersonContact;
 
 public slots:
     void onCustomContextMenuRequested(const QPoint &point);
