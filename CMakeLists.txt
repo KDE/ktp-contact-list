@@ -42,7 +42,7 @@ include_directories (${KDE4_INCLUDES}
 
 # add_subdirectory (ontologies)
 
-set (contactlist_SRCS contactitem.cpp fakecontactsmodel.cpp
+set (contactlist_SRCS contactsmodelfilter.cpp account-item.cpp accounts-list-model.cpp contactitem.cpp fakecontactsmodel.cpp
      main.cpp
      main-widget.cpp
 )
@@ -58,6 +58,7 @@ kde4_add_executable (telepathy_contactlist_prototype
 
 target_link_libraries (telepathy_contactlist_prototype
 #                        ${KTELEPATHY_LIBRARIES}
+                       ${TELEPATHY_QT4_LIBRARIES}
                        ${KDE4_KDEUI_LIBS}
 #                        ontologies
 )

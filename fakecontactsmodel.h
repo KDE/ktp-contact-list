@@ -28,6 +28,11 @@
 #include <QPixmap>
 #include <QSet>
 
+//FIXME find out which include I really need for the ptrs
+#include <TelepathyQt4/Account>
+#include <TelepathyQt4/Contact>
+#include <TelepathyQt4/PendingContacts>
+
 #include "contactitem.h"
 
 /* contact status
@@ -40,34 +45,54 @@
  * 6 - invisible
  */
 
+Q_DECLARE_METATYPE(Tp::ConnectionPresenceType);
+
 class ModelRoles {
 public:
     enum {
-        UserNameRole       = Qt::DisplayRole,
-        UserAvatarRole     = Qt::DecorationRole,
-        UserStatusRole     = Qt::UserRole + 1,
-        UserStatusMsgRole  = Qt::UserRole + 2,
-        UserGroupsRole     = Qt::UserRole + 3
+        UserNameRole         = Qt::DisplayRole,
+        UserAvatarRole       = Qt::DecorationRole,
+        UserStatusRole       = Qt::UserRole + 1,
+        UserStatusMsgRole    = Qt::UserRole + 2,
+        UserGroupsRole       = Qt::UserRole + 3,
+        IsContact            = Qt::UserRole + 4,
+        AccountGroupRole     = Qt::UserRole + 5,
+        AccountAllContactsCountRole = Qt::UserRole + 6,
+        AccountAvailContactsCountRole = Qt::UserRole + 7
     };
 };
 
 class FakeContactsModel : public QAbstractItemModel
 {
+    Q_OBJECT
 
 public:
     FakeContactsModel(QObject* parent = 0);
     ~FakeContactsModel();
     
-    void initContacts();
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     int columnCount(const QModelIndex& parent = QModelIndex()) const;
     int rowCount(const QModelIndex& parent = QModelIndex()) const;
     QModelIndex parent(const QModelIndex& child) const;
     QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
     
+    Tp::AccountPtr account(const QModelIndex& index) const;
+    void addAccountContacts(Tp::AccountPtr account);
+    
+    Tp::ContactPtr contact(const QModelIndex &index) const;
+    
+public Q_SLOTS:
+    void updateContactList();
+    void setAllOffline();
+    void onContactUpdated();
+    void clear();
+    
 private:
     ContactItem *m_rootItem; 
-    QList<Person> m_contacts;
+    
+    QList<Tp::ContactPtr> m_contacts;
+    QList<ContactItem*> m_groups;
+    QSet<Tp::AccountPtr> m_accounts; //use QSet for auto-preventing of inserting duplicate accounts
 };
 
 #endif // FAKECONTACTSMODEL_H

@@ -24,25 +24,15 @@
 
 #include <QList>
 
-class Person
-{
-    
-public:
-    int           contactId;          //just simple id to reference it from parentId
-    int           parentId;           //id of the metacontact, that is parent to this contact
-    QString       contactName;        //this is the account username/number
-    QPixmap       avatar;             //user's avatar
-    int           status;             //status - online, away, offline etc.
-    QString       statusMessage;      //additional status message 
-    QStringList   groups;             //groups the current contact is in
-    QList<int>    protocolsConnected; //makes sense only for metacontact..I guess
-    QSet<QString> capabilities;       //capabilities - send file etc - makes sense when not metacontact
-};
+#include <TelepathyQt4/Contact>
 
 class ContactItem
 {
 public:
-    ContactItem(const Person &data, ContactItem *parent = 0);
+    enum ItemType {Contact, Group};
+    
+    ContactItem(const Tp::ContactPtr &data, ContactItem *parent, ItemType type = ContactItem::Contact);
+    ContactItem(ContactItem *parent = 0, ItemType type = ContactItem::Group);
     ~ContactItem();
     
     void appendChildContact(ContactItem *childContact);
@@ -50,14 +40,25 @@ public:
     ContactItem *childContact(int row);
     int childContactsCount() const;
     int columnCount() const;
-    Person data() const;
+    Tp::ContactPtr data() const;
+    Tp::AccountPtr parentAccount() const;
+    void setParentAccount(const Tp::AccountPtr &account);
     int row() const;
     ContactItem *parent();
+    ItemType type() const;
+    bool isContact() const;
+    bool isGroup() const;
+    
+    QString groupName() const;
+    void setGroupName(const QString &groupName);
     
 private:
-    QList<ContactItem*> m_childContacts;
-    Person m_contactData;
-    ContactItem *m_parentContact;
+    QList<ContactItem*>     m_childContacts;
+    Tp::ContactPtr          m_contactData;
+    Tp::AccountPtr          m_parentAccount;
+    ContactItem*            m_parentContact;
+    ItemType                m_itemType;
+    QString                 m_groupName;
 };
 
 #endif // CONTACTITEM_H

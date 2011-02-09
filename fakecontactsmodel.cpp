@@ -17,14 +17,21 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include <KIcon>
+#include <KDebug>
+
+#include <TelepathyQt4/ContactManager>
+#include <TelepathyQt4/Contact>
+#include <TelepathyQt4/PendingReady>
+#include <TelepathyQt4/PendingContacts>
+#include <TelepathyQt4/AvatarData>
 
 #include "fakecontactsmodel.h"
 
 FakeContactsModel::FakeContactsModel(QObject* parent): QAbstractItemModel(parent)
 {
-    Person me;
-    m_rootItem = new ContactItem(me);
-    initContacts();
+    Tp::ContactPtr me;
+    m_rootItem = new ContactItem();
 }
 
 FakeContactsModel::~FakeContactsModel()
@@ -32,119 +39,175 @@ FakeContactsModel::~FakeContactsModel()
     delete m_rootItem;
 }
 
-void FakeContactsModel::initContacts()
+Tp::AccountPtr FakeContactsModel::account(const QModelIndex& index) const
 {
-    Person c1;
-    c1.contactId = 1;
-    c1.parentId = 0;
-    c1.contactName = "Mike";
-    c1.status = 1;
-    c1.statusMessage = "Hello world!";
-    c1.avatar = QPixmap("../avatars/dice.jpg");
-    c1.protocolsConnected << 1 << 3;
-    
-    Person c2;
-    c2.contactId = 2;
-    c2.parentId = 0;
-    c2.contactName = "Jack";
-    c2.status = 2;
-    c2.statusMessage = "I'm away";
-    c2.avatar = QPixmap("../avatars/astronaut.jpg");
-    c2.protocolsConnected << 2 << 3;
-    
-    Person c3;
-    c3.contactId = 3;
-    c3.parentId = 0;
-    c3.contactName = "Will";
-    c3.avatar = QPixmap("../avatars/fish.jpg");
-    c3.status = 0;
+    ContactItem *contact = static_cast<ContactItem*>(index.internalPointer());
+    return contact->parentAccount();
+}
 
-    Person c4;
-    c4.contactId = 4;
-    c4.parentId = 0;
-    c4.contactName = "Zach";
-    c4.statusMessage = "Working...";
-    c4.status = 1;
-    c4.avatar = QPixmap("../avatars/coffee.jpg");
-    c4.protocolsConnected << 1 << 2;
-    
-    Person c5;
-    c5.contactId = 5;
-    c5.parentId = 4;
-    c5.contactName = "Zach ICQ";
-    //c1.groups << 1 << 3
-    c5.avatar = QPixmap("../avatars/lightning.jpg");
-    c5.status = 1;
-        
-    Person c6;
-    c6.contactId = 6;
-    c6.parentId = 4;
-    c6.contactName = "Zach GTalk";
-    //c1.groups << 1 << 3
-    c6.avatar = QPixmap("../avatars/chess.jpg");
-    c6.status = 2;
-    
-    m_contacts << c1 << c2 << c3 << c4 << c5 << c6;
-    
-    Person p;
-    Person c;
-    foreach(p, m_contacts)
+void FakeContactsModel::addAccountContacts(Tp::AccountPtr account)
+{
+    if(!m_accounts.contains(account))
     {
-        if(p.parentId == 0)
+        kDebug() << "Adding account to contact list..";
+        
+        if (account->connectionStatus() == Tp::ConnectionStatusConnected && account->connection()) 
         {
-            ContactItem *contact = new ContactItem(p, m_rootItem);
-            m_rootItem->appendChildContact(contact);
-            foreach(c, m_contacts)
+            m_accounts.insert(account);
+            Tp::ContactManagerPtr contactManager = account->connection()->contactManager();
+            
+            QList<Tp::ContactPtr> newContacts = contactManager->allKnownContacts().toList();
+            
+            //need to add a connection to each contact to emit updated when applicable.
+            
+            beginInsertRows(QModelIndex(), 0, newContacts.size());
+            kDebug() << newContacts.size() << "contacts from " << account->displayName();
+            
+            ContactItem *group = new ContactItem(m_rootItem);
+            m_rootItem->appendChildContact(group);
+            m_groups.append(group);
+            
+            group->setGroupName(account->displayName());
+            group->setParentAccount(account);
+            
+            Tp::ContactPtr p;
+            foreach(p, newContacts)
             {
-                if(c.parentId == p.contactId)
-                {
-                    contact->appendChildContact(new ContactItem(c, contact));
-                }
+                ContactItem *contact = new ContactItem(p, group);
+                contact->setParentAccount(account);
+
+                group->appendChildContact(contact);  
+
+                connect(p.data(), SIGNAL(presenceChanged(Tp::Presence)),
+                        this, SLOT(onContactUpdated()));
             }
+
+            m_contacts.append(newContacts);
+            endInsertRows();
         }
+        else kDebug() << "No contacts added";
+        
+        //updateContactList();    
     }
+    else kDebug() << "Account already in the contact list, skipping..";
+}
+
+void FakeContactsModel::updateContactList()
+{
+    Tp::AccountPtr account;
+    
+    foreach(account, m_accounts)
+    {
+
+    }
+}
+
+void FakeContactsModel::setAllOffline()
+{
+    
+}
+
+void FakeContactsModel::onContactUpdated()
+{
+    emit dataChanged(createIndex(0,0), createIndex(rowCount()-1,0)); //update the whole list
+}
+
+Tp::ContactPtr FakeContactsModel::contact(const QModelIndex& index) const
+{
+    if (! index.isValid()) {
+        return Tp::ContactPtr();
+    }
+    return m_contacts.at(index.row());
+}
+
+void FakeContactsModel::clear()
+{
+    beginRemoveRows(QModelIndex(), 0, m_contacts.size());
+    m_contacts.clear();
+    endRemoveRows();
 }
 
 QVariant FakeContactsModel::data(const QModelIndex& index, int role) const
 {
-    if (!index.isValid())
+    if(!index.isValid())
         return QVariant();
     
     ContactItem *contact = static_cast<ContactItem*>(index.internalPointer());
     
-    if(role == ModelRoles::UserNameRole) 
+    if(contact->isContact())
     {
-        return contact->data().contactName;
-    }
-    else if(role == ModelRoles::UserAvatarRole)
-    {
-        return contact->data().avatar;
-    }
-    else if(role == ModelRoles::UserStatusRole)
-    {
-        return contact->data().status;
-    }
-    else if(role == ModelRoles::UserStatusMsgRole)
-    {
-        return contact->data().statusMessage;
-    }
-    else if(role == ModelRoles::UserGroupsRole)
-    {
-        return contact->data().groups;
-    }
     
+        if(role == ModelRoles::UserNameRole) 
+        {
+            return contact->data()->alias();
+        }
+        else if(role == ModelRoles::UserAvatarRole)
+        {
+            if(!contact->data()->isAvatarTokenKnown()) 
+            {
+                return QVariant(KIcon("im-user").pixmap(32, 32));
+            }
+            else 
+            {
+                return QVariant(QIcon(contact->data()->avatarData().fileName).pixmap(32, 32));
+            }
+        }
+        else if(role == ModelRoles::UserStatusRole)
+        {
+            return contact->data()->presence().type();
+        }
+        else if(role == ModelRoles::UserStatusMsgRole)
+        {
+            return contact->data()->presence().statusMessage();
+        }
+        else if(role == ModelRoles::UserGroupsRole)
+        {
+            return contact->data()->groups();
+        }
+//         else if(role == ModelRoles::AccountGroupRole)
+//         {
+//             return contact->groupName();
+//         }
+        else if(role == ModelRoles::IsContact)
+        {
+            return contact->isContact();
+        }
+    }
+    else 
+    {
+        if(role == ModelRoles::AccountGroupRole)
+        {
+            return contact->groupName();
+        }        
+        else if(role == ModelRoles::IsContact)
+        {
+            return contact->isContact();
+        }
+        else if(role == ModelRoles::AccountAllContactsCountRole)
+        {
+            return contact->childContactsCount();
+        }
+        else if(role == ModelRoles::AccountAvailContactsCountRole)
+        {
+            return 0;//contact->parentAccount()->
+        }
+    }
+
     return QVariant();
-    
 }
 
 int FakeContactsModel::columnCount(const QModelIndex& parent) const
 {
-    return 1;
+    if (parent.isValid())
+        return static_cast<ContactItem*>(parent.internalPointer())->columnCount();
+    else
+        return m_rootItem->columnCount();
 }
 
 int FakeContactsModel::rowCount(const QModelIndex& parent) const
 {
     ContactItem *parentItem;
+    
     if (parent.column() > 0)
         return 0;
     
@@ -154,6 +217,12 @@ int FakeContactsModel::rowCount(const QModelIndex& parent) const
         parentItem = static_cast<ContactItem*>(parent.internalPointer());
     
     return parentItem->childContactsCount();
+
+//     if (parent == QModelIndex()) {
+//         return m_contacts.size();
+//     }
+//     return 0;
+
 }
 
 QModelIndex FakeContactsModel::parent(const QModelIndex& index) const
@@ -162,9 +231,14 @@ QModelIndex FakeContactsModel::parent(const QModelIndex& index) const
         return QModelIndex();
     
     ContactItem *childItem = static_cast<ContactItem*>(index.internalPointer());
+    
+    // if in any case the childItem is m_rootItem->parent(), return empty index
+    if (childItem == m_rootItem || !childItem)
+        return QModelIndex();
+    
     ContactItem *parentItem = childItem->parent();
     
-    if (parentItem == m_rootItem)
+    if (parentItem == m_rootItem || !parentItem)
         return QModelIndex();
     
     return createIndex(parentItem->row(), 0, parentItem);
@@ -188,4 +262,6 @@ QModelIndex FakeContactsModel::index(int row, int column, const QModelIndex& par
     else
         return QModelIndex();
 }
+
+#include "fakecontactsmodel.moc"
 

@@ -25,15 +25,26 @@
 #include "ui_main-widget.h"
 
 #include "fakecontactsmodel.h"
+#include "accounts-list-model.h"
 
 #include <QtGui/QWidget>
 #include <QtGui/QStyledItemDelegate>
 
+#include <TelepathyQt4/AccountManager>
+
 class QSortFilterProxyModel;
 class QAbstractProxyModel;
+class ContactsModelFilter;
+class KMenu;
+class KSelectAction;
+
 namespace KTelepathy {
     class ContactsListModel;
     class GroupedContactsProxyModel;
+}
+
+namespace Tp {
+    class PendingOperation;
 }
 
 class ContactDelegate : public QStyledItemDelegate
@@ -55,16 +66,23 @@ public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
 
-private:
-    FakeContactsModel *m_model;
-    //KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
-    QSortFilterProxyModel *m_sortFilterProxyModel;
-    QAbstractProxyModel *m_currentModel;
-//     Nepomuk::PersonContact m_mePersonContact;
-
-public slots:
+public Q_SLOTS:
+    void onAccountManagerReady(Tp::PendingOperation *op);
+    void onChannelJoined(Tp::PendingOperation *op);
+    void startTextChannel(const QModelIndex &index);
+    void onContactListDoubleClick(const QModelIndex &index);
+    void setStatus(int statusIndex);
+    void setCurrentAccountButtonPressed();
+    void onOnlinessChanged(bool online);
+    void onConnectionChanged(const Tp::ConnectionPtr &connection);
+    void onAccountReady(Tp::PendingOperation *op);
+    void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
+    void loadContactsFromAccount(const Tp::AccountPtr &account);
+    //    void startAudioChannel();
+    //    void startVideoChannel();
+    
     void onCustomContextMenuRequested(const QPoint &point);
-//Menu actions
+    //Menu actions
     void onStartChat(bool);
     void onRequestRemoveFromGroup(bool);
     void onContactRemovalRequest(bool);
@@ -73,9 +91,24 @@ public slots:
     void onRequestAddToGroup(bool);
     void onAddToMetaContact(bool);
     void onRemoveFromMetacontact(bool);
-//Toolbar actions
+    //Toolbar actions
     void onAddContactRequest(bool);
     void onGroupContacts(bool);
+    
+private:
+    FakeContactsModel*      m_model;
+    QSortFilterProxyModel*  m_sortFilterProxyModel;
+    QAbstractProxyModel*    m_currentModel;
+    Tp::AccountManagerPtr   m_accountManager;
+    AccountsListModel*      m_accountsListModel;
+    KMenu*                  m_accountMenu;
+    KSelectAction*          m_setStatusAction;
+    
+    int                      m_currentAccountButtonPressed;
+    
+//     KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
+//     Nepomuk::PersonContact m_mePersonContact;
+
 };
 
 

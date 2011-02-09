@@ -33,6 +33,9 @@ extern "C"
 
 #include <Nepomuk/ResourceManager>
 
+#include <TelepathyQt4/Types>
+#include <TelepathyQt4/Debug>
+
 namespace
 {
     static void signal_handler(int signal)
@@ -49,10 +52,19 @@ namespace
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("telepathy-contactslist-prototype", 0, ki18n("Telepathy Nepomuk Enabled Contact List Prototype"), "0.1");
-
+    KAboutData aboutData("telepathy-contactslist-prototype", 0, ki18n("Telepathy Nepomuk Enabled Contact List Prototype"), "0.1",
+                         ki18n("VoIP client for KDE"), KAboutData::License_GPL,
+                         ki18n("(C) 2011, Martin Klapetek"));
+    
+    aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), KLocalizedString(),
+                        "martin.klapetek@gmail.com");
+    
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
+    
+    Tp::registerTypes();
+//     Tp::enableDebug(true);
+    Tp::enableWarnings(true);
 
 //     Nepomuk::ResourceManager::instance()->init();
 

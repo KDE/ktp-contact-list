@@ -23,10 +23,17 @@
 #include "fakecontactsmodel.h"
 #include "contactitem.h"
 
-ContactItem::ContactItem(const Person& data, ContactItem* parent)
+ContactItem::ContactItem(const Tp::ContactPtr& data, ContactItem* parent, ItemType type)
 {
     m_parentContact = parent;
     m_contactData = data;
+    m_itemType = type;
+}
+
+ContactItem::ContactItem(ContactItem* parent, ContactItem::ItemType type)
+{
+    m_parentContact = parent;
+    m_itemType = type;
 }
 
 ContactItem::~ContactItem()
@@ -41,7 +48,7 @@ void ContactItem::appendChildContact(ContactItem* childContact)
 
 ContactItem* ContactItem::childContact(int row)
 {
-    return m_childContacts.at(row);
+    return m_childContacts.value(row);
 }
 
 int ContactItem::childContactsCount() const
@@ -49,9 +56,19 @@ int ContactItem::childContactsCount() const
     return m_childContacts.count();
 }
 
-Person ContactItem::data() const
+Tp::ContactPtr ContactItem::data() const
 {
     return m_contactData;
+}
+
+Tp::AccountPtr ContactItem::parentAccount() const
+{
+    return m_parentAccount;
+}
+
+void ContactItem::setParentAccount(const Tp::AccountPtr &account)
+{
+    m_parentAccount = account;
 }
 
 ContactItem* ContactItem::parent()
@@ -70,4 +87,33 @@ int ContactItem::row() const
         return m_parentContact->m_childContacts.indexOf(const_cast<ContactItem*>(this));
     
     return 0;
+}
+
+ContactItem::ItemType ContactItem::type() const
+{
+    return m_itemType;
+}
+
+bool ContactItem::isContact() const
+{
+    if(m_itemType == ContactItem::Contact)
+        return true;
+    return false;
+}
+
+bool ContactItem::isGroup() const
+{
+    if(m_itemType == ContactItem::Group)
+        return true;
+    return false;
+}
+
+QString ContactItem::groupName() const
+{
+    return m_groupName;
+}
+
+void ContactItem::setGroupName(const QString& groupName)
+{
+    m_groupName = groupName;
 }

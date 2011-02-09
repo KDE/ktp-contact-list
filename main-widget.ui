@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>309</width>
-    <height>591</height>
+    <width>310</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -28,6 +28,9 @@
    </item>
    <item>
     <widget class="QTreeView" name="m_contactsListView"/>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="m_accountButtonsLayout"/>
    </item>
   </layout>
   <action name="m_actionAdd_contact">

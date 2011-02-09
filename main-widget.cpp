@@ -20,19 +20,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "main-widget.h"
-
 #include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QPainter>
 #include <QtGui/QMenu>
 #include <QtGui/QLabel>
 #include <QtGui/QCheckBox>
+#include <QtGui/QPushButton>
 
 #include <KDebug>
 #include <KJob>
 #include <KLineEdit>
 #include <KComboBox>
 #include <KMessageBox>
+#include <KMenu>
+#include <KSelectAction>
+
+#include <TelepathyQt4/PendingReady>
+#include <TelepathyQt4/PendingChannelRequest>
+#include <TelepathyQt4/ClientRegistrar>
 
 #include <Nepomuk/ResourceManager>
 #include <Nepomuk/Variant>
@@ -46,10 +51,23 @@
 
 #include <TelepathyQt4/Constants>
 
+#include "main-widget.h"
+#include "ui_main-widget.h"
+#include "account-item.h"
+#include "contactsmodelfilter.h"
+
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
+
+static Tp::ConnectionPresenceType accountPresenceTypes[] = { Tp::ConnectionPresenceTypeAvailable, Tp::ConnectionPresenceTypeAway,
+                    Tp::ConnectionPresenceTypeAway, Tp::ConnectionPresenceTypeBusy,
+                    Tp::ConnectionPresenceTypeBusy, Tp::ConnectionPresenceTypeExtendedAway,
+                    Tp::ConnectionPresenceTypeHidden, Tp::ConnectionPresenceTypeOffline };
+
+static const char *accountPresenceStatuses[] = { "available", "away", "brb", "busy",
+                    "dnd", "xa", "hidden", "offline" };
 
 // using KTelepathy::ContactsListModel;
 // using KTelepathy::GroupedContactsProxyModel;
@@ -80,77 +98,98 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
-    QRect iconRect = optV4.rect;
-    iconRect.setSize(QSize(32, 32));
-    iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
-
-    const QPixmap pixmap = idx.data(ModelRoles::UserAvatarRole).value<QPixmap>();
-    if (!pixmap.isNull()) {
-        painter->drawPixmap(iconRect, idx.data(ModelRoles::UserAvatarRole).value<QPixmap>());
-    }
-    
-    /* contact status
-     * 0 - offline
-     * 1 - online
-     * 2 - away
-     * 3 - not available
-     * 4 - do not disturb
-     * 5 - free for chat
-     * 6 - invisible
-     */
-    
-    QPixmap icon;
-    
-    switch(idx.data(ModelRoles::UserStatusRole).toInt())
+    if(idx.data(ModelRoles::IsContact).toBool())
     {
-        case 1:
-            icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
-            break;
-        case 2:
-            icon = SmallIcon("user-away", KIconLoader::SizeSmallMedium);
-            break;
-        case 3:
-            icon = SmallIcon("user-away-extended", KIconLoader::SizeSmallMedium);
-            break;
-        case 4:
-            icon = SmallIcon("user-busy", KIconLoader::SizeSmallMedium);
-            break;
-        case 0:
-            icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
-            break;
-        default:
-            icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
-            break;
+        
+        QRect iconRect = optV4.rect;
+        iconRect.setSize(QSize(32, 32));
+        iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
+
+        const QPixmap pixmap = idx.data(ModelRoles::UserAvatarRole).value<QPixmap>();
+        if (!pixmap.isNull()) {
+            painter->drawPixmap(iconRect, idx.data(ModelRoles::UserAvatarRole).value<QPixmap>());
+        }
+        
+        QPixmap icon;
+        
+        switch(idx.data(ModelRoles::UserStatusRole).toInt())
+        {
+            case Tp::ConnectionPresenceTypeAvailable:
+                icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
+                break;
+            case Tp::ConnectionPresenceTypeAway:
+                icon = SmallIcon("user-away", KIconLoader::SizeSmallMedium);
+                break;
+            case Tp::ConnectionPresenceTypeExtendedAway:
+                icon = SmallIcon("user-away-extended", KIconLoader::SizeSmallMedium);
+                break;
+            case Tp::ConnectionPresenceTypeBusy:
+                icon = SmallIcon("user-busy", KIconLoader::SizeSmallMedium);
+                break;
+            case Tp::ConnectionPresenceTypeOffline:
+                icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
+                break;
+            default:
+                icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
+                break;
+        }
+
+        QRect userNameRect = optV4.rect;
+        userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
+        userNameRect.setY(userNameRect.y() + 3);
+        //userNameRect = painter->boundingRect(userNameRect, Qt::AlignLeft | Qt::AlignTop, optV4.text);
+        
+        QRect statusMsgRect = optV4.rect;
+        statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
+        statusMsgRect.setY(userNameRect.top() + 16);
+        statusMsgRect.setWidth(option.rect.width());
+        
+        QRect statusIconRect = optV4.rect;
+        statusIconRect.setSize(QSize(22,22));
+        statusIconRect.moveTo(QPoint(optV4.rect.right() - 24, optV4.rect.top()+8));
+        
+        painter->drawPixmap(statusIconRect, icon);
+
+        QFont nameFont = painter->font();
+        nameFont.setPixelSize(12);
+        nameFont.setWeight(QFont::Bold);
+        
+        painter->setFont(nameFont);
+        painter->drawText(userNameRect, optV4.text);
+        
+        QFont statusFont = painter->font();
+        statusFont.setWeight(QFont::Normal);
+        statusFont.setPixelSize(10);
+        
+        painter->setFont(statusFont);
+        painter->drawText(statusMsgRect, idx.data(ModelRoles::UserStatusMsgRole).toString());
     }
+    else
+    {
+        QRect groupRect = optV4.rect;
+        //groupRect.setX(4);
+        //groupRect.setY(groupRect.y()+4);
+        //groupRect.setHeight(20);
+        
+        QRect groupLabelRect = groupRect;
+        //groupLabelRect.setHeight(16);
+        groupLabelRect.setLeft(4);
+        groupLabelRect.setBottom(groupRect.bottom());
+        
+        QFont groupFont = painter->font();
+        groupFont.setWeight(QFont::Normal);
+        groupFont.setPixelSize(10);
+        
+        QString counts = QString(" (%1/%2)").arg(idx.data(ModelRoles::AccountAvailContactsCountRole).toString(),
+                                       idx.data(ModelRoles::AccountAllContactsCountRole).toString());
+        
 
-    QRect userNameRect = optV4.rect;
-    userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
-    //userNameRect = painter->boundingRect(userNameRect, Qt::AlignLeft | Qt::AlignTop, optV4.text);
-    
-    QRect statusMsgRect = optV4.rect;
-    statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
-    statusMsgRect.setY(userNameRect.top() + 16);
-    statusMsgRect.setWidth(option.rect.width());
-    
-    QRect statusIconRect = optV4.rect;
-    statusIconRect.setSize(QSize(22,22));
-    statusIconRect.moveTo(QPoint(optV4.rect.right() - 24, optV4.rect.top()+8));
-    
-    painter->drawPixmap(statusIconRect, icon);
-
-    QFont nameFont = painter->font();
-    nameFont.setWeight(QFont::Bold);
-    
-    painter->setFont(nameFont);
-    painter->drawText(userNameRect, optV4.text);
-    
-    QFont statusFont = painter->font();
-    statusFont.setWeight(QFont::Normal);
-    statusFont.setPixelSize(10);
-    
-    painter->setFont(statusFont);
-    painter->drawText(statusMsgRect, idx.data(ModelRoles::UserStatusMsgRole).toString());
-
+        painter->fillRect(groupRect, Qt::lightGray);
+        
+        painter->setFont(groupFont);
+        painter->drawText(groupLabelRect, idx.data(ModelRoles::AccountGroupRole).toString().append(counts));
+        //painter->drawText(groupRect, "Group");
+    }
 //     QRect typeRect;
 // 
 //     typeRect = painter->boundingRect(optV4.rect, Qt::AlignLeft | Qt::AlignBottom, idx.data(51).toString());
@@ -166,7 +205,11 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
 QSize ContactDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-    return QSize(0, 32 + 2 * SPACING);
+    if(index.data(ModelRoles::IsContact).toBool())
+    {
+        return QSize(0, 32 + 2 * SPACING);
+    }
+    else return QSize(0,20);
 }
 
 MainWidget::MainWidget(QWidget *parent)
@@ -175,7 +218,6 @@ MainWidget::MainWidget(QWidget *parent)
 //   m_groupedContactsProxyModel(0),
    m_sortFilterProxyModel(0)
 {
-    kDebug();
 
     // Check if Nepomuk Query service client is up and running
 //     if (!Nepomuk::Query::QueryServiceClient::serviceAvailable()) {
@@ -185,11 +227,41 @@ MainWidget::MainWidget(QWidget *parent)
 //                                       "check your system settings"));
 //     }
 
+    Tp::registerTypes();
+
     setupUi(this);
     setWindowIcon(KIcon("telepathy"));
     m_actionAdd_contact->setIcon(KIcon("list-add-user"));
     m_actionGroup_contacts->setIcon(KIcon("user-group-properties"));
+    
+    
+    // Start setting up the Telepathy AccountManager.
+    Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
+                                                                       Tp::Features() << Tp::Account::FeatureCore
+                                                                       << Tp::Account::FeatureAvatar
+                                                                       << Tp::Account::FeatureProtocolInfo
+                                                                       << Tp::Account::FeatureProfile);
+    
+    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus(),
+                                                                               Tp::Features() << Tp::Connection::FeatureCore
+                                                                               << Tp::Connection::FeatureRosterGroups
+                                                                               << Tp::Connection::FeatureRoster
+                                                                               << Tp::Connection::FeatureSelfContact);
+    
+    Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
+                                                                      << Tp::Contact::FeatureAvatarData
+                                                                      << Tp::Contact::FeatureSimplePresence);
+    
+    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
+    
+    m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(), accountFactory, connectionFactory, channelFactory, contactFactory);
 
+    m_accountsListModel = new AccountsListModel(this);
+    
+    connect(m_accountManager->becomeReady(),
+            SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(onAccountManagerReady(Tp::PendingOperation*)));
+    
     // Initialize Telepathy
     //TelepathyBridge::instance()->init();
     //connect(TelepathyBridge::instance(),
@@ -199,21 +271,31 @@ MainWidget::MainWidget(QWidget *parent)
     m_model = new FakeContactsModel(this);
     m_sortFilterProxyModel = new QSortFilterProxyModel(this);
     m_sortFilterProxyModel->setSourceModel(m_model);
+    m_sortFilterProxyModel->setDynamicSortFilter(true);
+    m_sortFilterProxyModel->setFilterRole(ModelRoles::UserStatusRole);
+    m_sortFilterProxyModel->setSortRole(ModelRoles::UserNameRole);
 
     //m_groupedContactsProxyModel = new GroupedContactsProxyModel(this);
     //m_groupedContactsProxyModel->setSourceModel(m_model);
-
+    
     m_contactsListView->header()->hide();
     m_contactsListView->setRootIsDecorated(false);
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->setContextMenuPolicy(Qt::CustomContextMenu);
-//     m_currentModel = m_groupedContactsProxyModel;
-     m_contactsListView->setModel(m_model);
+    m_contactsListView->setModel(m_model);
     m_contactsListView->setItemDelegate(new ContactDelegate(this));
+    m_contactsListView->setIndentation(0);
+    m_contactsListView->setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
+    
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
+    
+    connect(m_contactsListView, SIGNAL(doubleClicked(QModelIndex)),
+            this, SLOT(onContactListDoubleClick(QModelIndex)));
+    
     connect(m_actionAdd_contact, SIGNAL(triggered(bool)),
             this, SLOT(onAddContactRequest(bool)));
+    
     connect(m_actionGroup_contacts, SIGNAL(triggered(bool)),
             this, SLOT(onGroupContacts(bool)));
 
@@ -232,12 +314,199 @@ MainWidget::MainWidget(QWidget *parent)
 //             break;
 //         }
 //     }
+    
+    m_accountMenu = new KMenu(this);
+    m_setStatusAction = new KSelectAction(i18nc("@action:inmenu", "Status"), m_accountMenu);
+    m_setStatusAction->addAction(KIcon("user-online"), i18nc("@action:inmenu", "Available"));
+    m_setStatusAction->addAction(KIcon("user-away"), i18nc("@action:inmenu", "Away"));
+    m_setStatusAction->addAction(KIcon("user-away"), i18nc("@action:inmenu", "Be right back"));
+    m_setStatusAction->addAction(KIcon("user-busy"), i18nc("@action:inmenu", "Busy"));
+    m_setStatusAction->addAction(KIcon("user-busy"), i18nc("@action:inmenu", "Do not disturb"));
+    m_setStatusAction->addAction(KIcon("user-away-extended"), i18nc("@action:inmenu", "Extended Away"));
+    m_setStatusAction->addAction(KIcon("user-invisible"), i18nc("@action:inmenu", "Invisible"));
+    m_setStatusAction->addAction(KIcon("user-offline"), i18nc("@action:inmenu", "Offline"));
+    connect(m_setStatusAction, SIGNAL(triggered(int)), SLOT(setStatus(int)));
+    m_accountMenu->addAction(m_setStatusAction);
 }
 
 MainWidget::~MainWidget()
 {
     kDebug();
+    setStatus(7);
 }
+
+void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
+{
+    if (op->isError()) {
+        
+        kDebug() << op->errorName();
+        kDebug() << op->errorMessage();
+    }
+    
+    QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
+    foreach (Tp::AccountPtr account, accounts) 
+    {
+        if(account->isEnabled()) 
+        {
+            account->becomeReady();
+            m_accountsListModel->addAccount(account);
+            connect(account.data(),
+                    SIGNAL(connectionChanged(Tp::ConnectionPtr)),
+                    this, SLOT(onConnectionChanged(Tp::ConnectionPtr)));
+            
+            connect(account.data(),
+                    SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), 
+                    this, SLOT(onAccountConnectionStatusChanged(Tp::ConnectionStatus)));
+            
+            if(account->connectionStatus() == Tp::ConnectionStatusConnected && account->connection())
+            {
+                loadContactsFromAccount(account);
+            }
+
+            QPushButton *bt = new QPushButton(this);
+            bt->setToolTip(QString(account->displayName()));
+            bt->setMaximumWidth(24);
+            bt->setObjectName(QString::number(m_accountsListModel->rowCount()-1));
+
+            connect(bt, SIGNAL(pressed()),
+                    this, SLOT(setCurrentAccountButtonPressed()));
+
+            QString iconPath = account->iconName();
+
+            //if the icon has not been set, we use the protocol icon    
+            if(iconPath.isEmpty()) {
+                iconPath = QString("im-%1").arg(account->protocolName());
+            }
+
+            bt->setIcon(KIcon(iconPath));
+            bt->setMenu(m_accountMenu);
+
+            if(!account->isValid()) {
+                //we paint a warning symbol in the right-bottom corner
+                QPixmap pixmap = bt->icon().pixmap(32, 32);
+                QPainter painter(&pixmap);
+                KIcon("dialog-error").paint(&painter, 15, 15, 16, 16);
+                
+                bt->setIcon(KIcon(pixmap));
+            }
+
+            m_accountButtonsLayout->addWidget(bt);
+
+            
+//             connect(account.data(),
+//                     SIGNAL(onlinenessChanged(bool)), 
+//                     this, SLOT(onOnlinessChanged(bool)));
+
+        }
+
+    }
+    
+    m_accountButtonsLayout->insertStretch(-1);
+}
+
+void MainWidget::onAccountReady(Tp::PendingOperation* op)
+{
+    if (op->isError()) {
+        qWarning() << "Account cannot become ready";
+        return;
+    }
+    
+    Tp::PendingReady *pendingReady = qobject_cast<Tp::PendingReady*>(op);
+    Q_ASSERT(pendingReady);
+    //Tp::AccountPtr account = Tp::AccountPtr::dynamicCast(pendingReady->object());
+    //account->deref(); //remove extra reference added in onAccountCreated()
+    
+
+    
+}
+
+void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
+{   
+    //TODO: Add some handling
+    kDebug() << "Connection status is" << status;
+}
+
+void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
+{
+    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
+    loadContactsFromAccount(account);
+}
+
+void MainWidget::loadContactsFromAccount(const Tp::AccountPtr& account)
+{
+    m_model->addAccountContacts(account);
+    //m_currentAccountButtonPressed = -1;
+    m_sortFilterProxyModel->sort(0, Qt::AscendingOrder);
+    m_contactsListView->expandAll();
+}
+
+void MainWidget::onOnlinessChanged(bool online)
+{
+    if(m_currentAccountButtonPressed == -1)
+        return;
+    
+    Tp::AccountPtr account = m_accountsListModel->itemForIndex(m_accountsListModel->index(m_currentAccountButtonPressed, 0))->account();
+    
+    if(online)
+    {
+        kDebug() << account->displayName() << "has become online";
+        m_model->addAccountContacts(account);
+        m_sortFilterProxyModel->sort(0);
+        m_currentAccountButtonPressed = -1;       
+    }
+    else {
+        kDebug() << account->displayName() << "has become offline";
+    }
+    
+}
+
+void MainWidget::onContactListDoubleClick(const QModelIndex& index)
+{
+    if(!index.isValid()) {
+        return;
+    }
+    kDebug() << index;   
+    ContactItem *item = static_cast<ContactItem*>(index.internalPointer());
+    if(item->isContact())
+    {
+        kDebug() << "Text chat requested";
+        startTextChannel(index);
+    }
+    else
+    {
+        if(m_contactsListView->isExpanded(index))
+            m_contactsListView->collapse(index);
+        else m_contactsListView->expand(index);
+        
+        kDebug() << index.data(ModelRoles::AccountGroupRole);
+    }
+}
+
+void MainWidget::startTextChannel(const QModelIndex &index)
+{
+    //QModelIndex index = m_contactsListView->currentIndex();
+    if (! index.isValid()) {
+        return;
+    }
+    
+    Tp::ContactPtr contact = m_model->contact(index);
+    kDebug() << "Requesting chat for contact" << contact->alias();
+    
+    Tp::AccountPtr account = m_model->account(index);
+    kDebug() << account->displayName();
+    
+    Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact);
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onChannelJoined(Tp::PendingOperation*)));
+}
+
+void MainWidget::onChannelJoined(Tp::PendingOperation* op)
+{
+    if (op->isError()) {
+        kDebug() << op->errorName();
+        kDebug() << op->errorMessage();
+    }
+}
+
 
 void MainWidget::onHandlerReady(bool ready)
 {
@@ -246,6 +515,30 @@ void MainWidget::onHandlerReady(bool ready)
     } else {
         kDebug() << "Telepathy handler ready";
     }
+}
+
+void MainWidget::setStatus(int statusIndex)
+{
+    kDebug() << m_currentAccountButtonPressed;
+    Q_ASSERT(statusIndex >= 0 && statusIndex <= 7);
+    Tp::SimplePresence presence;
+    presence.type = accountPresenceTypes[statusIndex];
+    presence.status = QLatin1String(accountPresenceStatuses[statusIndex]);
+    
+    Q_ASSERT(m_currentAccountButtonPressed >= 0);
+    Tp::AccountPtr account = m_accountsListModel->itemForIndex(m_accountsListModel->index(m_currentAccountButtonPressed, 0))->account();
+    Q_ASSERT( !account.isNull() );
+    
+    Tp::PendingOperation* presenceRequest = account->setRequestedPresence(presence);
+    
+    //connect(account, SIGNAL(requestedPresenceChanged(Tp::Presence)),
+    //                        this, SLOT(onPresenceRequestFinished()));
+    //connect(presenceRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onPresenceRequestFinished(Tp::PendingOperation*)));
+}
+
+void MainWidget::setCurrentAccountButtonPressed()
+{
+    m_currentAccountButtonPressed = sender()->objectName().toInt();
 }
 
 void MainWidget::onCustomContextMenuRequested(const QPoint& point)
