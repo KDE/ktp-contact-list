@@ -191,6 +191,17 @@ QVariant FakeContactsModel::data(const QModelIndex& index, int role) const
         {
             return 0;//contact->parentAccount()->
         }
+        else if(role == ModelRoles::AccountIconRole)
+        {
+            QString iconPath = contact->parentAccount()->iconName();
+            
+            //if the icon has not been set, we use the protocol icon    
+            if(iconPath.isEmpty()) {
+                iconPath = QString("im-%1").arg(contact->parentAccount()->protocolName());
+            }
+            
+            return iconPath;
+        }
     }
 
     return QVariant();

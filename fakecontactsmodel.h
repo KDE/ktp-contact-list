@@ -58,7 +58,8 @@ public:
         IsContact            = Qt::UserRole + 4,
         AccountGroupRole     = Qt::UserRole + 5,
         AccountAllContactsCountRole = Qt::UserRole + 6,
-        AccountAvailContactsCountRole = Qt::UserRole + 7
+        AccountAvailContactsCountRole = Qt::UserRole + 7,
+        AccountIconRole      = Qt::UserRole + 8
     };
 };
 

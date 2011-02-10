@@ -26,6 +26,7 @@
 #include <QtGui/QLabel>
 #include <QtGui/QCheckBox>
 #include <QtGui/QPushButton>
+#include <QtGui/QToolButton>
 
 #include <KDebug>
 #include <KJob>
@@ -55,19 +56,12 @@
 #include "ui_main-widget.h"
 #include "account-item.h"
 #include "contactsmodelfilter.h"
+#include "accountbutton.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
-
-static Tp::ConnectionPresenceType accountPresenceTypes[] = { Tp::ConnectionPresenceTypeAvailable, Tp::ConnectionPresenceTypeAway,
-                    Tp::ConnectionPresenceTypeAway, Tp::ConnectionPresenceTypeBusy,
-                    Tp::ConnectionPresenceTypeBusy, Tp::ConnectionPresenceTypeExtendedAway,
-                    Tp::ConnectionPresenceTypeHidden, Tp::ConnectionPresenceTypeOffline };
-
-static const char *accountPresenceStatuses[] = { "available", "away", "brb", "busy",
-                    "dnd", "xa", "hidden", "offline" };
 
 // using KTelepathy::ContactsListModel;
 // using KTelepathy::GroupedContactsProxyModel;
@@ -167,14 +161,15 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     else
     {
         QRect groupRect = optV4.rect;
-        //groupRect.setX(4);
-        //groupRect.setY(groupRect.y()+4);
-        //groupRect.setHeight(20);
+        
+        QRect accountGroupRect = groupRect;
+        accountGroupRect.setSize(QSize(16,16));
+        accountGroupRect.moveTo(QPoint(groupRect.left() + 2, groupRect.top() + 2));
         
         QRect groupLabelRect = groupRect;
+        groupLabelRect.setLeft(20);
+        //groupLabelRect.setBottom(groupRect.bottom());
         //groupLabelRect.setHeight(16);
-        groupLabelRect.setLeft(4);
-        groupLabelRect.setBottom(groupRect.bottom());
         
         QFont groupFont = painter->font();
         groupFont.setWeight(QFont::Normal);
@@ -184,11 +179,16 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
                                        idx.data(ModelRoles::AccountAllContactsCountRole).toString());
         
 
-        painter->fillRect(groupRect, Qt::lightGray);
+        painter->fillRect(groupRect, QColor(247, 251, 255));
+        
+        painter->drawPixmap(accountGroupRect, KIcon(idx.data(ModelRoles::AccountIconRole).toString()).pixmap(16,16));
         
         painter->setFont(groupFont);
-        painter->drawText(groupLabelRect, idx.data(ModelRoles::AccountGroupRole).toString().append(counts));
-        //painter->drawText(groupRect, "Group");
+        painter->drawText(groupLabelRect, Qt::AlignVCenter, idx.data(ModelRoles::AccountGroupRole).toString().append(counts));
+        
+        painter->setPen(QColor(220, 220, 220));
+        painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
+        painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
     }
 //     QRect typeRect;
 // 
@@ -299,6 +299,7 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_actionGroup_contacts, SIGNAL(triggered(bool)),
             this, SLOT(onGroupContacts(bool)));
 
+   
     // Get 'me' as soon as possible
     // FIXME: Port to new OSCAF standard for accessing "me" as soon as it
     // becomes available.
@@ -315,24 +316,13 @@ MainWidget::MainWidget(QWidget *parent)
 //         }
 //     }
     
-    m_accountMenu = new KMenu(this);
-    m_setStatusAction = new KSelectAction(i18nc("@action:inmenu", "Status"), m_accountMenu);
-    m_setStatusAction->addAction(KIcon("user-online"), i18nc("@action:inmenu", "Available"));
-    m_setStatusAction->addAction(KIcon("user-away"), i18nc("@action:inmenu", "Away"));
-    m_setStatusAction->addAction(KIcon("user-away"), i18nc("@action:inmenu", "Be right back"));
-    m_setStatusAction->addAction(KIcon("user-busy"), i18nc("@action:inmenu", "Busy"));
-    m_setStatusAction->addAction(KIcon("user-busy"), i18nc("@action:inmenu", "Do not disturb"));
-    m_setStatusAction->addAction(KIcon("user-away-extended"), i18nc("@action:inmenu", "Extended Away"));
-    m_setStatusAction->addAction(KIcon("user-invisible"), i18nc("@action:inmenu", "Invisible"));
-    m_setStatusAction->addAction(KIcon("user-offline"), i18nc("@action:inmenu", "Offline"));
-    connect(m_setStatusAction, SIGNAL(triggered(int)), SLOT(setStatus(int)));
-    m_accountMenu->addAction(m_setStatusAction);
+    
 }
 
 MainWidget::~MainWidget()
 {
     kDebug();
-    setStatus(7);
+    //setStatus(7);
 }
 
 void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
@@ -363,40 +353,9 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
                 loadContactsFromAccount(account);
             }
 
-            QPushButton *bt = new QPushButton(this);
-            bt->setToolTip(QString(account->displayName()));
-            bt->setMaximumWidth(24);
-            bt->setObjectName(QString::number(m_accountsListModel->rowCount()-1));
-
-            connect(bt, SIGNAL(pressed()),
-                    this, SLOT(setCurrentAccountButtonPressed()));
-
-            QString iconPath = account->iconName();
-
-            //if the icon has not been set, we use the protocol icon    
-            if(iconPath.isEmpty()) {
-                iconPath = QString("im-%1").arg(account->protocolName());
-            }
-
-            bt->setIcon(KIcon(iconPath));
-            bt->setMenu(m_accountMenu);
-
-            if(!account->isValid()) {
-                //we paint a warning symbol in the right-bottom corner
-                QPixmap pixmap = bt->icon().pixmap(32, 32);
-                QPainter painter(&pixmap);
-                KIcon("dialog-error").paint(&painter, 15, 15, 16, 16);
-                
-                bt->setIcon(KIcon(pixmap));
-            }
+            AccountButton *bt = new AccountButton(account, this);
 
             m_accountButtonsLayout->addWidget(bt);
-
-            
-//             connect(account.data(),
-//                     SIGNAL(onlinenessChanged(bool)), 
-//                     this, SLOT(onOnlinessChanged(bool)));
-
         }
 
     }
@@ -438,26 +397,6 @@ void MainWidget::loadContactsFromAccount(const Tp::AccountPtr& account)
     //m_currentAccountButtonPressed = -1;
     m_sortFilterProxyModel->sort(0, Qt::AscendingOrder);
     m_contactsListView->expandAll();
-}
-
-void MainWidget::onOnlinessChanged(bool online)
-{
-    if(m_currentAccountButtonPressed == -1)
-        return;
-    
-    Tp::AccountPtr account = m_accountsListModel->itemForIndex(m_accountsListModel->index(m_currentAccountButtonPressed, 0))->account();
-    
-    if(online)
-    {
-        kDebug() << account->displayName() << "has become online";
-        m_model->addAccountContacts(account);
-        m_sortFilterProxyModel->sort(0);
-        m_currentAccountButtonPressed = -1;       
-    }
-    else {
-        kDebug() << account->displayName() << "has become offline";
-    }
-    
 }
 
 void MainWidget::onContactListDoubleClick(const QModelIndex& index)
@@ -515,30 +454,6 @@ void MainWidget::onHandlerReady(bool ready)
     } else {
         kDebug() << "Telepathy handler ready";
     }
-}
-
-void MainWidget::setStatus(int statusIndex)
-{
-    kDebug() << m_currentAccountButtonPressed;
-    Q_ASSERT(statusIndex >= 0 && statusIndex <= 7);
-    Tp::SimplePresence presence;
-    presence.type = accountPresenceTypes[statusIndex];
-    presence.status = QLatin1String(accountPresenceStatuses[statusIndex]);
-    
-    Q_ASSERT(m_currentAccountButtonPressed >= 0);
-    Tp::AccountPtr account = m_accountsListModel->itemForIndex(m_accountsListModel->index(m_currentAccountButtonPressed, 0))->account();
-    Q_ASSERT( !account.isNull() );
-    
-    Tp::PendingOperation* presenceRequest = account->setRequestedPresence(presence);
-    
-    //connect(account, SIGNAL(requestedPresenceChanged(Tp::Presence)),
-    //                        this, SLOT(onPresenceRequestFinished()));
-    //connect(presenceRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onPresenceRequestFinished(Tp::PendingOperation*)));
-}
-
-void MainWidget::setCurrentAccountButtonPressed()
-{
-    m_currentAccountButtonPressed = sender()->objectName().toInt();
 }
 
 void MainWidget::onCustomContextMenuRequested(const QPoint& point)

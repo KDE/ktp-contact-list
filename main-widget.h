@@ -71,9 +71,6 @@ public Q_SLOTS:
     void onChannelJoined(Tp::PendingOperation *op);
     void startTextChannel(const QModelIndex &index);
     void onContactListDoubleClick(const QModelIndex &index);
-    void setStatus(int statusIndex);
-    void setCurrentAccountButtonPressed();
-    void onOnlinessChanged(bool online);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
     void onAccountReady(Tp::PendingOperation *op);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
@@ -103,8 +100,7 @@ private:
     AccountsListModel*      m_accountsListModel;
     KMenu*                  m_accountMenu;
     KSelectAction*          m_setStatusAction;
-    
-    int                      m_currentAccountButtonPressed;
+
     
 //     KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
 //     Nepomuk::PersonContact m_mePersonContact;
