@@ -75,6 +75,7 @@ public Q_SLOTS:
     void onAccountReady(Tp::PendingOperation *op);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
     void loadContactsFromAccount(const Tp::AccountPtr &account);
+    void showMessageToUser(const QString &text);
     //    void startAudioChannel();
     //    void startVideoChannel();
     
@@ -100,7 +101,6 @@ private:
     AccountsListModel*      m_accountsListModel;
     KMenu*                  m_accountMenu;
     KSelectAction*          m_setStatusAction;
-
     
 //     KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
 //     Nepomuk::PersonContact m_mePersonContact;

@@ -371,18 +371,15 @@ void MainWidget::onAccountReady(Tp::PendingOperation* op)
     }
     
     Tp::PendingReady *pendingReady = qobject_cast<Tp::PendingReady*>(op);
-    Q_ASSERT(pendingReady);
-    //Tp::AccountPtr account = Tp::AccountPtr::dynamicCast(pendingReady->object());
-    //account->deref(); //remove extra reference added in onAccountCreated()
-    
-
-    
+    Q_ASSERT(pendingReady);   
 }
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 {   
     //TODO: Add some handling
     kDebug() << "Connection status is" << status;
+    if(status == Tp::ConnectionStatusConnecting)
+        showMessageToUser(i18n("Connecting..."));
 }
 
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
@@ -454,6 +451,42 @@ void MainWidget::onHandlerReady(bool ready)
     } else {
         kDebug() << "Telepathy handler ready";
     }
+}
+
+void MainWidget::showMessageToUser(const QString& text)
+{
+    QFrame *msgFrame = new QFrame(m_contactsListView);
+    msgFrame->setAttribute(Qt::WA_DeleteOnClose);
+    msgFrame->setMinimumSize(QSize(m_contactsListView->width(), 150));
+    msgFrame->setFrameShape(QFrame::StyledPanel);
+    msgFrame->setFrameShadow(QFrame::Plain);
+    msgFrame->setAutoFillBackground(true);
+    
+    QLabel *message = new QLabel(text, msgFrame);
+    
+    msgFrame->show();
+    
+    //QTimeLine *tl = new QTimeLine(4000);
+    
+    QPropertyAnimation *a = new QPropertyAnimation(msgFrame, "pos");
+    a->setParent(msgFrame);
+    a->setDuration(4000);
+    a->setEasingCurve(QEasingCurve::OutExpo);
+    a->setStartValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()));
+    a->setEndValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()-100));
+    a->start();
+    
+//     m_anim = new Animation(msgFrame, "pos");
+//     m_anim->setEasingCurve(QEasingCurve::OutExpo);
+    
+//     m_anim->setStartValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()));
+//     m_anim->setEndValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()-100));
+//     m_anim->setDuration(4000);
+//     m_anim->setLoopCount(1);
+//     m_anim->start();
+    
+    QTimer::singleShot(4500, msgFrame, SLOT(close()));
+    
 }
 
 void MainWidget::onCustomContextMenuRequested(const QPoint& point)
