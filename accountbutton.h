@@ -37,8 +37,6 @@ public:
     
 public Q_SLOTS:
     void setAccountStatus(QAction *action);
-    void onAccountStatusHover(QAction *action);
-    void showStatusMessageEditLine();
     
 private:
     Tp::AccountPtr m_account;
