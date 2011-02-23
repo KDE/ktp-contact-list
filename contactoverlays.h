@@ -21,17 +21,10 @@
 #ifndef CONTACTOVERLAYS_H
 #define CONTACTOVERLAYS_H
 
-// Qt includes
-
-// KDE includes
-
 #include <KGuiItem>
-
-// Local includes
 
 #include "contactdelegateoverlay.h"
 #include "contactviewhoverbutton.h"
-#include "fakecontactsmodel.h"
 
 class TextChannelContactOverlay : public HoverButtonDelegateOverlay
 {
@@ -41,8 +34,6 @@ public:
 
     TextChannelContactOverlay(QObject* parent);
     virtual void setActive(bool active);
-
-    void setReferenceModel(const FakeContactsModel* model);
 
 Q_SIGNALS:
 
@@ -60,8 +51,7 @@ protected Q_SLOTS:
 
 protected:
 
-    KGuiItem                 m_gui;
-    const FakeContactsModel* m_referenceModel;
+    KGuiItem m_gui;
 
     class Button;
     Button *button() const;
@@ -78,11 +68,9 @@ public:
     AudioChannelContactOverlay(QObject* parent);
     virtual void setActive(bool active);
     
-    void setReferenceModel(const FakeContactsModel* model);
-    
 Q_SIGNALS:
     
-    //void activated(const ImageInfo& info);
+    void activated(const QModelIndex& index);
     
 protected:
     
@@ -96,8 +84,7 @@ protected Q_SLOTS:
     
 protected:
     
-    KGuiItem                 m_gui;
-    const FakeContactsModel* m_referenceModel;
+    KGuiItem m_gui;
     
     class Button;
     Button *button() const;
@@ -114,11 +101,9 @@ public:
     VideoChannelContactOverlay(QObject* parent);
     virtual void setActive(bool active);
     
-    void setReferenceModel(const FakeContactsModel* model);
-    
 Q_SIGNALS:
     
-    //void activated(const ImageInfo& info);
+    void activated(const QModelIndex& index);
     
 protected:
     
@@ -132,8 +117,7 @@ protected Q_SLOTS:
     
 protected:
     
-    KGuiItem                 m_gui;
-    const FakeContactsModel* m_referenceModel;
+    KGuiItem m_gui;
     
     class Button;
     Button *button() const;
@@ -149,12 +133,10 @@ public:
     
     FileTransferContactOverlay(QObject* parent);
     virtual void setActive(bool active);
-    
-    void setReferenceModel(const FakeContactsModel* model);
-    
+
 Q_SIGNALS:
     
-    //void activated(const ImageInfo& info);
+    void activated(const QModelIndex& index);
     
 protected:
     
@@ -168,8 +150,7 @@ protected Q_SLOTS:
     
 protected:
     
-    KGuiItem                 m_gui;
-    const FakeContactsModel* m_referenceModel;
+    KGuiItem m_gui;
     
     class Button;
     Button *button() const;

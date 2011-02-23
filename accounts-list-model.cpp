@@ -18,14 +18,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "accounts-list-model.h"
-
-#include "account-item.h"
-
 #include <KDebug>
 #include <KIcon>
 
 #include <TelepathyQt4/Account>
+
+#include "accounts-list-model.h"
+#include "account-item.h"
 
 AccountsListModel::AccountsListModel(QObject *parent)
  : QAbstractListModel(parent)

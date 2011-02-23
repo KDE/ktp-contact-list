@@ -17,22 +17,19 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
-
-#include "account-item.h"
-
-#include "accounts-list-model.h"
-
+#include <QtCore/QTimer>
+#include <QtGui/QPainter>
 
 #include <KApplication>
 #include <KDebug>
 #include <KIcon>
 #include <KLocalizedString>
 
-#include <QtCore/QTimer>
-#include <QtGui/QPainter>
-
 #include <TelepathyQt4/PendingOperation>
 #include <TelepathyQt4/PendingReady>
+
+#include "account-item.h"
+#include "accounts-list-model.h"
 
 AccountItem::AccountItem(const Tp::AccountPtr &account, AccountsListModel *parent)
  : QObject(parent),

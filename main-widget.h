@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2009-2010 Collabora Ltd. <info@collabora.co.uk>
  *   @Author George Goldberg <george.goldberg@collabora.co.uk>
+ *   @Author Martin Klapetek <martin.klapetek@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -19,35 +20,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef TELEPATHY_CONTACTSLIST_PROTOTYPE_MAIN_WIDGET_H
-#define TELEPATHY_CONTACTSLIST_PROTOTYPE_MAIN_WIDGET_H
-
-#include "ui_main-widget.h"
-
-#include "fakecontactsmodel.h"
-#include "accounts-list-model.h"
+#ifndef TELEPATHY_CONTACTSLIST_MAIN_WIDGET_H
+#define TELEPATHY_CONTACTSLIST_MAIN_WIDGET_H
 
 #include <QtGui/QWidget>
 #include <QtGui/QStyledItemDelegate>
 
 #include <TelepathyQt4/AccountManager>
+
+#include "ui_main-widget.h"
 #include "contactdelegateoverlay.h"
 
-class QSortFilterProxyModel;
-class QAbstractProxyModel;
-class ContactsModelFilter;
 class KMenu;
 class KSelectAction;
 
-class ActionContactOverlay;
-
-namespace KTelepathy {
-    class ContactsListModel;
-    class GroupedContactsProxyModel;
-}
-
-namespace Tp {
-    class PendingOperation;
+namespace Tpy {
+    class AccountsModel;
 }
 
 class ContactDelegate : public QStyledItemDelegate, public ContactDelegateOverlayContainer
@@ -117,10 +105,9 @@ public Q_SLOTS:
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
     void onAccountReady(Tp::PendingOperation *op);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
-    void loadContactsFromAccount(const Tp::AccountPtr &account);
     void showMessageToUser(const QString &text, const SystemMessageType type);
     void systemMessageTest();
-    void addActionOverlay();
+    void addOverlayButtons();
     //    void startAudioChannel();
     //    void startVideoChannel();
     
@@ -139,18 +126,11 @@ public Q_SLOTS:
     void onGroupContacts(bool);
     
 private:
-    FakeContactsModel*      m_model;
-    QSortFilterProxyModel*  m_sortFilterProxyModel;
-    QAbstractProxyModel*    m_currentModel;
+    Tpy::AccountsModel*     m_model;
     Tp::AccountManagerPtr   m_accountManager;
-    AccountsListModel*      m_accountsListModel;
     KMenu*                  m_accountMenu;
     KSelectAction*          m_setStatusAction;
     ContactDelegate*        m_delegate;
-    
-//     KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
-//     Nepomuk::PersonContact m_mePersonContact;
-
 };
 
 

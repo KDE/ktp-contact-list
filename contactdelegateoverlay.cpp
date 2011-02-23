@@ -18,22 +18,14 @@
 *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-// Qt includes
-
 #include <QEvent>
+#include <QTimer>
 #include <QMouseEvent>
 
-// KDE includes
+#include <KDebug>
 
-#include <kdebug.h>
-
-// Local includes
 #include "contactdelegateoverlay.h"
-
-//include "itemviewimagedelegate.h"
 #include "contactviewhoverbutton.h"
-#include <QTimer>
-
 
 ContactDelegateOverlay::ContactDelegateOverlay(QObject* parent)
     : QObject(parent), m_view(0), m_delegate(0)
@@ -189,7 +181,6 @@ QWidget* AbstractWidgetDelegateOverlay::parentWidget() const
 void AbstractWidgetDelegateOverlay::slotReset()
 {
     hide();
-    kDebug();
 }
 
 void AbstractWidgetDelegateOverlay::slotEntered(const QModelIndex& index)
@@ -233,7 +224,6 @@ void AbstractWidgetDelegateOverlay::slotLayoutChanged()
 
 void AbstractWidgetDelegateOverlay::viewportLeaveEvent(QObject*, QEvent*)
 {
-    kDebug();
     hide();
     emit overlayHidden();
 }

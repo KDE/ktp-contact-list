@@ -42,7 +42,15 @@ include_directories (${KDE4_INCLUDES}
 
 # add_subdirectory (ontologies)
 
-set (contactlist_SRCS contactviewhoverbutton.cpp contactoverlays.cpp contactdelegateoverlay.cpp accountbutton.cpp contactsmodelfilter.cpp account-item.cpp accounts-list-model.cpp contactitem.cpp fakecontactsmodel.cpp
+set (contactlist_SRCS 
+     contactviewhoverbutton.cpp 
+     contactoverlays.cpp 
+     contactdelegateoverlay.cpp 
+     accountbutton.cpp 
+     accounts-model.cpp
+     contact-model-item.cpp
+     tree-node.cpp
+     accounts-model-item.cpp
      main.cpp
      main-widget.cpp
 )

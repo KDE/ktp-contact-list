@@ -20,15 +20,11 @@
 
 #include "contactoverlays.moc"
 
-// Qt includes
-
-// KDE includes
-
 #include <KLocale>
 #include <KIconLoader>
 #include <KDebug>
 
-#include <TelepathyQt4/ContactCapabilities>
+#include "accounts-model.h"
 
 class TextChannelContactOverlay::Button : public ContactViewHoverButton
 {
@@ -71,8 +67,7 @@ void TextChannelContactOverlay::Button::updateToolTip()
 // -------------------------------------------------------------------------
 
 TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
-    : HoverButtonDelegateOverlay(parent),
-      m_referenceModel(0)
+    : HoverButtonDelegateOverlay(parent)
 {
     m_gui = KGuiItem(i18n("Start text channel"), "text-x-generic", 
                      i18n("Start text channel"), i18n("Whats this"));
@@ -81,11 +76,6 @@ TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
 TextChannelContactOverlay::Button *TextChannelContactOverlay::button() const
 {
     return static_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void TextChannelContactOverlay::setReferenceModel(const FakeContactsModel* model)
-{
-    m_referenceModel = model;
 }
 
 void TextChannelContactOverlay::setActive(bool active)
@@ -132,7 +122,7 @@ void TextChannelContactOverlay::slotClicked(bool checked)
 
 bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().textChats()) {
+    if(index.data(Tpy::AccountsModel::TextChatCapabilityRole).toBool()) {
         return true;
     }
     
@@ -182,8 +172,7 @@ void AudioChannelContactOverlay::Button::updateToolTip()
 // -------------------------------------------------------------------------
 
 AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
-: HoverButtonDelegateOverlay(parent),
-m_referenceModel(0)
+: HoverButtonDelegateOverlay(parent)
 {
     m_gui = KGuiItem(i18n("Start audio channel"), "voicecall", 
                      i18n("Start audio channel"), i18n("Whats this"));
@@ -193,11 +182,6 @@ m_referenceModel(0)
 AudioChannelContactOverlay::Button *AudioChannelContactOverlay::button() const
 {
     return static_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void AudioChannelContactOverlay::setReferenceModel(const FakeContactsModel* model)
-{
-    m_referenceModel = model;
 }
 
 void AudioChannelContactOverlay::setActive(bool active)
@@ -238,13 +222,13 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
     
     if (index.isValid())
     {
-        //emit activated(index);
+        emit activated(index);
     }
 }
 
 bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().streamedMediaAudioCalls()) {
+    if(index.data(Tpy::AccountsModel::AudioCallCapabilityRole).toBool()) {
         return true;
     }
     
@@ -294,8 +278,7 @@ void VideoChannelContactOverlay::Button::updateToolTip()
 // -------------------------------------------------------------------------
 
 VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
-: HoverButtonDelegateOverlay(parent),
-m_referenceModel(0)
+: HoverButtonDelegateOverlay(parent)
 {
     m_gui = KGuiItem(i18n("Start video channel"), "camera-web", 
                      i18n("Start video channel"), i18n("Whats this"));          
@@ -304,11 +287,6 @@ m_referenceModel(0)
 VideoChannelContactOverlay::Button *VideoChannelContactOverlay::button() const
 {
     return static_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void VideoChannelContactOverlay::setReferenceModel(const FakeContactsModel* model)
-{
-    m_referenceModel = model;
 }
 
 void VideoChannelContactOverlay::setActive(bool active)
@@ -349,13 +327,13 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
     
     if (index.isValid())
     {
-        //emit activated(index);
+        emit activated(index);
     }
 }
 
 bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().streamedMediaVideoCallsWithAudio()) {
+    if(index.data(Tpy::AccountsModel::VideoCallCapabilityRole).toBool()) {
         return true;
     }
     
@@ -405,8 +383,7 @@ void FileTransferContactOverlay::Button::updateToolTip()
 // -------------------------------------------------------------------------
 
 FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
-: HoverButtonDelegateOverlay(parent),
-m_referenceModel(0)
+: HoverButtonDelegateOverlay(parent)
 {
     m_gui = KGuiItem(i18n("Send file"), "mail-attachment", 
                      i18n("Send file"), i18n("Whats this"));          
@@ -415,11 +392,6 @@ m_referenceModel(0)
 FileTransferContactOverlay::Button *FileTransferContactOverlay::button() const
 {
     return static_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void FileTransferContactOverlay::setReferenceModel(const FakeContactsModel* model)
-{
-    m_referenceModel = model;
 }
 
 void FileTransferContactOverlay::setActive(bool active)
@@ -460,13 +432,13 @@ void FileTransferContactOverlay::slotClicked(bool checked)
     
     if (index.isValid())
     {
-        //emit activated(index);
+        emit activated(index);
     }
 }
 
 bool FileTransferContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().fileTransfers()) {
+    if(index.data(Tpy::AccountsModel::FileTransferCapabilityRole).toBool()) {
         return true;
     }
     

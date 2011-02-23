@@ -30,17 +30,12 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QToolButton>
 
-#include <KDebug>
-#include <KJob>
-#include <KLineEdit>
-#include <KComboBox>
-#include <KMessageBox>
-#include <KMenu>
-#include <KSelectAction>
-
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingChannelRequest>
 #include <TelepathyQt4/ClientRegistrar>
+#include <TelepathyQt4/Constants>
+
+#include <KDebug>
 
 #include <Nepomuk/ResourceManager>
 #include <Nepomuk/Variant>
@@ -52,14 +47,12 @@
 #include <Nepomuk/Query/AndTerm>
 #include <Nepomuk/Query/Result>
 
-#include <TelepathyQt4/Constants>
-
 #include "main-widget.h"
 #include "ui_main-widget.h"
 #include "account-item.h"
-#include "contactsmodelfilter.h"
 #include "accountbutton.h"
 #include "contactoverlays.h"
+#include "accounts-model.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
@@ -83,10 +76,10 @@ ContactDelegate::~ContactDelegate()
 {
 }
 
-void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & idx) const
+void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
     QStyleOptionViewItemV4 optV4 = option;
-    initStyleOption(&optV4, idx);
+    initStyleOption(&optV4, index);
 
     painter->save();
 
@@ -94,22 +87,29 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
+    
+//     kDebug() << index.data(Tpy::AccountsModel::PresenceTypeRole);
+    
+    bool isContact = !index.data(Tpy::AccountsModel::AliasRole).toString().isEmpty();
 
-    if(idx.data(ModelRoles::IsContact).toBool())
+    if(isContact)
     {
         
         QRect iconRect = optV4.rect;
         iconRect.setSize(QSize(32, 32));
         iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
 
-        const QPixmap pixmap = idx.data(ModelRoles::UserAvatarRole).value<QPixmap>();
-        if (!pixmap.isNull()) {
-            painter->drawPixmap(iconRect, idx.data(ModelRoles::UserAvatarRole).value<QPixmap>());
-        }
+        QPixmap avatar = QPixmap::fromImage(QImage(index.data(Tpy::AccountsModel::AvatarRole).toString()));
+        
+        if(avatar.isNull()) {
+            avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
+        } 
+        
+        painter->drawPixmap(iconRect, avatar);
         
         QPixmap icon;
         
-        switch(idx.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>())
+        switch(index.data(Tpy::AccountsModel::PresenceTypeRole).toInt())
         {
             case Tp::ConnectionPresenceTypeAvailable:
                 icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
@@ -127,7 +127,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
                 icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
                 break;
             default:
-                icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
+                icon = SmallIcon("task-attention", KIconLoader::SizeSmallMedium);
                 break;
         }
 
@@ -158,17 +158,18 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         statusFont.setWeight(QFont::Normal);
         statusFont.setPixelSize(10);
         
-        if(idx == m_indexForHiding) {
+        if(index == m_indexForHiding) {
             painter->setPen(QColor(0, 0, 0, m_fadingValue));        //TODO: Change to theme color
         }
         
         painter->setFont(statusFont);        
-        painter->drawText(statusMsgRect, idx.data(ModelRoles::UserStatusMsgRole).toString());
+        painter->drawText(statusMsgRect, index.data(Tpy::AccountsModel::PresenceMessageRole).toString());
         
     }
     else
     {
-        QRect groupRect = optV4.rect;
+        painter->drawText(optV4.rect, index.data(Tpy::AccountsModel::DisplayNameRole).toString());
+        /*QRect groupRect = optV4.rect;
         
         QRect accountGroupRect = groupRect;
         accountGroupRect.setSize(QSize(16,16));
@@ -183,40 +184,41 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         groupFont.setWeight(QFont::Normal);
         groupFont.setPixelSize(10);
         
-        QString counts = QString(" (%1/%2)").arg(idx.data(ModelRoles::AccountAvailContactsCountRole).toString(),
-                                       idx.data(ModelRoles::AccountAllContactsCountRole).toString());
+        QString counts = QString(" (%1/%2)").arg(index.data(ModelRoles::AccountAvailContactsCountRole).toString(),
+                                       index.data(ModelRoles::AccountAllContactsCountRole).toString());
         
 
         painter->fillRect(groupRect, QColor(247, 251, 255));
         
-        painter->drawPixmap(accountGroupRect, KIcon(idx.data(ModelRoles::AccountIconRole).toString()).pixmap(16,16));
+        painter->drawPixmap(accountGroupRect, KIcon(index.data(ModelRoles::AccountIconRole).toString()).pixmap(16,16));
         
         painter->setFont(groupFont);
-        painter->drawText(groupLabelRect, Qt::AlignVCenter, idx.data(ModelRoles::AccountGroupRole).toString().append(counts));
+        painter->drawText(groupLabelRect, Qt::AlignVCenter, index.data(ModelRoles::AccountGroupRole).toString().append(counts));
         
         painter->setPen(QColor(220, 220, 220));
         painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
-        painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
+        painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());*/
     }
+    
 //     QRect typeRect;
 // 
-//     typeRect = painter->boundingRect(optV4.rect, Qt::AlignLeft | Qt::AlignBottom, idx.data(51).toString());
+//     typeRect = painter->boundingRect(optV4.rect, Qt::AlignLeft | Qt::AlignBottom, index.data(51).toString());
 //     typeRect.moveTo(QPoint(typeRect.x() + iconRect.x() + iconRect.width() + SPACING, typeRect.y() - SPACING));
-//     painter->drawText(typeRect, idx.data(51).toString());
+//     painter->drawText(typeRect, index.data(51).toString());
 // 
-//     QRect sizeRect = painter->boundingRect(optV4.rect, Qt::AlignRight | Qt::AlignTop, idx.data(50).toString());
+//     QRect sizeRect = painter->boundingRect(optV4.rect, Qt::AlignRight | Qt::AlignTop, index.data(50).toString());
 //     sizeRect.moveTo(QPoint(sizeRect.x() - SPACING, sizeRect.y() + SPACING));
-//     painter->drawText(sizeRect, idx.data(50).toString());
+//     painter->drawText(sizeRect, index.data(50).toString());
 
     painter->restore();
 }
 
 QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {   
-    if(option.state & QStyle::State_Selected)
-        kDebug() << index.data(ModelRoles::UserNameRole).toString();
+//     if(option.state & QStyle::State_Selected)
+//         kDebug() << index.data(ModelRoles::UserNameRole).toString();
     
-    if(index.data(ModelRoles::IsContact).toBool()) {
+    if(!index.data(Tpy::AccountsModel::AliasRole).toString().isEmpty()) {
         return QSize(0, 32 + 4 * SPACING);
     }
     else return QSize(0,20);   
@@ -224,14 +226,12 @@ QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModel
 
 void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
 {
-//     kDebug() << "Mouse entered" << index.data(ModelRoles::UserNameRole).toString();
     m_indexForHiding = index;
     fadeOutStatusMessageSlot();
 }
 
 void ContactDelegate::reshowStatusMessageSlot()
 {
-    kDebug();
     m_fadingValue = 255;
     m_indexForHiding = QModelIndex();
     emit repaintItem(m_indexForHiding);
@@ -263,7 +263,6 @@ void ContactDelegate::setFadingValue(int value)
 
 void ContactDelegate::triggerRepaint()
 {
-//     kDebug() << m_fadingValue;
     emit repaintItem(m_indexForHiding);
 }
 
@@ -271,9 +270,7 @@ void ContactDelegate::triggerRepaint()
 
 MainWidget::MainWidget(QWidget *parent)
  : QWidget(parent),
-   m_model(0),
-//   m_groupedContactsProxyModel(0),
-   m_sortFilterProxyModel(0)
+   m_model(0)
 {
 
     // Check if Nepomuk Query service client is up and running
@@ -313,8 +310,6 @@ MainWidget::MainWidget(QWidget *parent)
     Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
     
     m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(), accountFactory, connectionFactory, channelFactory, contactFactory);
-
-    m_accountsListModel = new AccountsListModel(this);
     
     connect(m_accountManager->becomeReady(),
             SIGNAL(finished(Tp::PendingOperation*)),
@@ -325,30 +320,20 @@ MainWidget::MainWidget(QWidget *parent)
     //connect(TelepathyBridge::instance(),
     //        SIGNAL(ready(bool)),
     //        SLOT(onHandlerReady(bool)));
-
-    m_model = new FakeContactsModel(this);
-    m_sortFilterProxyModel = new QSortFilterProxyModel(this);
-    m_sortFilterProxyModel->setSourceModel(m_model);
-    m_sortFilterProxyModel->setDynamicSortFilter(true);
-    m_sortFilterProxyModel->setFilterRole(ModelRoles::UserStatusRole);
-    m_sortFilterProxyModel->setSortRole(ModelRoles::UserNameRole);
     
     m_delegate = new ContactDelegate(this);
-
-    //m_groupedContactsProxyModel = new GroupedContactsProxyModel(this);
-    //m_groupedContactsProxyModel->setSourceModel(m_model);
     
     m_contactsListView->header()->hide();
     m_contactsListView->setRootIsDecorated(false);
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_contactsListView->setModel(m_model);
     m_contactsListView->setItemDelegate(m_delegate);
     m_contactsListView->setIndentation(0);
     m_contactsListView->setMouseTracking(true);
     m_contactsListView->setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
     
-    addActionOverlay();
+    addOverlayButtons();
+    
     
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
@@ -364,31 +349,10 @@ MainWidget::MainWidget(QWidget *parent)
     
     connect(m_actionGroup_contacts, SIGNAL(triggered(bool)),
             this, SLOT(onGroupContacts(bool)));
-
-   
-    // Get 'me' as soon as possible
-    // FIXME: Port to new OSCAF standard for accessing "me" as soon as it
-    // becomes available.
-//     Nepomuk::Thing me(QUrl::fromEncoded("nepomuk:/myself"));
-
-    // Loop through all the grounding instances of this person
-//     foreach (Nepomuk::InformationElement resource, me.groundingOccurrences()) {
-//         // See if this grounding instance is of type nco:contact.
-//         if (resource.hasType(Nepomuk::Vocabulary::NCO::PersonContact())) {
-//             // FIXME: We are going to assume the first NCO::PersonContact is the
-//             // right one. Can we improve this?
-//             m_mePersonContact = resource;
-//             break;
-//         }
-//     }
-    
-    
 }
 
 MainWidget::~MainWidget()
 {
-    kDebug();
-    //setStatus(7);
 }
 
 void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
@@ -405,7 +369,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         if(account->isEnabled()) 
         {
             account->becomeReady();
-            m_accountsListModel->addAccount(account);
+            
             connect(account.data(),
                     SIGNAL(connectionChanged(Tp::ConnectionPtr)),
                     this, SLOT(onConnectionChanged(Tp::ConnectionPtr)));
@@ -413,17 +377,14 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
             connect(account.data(),
                     SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), 
                     this, SLOT(onAccountConnectionStatusChanged(Tp::ConnectionStatus)));
-            
-            if(account->connectionStatus() == Tp::ConnectionStatusConnected && account->connection())
-            {
-                loadContactsFromAccount(account);
-            }
 
             AccountButton *bt = new AccountButton(account, this);
 
             m_accountButtonsLayout->addWidget(bt);
+            
+            m_model = new Tpy::AccountsModel(m_accountManager, this);
+            m_contactsListView->setModel(m_model);            
         }
-
     }
     
     m_accountButtonsLayout->insertStretch(-1);
@@ -464,7 +425,7 @@ void MainWidget::onAccountReady(Tp::PendingOperation* op)
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 {   
-    //TODO: Add some handling
+    //TODO: Add some 'working' indicator
     kDebug() << "Connection status is" << status;
     if(status == Tp::ConnectionStatusConnecting)
         showMessageToUser(i18n("Connecting..."), MainWidget::SystemMessageInfo);
@@ -472,16 +433,9 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
 {
-    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
-    loadContactsFromAccount(account);
-}
-
-void MainWidget::loadContactsFromAccount(const Tp::AccountPtr& account)
-{
-    m_model->addAccountContacts(account);
-    //m_currentAccountButtonPressed = -1;
-    m_sortFilterProxyModel->sort(0, Qt::AscendingOrder);
     m_contactsListView->expandAll();
+    //Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
+    kDebug();
 }
 
 void MainWidget::onContactListDoubleClick(const QModelIndex& index)
@@ -489,35 +443,28 @@ void MainWidget::onContactListDoubleClick(const QModelIndex& index)
     if(!index.isValid()) {
         return;
     }
-    kDebug() << index;   
-    ContactItem *item = static_cast<ContactItem*>(index.internalPointer());
-    if(item->isContact())
-    {
-        kDebug() << "Text chat requested";
-        startTextChannel(index);
-    }
-    else
-    {
+    
+    if(index.data(Tpy::AccountsModel::AliasRole).toString().isEmpty()) {
         if(m_contactsListView->isExpanded(index))
             m_contactsListView->collapse(index);
         else m_contactsListView->expand(index);
-        
-        kDebug() << index.data(ModelRoles::AccountGroupRole);
+    }
+    else {
+        kDebug() << "Text chat requested for index" << index;
+        startTextChannel(index);    
     }
 }
 
 void MainWidget::startTextChannel(const QModelIndex &index)
 {
-    //QModelIndex index = m_contactsListView->currentIndex();
     if (! index.isValid()) {
         return;
     }
     
-    Tp::ContactPtr contact = m_model->contact(index);
+    Tp::ContactPtr contact = m_model->contactForIndex(index);
     kDebug() << "Requesting chat for contact" << contact->alias();
     
-    Tp::AccountPtr account = m_model->account(index);
-    kDebug() << account->displayName();
+    Tp::AccountPtr account = m_model->accountForContactIndex(index);
     
     Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact);
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onChannelJoined(Tp::PendingOperation*)));
@@ -597,7 +544,7 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
     
 }
 
-void MainWidget::addActionOverlay()
+void MainWidget::addOverlayButtons()
 {
         TextChannelContactOverlay*  textOverlay = new TextChannelContactOverlay(this);
         AudioChannelContactOverlay* audioOverlay = new AudioChannelContactOverlay(this);
@@ -642,16 +589,16 @@ void MainWidget::onCustomContextMenuRequested(const QPoint& point)
 //     }
 // 
 //     // Map the index to the real model
-//     QModelIndex idx = m_currentModel->mapToSource(proxyIdx);
-//     if (!idx.isValid()) {
+//     QModelIndex index = m_currentModel->mapToSource(proxyIdx);
+//     if (!index.isValid()) {
 //         kDebug() << "Could not map to source";
 //         // Flee
 //         return;
 //     }
 // 
 //     // Ok, now let's guess
-//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
-//     kDebug() << idx << idx.internalPointer() << abstractItem;
+//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
+//     kDebug() << index << index.internalPointer() << abstractItem;
 //     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 //     kDebug() << contactItem;
 //     QMenu *menu = new QMenu;
@@ -810,15 +757,15 @@ void MainWidget::onRequestRemoveFromGroup(bool )
 //     kDebug() << "Request removal from group " << action->text();
 // 
 //     // Pick the current model index
-//     QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
-//     if (!idx.isValid()) {
+//     QModelIndex index = m_currentModel->mapToSource(m_contactsListView->currentIndex());
+//     if (!index.isValid()) {
 //         // Flee
 //         kDebug() << "Invalid index";
 //         return;
 //     }
 // 
 //     // Ok, what is it?
-//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
 //     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 // 
 //     if (contactItem) {
@@ -852,15 +799,15 @@ void MainWidget::onRequestAddToGroup(bool )
 //     kDebug() << "Request addition group " << action->text();
 // 
 //     // Pick the current model index
-//     QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
-//     if (!idx.isValid()) {
+//     QModelIndex index = m_currentModel->mapToSource(m_contactsListView->currentIndex());
+//     if (!index.isValid()) {
 //         // Flee
 //         kDebug() << "Invalid index";
 //         return;
 //     }
 // 
 //     // Ok, what is it?
-//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
 //     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 // 
 //     if (contactItem) {
@@ -889,15 +836,15 @@ void MainWidget::onContactBlockRequest(bool )
 void MainWidget::onRemoveFromMetacontact(bool )
 {
 //     // Pick the current model index
-//     QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
-//     if (!idx.isValid()) {
+//     QModelIndex index = m_currentModel->mapToSource(m_contactsListView->currentIndex());
+//     if (!index.isValid()) {
 //         // Flee
 //         kDebug() << "Invalid index";
 //         return;
 //     }
 // 
 //     // Ok, what is it?
-//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
 //     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 // 
 //     Q_ASSERT(contactItem);
@@ -924,15 +871,15 @@ void MainWidget::onContactRemovalRequest(bool )
 //     kDebug() << "Request addition group " << action->text();
 // 
 //     // Pick the current model index
-//     QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
-//     if (!idx.isValid()) {
+//     QModelIndex index = m_currentModel->mapToSource(m_contactsListView->currentIndex());
+//     if (!index.isValid()) {
 //         // Flee
 //         kDebug() << "Invalid index";
 //         return;
 //     }
 // 
 //     // Ok, what is it?
-//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
 //     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 // 
 //     if (contactItem) {
@@ -1110,15 +1057,15 @@ void MainWidget::onAddToMetaContact(bool )
 //     kDebug() << "Request adding to metacontact " << metaContactName;
 // 
 //     // Pick the current model index
-//     QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
-//     if (!idx.isValid()) {
+//     QModelIndex index = m_currentModel->mapToSource(m_contactsListView->currentIndex());
+//     if (!index.isValid()) {
 //         // Flee
 //         kDebug() << "Invalid index";
 //         return;
 //     }
 // 
 //     // Ok, what is it?
-//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
 //     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 // 
 //     Q_ASSERT(contactItem);
@@ -1190,8 +1137,8 @@ void MainWidget::onStartChat(bool)
 //     }
 // 
 //     // Pick the current model index
-//     QModelIndex idx = m_currentModel->mapToSource(m_contactsListView->currentIndex());
-//     if (!idx.isValid()) {
+//     QModelIndex index = m_currentModel->mapToSource(m_contactsListView->currentIndex());
+//     if (!index.isValid()) {
 //         // Flee
 //         kDebug() << "Invalid index";
 //         return;
@@ -1199,7 +1146,7 @@ void MainWidget::onStartChat(bool)
 // 
 //     RequestTextChatJob* job;
 //     // Ok, what is it?
-//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(idx.internalPointer());
+//     AbstractTreeItem *abstractItem = static_cast<AbstractTreeItem*>(index.internalPointer());
 //     ContactItem *contactItem = dynamic_cast<ContactItem*>(abstractItem);
 //     MetaContactItem *metacontactItem = dynamic_cast<MetaContactItem*>(abstractItem);
 // 
