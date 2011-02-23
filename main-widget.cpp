@@ -49,7 +49,6 @@
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
-#include "account-item.h"
 #include "accountbutton.h"
 #include "contactoverlays.h"
 #include "accounts-model.h"
