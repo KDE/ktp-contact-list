@@ -25,6 +25,7 @@
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingContacts>
 #include <TelepathyQt4/AvatarData>
+#include <TelepathyQt4/ContactCapabilities>
 
 #include "fakecontactsmodel.h"
 
@@ -174,7 +175,7 @@ QVariant FakeContactsModel::data(const QModelIndex& index, int role) const
         }
         else if(role == ModelRoles::ContactCapabilities)
         {
-            return qVariantFromValue<Tp::ConnectionCapabilities>(contact->data()->capabilities());
+            return QVariant::fromValue<Tp::ContactCapabilities>(contact->data()->capabilities());
         }
     }
     else 

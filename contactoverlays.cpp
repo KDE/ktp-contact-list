@@ -28,6 +28,8 @@
 #include <KIconLoader>
 #include <KDebug>
 
+#include <TelepathyQt4/ContactCapabilities>
+
 class TextChannelContactOverlay::Button : public ContactViewHoverButton
 {
 public:
@@ -130,11 +132,11 @@ void TextChannelContactOverlay::slotClicked(bool checked)
 
 bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>() == Tp::ConnectionPresenceTypeOffline) {
-        return false;
+    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().textChats()) {
+        return true;
     }
     
-    return true;
+    return false;
 }
 
 // ------------------------------------------------------------------------
@@ -242,11 +244,11 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
 
 bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>() == Tp::ConnectionPresenceTypeOffline) {
-        return false;
+    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().streamedMediaAudioCalls()) {
+        return true;
     }
-
-    return true;
+    
+    return false;
 }
 
 // ----------------------------------------------------------
@@ -353,9 +355,120 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
 
 bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>() == Tp::ConnectionPresenceTypeOffline) {
-        return false;
+    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().streamedMediaVideoCallsWithAudio()) {
+        return true;
     }
     
-    return true;
+    return false;
+}
+
+// ----------------------------------------------------------
+
+class FileTransferContactOverlay::Button : public ContactViewHoverButton
+{
+public:
+    
+    Button(QAbstractItemView* parentView, const KGuiItem& gui);
+    virtual QSize sizeHint() const;
+    
+protected:
+    
+    KGuiItem gui;
+    
+    virtual QPixmap icon();
+    virtual void updateToolTip();
+    
+};
+
+FileTransferContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
+: ContactViewHoverButton(parentView), gui(gui)
+{
+}
+
+QSize FileTransferContactOverlay::Button::sizeHint() const
+{
+    return QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
+}
+
+QPixmap FileTransferContactOverlay::Button::icon()
+{
+    return KIconLoader::global()->loadIcon(gui.iconName(),
+                                           KIconLoader::NoGroup,
+                                           KIconLoader::SizeSmall);
+}
+
+void FileTransferContactOverlay::Button::updateToolTip()
+{
+    setToolTip(gui.toolTip());
+}
+
+// -------------------------------------------------------------------------
+
+FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
+: HoverButtonDelegateOverlay(parent),
+m_referenceModel(0)
+{
+    m_gui = KGuiItem(i18n("Send file"), "mail-attachment", 
+                     i18n("Send file"), i18n("Whats this"));          
+}
+
+FileTransferContactOverlay::Button *FileTransferContactOverlay::button() const
+{
+    return static_cast<Button*>(HoverButtonDelegateOverlay::button());
+}
+
+void FileTransferContactOverlay::setReferenceModel(const FakeContactsModel* model)
+{
+    m_referenceModel = model;
+}
+
+void FileTransferContactOverlay::setActive(bool active)
+{
+    HoverButtonDelegateOverlay::setActive(active);
+    
+    if (active)
+    {
+        connect(button(), SIGNAL(clicked(bool)),
+                this, SLOT(slotClicked(bool)));
+    }
+    else
+    {
+        // button is deleted
+    }
+}
+
+ContactViewHoverButton* FileTransferContactOverlay::createButton()
+{
+    return new Button(view(), m_gui);
+}
+
+void FileTransferContactOverlay::updateButton(const QModelIndex& index)
+{
+    const QRect rect = m_view->visualRect(index);
+    const QSize size = button()->size();
+    
+    const int gap = 5;
+    const int x   = rect.right() - gap - 132 - size.width();
+    const int y   = rect.bottom() - gap - size.height();
+    button()->move(QPoint(x, y));
+}
+
+void FileTransferContactOverlay::slotClicked(bool checked)
+{
+    Q_UNUSED(checked);
+    QModelIndex index = button()->index();
+    
+    if (index.isValid())
+    {
+        //emit activated(index);
+    }
+}
+
+bool FileTransferContactOverlay::checkIndex(const QModelIndex& index) const
+{
+    if(index.data(ModelRoles::ContactCapabilities).value<Tp::ContactCapabilities>().fileTransfers()) {
+        return true;
+    }
+    
+    return false;
 }

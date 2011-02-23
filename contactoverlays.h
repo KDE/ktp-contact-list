@@ -139,4 +139,40 @@ protected:
     Button *button() const;
 };
 
+// ---------------------------------------------------------------------
+
+class FileTransferContactOverlay : public HoverButtonDelegateOverlay
+{
+    Q_OBJECT
+    
+public:
+    
+    FileTransferContactOverlay(QObject* parent);
+    virtual void setActive(bool active);
+    
+    void setReferenceModel(const FakeContactsModel* model);
+    
+Q_SIGNALS:
+    
+    //void activated(const ImageInfo& info);
+    
+protected:
+    
+    virtual ContactViewHoverButton* createButton();
+    virtual void updateButton(const QModelIndex& index);
+    virtual bool checkIndex(const QModelIndex& index) const;
+    
+protected Q_SLOTS:
+    
+    void slotClicked(bool checked);
+    
+protected:
+    
+    KGuiItem                 m_gui;
+    const FakeContactsModel* m_referenceModel;
+    
+    class Button;
+    Button *button() const;
+};
+
 #endif // VERSIONSOVERLAYS_H

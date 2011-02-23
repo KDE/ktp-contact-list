@@ -307,7 +307,8 @@ MainWidget::MainWidget(QWidget *parent)
     
     Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
                                                                       << Tp::Contact::FeatureAvatarData
-                                                                      << Tp::Contact::FeatureSimplePresence);
+                                                                      << Tp::Contact::FeatureSimplePresence
+                                                                      << Tp::Contact::FeatureCapabilities);
     
     Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
     
@@ -602,9 +603,12 @@ void MainWidget::addActionOverlay()
         AudioChannelContactOverlay* audioOverlay = new AudioChannelContactOverlay(this);
         VideoChannelContactOverlay* videoOverlay = new VideoChannelContactOverlay(this);
         
+        FileTransferContactOverlay* fileOverlay = new FileTransferContactOverlay(this);
+        
         m_delegate->installOverlay(textOverlay);
         m_delegate->installOverlay(audioOverlay);
         m_delegate->installOverlay(videoOverlay);
+        m_delegate->installOverlay(fileOverlay);
         
         textOverlay->setView(m_contactsListView);
         textOverlay->setActive(true);
@@ -614,6 +618,9 @@ void MainWidget::addActionOverlay()
         
         videoOverlay->setView(m_contactsListView);
         videoOverlay->setActive(true);
+        
+        fileOverlay->setView(m_contactsListView);
+        fileOverlay->setActive(true);
         
         connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
                 m_delegate, SLOT(hideStatusMessageSlot(QModelIndex)));
