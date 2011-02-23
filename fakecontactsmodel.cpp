@@ -154,7 +154,7 @@ QVariant FakeContactsModel::data(const QModelIndex& index, int role) const
         }
         else if(role == ModelRoles::UserStatusRole)
         {
-            return contact->data()->presence().type();
+            return QVariant::fromValue<Tp::ConnectionPresenceType>(contact->data()->presence().type());
         }
         else if(role == ModelRoles::UserStatusMsgRole)
         {

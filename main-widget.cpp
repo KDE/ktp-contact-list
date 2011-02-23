@@ -109,7 +109,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         
         QPixmap icon;
         
-        switch(idx.data(ModelRoles::UserStatusRole).toInt())
+        switch(idx.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>())
         {
             case Tp::ConnectionPresenceTypeAvailable:
                 icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);

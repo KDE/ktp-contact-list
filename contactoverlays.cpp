@@ -130,11 +130,11 @@ void TextChannelContactOverlay::slotClicked(bool checked)
 
 bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-
-        if (m_referenceModel)
-        {
-        }
-        return true;
+    if(index.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>() == Tp::ConnectionPresenceTypeOffline) {
+        return false;
+    }
+    
+    return true;
 }
 
 // ------------------------------------------------------------------------
@@ -242,10 +242,10 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
 
 bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    
-    if (m_referenceModel)
-    {
+    if(index.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>() == Tp::ConnectionPresenceTypeOffline) {
+        return false;
     }
+
     return true;
 }
 
@@ -353,9 +353,9 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
 
 bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    
-    if (m_referenceModel)
-    {
+    if(index.data(ModelRoles::UserStatusRole).value<Tp::ConnectionPresenceType>() == Tp::ConnectionPresenceTypeOffline) {
+        return false;
     }
+    
     return true;
 }
