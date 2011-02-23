@@ -20,6 +20,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "main-widget.moc"
+
 #include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QPainter>
 #include <QtGui/QMenu>
@@ -57,6 +59,7 @@
 #include "account-item.h"
 #include "contactsmodelfilter.h"
 #include "accountbutton.h"
+#include "contactoverlays.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
@@ -72,7 +75,7 @@ const int AVATAR_SIZE = 32;
 // using KTelepathy::RequestTextChatJob;
 
 ContactDelegate::ContactDelegate(QObject * parent)
-  : QStyledItemDelegate(parent)
+  : QStyledItemDelegate(parent), ContactDelegateOverlayContainer()
 {
 }
 
@@ -155,8 +158,13 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         statusFont.setWeight(QFont::Normal);
         statusFont.setPixelSize(10);
         
-        painter->setFont(statusFont);
+        if(idx == m_indexForHiding) {
+            painter->setPen(QColor(0, 0, 0, m_fadingValue));        //TODO: Change to theme color
+        }
+        
+        painter->setFont(statusFont);        
         painter->drawText(statusMsgRect, idx.data(ModelRoles::UserStatusMsgRole).toString());
+        
     }
     else
     {
@@ -203,14 +211,63 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     painter->restore();
 }
 
-QSize ContactDelegate::sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const
-{
-    if(index.data(ModelRoles::IsContact).toBool())
-    {
-        return QSize(0, 32 + 2 * SPACING);
+QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{   
+    if(option.state & QStyle::State_Selected)
+        kDebug() << index.data(ModelRoles::UserNameRole).toString();
+    
+    if(index.data(ModelRoles::IsContact).toBool()) {
+        return QSize(0, 32 + 4 * SPACING);
     }
-    else return QSize(0,20);
+    else return QSize(0,20);   
 }
+
+void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
+{
+//     kDebug() << "Mouse entered" << index.data(ModelRoles::UserNameRole).toString();
+    m_indexForHiding = index;
+    fadeOutStatusMessageSlot();
+}
+
+void ContactDelegate::reshowStatusMessageSlot()
+{
+    kDebug();
+    m_fadingValue = 255;
+    m_indexForHiding = QModelIndex();
+    emit repaintItem(m_indexForHiding);
+}
+
+void ContactDelegate::fadeOutStatusMessageSlot()
+{
+    QPropertyAnimation *a = new QPropertyAnimation(this, "m_fadingValue");
+    a->setParent(this);
+    a->setDuration(500);
+    a->setEasingCurve(QEasingCurve::OutExpo);
+    a->setStartValue(255);
+    a->setEndValue(0);
+    a->start();
+    
+    connect(a, SIGNAL(valueChanged(QVariant)),
+        this, SLOT(triggerRepaint()));
+}
+
+int ContactDelegate::fadingValue() const
+{
+    return m_fadingValue;
+}
+
+void ContactDelegate::setFadingValue(int value)
+{
+    m_fadingValue = value;
+}
+
+void ContactDelegate::triggerRepaint()
+{
+//     kDebug() << m_fadingValue;
+    emit repaintItem(m_indexForHiding);
+}
+
+//---------------------------------------------------------------------------------------
 
 MainWidget::MainWidget(QWidget *parent)
  : QWidget(parent),
@@ -274,6 +331,8 @@ MainWidget::MainWidget(QWidget *parent)
     m_sortFilterProxyModel->setDynamicSortFilter(true);
     m_sortFilterProxyModel->setFilterRole(ModelRoles::UserStatusRole);
     m_sortFilterProxyModel->setSortRole(ModelRoles::UserNameRole);
+    
+    m_delegate = new ContactDelegate(this);
 
     //m_groupedContactsProxyModel = new GroupedContactsProxyModel(this);
     //m_groupedContactsProxyModel->setSourceModel(m_model);
@@ -283,15 +342,21 @@ MainWidget::MainWidget(QWidget *parent)
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_contactsListView->setModel(m_model);
-    m_contactsListView->setItemDelegate(new ContactDelegate(this));
+    m_contactsListView->setItemDelegate(m_delegate);
     m_contactsListView->setIndentation(0);
+    m_contactsListView->setMouseTracking(true);
     m_contactsListView->setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
+    
+    addActionOverlay();
     
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
     
     connect(m_contactsListView, SIGNAL(doubleClicked(QModelIndex)),
             this, SLOT(onContactListDoubleClick(QModelIndex)));
+    
+    connect(m_delegate, SIGNAL(repaintItem(QModelIndex)),
+            m_contactsListView->viewport(), SLOT(repaint())); //update(QModelIndex)
     
     connect(m_actionAdd_contact, SIGNAL(triggered(bool)),
             this, SLOT(onAddContactRequest(bool)));
@@ -361,6 +426,28 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     }
     
     m_accountButtonsLayout->insertStretch(-1);
+    
+    QPushButton *bInfo = new QPushButton(this);
+    bInfo->setText("Info");
+    bInfo->setObjectName("infoBt");
+    
+    QPushButton *bErr = new QPushButton(this);
+    bErr->setText("Err");
+    bErr->setObjectName("errBt");
+    
+    connect(bInfo, SIGNAL(clicked(bool)), this, SLOT(systemMessageTest()));
+    connect(bErr, SIGNAL(clicked(bool)), this, SLOT(systemMessageTest()));
+    
+    m_accountButtonsLayout->addWidget(bInfo);
+    m_accountButtonsLayout->addWidget(bErr);
+}
+
+void MainWidget::systemMessageTest()
+{
+    if(sender()->objectName() == "infoBt")
+        showMessageToUser("Info message...", MainWidget::SystemMessageInfo);
+    else showMessageToUser("Error message...", MainWidget::SystemMessageError);
+    
 }
 
 void MainWidget::onAccountReady(Tp::PendingOperation* op)
@@ -379,7 +466,7 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
     //TODO: Add some handling
     kDebug() << "Connection status is" << status;
     if(status == Tp::ConnectionStatusConnecting)
-        showMessageToUser(i18n("Connecting..."));
+        showMessageToUser(i18n("Connecting..."), MainWidget::SystemMessageInfo);
 }
 
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
@@ -453,40 +540,89 @@ void MainWidget::onHandlerReady(bool ready)
     }
 }
 
-void MainWidget::showMessageToUser(const QString& text)
+void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
 {
+    //kDebug() << m_contactsListView->size() << m_contactsListView->viewport()->size();
     QFrame *msgFrame = new QFrame(m_contactsListView);
     msgFrame->setAttribute(Qt::WA_DeleteOnClose);
-    msgFrame->setMinimumSize(QSize(m_contactsListView->width(), 150));
-    msgFrame->setFrameShape(QFrame::StyledPanel);
+    msgFrame->setMinimumSize(QSize(m_contactsListView->viewport()->width(), 55));
+    msgFrame->setFrameShape(QFrame::Box);
     msgFrame->setFrameShadow(QFrame::Plain);
     msgFrame->setAutoFillBackground(true);
+    msgFrame->setLineWidth(1);
+    
+    if(type == MainWidget::SystemMessageError) {
+        msgFrame->setStyleSheet("background-color: #FFCBCB; color: #FF2222;");
+    }
+    else if(type == MainWidget::SystemMessageInfo) {
+        msgFrame->setStyleSheet("color: #2222FF;");
+    }
+    
+    QHBoxLayout *layout = new QHBoxLayout(msgFrame);
+    QVBoxLayout *closeBtLayout = new QVBoxLayout(msgFrame);
     
     QLabel *message = new QLabel(text, msgFrame);
+    message->setAlignment(Qt::AlignVCenter);
+    
+    QToolButton *closeButton = new QToolButton(msgFrame);
+    closeButton->setText("x");
+    closeButton->setAutoRaise(true);
+    closeButton->setMaximumSize(QSize(16,16));
+    
+    connect(closeButton, SIGNAL(clicked(bool)), msgFrame, SLOT(close()));
+    
+    closeBtLayout->addWidget(closeButton);
+    closeBtLayout->addStretch(-1);
+    
+    layout->addWidget(message);
+    layout->addLayout(closeBtLayout);
     
     msgFrame->show();
-    
-    //QTimeLine *tl = new QTimeLine(4000);
     
     QPropertyAnimation *a = new QPropertyAnimation(msgFrame, "pos");
     a->setParent(msgFrame);
     a->setDuration(4000);
     a->setEasingCurve(QEasingCurve::OutExpo);
-    a->setStartValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()));
-    a->setEndValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()-100));
+    a->setStartValue(QPointF(m_contactsListView->viewport()->pos().x(), 
+                             m_contactsListView->viewport()->pos().y()+m_contactsListView->viewport()->height()));
+    
+    a->setEndValue(QPointF(m_contactsListView->viewport()->pos().x(), 
+                           m_contactsListView->viewport()->pos().y()+m_contactsListView->viewport()->height()-50));
     a->start();
     
-//     m_anim = new Animation(msgFrame, "pos");
-//     m_anim->setEasingCurve(QEasingCurve::OutExpo);
+    if(type == MainWidget::SystemMessageInfo) {
+        QTimer::singleShot(4500, msgFrame, SLOT(close()));
+    }
     
-//     m_anim->setStartValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()));
-//     m_anim->setEndValue(QPointF(m_contactsListView->pos().x(), m_contactsListView->pos().y()+m_contactsListView->height()-100));
-//     m_anim->setDuration(4000);
-//     m_anim->setLoopCount(1);
-//     m_anim->start();
-    
-    QTimer::singleShot(4500, msgFrame, SLOT(close()));
-    
+}
+
+void MainWidget::addActionOverlay()
+{
+        TextChannelContactOverlay*  textOverlay = new TextChannelContactOverlay(this);
+        AudioChannelContactOverlay* audioOverlay = new AudioChannelContactOverlay(this);
+        VideoChannelContactOverlay* videoOverlay = new VideoChannelContactOverlay(this);
+        
+        m_delegate->installOverlay(textOverlay);
+        m_delegate->installOverlay(audioOverlay);
+        m_delegate->installOverlay(videoOverlay);
+        
+        textOverlay->setView(m_contactsListView);
+        textOverlay->setActive(true);
+        
+        audioOverlay->setView(m_contactsListView);
+        audioOverlay->setActive(true);
+        
+        videoOverlay->setView(m_contactsListView);
+        videoOverlay->setActive(true);
+        
+        connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
+                m_delegate, SLOT(hideStatusMessageSlot(QModelIndex)));
+        
+        connect(textOverlay, SIGNAL(overlayHidden()),
+                m_delegate, SLOT(reshowStatusMessageSlot()));
+        
+        connect(textOverlay, SIGNAL(activated(QModelIndex)),
+                this, SLOT(startTextChannel(QModelIndex)));
 }
 
 void MainWidget::onCustomContextMenuRequested(const QPoint& point)
@@ -1096,7 +1232,3 @@ void MainWidget::onStartChat(bool)
 //         kDebug() << "This should be a success.";
 //     }
 }
-
-
-#include "main-widget.moc"
-

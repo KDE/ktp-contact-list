@@ -31,12 +31,15 @@
 #include <QtGui/QStyledItemDelegate>
 
 #include <TelepathyQt4/AccountManager>
+#include "contactdelegateoverlay.h"
 
 class QSortFilterProxyModel;
 class QAbstractProxyModel;
 class ContactsModelFilter;
 class KMenu;
 class KSelectAction;
+
+class ActionContactOverlay;
 
 namespace KTelepathy {
     class ContactsListModel;
@@ -47,15 +50,37 @@ namespace Tp {
     class PendingOperation;
 }
 
-class ContactDelegate : public QStyledItemDelegate
+class ContactDelegate : public QStyledItemDelegate, public ContactDelegateOverlayContainer
 {
     Q_OBJECT
-    public:
-        ContactDelegate(QObject * parent = 0);
-        ~ContactDelegate();
+    Q_PROPERTY(int m_fadingValue READ fadingValue WRITE setFadingValue);
+    
+public:
+    ContactDelegate(QObject * parent = 0);
+    ~ContactDelegate();
 
-        virtual void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
-        virtual QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    
+    int fadingValue() const;
+    void setFadingValue(int value);
+        
+public Q_SLOTS:
+    void hideStatusMessageSlot(const QModelIndex& index);
+    void reshowStatusMessageSlot();
+    void fadeOutStatusMessageSlot();
+    void triggerRepaint();
+    
+Q_SIGNALS:
+    void repaintItem(QModelIndex);
+        
+protected:
+    /// Returns the delegate, typically, the derived class
+    virtual QAbstractItemDelegate* asDelegate() { return this; }
+    
+private:
+    QModelIndex m_indexForHiding;
+    int         m_fadingValue;
 };
 
 class MainWidget : public QWidget, Ui::MainWidget
@@ -65,6 +90,24 @@ class MainWidget : public QWidget, Ui::MainWidget
 public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
+    
+    enum SystemMessageType {
+        /*
+         * this will show a system message to the user
+         * but it will fade after short timout,
+         * thus it should be used for non-important messages
+         * like "Connecting..." etc.
+         */ 
+        SystemMessageInfo,
+        
+        /*
+         * message with this class will stay visible until user
+         * closes it and will have light-red background
+         */
+        SystemMessageError
+    };
+    
+//     ActionContactOverlay *addActionOverlay();
 
 public Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
@@ -75,7 +118,9 @@ public Q_SLOTS:
     void onAccountReady(Tp::PendingOperation *op);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
     void loadContactsFromAccount(const Tp::AccountPtr &account);
-    void showMessageToUser(const QString &text);
+    void showMessageToUser(const QString &text, const SystemMessageType type);
+    void systemMessageTest();
+    void addActionOverlay();
     //    void startAudioChannel();
     //    void startVideoChannel();
     
@@ -101,6 +146,7 @@ private:
     AccountsListModel*      m_accountsListModel;
     KMenu*                  m_accountMenu;
     KSelectAction*          m_setStatusAction;
+    ContactDelegate*        m_delegate;
     
 //     KTelepathy::GroupedContactsProxyModel *m_groupedContactsProxyModel;
 //     Nepomuk::PersonContact m_mePersonContact;
