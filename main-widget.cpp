@@ -427,19 +427,19 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     
     m_accountButtonsLayout->insertStretch(-1);
     
-    QPushButton *bInfo = new QPushButton(this);
-    bInfo->setText("Info");
-    bInfo->setObjectName("infoBt");
-    
-    QPushButton *bErr = new QPushButton(this);
-    bErr->setText("Err");
-    bErr->setObjectName("errBt");
-    
-    connect(bInfo, SIGNAL(clicked(bool)), this, SLOT(systemMessageTest()));
-    connect(bErr, SIGNAL(clicked(bool)), this, SLOT(systemMessageTest()));
-    
-    m_accountButtonsLayout->addWidget(bInfo);
-    m_accountButtonsLayout->addWidget(bErr);
+//     QPushButton *bInfo = new QPushButton(this);
+//     bInfo->setText("Info");
+//     bInfo->setObjectName("infoBt");
+//     
+//     QPushButton *bErr = new QPushButton(this);
+//     bErr->setText("Err");
+//     bErr->setObjectName("errBt");
+//     
+//     connect(bInfo, SIGNAL(clicked(bool)), this, SLOT(systemMessageTest()));
+//     connect(bErr, SIGNAL(clicked(bool)), this, SLOT(systemMessageTest()));
+//     
+//     m_accountButtonsLayout->addWidget(bInfo);
+//     m_accountButtonsLayout->addWidget(bErr);
 }
 
 void MainWidget::systemMessageTest()

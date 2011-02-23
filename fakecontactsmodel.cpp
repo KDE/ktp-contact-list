@@ -172,6 +172,10 @@ QVariant FakeContactsModel::data(const QModelIndex& index, int role) const
         {
             return contact->isContact();
         }
+        else if(role == ModelRoles::ContactCapabilities)
+        {
+            return qVariantFromValue<Tp::ConnectionCapabilities>(contact->data()->capabilities());
+        }
     }
     else 
     {
