@@ -428,13 +428,13 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
     kDebug() << "Connection status is" << status;
     switch (status) {
     case Tp::ConnectionStatusConnecting:
-         showMessageToUser(i18n("Connecting..."));
+         showMessageToUser(i18n("Connecting..."), MainWidget::SystemMessageInfo);
         break;
     case Tp::ConnectionStatusConnected:
-        showMessageToUser(i18n("Connected!"));
+        showMessageToUser(i18n("Connected!"), MainWidget::SystemMessageInfo);
         break;
     case Tp::ConnectionStatusDisconnected:
-        showMessageToUser(i18n("Disconnected!"));
+        showMessageToUser(i18n("Disconnected!"), MainWidget::SystemMessageInfo);
         break;
     default:
         break;
