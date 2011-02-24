@@ -33,10 +33,7 @@
 
 class KMenu;
 class KSelectAction;
-
-namespace Tpy {
-    class AccountsModel;
-}
+class AccountsModel;
 
 class ContactDelegate : public QStyledItemDelegate, public ContactDelegateOverlayContainer
 {
@@ -126,7 +123,7 @@ public Q_SLOTS:
     void onGroupContacts(bool);
     
 private:
-    Tpy::AccountsModel*     m_model;
+    AccountsModel*          m_model;
     Tp::AccountManagerPtr   m_accountManager;
     KMenu*                  m_accountMenu;
     KSelectAction*          m_setStatusAction;

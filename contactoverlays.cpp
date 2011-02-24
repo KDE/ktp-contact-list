@@ -1,7 +1,8 @@
 /*
  *  Contact overlay buttons
- *  Copyright (C) 2009  Marcel Wiesweg <marcel dot wiesweg at gmx dot de>
- *  Copyright (C) 2011  Martin Klapetek <martin dot klapetek at gmail dot com>
+ * 
+ *  Copyright (C) 2009 Marcel Wiesweg <marcel dot wiesweg at gmx dot de>
+ *  Copyright (C) 2011 Martin Klapetek <martin dot klapetek at gmail dot com>
  * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -122,7 +123,7 @@ void TextChannelContactOverlay::slotClicked(bool checked)
 
 bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(Tpy::AccountsModel::TextChatCapabilityRole).toBool()) {
+    if(index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
         return true;
     }
     
@@ -228,7 +229,7 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
 
 bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(Tpy::AccountsModel::AudioCallCapabilityRole).toBool()) {
+    if(index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
         return true;
     }
     
@@ -333,7 +334,7 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
 
 bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(Tpy::AccountsModel::VideoCallCapabilityRole).toBool()) {
+    if(index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
         return true;
     }
     
@@ -438,7 +439,7 @@ void FileTransferContactOverlay::slotClicked(bool checked)
 
 bool FileTransferContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(Tpy::AccountsModel::FileTransferCapabilityRole).toBool()) {
+    if(index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
         return true;
     }
     

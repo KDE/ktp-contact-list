@@ -1,5 +1,6 @@
 /*
  *  Qt item view mouse hover button
+ * 
  *  Copyright (C) 2009  Marcel Wiesweg <marcel dot wiesweg at gmx dot de>
  *  Copyright (C) 2011  Martin Klapetek <martin dot klapetek at gmail dot com>
  * 

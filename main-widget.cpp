@@ -87,9 +87,9 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
     
-//     kDebug() << index.data(Tpy::AccountsModel::PresenceTypeRole);
+//     kDebug() << index.data(AccountsModel::PresenceTypeRole);
     
-    bool isContact = !index.data(Tpy::AccountsModel::AliasRole).toString().isEmpty();
+    bool isContact = !index.data(AccountsModel::AliasRole).toString().isEmpty();
 
     if(isContact)
     {
@@ -98,7 +98,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         iconRect.setSize(QSize(32, 32));
         iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
 
-        QPixmap avatar = QPixmap::fromImage(QImage(index.data(Tpy::AccountsModel::AvatarRole).toString()));
+        QPixmap avatar = QPixmap::fromImage(QImage(index.data(AccountsModel::AvatarRole).toString()));
         
         if(avatar.isNull()) {
             avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
@@ -108,7 +108,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         
         QPixmap icon;
         
-        switch(index.data(Tpy::AccountsModel::PresenceTypeRole).toInt())
+        switch(index.data(AccountsModel::PresenceTypeRole).toInt())
         {
             case Tp::ConnectionPresenceTypeAvailable:
                 icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
@@ -162,12 +162,12 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         }
         
         painter->setFont(statusFont);        
-        painter->drawText(statusMsgRect, index.data(Tpy::AccountsModel::PresenceMessageRole).toString());
+        painter->drawText(statusMsgRect, index.data(AccountsModel::PresenceMessageRole).toString());
         
     }
     else
     {
-        painter->drawText(optV4.rect, index.data(Tpy::AccountsModel::DisplayNameRole).toString());
+        painter->drawText(optV4.rect, index.data(AccountsModel::DisplayNameRole).toString());
         /*QRect groupRect = optV4.rect;
         
         QRect accountGroupRect = groupRect;
@@ -214,10 +214,11 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
 QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {   
+    Q_UNUSED(option);
 //     if(option.state & QStyle::State_Selected)
 //         kDebug() << index.data(ModelRoles::UserNameRole).toString();
     
-    if(!index.data(Tpy::AccountsModel::AliasRole).toString().isEmpty()) {
+    if(!index.data(AccountsModel::AliasRole).toString().isEmpty()) {
         return QSize(0, 32 + 4 * SPACING);
     }
     else return QSize(0,20);   
@@ -381,7 +382,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
             m_accountButtonsLayout->addWidget(bt);
             
-            m_model = new Tpy::AccountsModel(m_accountManager, this);
+            m_model = new AccountsModel(m_accountManager, this);
             m_contactsListView->setModel(m_model);            
         }
     }
@@ -443,6 +444,7 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
 {
+    Q_UNUSED(connection);
     m_contactsListView->expandAll();
     //Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
     kDebug();
@@ -454,7 +456,7 @@ void MainWidget::onContactListDoubleClick(const QModelIndex& index)
         return;
     }
     
-    if(index.data(Tpy::AccountsModel::AliasRole).toString().isEmpty()) {
+    if(index.data(AccountsModel::AliasRole).toString().isEmpty()) {
         if(m_contactsListView->isExpanded(index))
             m_contactsListView->collapse(index);
         else m_contactsListView->expand(index);
