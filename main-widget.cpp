@@ -426,8 +426,19 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 {   
     //TODO: Add some 'working' indicator
     kDebug() << "Connection status is" << status;
-    if(status == Tp::ConnectionStatusConnecting)
-        showMessageToUser(i18n("Connecting..."), MainWidget::SystemMessageInfo);
+    switch (status) {
+    case Tp::ConnectionStatusConnecting:
+         showMessageToUser(i18n("Connecting..."));
+        break;
+    case Tp::ConnectionStatusConnected:
+        showMessageToUser(i18n("Connected!"));
+        break;
+    case Tp::ConnectionStatusDisconnected:
+        showMessageToUser(i18n("Disconnected!"));
+        break;
+    default:
+        break;
+    }
 }
 
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
