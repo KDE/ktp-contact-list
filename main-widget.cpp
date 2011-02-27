@@ -386,7 +386,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
             m_accountButtonsLayout->addWidget(bt);         
         }
     }
-    
+    m_contactsListView->expandAll();
+
     m_accountButtonsLayout->insertStretch(-1);
     
 //     QPushButton *bInfo = new QPushButton(this);
@@ -445,7 +446,7 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
 {
     Q_UNUSED(connection);
-    m_contactsListView->expandAll();
+//    m_contactsListView->expandAll();
     //Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
     kDebug();
 }
