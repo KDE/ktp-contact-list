@@ -363,6 +363,9 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         kDebug() << op->errorMessage();
     }
     
+    m_model = new AccountsModel(m_accountManager, this);
+    m_contactsListView->setModel(m_model);
+
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
     foreach (Tp::AccountPtr account, accounts) 
     {
@@ -380,10 +383,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
             AccountButton *bt = new AccountButton(account, this);
 
-            m_accountButtonsLayout->addWidget(bt);
-            
-            m_model = new AccountsModel(m_accountManager, this);
-            m_contactsListView->setModel(m_model);            
+            m_accountButtonsLayout->addWidget(bt);         
         }
     }
     
