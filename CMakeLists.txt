@@ -30,7 +30,6 @@ include (KDE4Defaults)
 include (MacroLibrary)
 
 add_definitions (${KDE4_DEFINITIONS}
-                 -DDISABLE_NEPOMUK_LEGACY
 )
 
 include_directories (${KDE4_INCLUDES}

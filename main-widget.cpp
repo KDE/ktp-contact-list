@@ -37,16 +37,6 @@
 
 #include <KDebug>
 
-#include <Nepomuk/ResourceManager>
-#include <Nepomuk/Variant>
-#include <Nepomuk/Query/QueryServiceClient>
-#include <Nepomuk/Query/ComparisonTerm>
-#include <Nepomuk/Query/ResourceTerm>
-#include <Nepomuk/Query/ResourceTypeTerm>
-#include <Nepomuk/Query/LiteralTerm>
-#include <Nepomuk/Query/AndTerm>
-#include <Nepomuk/Query/Result>
-
 #include "main-widget.h"
 #include "ui_main-widget.h"
 #include "accountbutton.h"
@@ -57,33 +47,11 @@
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
-
-
-// using KTelepathy::ContactsListModel;
-// using KTelepathy::GroupedContactsProxyModel;
-// using KTelepathy::TelepathyBridge;
-// using KTelepathy::AbstractTreeItem;
-// using KTelepathy::ContactItem;
-// using KTelepathy::MetaContactItem;
-// using KTelepathy::RequestTextChatJob;
-
-
-//---------------------------------------------------------------------------------------
-
 MainWidget::MainWidget(QWidget *parent)
  : QWidget(parent),
    m_model(0),
    m_modelFilter(0)
 {
-
-    // Check if Nepomuk Query service client is up and running
-//     if (!Nepomuk::Query::QueryServiceClient::serviceAvailable()) {
-//         // That's a failure
-//         KMessageBox::error(this, i18n("The Nepomuk Query Service client is not available on your system. "
-//                                       "Contactlist requires the query service client to be available: please "
-//                                       "check your system settings"));
-//     }
-
     Tp::registerTypes();
 
     setupUi(this);
