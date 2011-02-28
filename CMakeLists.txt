@@ -45,7 +45,8 @@ include_directories (${KDE4_INCLUDES}
 set (contactlist_SRCS 
      contactviewhoverbutton.cpp 
      contactoverlays.cpp 
-     contactdelegateoverlay.cpp 
+     contactdelegateoverlay.cpp
+     contactdelegate.cpp
      accountbutton.cpp 
      accounts-model.cpp
      accountfiltermodel.cpp
@@ -55,6 +56,7 @@ set (contactlist_SRCS
      main.cpp
      main-widget.cpp
 )
+
 
 kde4_add_ui_files (contactlist_SRCS
                    main-widget.ui
