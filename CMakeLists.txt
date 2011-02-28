@@ -48,6 +48,7 @@ set (contactlist_SRCS
      contactdelegateoverlay.cpp 
      accountbutton.cpp 
      accounts-model.cpp
+     accountfiltermodel.cpp
      contact-model-item.cpp
      tree-node.cpp
      accounts-model-item.cpp

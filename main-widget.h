@@ -34,6 +34,7 @@
 class KMenu;
 class KSelectAction;
 class AccountsModel;
+class AccountFilterModel;
 
 class ContactDelegate : public QStyledItemDelegate, public ContactDelegateOverlayContainer
 {
@@ -68,10 +69,10 @@ private:
     int         m_fadingValue;
 };
 
+
 class MainWidget : public QWidget, Ui::MainWidget
 {
     Q_OBJECT
-
 public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
@@ -124,6 +125,7 @@ public Q_SLOTS:
     
 private:
     AccountsModel*          m_model;
+    AccountFilterModel*     m_modelFilter;
     Tp::AccountManagerPtr   m_accountManager;
     KMenu*                  m_accountMenu;
     KSelectAction*          m_setStatusAction;

@@ -52,6 +52,7 @@
 #include "accountbutton.h"
 #include "contactoverlays.h"
 #include "accounts-model.h"
+#include "accountfiltermodel.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
@@ -270,7 +271,8 @@ void ContactDelegate::triggerRepaint()
 
 MainWidget::MainWidget(QWidget *parent)
  : QWidget(parent),
-   m_model(0)
+   m_model(0),
+   m_modelFilter(0)
 {
 
     // Check if Nepomuk Query service client is up and running
@@ -364,7 +366,12 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     }
     
     m_model = new AccountsModel(m_accountManager, this);
-    m_contactsListView->setModel(m_model);
+    m_modelFilter = new AccountFilterModel(this);
+    m_modelFilter->setSourceModel(m_model);
+    m_modelFilter->setDynamicSortFilter(true);
+    m_modelFilter->filterOfflineUsers(true);
+    m_contactsListView->setModel(m_modelFilter);
+
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
     foreach (Tp::AccountPtr account, accounts) 
@@ -474,10 +481,11 @@ void MainWidget::startTextChannel(const QModelIndex &index)
         return;
     }
     
-    Tp::ContactPtr contact = m_model->contactForIndex(index);
+    QModelIndex realIndex = m_modelFilter->mapToSource(index);
+    Tp::ContactPtr contact = m_model->contactForIndex(realIndex);
     kDebug() << "Requesting chat for contact" << contact->alias();
     
-    Tp::AccountPtr account = m_model->accountForContactIndex(index);
+    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
     
     Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact);
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onChannelJoined(Tp::PendingOperation*)));
