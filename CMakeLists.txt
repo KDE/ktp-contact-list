@@ -1,4 +1,4 @@
-project (telepathy-contactlist-prototype)
+project (telepathy-kde-contactlist)
 
 set (CMAKE_MODULE_PATH
      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
@@ -62,19 +62,17 @@ kde4_add_ui_files (contactlist_SRCS
                    main-widget.ui
 )
 
-kde4_add_executable (telepathy_contactlist_prototype
+kde4_add_executable (telepathy-kde-contactlist
                      ${contactlist_SRCS}
 
 )
 
-target_link_libraries (telepathy_contactlist_prototype
-#                        ${KTELEPATHY_LIBRARIES}
+target_link_libraries (telepathy-kde-contactlist
                        ${TELEPATHY_QT4_LIBRARIES}
                        ${KDE4_KDEUI_LIBS}
-#                        ontologies
 )
 
 # Install:
-install (TARGETS telepathy_contactlist_prototype
+install (TARGETS telepathy-kde-contactlist
          DESTINATION ${BIN_INSTALL_DIR}
 )

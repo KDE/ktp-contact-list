@@ -38,14 +38,15 @@ bool AccountFilterModel::filterOfflineUsers() const
     return m_filterOfflineUsers;
 }
 
-
 bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
     //if we're looking at filtering an account or not
     if (source_parent != QModelIndex()) {
         if (m_filterOfflineUsers &&
-            source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
-                == Tp::ConnectionPresenceTypeOffline) {
+            (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
+                == Tp::ConnectionPresenceTypeOffline) ||
+            (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
+                == Tp::ConnectionPresenceTypeUnknown)) {
             return false;
         }
     }
