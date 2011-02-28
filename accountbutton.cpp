@@ -25,6 +25,8 @@
 #include <KIcon>
 #include <KLocale>
 
+#include <TelepathyQt4/PendingOperation>
+
 #include "accountbutton.h"
 
 static Tp::ConnectionPresenceType accountPresenceTypes[] = { Tp::ConnectionPresenceTypeAvailable, Tp::ConnectionPresenceTypeAway,
@@ -38,6 +40,7 @@ static const char *accountPresenceStatuses[] = { "available", "away", "brb", "bu
 AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QToolButton(parent)
 {
     m_account = account;
+    m_statusIndex = -1;
     
     QString iconPath = account->iconName();
     
@@ -57,7 +60,6 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
         setIcon(KIcon(pixmap));
     }
     
-    setToolTip(QString(account->displayName()));
     setMaximumWidth(24);
     
     setAutoRaise(true);
@@ -101,10 +103,21 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     foreach(QAction *a, actions())
     {
         a->setCheckable(true);
+        
+        if(m_account->currentPresence().status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
+            a->setChecked(true);
+            m_statusIndex = a->data().toInt();
+        }
     }
     
     connect(this, SIGNAL(triggered(QAction*)),
             this, SLOT(setAccountStatus(QAction*)));
+    
+    if(m_statusIndex == -1) {
+        m_statusIndex = 7;
+    }
+    
+    updateToolTip();
 }
 
 void AccountButton::setAccountStatus(QAction *action)
@@ -112,11 +125,29 @@ void AccountButton::setAccountStatus(QAction *action)
     int statusIndex = action->data().toInt();
     Q_ASSERT(statusIndex >= 0 && statusIndex <= 7);
     
+    m_statusIndex = statusIndex;
+    
     Tp::SimplePresence presence;
     presence.type = accountPresenceTypes[statusIndex];
     presence.status = QLatin1String(accountPresenceStatuses[statusIndex]);
     
     Q_ASSERT(!m_account.isNull());
     
-    m_account->setRequestedPresence(presence);
+    Tp::PendingOperation* presenceRequest = m_account->setRequestedPresence(presence);
+    
+    connect(presenceRequest, SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(updateToolTip()));
 }
+
+void AccountButton::updateToolTip()
+{
+    if(m_account->currentPresence().statusMessage().isEmpty()) {
+        setToolTip(QString("%1\n%2").arg(m_account->displayName())
+                                    .arg(actions().value(m_statusIndex)->text()));
+    }
+    else {
+        setToolTip(QString("%1\n%2\n%3").arg(m_account->displayName())
+                                        .arg(actions().value(m_statusIndex)->text())
+                                        .arg(m_account->currentPresence().statusMessage()));
+    }
+}   

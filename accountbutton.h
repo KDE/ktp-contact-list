@@ -37,9 +37,11 @@ public:
     
 public Q_SLOTS:
     void setAccountStatus(QAction *action);
+    void updateToolTip();
     
 private:
     Tp::AccountPtr m_account;
+    int            m_statusIndex;
 };
 
 #endif // TELEPATHY_ACCOUNTBUTTON_H
