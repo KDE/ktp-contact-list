@@ -370,7 +370,10 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_modelFilter->setSourceModel(m_model);
     m_modelFilter->setDynamicSortFilter(true);
     m_modelFilter->filterOfflineUsers(true);
+    m_modelFilter->setSortRole(Qt::DisplayRole);
     m_contactsListView->setModel(m_modelFilter);
+    m_contactsListView->setSortingEnabled(true);
+    m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
 
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
