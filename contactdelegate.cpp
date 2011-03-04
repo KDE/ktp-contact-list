@@ -5,6 +5,7 @@
 
 #include <KIconLoader>
 #include <KIcon>
+#include <KDebug>
 
 #include "accounts-model.h"
 
@@ -119,7 +120,6 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     }
     else
     {
-//        painter->drawText(optV4.rect, index.data(AccountsModel::DisplayNameRole).toString());
         QRect groupRect = optV4.rect;
 
         QRect accountGroupRect = groupRect;
@@ -128,8 +128,9 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         QRect groupLabelRect = groupRect;
         groupLabelRect.setLeft(20);
-        //groupLabelRect.setBottom(groupRect.bottom());
-        //groupLabelRect.setHeight(16);
+        
+        QRect expandSignRect = groupLabelRect;
+        expandSignRect.setLeft(groupLabelRect.right()-20);
 
         QFont groupFont = painter->font();
         groupFont.setWeight(QFont::Normal);
@@ -149,17 +150,16 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         painter->setPen(QColor(220, 220, 220));
         painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
         painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
-    }
 
-//     QRect typeRect;
-//
-//     typeRect = painter->boundingRect(optV4.rect, Qt::AlignLeft | Qt::AlignBottom, index.data(51).toString());
-//     typeRect.moveTo(QPoint(typeRect.x() + iconRect.x() + iconRect.width() + SPACING, typeRect.y() - SPACING));
-//     painter->drawText(typeRect, index.data(51).toString());
-//
-//     QRect sizeRect = painter->boundingRect(optV4.rect, Qt::AlignRight | Qt::AlignTop, index.data(50).toString());
-//     sizeRect.moveTo(QPoint(sizeRect.x() - SPACING, sizeRect.y() + SPACING));
-//     painter->drawText(sizeRect, index.data(50).toString());
+        painter->setPen(QColor(0, 0, 0));
+        
+        if(option.state & QStyle::State_Open) {
+            painter->drawText(expandSignRect, Qt::AlignVCenter, QString("-"));
+        }
+        else {
+            painter->drawText(expandSignRect, Qt::AlignVCenter, QString("+"));
+        }
+    }
 
     painter->restore();
 }
