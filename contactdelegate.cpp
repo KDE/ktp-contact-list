@@ -75,39 +75,46 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
                 break;
         }
 
+        QRect statusIconRect = optV4.rect;
+        statusIconRect.setSize(QSize(22, 22));
+        statusIconRect.moveTo(QPoint(optV4.rect.right() - 24, optV4.rect.top() + 8));
+
+        painter->drawPixmap(statusIconRect, icon);
+
         QRect userNameRect = optV4.rect;
         userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
         userNameRect.setY(userNameRect.y() + 3);
-        //userNameRect = painter->boundingRect(userNameRect, Qt::AlignLeft | Qt::AlignTop, optV4.text);
-
-        QRect statusMsgRect = optV4.rect;
-        statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
-        statusMsgRect.setY(userNameRect.top() + 16);
-        statusMsgRect.setWidth(option.rect.width());
-
-        QRect statusIconRect = optV4.rect;
-        statusIconRect.setSize(QSize(22,22));
-        statusIconRect.moveTo(QPoint(optV4.rect.right() - 24, optV4.rect.top()+8));
-
-        painter->drawPixmap(statusIconRect, icon);
+        userNameRect.setWidth(userNameRect.width() - 28);
 
         QFont nameFont = painter->font();
         nameFont.setPixelSize(12);
         nameFont.setWeight(QFont::Bold);
 
+        const QFontMetrics nameFontMetrics(nameFont);
+
         painter->setFont(nameFont);
-        painter->drawText(userNameRect, optV4.text);
+        painter->drawText(userNameRect, 
+                          nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
+        
+        QRect statusMsgRect = optV4.rect;
+        statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
+        statusMsgRect.setY(userNameRect.top() + 16);
+        statusMsgRect.setWidth(statusMsgRect.width() - 28);
 
         QFont statusFont = painter->font();
         statusFont.setWeight(QFont::Normal);
         statusFont.setPixelSize(10);
 
-        if(index == m_indexForHiding) {
-            painter->setPen(QColor(0, 0, 0, m_fadingValue));        //TODO: Change to theme color
+        const QFontMetrics statusFontMetrics(statusFont);
+
+        if (index == m_indexForHiding) {
+            painter->setPen(QColor(0, 0, 0, m_fadingValue)); // TODO: Change to theme colour.
         }
 
         painter->setFont(statusFont);
-        painter->drawText(statusMsgRect, index.data(AccountsModel::PresenceMessageRole).toString());
+        painter->drawText(statusMsgRect,
+                          statusFontMetrics.elidedText(index.data(AccountsModel::PresenceMessageRole).toString(),
+                                                       Qt::ElideRight, statusMsgRect.width()));
 
     }
     else
