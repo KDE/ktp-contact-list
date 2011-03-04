@@ -57,8 +57,17 @@ MainWidget::MainWidget(QWidget *parent)
     setupUi(this);
     setWindowIcon(KIcon("telepathy"));
     m_actionAdd_contact->setIcon(KIcon("list-add-user"));
-    m_actionGroup_contacts->setIcon(KIcon("user-group-properties"));
+    m_actionAdd_contact->setText(QString());
+    m_actionAdd_contact->setToolTip(i18n("Add new contacts.."));
     
+    m_actionGroup_contacts->setIcon(KIcon("user-group-properties"));
+    m_actionGroup_contacts->setText(QString());
+    //TODO: Toggle the tooltip with the button? eg. once its Show, after click its Hide .. ?
+    m_actionGroup_contacts->setToolTip(i18n("Show/Hide groups"));
+    
+    m_actionHide_offline->setIcon(KIcon("meeting-attending-tentative"));
+    m_actionHide_offline->setText(QString());
+    m_actionHide_offline->setToolTip(i18n("Show/Hide offline users"));
     
     // Start setting up the Telepathy AccountManager.
     Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
@@ -144,7 +153,10 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
 
-
+    connect(m_actionHide_offline, SIGNAL(toggled(bool)),
+            m_modelFilter, SLOT(filterOfflineUsers(bool)));
+    
+    
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
     foreach (Tp::AccountPtr account, accounts) 
     {

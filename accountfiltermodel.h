@@ -25,11 +25,15 @@
 
 class AccountFilterModel : public QSortFilterProxyModel
 {
+    Q_OBJECT
+    
 public:
     AccountFilterModel(QObject *parent=0);
 
-    void filterOfflineUsers(bool filterOfflineUsers);
     bool filterOfflineUsers() const;
+    
+public slots:
+    void filterOfflineUsers(bool filterOfflineUsers);
 
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;

@@ -31,6 +31,7 @@ AccountFilterModel::AccountFilterModel(QObject *parent)
 void AccountFilterModel::filterOfflineUsers(bool filterOfflineUsers)
 {
     m_filterOfflineUsers = filterOfflineUsers;
+    invalidateFilter();
 }
 
 bool AccountFilterModel::filterOfflineUsers() const
@@ -47,7 +48,8 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
                 == Tp::ConnectionPresenceTypeOffline) ||
             (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
                 == Tp::ConnectionPresenceTypeUnknown)) {
-            return false;
+            
+                return false;
         }
     }
 
