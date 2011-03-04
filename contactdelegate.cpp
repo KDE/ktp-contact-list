@@ -4,6 +4,7 @@
 #include <QApplication>
 
 #include <KIconLoader>
+#include <KIcon>
 
 #include "accounts-model.h"
 
@@ -39,7 +40,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     {
 
         QRect iconRect = optV4.rect;
-        iconRect.setSize(QSize(32, 32));
+        iconRect.setSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
         iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
 
         QPixmap avatar = QPixmap::fromImage(QImage(index.data(AccountsModel::AvatarRole).toString()));
@@ -111,8 +112,8 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     }
     else
     {
-        painter->drawText(optV4.rect, index.data(AccountsModel::DisplayNameRole).toString());
-        /*QRect groupRect = optV4.rect;
+//        painter->drawText(optV4.rect, index.data(AccountsModel::DisplayNameRole).toString());
+        QRect groupRect = optV4.rect;
 
         QRect accountGroupRect = groupRect;
         accountGroupRect.setSize(QSize(16,16));
@@ -127,20 +128,20 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         groupFont.setWeight(QFont::Normal);
         groupFont.setPixelSize(10);
 
-        QString counts = QString(" (%1/%2)").arg(index.data(ModelRoles::AccountAvailContactsCountRole).toString(),
-                                       index.data(ModelRoles::AccountAllContactsCountRole).toString());
+        QString counts;// = QString(" (%1/%2)").arg(index.data(AccountsModel::).toString(),
+                        //               index.data(ModelRoles::AccountAllContactsCountRole).toString());
 
 
         painter->fillRect(groupRect, QColor(247, 251, 255));
 
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(ModelRoles::AccountIconRole).toString()).pixmap(16,16));
+        painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString()).pixmap(16,16));
 
         painter->setFont(groupFont);
-        painter->drawText(groupLabelRect, Qt::AlignVCenter, index.data(ModelRoles::AccountGroupRole).toString().append(counts));
+        painter->drawText(groupLabelRect, Qt::AlignVCenter, index.data(AccountsModel::DisplayNameRole).toString().append(counts));
 
         painter->setPen(QColor(220, 220, 220));
         painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
-        painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());*/
+        painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
     }
 
 //     QRect typeRect;
