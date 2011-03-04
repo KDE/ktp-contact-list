@@ -229,7 +229,7 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
         m_contactsListView->expandAll();
         break;
     case Tp::ConnectionStatusDisconnected:
-        showMessageToUser(i18n("Disconnected!"), MainWidget::SystemMessageInfo);
+        //showMessageToUser(i18n("Disconnected!"), MainWidget::SystemMessageInfo);
         break;
     default:
         break;
