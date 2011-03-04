@@ -225,6 +225,8 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
         break;
     case Tp::ConnectionStatusConnected:
         showMessageToUser(i18n("Connected!"), MainWidget::SystemMessageInfo);
+        m_model->onNewAccount(Tp::AccountPtr(dynamic_cast<Tp::Account*>(sender())));
+        m_contactsListView->expandAll();
         break;
     case Tp::ConnectionStatusDisconnected:
         showMessageToUser(i18n("Disconnected!"), MainWidget::SystemMessageInfo);
