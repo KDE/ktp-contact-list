@@ -24,6 +24,8 @@
 
 #include <KIcon>
 #include <KLocale>
+#include <KPixmapSequenceOverlayPainter>
+#include <KPixmapSequence>
 
 #include <TelepathyQt4/PendingOperation>
 
@@ -37,10 +39,14 @@ Tp::ConnectionPresenceTypeHidden, Tp::ConnectionPresenceTypeOffline };
 static const char *accountPresenceStatuses[] = { "available", "away", "brb", "busy",
 "dnd", "xa", "hidden", "offline" };
 
-AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QToolButton(parent)
+AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QToolButton(parent),m_busyOverlay(0)
 {
     m_account = account;
     m_statusIndex = -1;
+    
+    m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
+    m_busyOverlay->setWidget(this);
+    m_busyOverlay->setSequence(KPixmapSequence(QString("process-working")));
     
     QString iconPath = account->iconName();
     
@@ -113,6 +119,9 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     connect(this, SIGNAL(triggered(QAction*)),
             this, SLOT(setAccountStatus(QAction*)));
     
+    connect(m_account.data(),SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), 
+            this, SLOT(connectionChanged(Tp::ConnectionStatus)));
+    
     if(m_statusIndex == -1) {
         m_statusIndex = 7;
     }
@@ -150,4 +159,29 @@ void AccountButton::updateToolTip()
                                         .arg(actions().value(m_statusIndex)->text())
                                         .arg(m_account->currentPresence().statusMessage()));
     }
-}   
+}
+
+void AccountButton::connectionChanged(Tp::ConnectionStatus status)
+{
+    switch (status) {
+        case Tp::ConnectionStatusConnecting:
+                showBusyIndicator();
+            break;
+        case Tp::ConnectionStatusConnected:
+        case Tp::ConnectionStatusDisconnected:
+                hideBusyIndicator();            
+            break;
+        default:
+            break;
+    }
+}
+
+void AccountButton::showBusyIndicator()
+{
+    m_busyOverlay->start();
+}
+
+void AccountButton::hideBusyIndicator()
+{
+    m_busyOverlay->stop();
+}

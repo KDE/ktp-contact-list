@@ -221,11 +221,11 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
     kDebug() << "Connection status is" << status;
     switch (status) {
     case Tp::ConnectionStatusConnecting:
-         showMessageToUser(i18n("Connecting..."), MainWidget::SystemMessageInfo);
+         //showMessageToUser(i18n("Connecting..."), MainWidget::SystemMessageInfo);
         break;
     case Tp::ConnectionStatusConnected:
-        showMessageToUser(i18n("Connected!"), MainWidget::SystemMessageInfo);
-        m_model->onNewAccount(Tp::AccountPtr(dynamic_cast<Tp::Account*>(sender())));
+        //showMessageToUser(i18n("Connected!"), MainWidget::SystemMessageInfo);
+        m_model->onNewAccount(Tp::AccountPtr(static_cast<Tp::Account*>(sender())));
         m_contactsListView->expandAll();
         break;
     case Tp::ConnectionStatusDisconnected:

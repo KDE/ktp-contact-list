@@ -27,6 +27,7 @@
 #include <TelepathyQt4/Account>
 
 class QAction;
+class KPixmapSequenceOverlayPainter;
 
 class AccountButton : public QToolButton
 {
@@ -38,10 +39,14 @@ public:
 public Q_SLOTS:
     void setAccountStatus(QAction *action);
     void updateToolTip();
+    void connectionChanged(Tp::ConnectionStatus status);
+    void showBusyIndicator();
+    void hideBusyIndicator();
     
 private:
-    Tp::AccountPtr m_account;
-    int            m_statusIndex;
+    Tp::AccountPtr                  m_account;
+    int                             m_statusIndex;
+    KPixmapSequenceOverlayPainter*  m_busyOverlay;
 };
 
 #endif // TELEPATHY_ACCOUNTBUTTON_H
