@@ -25,6 +25,7 @@ extern "C"
 }
 
 #include "main-widget.h"
+#include "config.h"
 
 #include <KAboutData>
 #include <KCmdLineArgs>
@@ -61,7 +62,9 @@ int main(int argc, char *argv[])
     KApplication app;
     
     Tp::registerTypes();
-//     Tp::enableDebug(true);
+#ifdef TP_DEBUG
+    Tp::enableDebug(true);
+#endif
     Tp::enableWarnings(true);
 
 //     Nepomuk::ResourceManager::instance()->init();
