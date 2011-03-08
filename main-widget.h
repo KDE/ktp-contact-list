@@ -72,22 +72,13 @@ public Q_SLOTS:
     void showMessageToUser(const QString &text, const SystemMessageType type);
     void systemMessageTest();
     void addOverlayButtons();
+    void onNewAccountAdded(const Tp::AccountPtr &account);
+    void onAccountStateChanged(bool enabled); 
+    void onAccountRemoved();
     //    void startAudioChannel();
     //    void startVideoChannel();
     
     void onCustomContextMenuRequested(const QPoint &point);
-    //Menu actions
-    void onStartChat(bool);
-    void onRequestRemoveFromGroup(bool);
-    void onContactRemovalRequest(bool);
-    void onContactBlockRequest(bool);
-    void onHandlerReady(bool);
-    void onRequestAddToGroup(bool);
-    void onAddToMetaContact(bool);
-    void onRemoveFromMetacontact(bool);
-    //Toolbar actions
-    void onAddContactRequest(bool);
-    void onGroupContacts(bool);
     
 private:
     AccountsModel*          m_model;

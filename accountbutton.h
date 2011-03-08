@@ -36,6 +36,8 @@ class AccountButton : public QToolButton
 public:
     AccountButton(const Tp::AccountPtr &account, QWidget *parent = 0);
     
+    QString accountId();
+    
 public Q_SLOTS:
     void setAccountStatus(QAction *action);
     void updateToolTip();

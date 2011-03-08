@@ -129,6 +129,11 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     updateToolTip();
 }
 
+QString AccountButton::accountId()
+{
+    return m_account->uniqueIdentifier();
+}
+
 void AccountButton::setAccountStatus(QAction *action)
 {
     int statusIndex = action->data().toInt();
