@@ -2,6 +2,7 @@
 
 #include <QtGui/QPainter>
 #include <QApplication>
+#include <QStyle>
 
 #include <KIconLoader>
 #include <KIcon>
@@ -153,11 +154,15 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         painter->setPen(QColor(0, 0, 0));
         
+
+        QStyleOption expandSignOption = option;
+        expandSignOption.rect = expandSignRect;
+
         if(option.state & QStyle::State_Open) {
-            painter->drawText(expandSignRect, Qt::AlignVCenter, QString("-"));
+            style->drawPrimitive(QStyle::PE_IndicatorArrowDown, &expandSignOption, painter);
         }
         else {
-            painter->drawText(expandSignRect, Qt::AlignVCenter, QString("+"));
+            style->drawPrimitive(QStyle::PE_IndicatorArrowRight, &expandSignOption, painter);
         }
     }
 
