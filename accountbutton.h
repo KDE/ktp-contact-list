@@ -44,6 +44,7 @@ public Q_SLOTS:
     void connectionChanged(Tp::ConnectionStatus status);
     void showBusyIndicator();
     void hideBusyIndicator();
+    void preseneceChanged(Tp::Presence presence);
     
 private:
     Tp::AccountPtr                  m_account;
