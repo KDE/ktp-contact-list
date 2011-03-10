@@ -95,7 +95,11 @@ MainWidget::MainWidget(QWidget *parent)
     
     Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
     
-    m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(), accountFactory, connectionFactory, channelFactory, contactFactory);
+    m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(),
+                                                  accountFactory,
+                                                  connectionFactory,
+                                                  channelFactory,
+                                                  contactFactory);
     
     connect(m_accountManager->becomeReady(),
             SIGNAL(finished(Tp::PendingOperation*)),
@@ -177,8 +181,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_accountButtonsLayout->insertStretch(-1);
     
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
-    foreach (Tp::AccountPtr account, accounts) 
-    {
+    foreach (Tp::AccountPtr account, accounts) {
         onNewAccountAdded(account);
     }
     m_contactsListView->expandAll();
@@ -197,20 +200,15 @@ void MainWidget::onAccountReady(Tp::PendingOperation* op)
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 {   
-    //TODO: Add some 'working' indicator
     kDebug() << "Connection status is" << status;
     switch (status) {
-    case Tp::ConnectionStatusConnecting:
-         //showMessageToUser(i18n("Connecting..."), MainWidget::SystemMessageInfo);
-        break;
     case Tp::ConnectionStatusConnected:
-        //showMessageToUser(i18n("Connected!"), MainWidget::SystemMessageInfo);
         m_model->onNewAccount(Tp::AccountPtr(static_cast<Tp::Account*>(sender())));
         m_contactsListView->expandAll();
         break;
+    //Fall through
+    case Tp::ConnectionStatusConnecting:
     case Tp::ConnectionStatusDisconnected:
-        //showMessageToUser(i18n("Disconnected!"), MainWidget::SystemMessageInfo);
-        break;
     default:
         break;
     }
@@ -320,7 +318,6 @@ void MainWidget::onChannelJoined(Tp::PendingOperation* op)
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
 {
-    //kDebug() << m_contactsListView->size() << m_contactsListView->viewport()->size();
     QFrame *msgFrame = new QFrame(m_contactsListView);
     msgFrame->setAttribute(Qt::WA_DeleteOnClose);
     msgFrame->setMinimumSize(QSize(m_contactsListView->viewport()->width(), 55));
@@ -376,37 +373,37 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
 
 void MainWidget::addOverlayButtons()
 {
-        TextChannelContactOverlay*  textOverlay = new TextChannelContactOverlay(this);
-        AudioChannelContactOverlay* audioOverlay = new AudioChannelContactOverlay(this);
-        VideoChannelContactOverlay* videoOverlay = new VideoChannelContactOverlay(this);
-        
-        FileTransferContactOverlay* fileOverlay = new FileTransferContactOverlay(this);
-        
-        m_delegate->installOverlay(textOverlay);
-        m_delegate->installOverlay(audioOverlay);
-        m_delegate->installOverlay(videoOverlay);
-        m_delegate->installOverlay(fileOverlay);
-        
-        textOverlay->setView(m_contactsListView);
-        textOverlay->setActive(true);
-        
-        audioOverlay->setView(m_contactsListView);
-        audioOverlay->setActive(true);
-        
-        videoOverlay->setView(m_contactsListView);
-        videoOverlay->setActive(true);
-        
-        fileOverlay->setView(m_contactsListView);
-        fileOverlay->setActive(true);
-        
-        connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
-                m_delegate, SLOT(hideStatusMessageSlot(QModelIndex)));
-        
-        connect(textOverlay, SIGNAL(overlayHidden()),
-                m_delegate, SLOT(reshowStatusMessageSlot()));
-        
-        connect(textOverlay, SIGNAL(activated(QModelIndex)),
-                this, SLOT(startTextChannel(QModelIndex)));
+    TextChannelContactOverlay*  textOverlay = new TextChannelContactOverlay(this);
+    AudioChannelContactOverlay* audioOverlay = new AudioChannelContactOverlay(this);
+    VideoChannelContactOverlay* videoOverlay = new VideoChannelContactOverlay(this);
+
+    FileTransferContactOverlay* fileOverlay = new FileTransferContactOverlay(this);
+
+    m_delegate->installOverlay(textOverlay);
+    m_delegate->installOverlay(audioOverlay);
+    m_delegate->installOverlay(videoOverlay);
+    m_delegate->installOverlay(fileOverlay);
+
+    textOverlay->setView(m_contactsListView);
+    textOverlay->setActive(true);
+
+    audioOverlay->setView(m_contactsListView);
+    audioOverlay->setActive(true);
+
+    videoOverlay->setView(m_contactsListView);
+    videoOverlay->setActive(true);
+
+    fileOverlay->setView(m_contactsListView);
+    fileOverlay->setActive(true);
+
+    connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
+            m_delegate, SLOT(hideStatusMessageSlot(QModelIndex)));
+
+    connect(textOverlay, SIGNAL(overlayHidden()),
+            m_delegate, SLOT(reshowStatusMessageSlot()));
+
+    connect(textOverlay, SIGNAL(activated(QModelIndex)),
+            this, SLOT(startTextChannel(QModelIndex)));
 }
 
 void MainWidget::toggleSearchWidget(bool show)

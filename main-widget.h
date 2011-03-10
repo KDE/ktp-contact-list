@@ -59,8 +59,6 @@ public:
          */
         SystemMessageError
     };
-    
-//     ActionContactOverlay *addActionOverlay();
 
 public Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
@@ -82,15 +80,13 @@ public Q_SLOTS:
     void onCustomContextMenuRequested(const QPoint &point);
     
 private:
-    AccountsModel*          m_model;
-    AccountFilterModel*     m_modelFilter;
+    AccountsModel          *m_model;
+    AccountFilterModel     *m_modelFilter;
     Tp::AccountManagerPtr   m_accountManager;
-    KMenu*                  m_accountMenu;
-    KSelectAction*          m_setStatusAction;
-    ContactDelegate*        m_delegate;
-//     FilterBar*              m_filterBar;
+    KMenu                  *m_accountMenu;
+    KSelectAction          *m_setStatusAction;
+    ContactDelegate        *m_delegate;
 };
 
 
 #endif // Header guard
-

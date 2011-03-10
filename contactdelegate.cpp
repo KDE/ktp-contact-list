@@ -53,26 +53,25 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         QPixmap icon;
 
-        switch(index.data(AccountsModel::PresenceTypeRole).toInt())
-        {
-            case Tp::ConnectionPresenceTypeAvailable:
-                icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
-                break;
-            case Tp::ConnectionPresenceTypeAway:
-                icon = SmallIcon("user-away", KIconLoader::SizeSmallMedium);
-                break;
-            case Tp::ConnectionPresenceTypeExtendedAway:
-                icon = SmallIcon("user-away-extended", KIconLoader::SizeSmallMedium);
-                break;
-            case Tp::ConnectionPresenceTypeBusy:
-                icon = SmallIcon("user-busy", KIconLoader::SizeSmallMedium);
-                break;
-            case Tp::ConnectionPresenceTypeOffline:
-                icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
-                break;
-            default:
-                icon = SmallIcon("task-attention", KIconLoader::SizeSmallMedium);
-                break;
+        switch(index.data(AccountsModel::PresenceTypeRole).toInt()) {
+        case Tp::ConnectionPresenceTypeAvailable:
+            icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
+            break;
+        case Tp::ConnectionPresenceTypeAway:
+            icon = SmallIcon("user-away", KIconLoader::SizeSmallMedium);
+            break;
+        case Tp::ConnectionPresenceTypeExtendedAway:
+            icon = SmallIcon("user-away-extended", KIconLoader::SizeSmallMedium);
+            break;
+        case Tp::ConnectionPresenceTypeBusy:
+            icon = SmallIcon("user-busy", KIconLoader::SizeSmallMedium);
+            break;
+        case Tp::ConnectionPresenceTypeOffline:
+            icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
+            break;
+        default:
+            icon = SmallIcon("task-attention", KIconLoader::SizeSmallMedium);
+            break;
         }
 
         QRect statusIconRect = optV4.rect;
@@ -147,14 +146,12 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         
         painter->setPen(m_palette->color(QPalette::WindowText));
         painter->setFont(groupFont);
-        painter->drawText(groupLabelRect, Qt::AlignVCenter, index.data(AccountsModel::DisplayNameRole).toString().append(counts));
+        painter->drawText(groupLabelRect, Qt::AlignVCenter,
+                          index.data(AccountsModel::DisplayNameRole).toString().append(counts));
 
         painter->setPen(m_palette->color(QPalette::ButtonText));
         painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
         painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
-
-        //painter->setPen(QColor(0, 0, 0));
-        
 
         QStyleOption expandSignOption = option;
         expandSignOption.rect = expandSignRect;

@@ -11,10 +11,10 @@ class ContactDelegate : public QStyledItemDelegate, public ContactDelegateOverla
     Q_PROPERTY(int m_fadingValue READ fadingValue WRITE setFadingValue);
 
 public:
-    ContactDelegate(QObject * parent = 0);
+    ContactDelegate(QObject *parent = 0);
     ~ContactDelegate();
 
-    void paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    void paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
     QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
     int fadingValue() const;
@@ -31,12 +31,12 @@ Q_SIGNALS:
 
 protected:
     /// Returns the delegate, typically, the derived class
-    virtual QAbstractItemDelegate* asDelegate() { return this; }
+    virtual QAbstractItemDelegate *asDelegate() { return this; }
 
 private:
     QModelIndex m_indexForHiding;
     int         m_fadingValue;
-    QPalette*   m_palette;
+    QPalette   *m_palette;
 };
 
 #endif // CONTACTDELEGATE_H

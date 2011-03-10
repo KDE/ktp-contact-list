@@ -31,13 +31,17 @@
 
 #include "accountbutton.h"
 
-static Tp::ConnectionPresenceType accountPresenceTypes[] = { Tp::ConnectionPresenceTypeAvailable, Tp::ConnectionPresenceTypeAway,
-Tp::ConnectionPresenceTypeAway, Tp::ConnectionPresenceTypeBusy,
-Tp::ConnectionPresenceTypeBusy, Tp::ConnectionPresenceTypeExtendedAway,
-Tp::ConnectionPresenceTypeHidden, Tp::ConnectionPresenceTypeOffline };
+static Tp::ConnectionPresenceType accountPresenceTypes[] = { Tp::ConnectionPresenceTypeAvailable,
+    Tp::ConnectionPresenceTypeAway,
+    Tp::ConnectionPresenceTypeAway,
+    Tp::ConnectionPresenceTypeBusy,
+    Tp::ConnectionPresenceTypeBusy,
+    Tp::ConnectionPresenceTypeExtendedAway,
+    Tp::ConnectionPresenceTypeHidden,
+    Tp::ConnectionPresenceTypeOffline };
 
 static const char *accountPresenceStatuses[] = { "available", "away", "brb", "busy",
-"dnd", "xa", "hidden", "offline" };
+    "dnd", "xa", "hidden", "offline" };
 
 AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QToolButton(parent),m_busyOverlay(0)
 {
@@ -106,8 +110,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     addActions(presenceActions->actions());
     
     //make all the actions checkable
-    foreach(QAction *a, actions())
-    {
+    foreach(QAction *a, actions()) {
         a->setCheckable(true);
         
         if(m_account->currentPresence().status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
@@ -172,15 +175,15 @@ void AccountButton::updateToolTip()
 void AccountButton::connectionChanged(Tp::ConnectionStatus status)
 {
     switch (status) {
-        case Tp::ConnectionStatusConnecting:
-                showBusyIndicator();
-            break;
-        case Tp::ConnectionStatusConnected:
-        case Tp::ConnectionStatusDisconnected:
-                hideBusyIndicator();            
-            break;
-        default:
-            break;
+    case Tp::ConnectionStatusConnecting:
+        showBusyIndicator();
+        break;
+    case Tp::ConnectionStatusConnected:
+    case Tp::ConnectionStatusDisconnected:
+        hideBusyIndicator();
+        break;
+    default:
+        break;
     }
 }
 
@@ -196,8 +199,7 @@ void AccountButton::hideBusyIndicator()
 
 void AccountButton::preseneceChanged(Tp::Presence presence)
 {
-    foreach(QAction *a, actions())
-    {
+    foreach(QAction *a, actions()) {
         if(presence.status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
             a->setChecked(true);
             m_statusIndex = a->data().toInt();

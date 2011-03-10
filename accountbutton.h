@@ -49,7 +49,7 @@ public Q_SLOTS:
 private:
     Tp::AccountPtr                  m_account;
     int                             m_statusIndex;
-    KPixmapSequenceOverlayPainter*  m_busyOverlay;
+    KPixmapSequenceOverlayPainter  *m_busyOverlay;
 };
 
 #endif // TELEPATHY_ACCOUNTBUTTON_H
