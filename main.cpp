@@ -25,7 +25,7 @@ extern "C"
 }
 
 #include "main-widget.h"
-#include "config.h"
+#include "build/config.h"
 
 #include <KAboutData>
 #include <KCmdLineArgs>
