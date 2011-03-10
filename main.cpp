@@ -67,8 +67,6 @@ int main(int argc, char *argv[])
 #endif
     Tp::enableWarnings(true);
 
-//     Nepomuk::ResourceManager::instance()->init();
-
     // Set up signal handlers.
     if (signal(SIGINT, signal_handler) == SIG_ERR) {
         kWarning() << "Setting up SIGINT signal handler failed.";
