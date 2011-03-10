@@ -14,12 +14,14 @@ const int SPACING = 4;
 const int AVATAR_SIZE = 32;
 
 ContactDelegate::ContactDelegate(QObject * parent)
-  : QStyledItemDelegate(parent), ContactDelegateOverlayContainer()
+  : QStyledItemDelegate(parent), ContactDelegateOverlayContainer(), m_palette(0)
 {
+    m_palette = new QPalette(QApplication::palette());
 }
 
 ContactDelegate::~ContactDelegate()
 {
+    delete m_palette;
 }
 
 void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
@@ -34,13 +36,9 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
-//     kDebug() << index.data(AccountsModel::PresenceTypeRole);
-
     bool isContact = !index.data(AccountsModel::AliasRole).toString().isEmpty();
 
-    if(isContact)
-    {
-
+    if(isContact) {
         QRect iconRect = optV4.rect;
         iconRect.setSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
         iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
@@ -109,8 +107,11 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         const QFontMetrics statusFontMetrics(statusFont);
 
+        QColor fadingColor(m_palette->color(QPalette::WindowText));
+        
         if (index == m_indexForHiding) {
-            painter->setPen(QColor(0, 0, 0, m_fadingValue)); // TODO: Change to theme colour.
+            fadingColor.setAlpha(m_fadingValue);
+            painter->setPen(fadingColor);
         }
 
         painter->setFont(statusFont);
@@ -119,8 +120,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
                                                        Qt::ElideRight, statusMsgRect.width()));
 
     }
-    else
-    {
+    else {
         QRect groupRect = optV4.rect;
 
         QRect accountGroupRect = groupRect;
@@ -136,23 +136,24 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         QFont groupFont = painter->font();
         groupFont.setWeight(QFont::Normal);
         groupFont.setPixelSize(10);
+        
 
         QString counts;// = QString(" (%1/%2)").arg(index.data(AccountsModel::).toString(),
                         //               index.data(ModelRoles::AccountAllContactsCountRole).toString());
 
-
-        painter->fillRect(groupRect, QColor(247, 251, 255));
+        painter->fillRect(groupRect, m_palette->color(QPalette::AlternateBase));
 
         painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString()).pixmap(16,16));
-
+        
+        painter->setPen(m_palette->color(QPalette::WindowText));
         painter->setFont(groupFont);
         painter->drawText(groupLabelRect, Qt::AlignVCenter, index.data(AccountsModel::DisplayNameRole).toString().append(counts));
 
-        painter->setPen(QColor(220, 220, 220));
+        painter->setPen(m_palette->color(QPalette::ButtonText));
         painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
         painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
 
-        painter->setPen(QColor(0, 0, 0));
+        //painter->setPen(QColor(0, 0, 0));
         
 
         QStyleOption expandSignOption = option;

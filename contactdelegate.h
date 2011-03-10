@@ -36,6 +36,7 @@ protected:
 private:
     QModelIndex m_indexForHiding;
     int         m_fadingValue;
+    QPalette*   m_palette;
 };
 
 #endif // CONTACTDELEGATE_H
