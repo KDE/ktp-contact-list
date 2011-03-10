@@ -203,6 +203,7 @@ void AccountButton::preseneceChanged(Tp::Presence presence)
         if(presence.status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
             a->setChecked(true);
             m_statusIndex = a->data().toInt();
+            break;
         }
     }    
 }
