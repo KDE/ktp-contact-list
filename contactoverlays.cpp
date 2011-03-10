@@ -83,13 +83,11 @@ void TextChannelContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
 
-    if (active)
-    {
+    if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
     }
-    else
-    {
+    else {
         // button is deleted
     }
 }
@@ -115,8 +113,7 @@ void TextChannelContactOverlay::slotClicked(bool checked)
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
 
-    if (index.isValid())
-    {
+    if (index.isValid()) {
         emit activated(index);
     }
 }
@@ -189,13 +186,11 @@ void AudioChannelContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
     
-    if (active)
-    {
+    if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
     }
-    else
-    {
+    else {
         // button is deleted
     }
 }
@@ -221,8 +216,7 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
     
-    if (index.isValid())
-    {
+    if (index.isValid()) {
         emit activated(index);
     }
 }
@@ -294,13 +288,11 @@ void VideoChannelContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
     
-    if (active)
-    {
+    if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
     }
-    else
-    {
+    else {
         // button is deleted
     }
 }
@@ -326,8 +318,7 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
     
-    if (index.isValid())
-    {
+    if (index.isValid()) {
         emit activated(index);
     }
 }
@@ -399,13 +390,11 @@ void FileTransferContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
     
-    if (active)
-    {
+    if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
     }
-    else
-    {
+    else {
         // button is deleted
     }
 }
@@ -431,8 +420,7 @@ void FileTransferContactOverlay::slotClicked(bool checked)
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
     
-    if (index.isValid())
-    {
+    if (index.isValid()) {
         emit activated(index);
     }
 }

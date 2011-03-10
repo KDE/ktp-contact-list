@@ -56,16 +56,14 @@ void ContactDelegateOverlay::paint(QPainter*, const QStyleOptionViewItem&, const
 
 void ContactDelegateOverlay::setView(QAbstractItemView* view)
 {
-    if (m_view)
-    {
+    if (m_view) {
         disconnect(this, SIGNAL(update(const QModelIndex&)),
                    m_view, SLOT(update(const QModelIndex&)));
     }
 
     m_view = view;
 
-    if (m_view)
-    {
+    if (m_view) {
         connect(this, SIGNAL(update(const QModelIndex&)),
                 m_view, SLOT(update(const QModelIndex&)));
     }
@@ -78,16 +76,14 @@ QAbstractItemView* ContactDelegateOverlay::view() const
 
 void ContactDelegateOverlay::setDelegate(QAbstractItemDelegate* delegate)
 {
-    if (m_delegate)
-    {
+    if (m_delegate) {
         disconnect(m_delegate, SIGNAL(visualChange()),
                    this, SLOT(visualChange()));
     }
 
     m_delegate = delegate;
 
-    if (m_delegate)
-    {
+    if (m_delegate) {
         connect(m_delegate, SIGNAL(visualChange()),
                 this, SLOT(visualChange()));
     }
@@ -109,10 +105,8 @@ AbstractWidgetDelegateOverlay::AbstractWidgetDelegateOverlay(QObject* parent)
 
 void AbstractWidgetDelegateOverlay::setActive(bool active)
 {
-    if (active)
-    {
-        if (m_widget)
-        {
+    if (active) {
+        if (m_widget) {
             delete m_widget;
             m_widget = 0;
         }
@@ -125,8 +119,7 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
         m_view->viewport()->installEventFilter(this);
         m_widget->installEventFilter(this);
 
-        if (view()->model())
-        {
+        if (view()->model()) {
             connect(m_view->model(), SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
                     this, SLOT(slotRowsRemoved(const QModelIndex&, int, int)));
 
@@ -143,17 +136,14 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
         connect(m_view, SIGNAL(viewportEntered()),
                 this, SLOT(slotViewportEntered()));
     }
-    else
-    {
+    else {
         delete m_widget;
         m_widget = 0;
 
-        if (m_view)
-        {
+        if (m_view) {
             m_view->viewport()->removeEventFilter(this);
 
-            if (view()->model())
-            {
+            if (view()->model()) {
                 disconnect(m_view->model(), 0, this, 0);
             }
 
@@ -168,8 +158,7 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
 
 void AbstractWidgetDelegateOverlay::hide()
 {
-    if (m_widget)
-    {
+    if (m_widget) {
         m_widget->hide();
     }
 }
@@ -188,8 +177,7 @@ void AbstractWidgetDelegateOverlay::slotEntered(const QModelIndex& index)
 {
     hide();
 
-    if (index.isValid() && checkIndex(index))
-    {
+    if (index.isValid() && checkIndex(index)) {
         //QTimer::singleShot(500, this, SLOT(slotWidgetAboutToShow(index)));
         QTimer::singleShot(500, m_widget, SLOT(show()));
         emit overlayActivated(index);
@@ -199,8 +187,7 @@ void AbstractWidgetDelegateOverlay::slotEntered(const QModelIndex& index)
 void AbstractWidgetDelegateOverlay::slotWidgetAboutToShow(const QModelIndex& index)
 {
     Q_UNUSED(index);
-    m_widget->show();
-    
+    m_widget->show();    
 }
 
 bool AbstractWidgetDelegateOverlay::checkIndex(const QModelIndex& index) const
@@ -232,50 +219,39 @@ void AbstractWidgetDelegateOverlay::viewportLeaveEvent(QObject*, QEvent*)
 
 bool AbstractWidgetDelegateOverlay::eventFilter(QObject* obj, QEvent* event)
 {
-    if (m_widget && obj == m_widget->parent())   // events on view's viewport
-    {
-        switch (event->type())
-        {
-            case QEvent::Leave:
-                viewportLeaveEvent(obj, event);
-                break;
-
-            case QEvent::MouseMove:
-
-                if (m_mouseButtonPressedOnWidget)
-                {
-                    // Don't forward mouse move events to the viewport,
-                    // otherwise a rubberband selection will be shown when
-                    // clicking on the selection toggle and moving the mouse
-                    // above the viewport.
-                    return true;
-                }
-
-                break;
-            case QEvent::MouseButtonRelease:
-                m_mouseButtonPressedOnWidget = false;
-                break;
-            default:
-                break;
+    if (m_widget && obj == m_widget->parent()) {  // events on view's viewport
+        switch (event->type()) {
+        case QEvent::Leave:
+            viewportLeaveEvent(obj, event);
+            break;
+        case QEvent::MouseMove:
+            if (m_mouseButtonPressedOnWidget) {
+                // Don't forward mouse move events to the viewport,
+                // otherwise a rubberband selection will be shown when
+                // clicking on the selection toggle and moving the mouse
+                // above the viewport.
+                return true;
+            }
+            break;
+        case QEvent::MouseButtonRelease:
+            m_mouseButtonPressedOnWidget = false;
+            break;
+        default:
+            break;
         }
     }
-    else if (obj == m_widget)
-    {
-        switch (event->type())
-        {
-            case QEvent::MouseButtonPress:
-
-                if (static_cast<QMouseEvent*>(event)->buttons() & Qt::LeftButton)
-                {
+    else if (obj == m_widget) {
+        switch (event->type()) {
+        case QEvent::MouseButtonPress:
+            if (static_cast<QMouseEvent*>(event)->buttons() & Qt::LeftButton) {
                     m_mouseButtonPressedOnWidget = true;
-                }
-
-                break;
-            case QEvent::MouseButtonRelease:
-                m_mouseButtonPressedOnWidget = false;
-                break;
-            default:
-                break;
+            }
+            break;
+        case QEvent::MouseButtonRelease:
+            m_mouseButtonPressedOnWidget = false;
+            break;
+        default:
+            break;
         }
     }
 
@@ -298,8 +274,7 @@ void HoverButtonDelegateOverlay::setActive(bool active)
 {
     AbstractWidgetDelegateOverlay::setActive(active);
 
-    if (active)
-    {
+    if (active) {
         button()->initIcon();
     }
 }
@@ -311,8 +286,7 @@ QWidget* HoverButtonDelegateOverlay::createWidget()
 
 void HoverButtonDelegateOverlay::visualChange()
 {
-    if (m_widget && m_widget->isVisible())
-    {
+    if (m_widget && m_widget->isVisible()) {
         updateButton(button()->index());
     }
 }
@@ -328,13 +302,11 @@ void HoverButtonDelegateOverlay::slotEntered(const QModelIndex& index)
 {
     AbstractWidgetDelegateOverlay::slotEntered(index);
 
-    if (index.isValid() && checkIndex(index))
-    {
+    if (index.isValid() && checkIndex(index)) {
         button()->setIndex(index);
         updateButton(index);
     }
-    else
-    {
+    else {
         button()->setIndex(index);
     }
 }
@@ -347,8 +319,7 @@ ContactDelegateOverlayContainer::~ContactDelegateOverlayContainer()
 
 void ContactDelegateOverlayContainer::installOverlay(ContactDelegateOverlay* overlay)
 {
-    if (!overlay->acceptsDelegate(asDelegate()))
-    {
+    if (!overlay->acceptsDelegate(asDelegate())) {
         kError() << "Cannot accept delegate" << asDelegate() << "for installing" << overlay;
         return;
     }
@@ -370,24 +341,21 @@ void ContactDelegateOverlayContainer::removeOverlay(ContactDelegateOverlay* over
 
 void ContactDelegateOverlayContainer::setAllOverlaysActive(bool active)
 {
-    foreach (ContactDelegateOverlay* overlay, m_overlays)
-    {
+    foreach (ContactDelegateOverlay* overlay, m_overlays) {
         overlay->setActive(active);
     }
 }
 
 void ContactDelegateOverlayContainer::setViewOnAllOverlays(QAbstractItemView* view)
 {
-    foreach (ContactDelegateOverlay* overlay, m_overlays)
-    {
+    foreach (ContactDelegateOverlay* overlay, m_overlays) {
         overlay->setView(view);
     }
 }
 
 void ContactDelegateOverlayContainer::removeAllOverlays()
 {
-    foreach (ContactDelegateOverlay* overlay, m_overlays)
-    {
+    foreach (ContactDelegateOverlay* overlay, m_overlays) {
         overlay->setActive(false);
         overlay->setDelegate(0);
         overlay->setView(0);
@@ -398,24 +366,21 @@ void ContactDelegateOverlayContainer::removeAllOverlays()
 void ContactDelegateOverlayContainer::overlayDestroyed(QObject* o)
 {
     ContactDelegateOverlay* overlay = qobject_cast<ContactDelegateOverlay*>(o);
-    if (overlay)
-    {
+    if (overlay) {
         removeOverlay(overlay);
     }
 }
 
 void ContactDelegateOverlayContainer::mouseMoved(QMouseEvent* e, const QRect& visualRect, const QModelIndex& index)
 {
-    foreach (ContactDelegateOverlay* overlay, m_overlays)
-    {
+    foreach (ContactDelegateOverlay* overlay, m_overlays) {
         overlay->mouseMoved(e, visualRect, index);
     }
 }
 
 void ContactDelegateOverlayContainer::drawDelegates(QPainter* p, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    foreach (ContactDelegateOverlay* overlay, m_overlays)
-    {
+    foreach (ContactDelegateOverlay* overlay, m_overlays) {
         overlay->paint(p, option, index);
     }
 }

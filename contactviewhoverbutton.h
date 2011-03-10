@@ -73,7 +73,7 @@ protected:
     bool                  m_isHovered;
     int                   m_fadingValue;
     QPixmap               m_icon;
-    QTimeLine*            m_fadingTimeLine;
+    QTimeLine            *m_fadingTimeLine;
 };
 
 #endif /* CONTACTVIEWHOVERBUTTON_H */

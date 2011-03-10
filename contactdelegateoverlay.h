@@ -68,8 +68,8 @@ protected Q_SLOTS:
 
 protected:
 
-    QAbstractItemView*     m_view;
-    QAbstractItemDelegate* m_delegate;
+    QAbstractItemView     *m_view;
+    QAbstractItemDelegate *m_delegate;
 };
 
 #define REQUIRE_DELEGATE(Delegate) \
@@ -142,7 +142,7 @@ protected:
 
     bool eventFilter(QObject* obj, QEvent* event);
 
-    QWidget* m_widget;
+    QWidget *m_widget;
 
     bool m_mouseButtonPressedOnWidget;
 };
