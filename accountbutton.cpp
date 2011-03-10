@@ -122,6 +122,9 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     connect(m_account.data(),SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), 
             this, SLOT(connectionChanged(Tp::ConnectionStatus)));
     
+    connect(m_account.data(), SIGNAL(currentPresenceChanged(Tp::Presence)),
+            this, SLOT(preseneceChanged(Tp::Presence)));
+    
     if(m_statusIndex == -1) {
         m_statusIndex = 7;
     }
@@ -189,4 +192,15 @@ void AccountButton::showBusyIndicator()
 void AccountButton::hideBusyIndicator()
 {
     m_busyOverlay->stop();
+}
+
+void AccountButton::preseneceChanged(Tp::Presence presence)
+{
+    foreach(QAction *a, actions())
+    {
+        if(presence.status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
+            a->setChecked(true);
+            m_statusIndex = a->data().toInt();
+        }
+    }    
 }
