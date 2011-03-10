@@ -56,6 +56,7 @@ set (contactlist_SRCS
      contact-model-item.cpp
      tree-node.cpp
      accounts-model-item.cpp
+     filterbar.cpp
      main.cpp
      main-widget.cpp
 )

@@ -2,6 +2,7 @@
  * Provide some filters on the account model
  *
  * Copyright (C) 2011 David Edmundson <kde@davidedmundson.co.uk>
+ * Copyright (C) 2011 Martin Klapetek <martin dot klapetek at gmail dot com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,7 +24,8 @@
 
 AccountFilterModel::AccountFilterModel(QObject *parent)
     : QSortFilterProxyModel(parent),
-      m_filterOfflineUsers(false)
+      m_filterOfflineUsers(false),
+      m_filterByName(false)
 {
 
 }
@@ -41,17 +43,42 @@ bool AccountFilterModel::filterOfflineUsers() const
 
 bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
+    bool rowAccepted = true;
     //if we're looking at filtering an account or not
-    if (source_parent != QModelIndex()) {
-        if (m_filterOfflineUsers &&
-            (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
-                == Tp::ConnectionPresenceTypeOffline) ||
-            (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
-                == Tp::ConnectionPresenceTypeUnknown)) {
+    if(source_parent != QModelIndex()) {
+        
+        //filter by name in the contact list
+        if(m_filterByName && 
+            !source_parent.child(source_row, 0).data(AccountsModel::AliasRole).toString()
+                .contains(m_filterString, Qt::CaseInsensitive)) {
             
-                return false;
+            rowAccepted = false;
+        }
+        
+        //filter offline users out
+        if( m_filterOfflineUsers &&
+            (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
+            == Tp::ConnectionPresenceTypeOffline) ||
+            (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
+            == Tp::ConnectionPresenceTypeUnknown)) {
+            
+                rowAccepted = false;
         }
     }
 
-    return true;
+    return rowAccepted;
+}
+
+void AccountFilterModel::setFilterString (const QString& str)
+{
+    m_filterString = str;
+    m_filterByName = true;
+    invalidateFilter();
+}
+
+void AccountFilterModel::clearFilterString()
+{
+    m_filterString.clear();
+    m_filterByName = false;
+    invalidateFilter();
 }

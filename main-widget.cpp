@@ -55,7 +55,9 @@ MainWidget::MainWidget(QWidget *parent)
     Tp::registerTypes();
 
     setupUi(this);
+    m_filterBar->hide();
     setWindowIcon(KIcon("telepathy"));
+    
     m_actionAdd_contact->setIcon(KIcon("list-add-user"));
     m_actionAdd_contact->setText(QString());
     m_actionAdd_contact->setToolTip(i18n("Add new contacts.."));
@@ -68,6 +70,10 @@ MainWidget::MainWidget(QWidget *parent)
     m_actionHide_offline->setIcon(KIcon("meeting-attending-tentative"));
     m_actionHide_offline->setText(QString());
     m_actionHide_offline->setToolTip(i18n("Show/Hide offline users"));
+    
+    m_actionSearch_contact->setIcon(KIcon("edit-find-user"));
+    m_actionSearch_contact->setText(QString());
+    m_actionSearch_contact->setToolTip(i18n("Find contact"));
     
     // Start setting up the Telepathy AccountManager.
     Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
@@ -98,12 +104,6 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_accountManager.data(), SIGNAL(newAccount(Tp::AccountPtr)),
             this, SLOT(onNewAccountAdded(Tp::AccountPtr)));
     
-    // Initialize Telepathy
-    //TelepathyBridge::instance()->init();
-    //connect(TelepathyBridge::instance(),
-    //        SIGNAL(ready(bool)),
-    //        SLOT(onHandlerReady(bool)));
-    
     m_delegate = new ContactDelegate(this);
     
     m_contactsListView->header()->hide();
@@ -116,7 +116,6 @@ MainWidget::MainWidget(QWidget *parent)
     m_contactsListView->setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
     
     addOverlayButtons();
-    
     
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
@@ -132,6 +131,9 @@ MainWidget::MainWidget(QWidget *parent)
     
     connect(m_actionGroup_contacts, SIGNAL(triggered(bool)),
             this, SLOT(onGroupContacts(bool)));
+    
+    connect(m_actionSearch_contact, SIGNAL(triggered(bool)),
+            this, SLOT(toggleSearchWidget(bool)));
 }
 
 MainWidget::~MainWidget()
@@ -151,6 +153,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_modelFilter->setSourceModel(m_model);
     m_modelFilter->setDynamicSortFilter(true);
     m_modelFilter->filterOfflineUsers(true);
+    m_modelFilter->clearFilterString();
     m_modelFilter->setSortRole(Qt::DisplayRole);
     m_contactsListView->setModel(m_modelFilter);
     m_contactsListView->setSortingEnabled(true);
@@ -158,6 +161,18 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     connect(m_actionHide_offline, SIGNAL(toggled(bool)),
             m_modelFilter, SLOT(filterOfflineUsers(bool)));
+
+    connect(m_filterBar, SIGNAL(filterChanged(QString)),
+            m_modelFilter, SLOT(setFilterString(QString)));
+    
+    connect(m_filterBar, SIGNAL(closeRequest()),
+            m_modelFilter, SLOT(clearFilterString()));
+    
+    connect(m_filterBar, SIGNAL(closeRequest()),
+            m_filterBar, SLOT(hide()));
+    
+    connect(m_filterBar, SIGNAL(closeRequest()),
+            m_actionSearch_contact, SLOT(toggle()));
     
     m_accountButtonsLayout->insertStretch(-1);
     
@@ -167,14 +182,6 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         onNewAccountAdded(account);
     }
     m_contactsListView->expandAll();
-}
-
-void MainWidget::systemMessageTest()
-{
-    if(sender()->objectName() == "infoBt")
-        showMessageToUser("Info message...", MainWidget::SystemMessageInfo);
-    else showMessageToUser("Error message...", MainWidget::SystemMessageError);
-    
 }
 
 void MainWidget::onAccountReady(Tp::PendingOperation* op)
@@ -400,6 +407,16 @@ void MainWidget::addOverlayButtons()
         
         connect(textOverlay, SIGNAL(activated(QModelIndex)),
                 this, SLOT(startTextChannel(QModelIndex)));
+}
+
+void MainWidget::toggleSearchWidget(bool show)
+{
+    if(show) {
+        m_filterBar->show();
+    }
+    else {
+        m_filterBar->hide();
+    }
 }
 
 void MainWidget::onCustomContextMenuRequested(const QPoint& point)

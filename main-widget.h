@@ -35,6 +35,7 @@ class KSelectAction;
 class AccountsModel;
 class AccountFilterModel;
 class ContactDelegate;
+class FilterBar;
 
 class MainWidget : public QWidget, Ui::MainWidget
 {
@@ -70,11 +71,11 @@ public Q_SLOTS:
     void onAccountReady(Tp::PendingOperation *op);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
     void showMessageToUser(const QString &text, const SystemMessageType type);
-    void systemMessageTest();
     void addOverlayButtons();
     void onNewAccountAdded(const Tp::AccountPtr &account);
     void onAccountStateChanged(bool enabled); 
     void onAccountRemoved();
+    void toggleSearchWidget(bool show);
     //    void startAudioChannel();
     //    void startVideoChannel();
     
@@ -87,6 +88,7 @@ private:
     KMenu*                  m_accountMenu;
     KSelectAction*          m_setStatusAction;
     ContactDelegate*        m_delegate;
+//     FilterBar*              m_filterBar;
 };
 
 

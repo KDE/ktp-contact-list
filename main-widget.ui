@@ -25,10 +25,14 @@
      <addaction name="m_actionAdd_contact"/>
      <addaction name="m_actionGroup_contacts"/>
      <addaction name="m_actionHide_offline"/>
+     <addaction name="m_actionSearch_contact"/>
     </widget>
    </item>
    <item>
     <widget class="QTreeView" name="m_contactsListView"/>
+   </item>
+   <item>
+    <widget class="FilterBar" name="m_filterBar" native="true"/>
    </item>
    <item>
     <layout class="QHBoxLayout" name="m_accountButtonsLayout"/>
@@ -61,7 +65,29 @@
     <string>Hide offline</string>
    </property>
   </action>
+  <action name="m_actionSearch_contact">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Search contacts</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>FilterBar</class>
+   <extends>QWidget</extends>
+   <header>filterbar.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
