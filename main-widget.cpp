@@ -415,6 +415,8 @@ void MainWidget::toggleSearchWidget(bool show)
         m_filterBar->show();
     }
     else {
+        m_modelFilter->clearFilterString();
+        m_filterBar->clear();
         m_filterBar->hide();
     }
 }
