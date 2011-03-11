@@ -25,7 +25,6 @@ extern "C"
 }
 
 #include "main-widget.h"
-#include "build/config.h"
 
 #include <KAboutData>
 #include <KCmdLineArgs>
@@ -59,12 +58,16 @@ int main(int argc, char *argv[])
                         "martin.klapetek@gmail.com");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
+
+    // Add --debug as commandline option
+    KCmdLineOptions options;
+    options.add("debug", ki18n("Show telepathy debbuging information"));
+    KCmdLineArgs::addCmdLineOptions(options);
+
     KApplication app;
 
     Tp::registerTypes();
-#ifdef TP_DEBUG
-    Tp::enableDebug(true);
-#endif
+    Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));
     Tp::enableWarnings(true);
 
     // Set up signal handlers.

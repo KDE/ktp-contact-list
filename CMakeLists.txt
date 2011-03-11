@@ -5,10 +5,6 @@ set (CMAKE_MODULE_PATH
      ${CMAKE_MODULE_PATH}
 )
 
-OPTION(TP_DEBUG  "Enable Telepathy-Qt4 Debug output" OFF )
-
-CONFIGURE_FILE( ${CMAKE_SOURCE_DIR}/config.h.cmake ${CMAKE_SOURCE_DIR}/build/config.h )
-
 set(KDE_MIN_VERSION "4.4.75")
 find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 REQUIRED)
