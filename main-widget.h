@@ -43,7 +43,7 @@ class MainWidget : public QWidget, Ui::MainWidget
 public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
-    
+
     enum SystemMessageType {
         /*
          * this will show a system message to the user
@@ -52,7 +52,7 @@ public:
          * like "Connecting..." etc.
          */ 
         SystemMessageInfo,
-        
+
         /*
          * message with this class will stay visible until user
          * closes it and will have light-red background
@@ -76,9 +76,9 @@ public Q_SLOTS:
     void toggleSearchWidget(bool show);
     //    void startAudioChannel();
     //    void startVideoChannel();
-    
+
     void onCustomContextMenuRequested(const QPoint &point);
-    
+
 private:
     AccountsModel          *m_model;
     AccountFilterModel     *m_modelFilter;
