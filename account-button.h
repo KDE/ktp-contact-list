@@ -36,19 +36,36 @@ class AccountButton : public QToolButton
 public:
     AccountButton(const Tp::AccountPtr &account, QWidget *parent = 0);
 
+    ///Returns the unique account ID
     QString accountId();
 
+    ///Returns the action (menu item) string for displaying elsewhere on the screen
+    QString presenceDisplayString(const Tp::Presence);
+
 public Q_SLOTS:
+    ///Sets the account status contained in action (connects to triggered(QAction*) signal)
     void setAccountStatus(QAction *action);
+
+    ///Updates the tooltip with the latest selected status
     void updateToolTip();
+
+    ///Called when the connection status changes
     void connectionChanged(Tp::ConnectionStatus status);
+
+    ///Shows the animated busy icon over the button
     void showBusyIndicator();
+
+    ///Hides the animated busy icon over the button
     void hideBusyIndicator();
+
+    ///Called when the account presence changes
     void preseneceChanged(Tp::Presence presence);
 
 private:
+    ///Holds the account it controls
     Tp::AccountPtr                  m_account;
-    int                             m_statusIndex;
+
+    ///The busy icon which is painted when connecting
     KPixmapSequenceOverlayPainter  *m_busyOverlay;
 };
 

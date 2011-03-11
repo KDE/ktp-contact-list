@@ -31,33 +31,16 @@
 
 #include "account-button.h"
 
-static Tp::ConnectionPresenceType accountPresenceTypes[] = { Tp::ConnectionPresenceTypeAvailable,
-    Tp::ConnectionPresenceTypeAway,
-    Tp::ConnectionPresenceTypeAway,
-    Tp::ConnectionPresenceTypeBusy,
-    Tp::ConnectionPresenceTypeBusy,
-    Tp::ConnectionPresenceTypeExtendedAway,
-    Tp::ConnectionPresenceTypeHidden,
-    Tp::ConnectionPresenceTypeOffline };
-
-static const char *accountPresenceStatuses[] = { "available", "away", "brb", "busy",
-    "dnd", "xa", "hidden", "offline" };
-
-AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QToolButton(parent),m_busyOverlay(0)
+AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
+  : QToolButton(parent), m_busyOverlay(0)
 {
     m_account = account;
-    m_statusIndex = -1;
 
     m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
     m_busyOverlay->setWidget(this);
     m_busyOverlay->setSequence(KPixmapSequence(QString("process-working")));
 
     QString iconPath = account->iconName();
-
-    //if the icon has not been set, we use the protocol icon
-    if (iconPath.isEmpty()) {
-        iconPath = QString("im-%1").arg(account->protocolName());
-    }
 
     setIcon(KIcon(iconPath));
 
@@ -88,15 +71,15 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     QAction *invisibleAction =  new QAction(KIcon("user-invisible"), i18nc("@action:inmenu", "Invisible"), this);
     QAction *offlineAction =    new QAction(KIcon("user-offline"), i18nc("@action:inmenu", "Offline"), this);
 
-    //let's set the indexes as data(), so we don't have to rely on putting the actions into indexed list/menu/etc
-    onlineAction->setData(0);
-    awayAction->setData(1);
-    brbAction->setData(2);
-    busyAction->setData(3);
-    dndAction->setData(4);
-    xaAction->setData(5);
-    invisibleAction->setData(6);
-    offlineAction->setData(7);
+    //let's set the presences as data so we can easily just use the Tp::Presence when the action has been triggered
+    onlineAction->setData(qVariantFromValue(Tp::Presence::available()));
+    awayAction->setData(qVariantFromValue(Tp::Presence::away()));
+    brbAction->setData(qVariantFromValue(Tp::Presence::brb()));
+    busyAction->setData(qVariantFromValue(Tp::Presence::busy()));
+    dndAction->setData(qVariantFromValue(Tp::Presence::busy()));
+    xaAction->setData(qVariantFromValue(Tp::Presence::xa()));
+    invisibleAction->setData(qVariantFromValue(Tp::Presence::hidden()));
+    offlineAction->setData(qVariantFromValue(Tp::Presence::offline()));
 
     presenceActions->addAction(onlineAction);
     presenceActions->addAction(awayAction);
@@ -109,13 +92,12 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
 
     addActions(presenceActions->actions());
 
-    //make all the actions checkable
-    foreach(QAction *a, actions()) {
+    //make all the actions checkable and set the current status as checked
+    foreach (QAction *a, actions()) {
         a->setCheckable(true);
 
-        if (m_account->currentPresence().status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
+        if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
             a->setChecked(true);
-            m_statusIndex = a->data().toInt();
         }
     }
 
@@ -128,10 +110,6 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     connect(m_account.data(), SIGNAL(currentPresenceChanged(Tp::Presence)),
             this, SLOT(preseneceChanged(Tp::Presence)));
 
-    if (m_statusIndex == -1) {
-        m_statusIndex = 7;
-    }
-
     updateToolTip();
 }
 
@@ -142,14 +120,9 @@ QString AccountButton::accountId()
 
 void AccountButton::setAccountStatus(QAction *action)
 {
-    int statusIndex = action->data().toInt();
-    Q_ASSERT(statusIndex >= 0 && statusIndex <= 7);
-
-    m_statusIndex = statusIndex;
-
     Tp::SimplePresence presence;
-    presence.type = accountPresenceTypes[statusIndex];
-    presence.status = QLatin1String(accountPresenceStatuses[statusIndex]);
+    presence.type = qVariantValue<Tp::Presence>(action->data()).type();
+    presence.status = qVariantValue<Tp::Presence>(action->data()).status();
 
     Q_ASSERT(!m_account.isNull());
 
@@ -161,13 +134,14 @@ void AccountButton::setAccountStatus(QAction *action)
 
 void AccountButton::updateToolTip()
 {
+    //check if the custom status message has been set
     if(m_account->currentPresence().statusMessage().isEmpty()) {
         setToolTip(QString("%1\n%2").arg(m_account->displayName())
-                                    .arg(actions().value(m_statusIndex)->text()));
+                                    .arg(presenceDisplayString(m_account->currentPresence())));
     }
     else {
         setToolTip(QString("%1\n%2\n%3").arg(m_account->displayName())
-                                        .arg(actions().value(m_statusIndex)->text())
+                                        .arg(presenceDisplayString(m_account->currentPresence()))
                                         .arg(m_account->currentPresence().statusMessage()));
     }
 }
@@ -200,10 +174,24 @@ void AccountButton::hideBusyIndicator()
 void AccountButton::preseneceChanged(Tp::Presence presence)
 {
     foreach(QAction *a, actions()) {
-        if(presence.status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
+        if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
             a->setChecked(true);
-            m_statusIndex = a->data().toInt();
+            updateToolTip();
             break;
         }
     }
+}
+
+/*  since there is no easy way to get this string by Tp::Presence,
+    we need to loop through all the actions and return the right one.
+    This will also get us i18n strings for free. */
+QString AccountButton::presenceDisplayString(const Tp::Presence)
+{
+    foreach(QAction *a, actions()) {
+        if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
+            return a->text();
+        }
+    }
+
+    return QString();
 }
