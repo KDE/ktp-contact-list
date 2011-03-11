@@ -25,8 +25,8 @@
 
 #include <KDebug>
 
-#include "contactdelegateoverlay.h"
-#include "contactviewhoverbutton.h"
+#include "contact-delegate-overlay.h"
+#include "contact-view-hover-button.h"
 
 ContactDelegateOverlay::ContactDelegateOverlay(QObject* parent)
     : QObject(parent), m_view(0), m_delegate(0)
@@ -385,4 +385,4 @@ void ContactDelegateOverlayContainer::drawDelegates(QPainter* p, const QStyleOpt
     }
 }
 
-#include "contactdelegateoverlay.moc"
+#include "contact-delegate-overlay.moc"

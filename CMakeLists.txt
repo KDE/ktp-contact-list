@@ -24,13 +24,13 @@ include_directories (${KDE4_INCLUDES}
 )
 
 set (contactlist_SRCS
-     contactviewhoverbutton.cpp
-     contactoverlays.cpp
-     contactdelegateoverlay.cpp
-     contactdelegate.cpp
-     accountbutton.cpp
+     contact-view-hover-button.cpp
+     contact-overlays.cpp
+     contact-delegate-overlay.cpp
+     contact-delegate.cpp
+     account-button.cpp
      accounts-model.cpp
-     accountfiltermodel.cpp
+     account-filter-model.cpp
      contact-model-item.cpp
      tree-node.cpp
      accounts-model-item.cpp

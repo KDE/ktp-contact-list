@@ -29,7 +29,7 @@
 
 #include <TelepathyQt4/PendingOperation>
 
-#include "accountbutton.h"
+#include "account-button.h"
 
 static Tp::ConnectionPresenceType accountPresenceTypes[] = { Tp::ConnectionPresenceTypeAvailable,
     Tp::ConnectionPresenceTypeAway,

@@ -3,7 +3,7 @@
 
 #include <QStyledItemDelegate>
 
-#include "contactdelegateoverlay.h"
+#include "contact-delegate-overlay.h"
 
 class ContactDelegate : public QStyledItemDelegate, public ContactDelegateOverlayContainer
 {

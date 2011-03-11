@@ -1,4 +1,4 @@
-#include "contactdelegate.h"
+#include "contact-delegate.h"
 
 #include <QtGui/QPainter>
 #include <QApplication>

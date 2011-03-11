@@ -39,11 +39,11 @@
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
-#include "accountbutton.h"
-#include "contactoverlays.h"
+#include "account-button.h"
+#include "contact-overlays.h"
 #include "accounts-model.h"
-#include "accountfiltermodel.h"
-#include "contactdelegate.h"
+#include "account-filter-model.h"
+#include "contact-delegate.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 

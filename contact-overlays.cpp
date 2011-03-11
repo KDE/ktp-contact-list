@@ -19,7 +19,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "contactoverlays.moc"
+#include "contact-overlays.moc"
 
 #include <KLocale>
 #include <KIconLoader>

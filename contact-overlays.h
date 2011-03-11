@@ -24,8 +24,8 @@
 
 #include <KGuiItem>
 
-#include "contactdelegateoverlay.h"
-#include "contactviewhoverbutton.h"
+#include "contact-delegate-overlay.h"
+#include "contact-view-hover-button.h"
 
 class TextChannelContactOverlay : public HoverButtonDelegateOverlay
 {
