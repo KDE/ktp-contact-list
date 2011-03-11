@@ -92,7 +92,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         const QFontMetrics nameFontMetrics(nameFont);
 
         painter->setFont(nameFont);
-        painter->drawText(userNameRect
+        painter->drawText(userNameRect,
                           nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
 
         QRect statusMsgRect = optV4.rect;
