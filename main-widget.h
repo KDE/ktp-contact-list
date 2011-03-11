@@ -50,7 +50,7 @@ public:
          * but it will fade after short timout,
          * thus it should be used for non-important messages
          * like "Connecting..." etc.
-         */ 
+         */
         SystemMessageInfo,
 
         /*
@@ -71,7 +71,7 @@ public Q_SLOTS:
     void showMessageToUser(const QString &text, const SystemMessageType type);
     void addOverlayButtons();
     void onNewAccountAdded(const Tp::AccountPtr &account);
-    void onAccountStateChanged(bool enabled); 
+    void onAccountStateChanged(bool enabled);
     void onAccountRemoved();
     void toggleSearchWidget(bool show);
     //    void startAudioChannel();

@@ -135,8 +135,7 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
 
         connect(m_view, SIGNAL(viewportEntered()),
                 this, SLOT(slotViewportEntered()));
-    }
-    else {
+    } else {
         delete m_widget;
         m_widget = 0;
 
@@ -239,12 +238,11 @@ bool AbstractWidgetDelegateOverlay::eventFilter(QObject* obj, QEvent* event)
         default:
             break;
         }
-    }
-    else if (obj == m_widget) {
+    } else if (obj == m_widget) {
         switch (event->type()) {
         case QEvent::MouseButtonPress:
             if (static_cast<QMouseEvent*>(event)->buttons() & Qt::LeftButton) {
-                    m_mouseButtonPressedOnWidget = true;
+                m_mouseButtonPressedOnWidget = true;
             }
             break;
         case QEvent::MouseButtonRelease:
@@ -305,8 +303,7 @@ void HoverButtonDelegateOverlay::slotEntered(const QModelIndex& index)
     if (index.isValid() && checkIndex(index)) {
         button()->setIndex(index);
         updateButton(index);
-    }
-    else {
+    } else {
         button()->setIndex(index);
     }
 }

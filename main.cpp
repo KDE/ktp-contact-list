@@ -54,13 +54,13 @@ int main(int argc, char *argv[])
     KAboutData aboutData("telepathy-kde-contactslist", 0, ki18n("Telepathy KDE Contact List"), "0.1",
                          ki18n("Telepathy KDE Contact List"), KAboutData::License_GPL,
                          ki18n("(C) 2011, Martin Klapetek"));
-    
+
     aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), KLocalizedString(),
                         "martin.klapetek@gmail.com");
-    
+
     KCmdLineArgs::init(argc, argv, &aboutData);
     KApplication app;
-    
+
     Tp::registerTypes();
 #ifdef TP_DEBUG
     Tp::enableDebug(true);
@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     if (signal(SIGTERM, signal_handler) == SIG_ERR) {
         kWarning() << "Setting up SIGTERM signal handler failed.";
     }
-    
+
     // Create the main widget and show it.
     MainWidget *mainWidget = new MainWidget(0);
     mainWidget->show();

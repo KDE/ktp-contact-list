@@ -85,8 +85,7 @@ void ContactViewHoverButton::setIndex(const QModelIndex& index)
 {
     m_index = index;
 
-    if (index.isValid())
-    {
+    if (index.isValid()) {
         startFading();
     }
 }
@@ -150,16 +149,12 @@ void ContactViewHoverButton::paintEvent(QPaintEvent* event)
     painter.drawEllipse(0, 0, width(), height());
 
     // draw the icon overlay
-    if (m_isHovered)
-    {
+    if (m_isHovered) {
         KIconEffect iconEffect;
         QPixmap activeIcon = iconEffect.apply(m_icon, KIconLoader::Desktop, KIconLoader::ActiveState);
         painter.drawPixmap(0, 0, activeIcon);
-    }
-    else
-    {
-        if (m_fadingValue < 255)
-        {
+    } else {
+        if (m_fadingValue < 255) {
             // apply an alpha mask respecting the fading value to the icon
             QPixmap icon = m_icon;
             QPixmap alphaMask(icon.width(), icon.height());
@@ -167,9 +162,7 @@ void ContactViewHoverButton::paintEvent(QPaintEvent* event)
             alphaMask.fill(color);
             icon.setAlphaChannel(alphaMask);
             painter.drawPixmap(0, 0, icon);
-        }
-        else
-        {
+        } else {
             // no fading is required
             painter.drawPixmap(0, 0, m_icon);
         }
@@ -180,8 +173,7 @@ void ContactViewHoverButton::setFadingValue(int value)
 {
     m_fadingValue = value;
 
-    if (m_fadingValue >= 255)
-    {
+    if (m_fadingValue >= 255) {
         m_fadingTimeLine->stop();
     }
 
@@ -206,8 +198,7 @@ void ContactViewHoverButton::refreshIcon()
 
 void ContactViewHoverButton::startFading()
 {
-    if (m_fadingTimeLine->state() != QTimeLine::Running)
-    {
+    if (m_fadingTimeLine->state() != QTimeLine::Running) {
         m_fadingTimeLine->start();
     }
 

@@ -55,13 +55,13 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     QString iconPath = account->iconName();
 
     //if the icon has not been set, we use the protocol icon
-    if(iconPath.isEmpty()) {
+    if (iconPath.isEmpty()) {
         iconPath = QString("im-%1").arg(account->protocolName());
     }
 
     setIcon(KIcon(iconPath));
 
-    if(!account->isValid()) {
+    if (!account->isValid()) {
         //we paint a warning symbol in the right-bottom corner
         QPixmap pixmap = icon().pixmap(32, 32);
         QPainter painter(&pixmap);
@@ -113,7 +113,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     foreach(QAction *a, actions()) {
         a->setCheckable(true);
 
-        if(m_account->currentPresence().status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
+        if (m_account->currentPresence().status() == QLatin1String(accountPresenceStatuses[a->data().toInt()])) {
             a->setChecked(true);
             m_statusIndex = a->data().toInt();
         }
@@ -128,7 +128,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent): QT
     connect(m_account.data(), SIGNAL(currentPresenceChanged(Tp::Presence)),
             this, SLOT(preseneceChanged(Tp::Presence)));
 
-    if(m_statusIndex == -1) {
+    if (m_statusIndex == -1) {
         m_statusIndex = 7;
     }
 

@@ -14,7 +14,7 @@ const int SPACING = 4;
 const int AVATAR_SIZE = 32;
 
 ContactDelegate::ContactDelegate(QObject * parent)
-  : QStyledItemDelegate(parent), ContactDelegateOverlayContainer(), m_palette(0)
+    : QStyledItemDelegate(parent), ContactDelegateOverlayContainer(), m_palette(0)
 {
     m_palette = new QPalette(QApplication::palette());
 }
@@ -38,14 +38,14 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
     bool isContact = !index.data(AccountsModel::AliasRole).toString().isEmpty();
 
-    if(isContact) {
+    if (isContact) {
         QRect iconRect = optV4.rect;
         iconRect.setSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
         iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
 
         QPixmap avatar = QPixmap::fromImage(QImage(index.data(AccountsModel::AvatarRole).toString()));
 
-        if(avatar.isNull()) {
+        if (avatar.isNull()) {
             avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
         }
 
@@ -53,7 +53,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         QPixmap icon;
 
-        switch(index.data(AccountsModel::PresenceTypeRole).toInt()) {
+        switch (index.data(AccountsModel::PresenceTypeRole).toInt()) {
         case Tp::ConnectionPresenceTypeAvailable:
             icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
             break;
@@ -118,19 +118,18 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
                           statusFontMetrics.elidedText(index.data(AccountsModel::PresenceMessageRole).toString(),
                                                        Qt::ElideRight, statusMsgRect.width()));
 
-    }
-    else {
+    } else {
         QRect groupRect = optV4.rect;
 
         QRect accountGroupRect = groupRect;
-        accountGroupRect.setSize(QSize(16,16));
+        accountGroupRect.setSize(QSize(16, 16));
         accountGroupRect.moveTo(QPoint(groupRect.left() + 2, groupRect.top() + 2));
 
         QRect groupLabelRect = groupRect;
         groupLabelRect.setLeft(20);
 
         QRect expandSignRect = groupLabelRect;
-        expandSignRect.setLeft(groupLabelRect.right()-20);
+        expandSignRect.setLeft(groupLabelRect.right() - 20);
 
         QFont groupFont = painter->font();
         groupFont.setWeight(QFont::Normal);
@@ -155,10 +154,9 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         QStyleOption expandSignOption = option;
         expandSignOption.rect = expandSignRect;
 
-        if(option.state & QStyle::State_Open) {
+        if (option.state & QStyle::State_Open) {
             style->drawPrimitive(QStyle::PE_IndicatorArrowDown, &expandSignOption, painter);
-        }
-        else {
+        } else {
             style->drawPrimitive(QStyle::PE_IndicatorArrowRight, &expandSignOption, painter);
         }
     }
@@ -172,10 +170,9 @@ QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModel
 //     if(option.state & QStyle::State_Selected)
 //         kDebug() << index.data(ModelRoles::UserNameRole).toString();
 
-    if(!index.data(AccountsModel::AliasRole).toString().isEmpty()) {
+    if (!index.data(AccountsModel::AliasRole).toString().isEmpty()) {
         return QSize(0, 32 + 4 * SPACING);
-    }
-    else return QSize(0,20);
+    } else return QSize(0, 20);
 }
 
 void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
@@ -202,7 +199,7 @@ void ContactDelegate::fadeOutStatusMessageSlot()
     a->start();
 
     connect(a, SIGNAL(valueChanged(QVariant)),
-        this, SLOT(triggerRepaint()));
+            this, SLOT(triggerRepaint()));
 }
 
 int ContactDelegate::fadingValue() const

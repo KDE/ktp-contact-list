@@ -86,8 +86,7 @@ void TextChannelContactOverlay::setActive(bool active)
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
-    }
-    else {
+    } else {
         // button is deleted
     }
 }
@@ -120,7 +119,7 @@ void TextChannelContactOverlay::slotClicked(bool checked)
 
 bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
+    if (index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
         return true;
     }
 
@@ -146,7 +145,7 @@ protected:
 };
 
 AudioChannelContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
-: ContactViewHoverButton(parentView), gui(gui)
+    : ContactViewHoverButton(parentView), gui(gui)
 {
 }
 
@@ -170,7 +169,7 @@ void AudioChannelContactOverlay::Button::updateToolTip()
 // -------------------------------------------------------------------------
 
 AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
-: HoverButtonDelegateOverlay(parent)
+    : HoverButtonDelegateOverlay(parent)
 {
     m_gui = KGuiItem(i18n("Start audio channel"), "voicecall",
                      i18n("Start audio channel"), i18n("Whats this"));
@@ -188,8 +187,7 @@ void AudioChannelContactOverlay::setActive(bool active)
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
-    }
-    else {
+    } else {
         // button is deleted
     }
 }
@@ -222,7 +220,7 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
 
 bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
+    if (index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
         return true;
     }
 
@@ -248,7 +246,7 @@ protected:
 };
 
 VideoChannelContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
-: ContactViewHoverButton(parentView), gui(gui)
+    : ContactViewHoverButton(parentView), gui(gui)
 {
 }
 
@@ -272,7 +270,7 @@ void VideoChannelContactOverlay::Button::updateToolTip()
 // -------------------------------------------------------------------------
 
 VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
-: HoverButtonDelegateOverlay(parent)
+    : HoverButtonDelegateOverlay(parent)
 {
     m_gui = KGuiItem(i18n("Start video channel"), "camera-web",
                      i18n("Start video channel"), i18n("Whats this"));
@@ -290,8 +288,7 @@ void VideoChannelContactOverlay::setActive(bool active)
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
-    }
-    else {
+    } else {
         // button is deleted
     }
 }
@@ -324,7 +321,7 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
 
 bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
+    if (index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
         return true;
     }
 
@@ -350,7 +347,7 @@ protected:
 };
 
 FileTransferContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
-: ContactViewHoverButton(parentView), gui(gui)
+    : ContactViewHoverButton(parentView), gui(gui)
 {
 }
 
@@ -374,7 +371,7 @@ void FileTransferContactOverlay::Button::updateToolTip()
 // -------------------------------------------------------------------------
 
 FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
-: HoverButtonDelegateOverlay(parent)
+    : HoverButtonDelegateOverlay(parent)
 {
     m_gui = KGuiItem(i18n("Send file"), "mail-attachment",
                      i18n("Send file"), i18n("Whats this"));
@@ -392,8 +389,7 @@ void FileTransferContactOverlay::setActive(bool active)
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
-    }
-    else {
+    } else {
         // button is deleted
     }
 }
@@ -426,7 +422,7 @@ void FileTransferContactOverlay::slotClicked(bool checked)
 
 bool FileTransferContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if(index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
+    if (index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
         return true;
     }
 

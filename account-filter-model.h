@@ -28,7 +28,7 @@ class AccountFilterModel : public QSortFilterProxyModel
     Q_OBJECT
 
 public:
-    AccountFilterModel(QObject *parent=0);
+    AccountFilterModel(QObject *parent = 0);
     bool filterOfflineUsers() const;
 
 public slots:
