@@ -1,19 +1,19 @@
 /*
  *  Contact overlay buttons
- * 
+ *
  *  Copyright (C) 2009 Marcel Wiesweg <marcel dot wiesweg at gmx dot de>
  *  Copyright (C) 2011 Martin Klapetek <martin dot klapetek at gmail dot com>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -70,7 +70,7 @@ void TextChannelContactOverlay::Button::updateToolTip()
 TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
     : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Start text channel"), "text-x-generic", 
+    m_gui = KGuiItem(i18n("Start text channel"), "text-x-generic",
                      i18n("Start text channel"), i18n("Whats this"));
 }
 
@@ -123,7 +123,7 @@ bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
     if(index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
         return true;
     }
-    
+
     return false;
 }
 
@@ -132,17 +132,17 @@ bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
 class AudioChannelContactOverlay::Button : public ContactViewHoverButton
 {
 public:
-    
+
     Button(QAbstractItemView* parentView, const KGuiItem& gui);
     virtual QSize sizeHint() const;
-    
+
 protected:
-    
+
     KGuiItem gui;
-    
+
     virtual QPixmap icon();
     virtual void updateToolTip();
-    
+
 };
 
 AudioChannelContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
@@ -172,9 +172,8 @@ void AudioChannelContactOverlay::Button::updateToolTip()
 AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
 : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Start audio channel"), "voicecall", 
+    m_gui = KGuiItem(i18n("Start audio channel"), "voicecall",
                      i18n("Start audio channel"), i18n("Whats this"));
-                              
 }
 
 AudioChannelContactOverlay::Button *AudioChannelContactOverlay::button() const
@@ -185,7 +184,7 @@ AudioChannelContactOverlay::Button *AudioChannelContactOverlay::button() const
 void AudioChannelContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
-    
+
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
@@ -204,7 +203,7 @@ void AudioChannelContactOverlay::updateButton(const QModelIndex& index)
 {
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
-    
+
     const int gap = 5;
     const int x   = rect.right() - gap - 72 - size.width();
     const int y   = rect.bottom() - gap - size.height();
@@ -215,7 +214,7 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
 {
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
-    
+
     if (index.isValid()) {
         emit activated(index);
     }
@@ -226,7 +225,7 @@ bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
     if(index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
         return true;
     }
-    
+
     return false;
 }
 
@@ -235,17 +234,17 @@ bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
 class VideoChannelContactOverlay::Button : public ContactViewHoverButton
 {
 public:
-    
+
     Button(QAbstractItemView* parentView, const KGuiItem& gui);
     virtual QSize sizeHint() const;
-    
+
 protected:
-    
+
     KGuiItem gui;
-    
+
     virtual QPixmap icon();
     virtual void updateToolTip();
-    
+
 };
 
 VideoChannelContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
@@ -275,8 +274,8 @@ void VideoChannelContactOverlay::Button::updateToolTip()
 VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
 : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Start video channel"), "camera-web", 
-                     i18n("Start video channel"), i18n("Whats this"));          
+    m_gui = KGuiItem(i18n("Start video channel"), "camera-web",
+                     i18n("Start video channel"), i18n("Whats this"));
 }
 
 VideoChannelContactOverlay::Button *VideoChannelContactOverlay::button() const
@@ -287,7 +286,7 @@ VideoChannelContactOverlay::Button *VideoChannelContactOverlay::button() const
 void VideoChannelContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
-    
+
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
@@ -306,7 +305,7 @@ void VideoChannelContactOverlay::updateButton(const QModelIndex& index)
 {
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
-    
+
     const int gap = 5;
     const int x   = rect.right() - gap - 50 - size.width();
     const int y   = rect.bottom() - gap - size.height();
@@ -317,7 +316,7 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
 {
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
-    
+
     if (index.isValid()) {
         emit activated(index);
     }
@@ -328,7 +327,7 @@ bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
     if(index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
         return true;
     }
-    
+
     return false;
 }
 
@@ -337,17 +336,17 @@ bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
 class FileTransferContactOverlay::Button : public ContactViewHoverButton
 {
 public:
-    
+
     Button(QAbstractItemView* parentView, const KGuiItem& gui);
     virtual QSize sizeHint() const;
-    
+
 protected:
-    
+
     KGuiItem gui;
-    
+
     virtual QPixmap icon();
     virtual void updateToolTip();
-    
+
 };
 
 FileTransferContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
@@ -377,8 +376,8 @@ void FileTransferContactOverlay::Button::updateToolTip()
 FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
 : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Send file"), "mail-attachment", 
-                     i18n("Send file"), i18n("Whats this"));          
+    m_gui = KGuiItem(i18n("Send file"), "mail-attachment",
+                     i18n("Send file"), i18n("Whats this"));
 }
 
 FileTransferContactOverlay::Button *FileTransferContactOverlay::button() const
@@ -389,7 +388,7 @@ FileTransferContactOverlay::Button *FileTransferContactOverlay::button() const
 void FileTransferContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
-    
+
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
                 this, SLOT(slotClicked(bool)));
@@ -408,7 +407,7 @@ void FileTransferContactOverlay::updateButton(const QModelIndex& index)
 {
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
-    
+
     const int gap = 5;
     const int x   = rect.right() - gap - 132 - size.width();
     const int y   = rect.bottom() - gap - size.height();
@@ -419,7 +418,7 @@ void FileTransferContactOverlay::slotClicked(bool checked)
 {
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
-    
+
     if (index.isValid()) {
         emit activated(index);
     }
@@ -430,6 +429,6 @@ bool FileTransferContactOverlay::checkIndex(const QModelIndex& index) const
     if(index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
         return true;
     }
-    
+
     return false;
 }

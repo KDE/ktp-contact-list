@@ -1,6 +1,6 @@
 /*
  * Tool button which controls account's presence
- * 
+ *
  * Copyright (C) 2011 Martin Klapetek <martin dot klapetek at gmail dot com>
  *
  * This library is free software; you can redistribute it and/or
@@ -32,12 +32,12 @@ class KPixmapSequenceOverlayPainter;
 class AccountButton : public QToolButton
 {
     Q_OBJECT
-    
+
 public:
     AccountButton(const Tp::AccountPtr &account, QWidget *parent = 0);
-    
+
     QString accountId();
-    
+
 public Q_SLOTS:
     void setAccountStatus(QAction *action);
     void updateToolTip();
@@ -45,7 +45,7 @@ public Q_SLOTS:
     void showBusyIndicator();
     void hideBusyIndicator();
     void preseneceChanged(Tp::Presence presence);
-    
+
 private:
     Tp::AccountPtr                  m_account;
     int                             m_statusIndex;

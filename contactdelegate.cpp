@@ -92,9 +92,9 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         const QFontMetrics nameFontMetrics(nameFont);
 
         painter->setFont(nameFont);
-        painter->drawText(userNameRect, 
+        painter->drawText(userNameRect
                           nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
-        
+
         QRect statusMsgRect = optV4.rect;
         statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
         statusMsgRect.setY(userNameRect.top() + 16);
@@ -107,7 +107,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         const QFontMetrics statusFontMetrics(statusFont);
 
         QColor fadingColor(m_palette->color(QPalette::WindowText));
-        
+
         if (index == m_indexForHiding) {
             fadingColor.setAlpha(m_fadingValue);
             painter->setPen(fadingColor);
@@ -128,14 +128,13 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         QRect groupLabelRect = groupRect;
         groupLabelRect.setLeft(20);
-        
+
         QRect expandSignRect = groupLabelRect;
         expandSignRect.setLeft(groupLabelRect.right()-20);
 
         QFont groupFont = painter->font();
         groupFont.setWeight(QFont::Normal);
         groupFont.setPixelSize(10);
-        
 
         QString counts;// = QString(" (%1/%2)").arg(index.data(AccountsModel::).toString(),
                         //               index.data(ModelRoles::AccountAllContactsCountRole).toString());
@@ -143,7 +142,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         painter->fillRect(groupRect, m_palette->color(QPalette::AlternateBase));
 
         painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString()).pixmap(16,16));
-        
+
         painter->setPen(m_palette->color(QPalette::WindowText));
         painter->setFont(groupFont);
         painter->drawText(groupLabelRect, Qt::AlignVCenter,

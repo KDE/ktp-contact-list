@@ -1,19 +1,19 @@
 /*
  *  Contact overlay buttons
- * 
+ *
  *  Copyright (C) 2009 Marcel Wiesweg <marcel dot wiesweg at gmx dot de>
  *  Copyright (C) 2011 Martin Klapetek <martin dot klapetek at gmail dot com>
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
- * 
+ *
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
- * 
+ *
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
@@ -63,30 +63,30 @@ protected:
 class AudioChannelContactOverlay : public HoverButtonDelegateOverlay
 {
     Q_OBJECT
-    
+
 public:
-    
+
     AudioChannelContactOverlay(QObject* parent);
     virtual void setActive(bool active);
-    
+
 Q_SIGNALS:
-    
+
     void activated(const QModelIndex& index);
-    
+
 protected:
-    
+
     virtual ContactViewHoverButton* createButton();
     virtual void updateButton(const QModelIndex& index);
     virtual bool checkIndex(const QModelIndex& index) const;
-    
+
 protected Q_SLOTS:
-    
+
     void slotClicked(bool checked);
-    
+
 protected:
-    
+
     KGuiItem m_gui;
-    
+
     class Button;
     Button *button() const;
 };
@@ -96,30 +96,30 @@ protected:
 class VideoChannelContactOverlay : public HoverButtonDelegateOverlay
 {
     Q_OBJECT
-    
+
 public:
-    
+
     VideoChannelContactOverlay(QObject* parent);
     virtual void setActive(bool active);
-    
+
 Q_SIGNALS:
-    
+
     void activated(const QModelIndex& index);
-    
+
 protected:
-    
+
     virtual ContactViewHoverButton* createButton();
     virtual void updateButton(const QModelIndex& index);
     virtual bool checkIndex(const QModelIndex& index) const;
-    
+
 protected Q_SLOTS:
-    
+
     void slotClicked(bool checked);
-    
+
 protected:
-    
+
     KGuiItem m_gui;
-    
+
     class Button;
     Button *button() const;
 };
@@ -129,30 +129,30 @@ protected:
 class FileTransferContactOverlay : public HoverButtonDelegateOverlay
 {
     Q_OBJECT
-    
+
 public:
-    
+
     FileTransferContactOverlay(QObject* parent);
     virtual void setActive(bool active);
 
 Q_SIGNALS:
-    
+
     void activated(const QModelIndex& index);
-    
+
 protected:
-    
+
     virtual ContactViewHoverButton* createButton();
     virtual void updateButton(const QModelIndex& index);
     virtual bool checkIndex(const QModelIndex& index) const;
-    
+
 protected Q_SLOTS:
-    
+
     void slotClicked(bool checked);
-    
+
 protected:
-    
+
     KGuiItem m_gui;
-    
+
     class Button;
     Button *button() const;
 };

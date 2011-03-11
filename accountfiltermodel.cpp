@@ -46,22 +46,21 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
     bool rowAccepted = true;
     //if we're looking at filtering an account or not
     if(source_parent != QModelIndex()) {
-        
         //filter by name in the contact list
         if(m_filterByName && 
             !source_parent.child(source_row, 0).data(AccountsModel::AliasRole).toString()
                 .contains(m_filterString, Qt::CaseInsensitive)) {
-            
+
             rowAccepted = false;
         }
-        
+
         //filter offline users out
         if( m_filterOfflineUsers &&
             (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
             == Tp::ConnectionPresenceTypeOffline) ||
             (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
             == Tp::ConnectionPresenceTypeUnknown)) {
-            
+
                 rowAccepted = false;
         }
     }

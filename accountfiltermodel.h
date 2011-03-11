@@ -26,27 +26,26 @@
 class AccountFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
-    
+
 public:
     AccountFilterModel(QObject *parent=0);
-
     bool filterOfflineUsers() const;
-    
+
 public slots:
     void filterOfflineUsers(bool filterOfflineUsers);
     void setFilterString(const QString &str);
     void clearFilterString();
-    
+
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
 
 private:
     /// Filters out offline users
     bool m_filterOfflineUsers;
-    
+
     /// Used when searching for contact
     bool m_filterByName;
-    
+
     /// Holds the string which is searched in the model
     QString m_filterString;
 };
