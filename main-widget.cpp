@@ -44,6 +44,7 @@
 #include "accounts-model.h"
 #include "account-filter-model.h"
 #include "contact-delegate.h"
+#include "contact-model-item.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
 
@@ -296,7 +297,9 @@ void MainWidget::startTextChannel(const QModelIndex &index)
     }
 
     QModelIndex realIndex = m_modelFilter->mapToSource(index);
-    Tp::ContactPtr contact = m_model->contactForIndex(realIndex);
+    Tp::ContactPtr contact = static_cast<ContactModelItem*>(
+        qVariantValue<QObject *>(m_model->data(realIndex, AccountsModel::ItemRole)))->contact();
+
     kDebug() << "Requesting chat for contact" << contact->alias();
 
     Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);

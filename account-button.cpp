@@ -135,11 +135,10 @@ void AccountButton::setAccountStatus(QAction *action)
 void AccountButton::updateToolTip()
 {
     //check if the custom status message has been set
-    if(m_account->currentPresence().statusMessage().isEmpty()) {
+    if (m_account->currentPresence().statusMessage().isEmpty()) {
         setToolTip(QString("%1\n%2").arg(m_account->displayName())
                                     .arg(presenceDisplayString(m_account->currentPresence())));
-    }
-    else {
+    } else {
         setToolTip(QString("%1\n%2\n%3").arg(m_account->displayName())
                                         .arg(presenceDisplayString(m_account->currentPresence()))
                                         .arg(m_account->currentPresence().statusMessage()));
@@ -173,7 +172,7 @@ void AccountButton::hideBusyIndicator()
 
 void AccountButton::preseneceChanged(Tp::Presence presence)
 {
-    foreach(QAction *a, actions()) {
+    foreach (QAction *a, actions()) {
         if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
             a->setChecked(true);
             updateToolTip();
@@ -187,7 +186,7 @@ void AccountButton::preseneceChanged(Tp::Presence presence)
     This will also get us i18n strings for free. */
 QString AccountButton::presenceDisplayString(const Tp::Presence)
 {
-    foreach(QAction *a, actions()) {
+    foreach (QAction *a, actions()) {
         if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
             return a->text();
         }
