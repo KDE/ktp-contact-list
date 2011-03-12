@@ -56,10 +56,10 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
 
         //filter offline users out
         if (m_filterOfflineUsers &&
-                (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
+                ((source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
                  == Tp::ConnectionPresenceTypeOffline) ||
                 (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
-                 == Tp::ConnectionPresenceTypeUnknown)) {
+                 == Tp::ConnectionPresenceTypeUnknown))) {
 
             rowAccepted = false;
         }
