@@ -108,7 +108,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
             this, SLOT(connectionChanged(Tp::ConnectionStatus)));
 
     connect(m_account.data(), SIGNAL(currentPresenceChanged(Tp::Presence)),
-            this, SLOT(preseneceChanged(Tp::Presence)));
+            this, SLOT(presenceChanged(Tp::Presence)));
 
     updateToolTip();
 }
@@ -170,7 +170,7 @@ void AccountButton::hideBusyIndicator()
     m_busyOverlay->stop();
 }
 
-void AccountButton::preseneceChanged(Tp::Presence presence)
+void AccountButton::presenceChanged(Tp::Presence presence)
 {
     foreach (QAction *a, actions()) {
         if (presence.status() == qVariantValue<Tp::Presence>(a->data()).status()) {

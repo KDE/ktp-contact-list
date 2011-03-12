@@ -59,7 +59,7 @@ public Q_SLOTS:
     void hideBusyIndicator();
 
     ///Called when the account presence changes
-    void preseneceChanged(Tp::Presence presence);
+    void presenceChanged(Tp::Presence presence);
 
 private:
     ///Holds the account it controls
