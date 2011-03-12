@@ -30,7 +30,7 @@ set (contactlist_SRCS
      contact-model-item.cpp
      tree-node.cpp
      accounts-model-item.cpp
-     filterbar.cpp
+     filter-bar.cpp
      main.cpp
      main-widget.cpp
 )

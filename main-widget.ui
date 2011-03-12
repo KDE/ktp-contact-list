@@ -84,7 +84,7 @@
   <customwidget>
    <class>FilterBar</class>
    <extends>QWidget</extends>
-   <header>filterbar.h</header>
+   <header>filter-bar.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
