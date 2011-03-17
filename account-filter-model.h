@@ -35,6 +35,7 @@ public slots:
     void filterOfflineUsers(bool filterOfflineUsers);
     void setFilterString(const QString &str);
     void clearFilterString();
+    void refilter();
 
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;

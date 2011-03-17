@@ -91,3 +91,8 @@ void AccountFilterModel::clearFilterString()
     m_filterByName = false;
     invalidateFilter();
 }
+
+void AccountFilterModel::refilter()
+{
+    invalidateFilter();
+}
