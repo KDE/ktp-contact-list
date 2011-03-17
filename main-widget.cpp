@@ -206,9 +206,12 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
         //FIXME: Get the account (sender()) index and expand only that index
         m_contactsListView->expandAll();
         break;
+    case Tp::ConnectionStatusDisconnected:
+        // This will make sure that the empty account groups will be hidden
+        m_modelFilter->refilter();
+        break;
     //Fall through
     case Tp::ConnectionStatusConnecting:
-    case Tp::ConnectionStatusDisconnected:
     default:
         break;
     }
