@@ -102,7 +102,7 @@ void TextChannelContactOverlay::updateButton(const QModelIndex& index)
     const QSize size = button()->size();
 
     const int gap = 5;
-    const int x   = rect.right() - gap - 96 - size.width();
+    const int x   = rect.left() + 40;// rect.right() - gap - 96 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
 }
@@ -203,7 +203,7 @@ void AudioChannelContactOverlay::updateButton(const QModelIndex& index)
     const QSize size = button()->size();
 
     const int gap = 5;
-    const int x   = rect.right() - gap - 72 - size.width();
+    const int x   = rect.left() + 64; //rect.right() - gap - 72 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
 }
@@ -304,7 +304,7 @@ void VideoChannelContactOverlay::updateButton(const QModelIndex& index)
     const QSize size = button()->size();
 
     const int gap = 5;
-    const int x   = rect.right() - gap - 50 - size.width();
+    const int x   = rect.left() + 88;// rect.right() - gap - 50 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
 }
@@ -405,7 +405,7 @@ void FileTransferContactOverlay::updateButton(const QModelIndex& index)
     const QSize size = button()->size();
 
     const int gap = 5;
-    const int x   = rect.right() - gap - 132 - size.width();
+    const int x   = rect.left() + 128;//rect.right() - gap - 132 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
 }

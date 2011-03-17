@@ -178,7 +178,8 @@ void AbstractWidgetDelegateOverlay::slotEntered(const QModelIndex& index)
 
     if (index.isValid() && checkIndex(index)) {
         //QTimer::singleShot(500, this, SLOT(slotWidgetAboutToShow(index)));
-        QTimer::singleShot(500, m_widget, SLOT(show()));
+//         QTimer::singleShot(500, m_widget, SLOT(show()));
+        m_widget->show();
         emit overlayActivated(index);
     }
 }

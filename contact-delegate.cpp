@@ -7,11 +7,13 @@
 #include <KIconLoader>
 #include <KIcon>
 #include <KDebug>
+#include <KGlobalSettings>
 
 #include "accounts-model.h"
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
+const int PRESENCE_ICON_SIZE = 22;
 
 ContactDelegate::ContactDelegate(QObject * parent)
     : QStyledItemDelegate(parent), ContactDelegateOverlayContainer(), m_palette(0)
@@ -75,17 +77,18 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         }
 
         QRect statusIconRect = optV4.rect;
-        statusIconRect.setSize(QSize(22, 22));
-        statusIconRect.moveTo(QPoint(optV4.rect.right() - 24, optV4.rect.top() + 8));
+        statusIconRect.setSize(QSize(PRESENCE_ICON_SIZE, PRESENCE_ICON_SIZE));
+        statusIconRect.moveTo(QPoint(optV4.rect.right() - PRESENCE_ICON_SIZE - SPACING,
+                                     optV4.rect.top() + (optV4.rect.height() - PRESENCE_ICON_SIZE) / 2));
 
         painter->drawPixmap(statusIconRect, icon);
 
         QRect userNameRect = optV4.rect;
         userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
         userNameRect.setY(userNameRect.y() + 3);
-        userNameRect.setWidth(userNameRect.width() - 28);
+        userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
 
-        QFont nameFont = painter->font();
+        QFont nameFont = painter->font();// KGlobalSettings::smallestReadableFont();
         nameFont.setPixelSize(12);
         nameFont.setWeight(QFont::Bold);
 
@@ -98,11 +101,9 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         QRect statusMsgRect = optV4.rect;
         statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
         statusMsgRect.setY(userNameRect.top() + 16);
-        statusMsgRect.setWidth(statusMsgRect.width() - 28);
+        statusMsgRect.setWidth(statusMsgRect.width() - PRESENCE_ICON_SIZE - SPACING);
 
-        QFont statusFont = painter->font();
-        statusFont.setWeight(QFont::Normal);
-        statusFont.setPixelSize(10);
+        QFont statusFont = KGlobalSettings::smallestReadableFont();
 
         const QFontMetrics statusFontMetrics(statusFont);
 
@@ -131,9 +132,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         QRect expandSignRect = groupLabelRect;
         expandSignRect.setLeft(groupLabelRect.right() - 20);
 
-        QFont groupFont = painter->font();
-        groupFont.setWeight(QFont::Normal);
-        groupFont.setPixelSize(10);
+        QFont groupFont = KGlobalSettings::smallestReadableFont();
 
         QString counts;// = QString(" (%1/%2)").arg(index.data(AccountsModel::).toString(),
                         //               index.data(ModelRoles::AccountAllContactsCountRole).toString());
