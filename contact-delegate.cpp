@@ -14,6 +14,7 @@
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
 const int PRESENCE_ICON_SIZE = 22;
+const int ACCOUNT_ICON_SIZE = 13;
 
 ContactDelegate::ContactDelegate(QObject * parent)
     : QStyledItemDelegate(parent), ContactDelegateOverlayContainer(), m_palette(0)
@@ -123,14 +124,15 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         QRect groupRect = optV4.rect;
 
         QRect accountGroupRect = groupRect;
-        accountGroupRect.setSize(QSize(16, 16));
+        accountGroupRect.setSize(QSize(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
         accountGroupRect.moveTo(QPoint(groupRect.left() + 2, groupRect.top() + 2));
 
         QRect groupLabelRect = groupRect;
-        groupLabelRect.setLeft(20);
+        groupLabelRect.setRight(groupLabelRect.right() - SPACING);
 
         QRect expandSignRect = groupLabelRect;
-        expandSignRect.setLeft(groupLabelRect.right() - 20);
+        expandSignRect.setLeft(ACCOUNT_ICON_SIZE + SPACING);
+        expandSignRect.setRight(groupLabelRect.left() + 20); //keep it by the left side
 
         QFont groupFont = KGlobalSettings::smallestReadableFont();
 
@@ -139,14 +141,21 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         painter->fillRect(groupRect, m_palette->color(QPalette::AlternateBase));
 
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString()).pixmap(16,16));
+        painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
+                                                   .pixmap(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
 
         painter->setPen(m_palette->color(QPalette::WindowText));
         painter->setFont(groupFont);
-        painter->drawText(groupLabelRect, Qt::AlignVCenter,
+        painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignRight,
                           index.data(AccountsModel::DisplayNameRole).toString().append(counts));
 
-        painter->setPen(m_palette->color(QPalette::ButtonText));
+        QPen thinLinePen;
+        thinLinePen.setWidth(0);
+        thinLinePen.setCosmetic(true);
+        thinLinePen.setColor(m_palette->color(QPalette::ButtonText));
+
+        painter->setPen(thinLinePen);
+
         painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
         painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
 
