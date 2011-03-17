@@ -68,7 +68,7 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
         if (!sourceModel()->index(source_row, 0).data(AccountsModel::EnabledRole).toBool()) {
             rowAccepted = false;
         }
-        if (sourceModel()->index(source_row, 0).data(AccountsModel::ConnectionStatusRole).toInt()
+        if (sourceModel()->index(source_row, 0).data(AccountsModel::ConnectionStatusRole).toUInt()
             != Tp::ConnectionStatusConnected) {
 
             rowAccepted = false;
