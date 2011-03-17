@@ -21,6 +21,7 @@
 
 #include "account-filter-model.h"
 #include "accounts-model.h"
+#include <KDebug>
 
 AccountFilterModel::AccountFilterModel(QObject *parent)
     : QSortFilterProxyModel(parent),
@@ -60,6 +61,15 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
                  == Tp::ConnectionPresenceTypeOffline) ||
                 (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
                  == Tp::ConnectionPresenceTypeUnknown))) {
+
+            rowAccepted = false;
+        }
+    } else {
+        if (!sourceModel()->index(source_row, 0).data(AccountsModel::EnabledRole).toBool()) {
+            rowAccepted = false;
+        }
+        if (sourceModel()->index(source_row, 0).data(AccountsModel::ConnectionStatusRole).toInt()
+            != Tp::ConnectionStatusConnected) {
 
             rowAccepted = false;
         }

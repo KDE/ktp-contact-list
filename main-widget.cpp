@@ -46,7 +46,7 @@
 #include "contact-delegate.h"
 #include "contact-model-item.h"
 
-#define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDEChatHandler"
+#define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 
 MainWidget::MainWidget(QWidget *parent)
  : QWidget(parent),
@@ -203,7 +203,7 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
     kDebug() << "Connection status is" << status;
     switch (status) {
     case Tp::ConnectionStatusConnected:
-        m_model->onNewAccount(Tp::AccountPtr(static_cast<Tp::Account*>(sender())));
+        //FIXME: Get the account (sender()) index and expand only that index
         m_contactsListView->expandAll();
         break;
     //Fall through
