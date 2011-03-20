@@ -61,9 +61,15 @@ public Q_SLOTS:
     ///Called when the account presence changes
     void presenceChanged(Tp::Presence presence);
 
+    ///Sets the custom presence message
+    void setCustomPresenceMessage(const QString &message);
+
 private:
     ///Holds the account it controls
     Tp::AccountPtr                  m_account;
+
+    ///Contains the custom presence string
+    QString                         m_customPresenceMessage;
 
     ///The busy icon which is painted when connecting
     KPixmapSequenceOverlayPainter  *m_busyOverlay;

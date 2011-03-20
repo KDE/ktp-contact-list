@@ -36,6 +36,7 @@
 #include <TelepathyQt4/Constants>
 
 #include <KDebug>
+#include <KUser>
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
@@ -49,15 +50,20 @@
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 
 MainWidget::MainWidget(QWidget *parent)
- : QWidget(parent),
+    : KMainWindow(parent),
    m_model(0),
    m_modelFilter(0)
 {
     Tp::registerTypes();
+    KUser user;
 
     setupUi(this);
     m_filterBar->hide();
     setWindowIcon(KIcon("telepathy"));
+
+    m_userAccountIconButton->setIcon(QIcon(QPixmap::fromImage(QImage(user.faceIconPath()))));
+    m_userAccountNameLabel->setText(user.property(KUser::FullName).toString());
+//     m_toolBar->hide();
 
     m_actionAdd_contact->setIcon(KIcon("list-add-user"));
     m_actionAdd_contact->setText(QString());
@@ -139,6 +145,9 @@ MainWidget::MainWidget(QWidget *parent)
 
     connect(m_actionSearch_contact, SIGNAL(triggered(bool)),
             this, SLOT(toggleSearchWidget(bool)));
+
+    connect(m_presenceMessageEdit, SIGNAL(returnPressed(QString)),
+            this, SLOT(setCustomPresenceMessage(QString)));
 }
 
 MainWidget::~MainWidget()
@@ -240,7 +249,7 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
     bt->setObjectName(account->uniqueIdentifier());
     bt->hide();
 
-    m_accountButtonsLayout->insertWidget(m_accountButtonsLayout->count() - 1, bt);         
+    m_accountButtonsLayout->insertWidget(m_accountButtonsLayout->count() - 1, bt);
 
     if(account->isEnabled()) {
         bt->show();
@@ -425,4 +434,14 @@ void MainWidget::toggleSearchWidget(bool show)
 void MainWidget::onCustomContextMenuRequested(const QPoint& point)
 {
     Q_UNUSED(point);
+}
+
+void MainWidget::setCustomPresenceMessage(const QString& message)
+{
+    for (int i = 0; i < m_accountButtonsLayout->count() - 1; i++) {
+        qobject_cast<AccountButton*>(m_accountButtonsLayout->itemAt(i)->widget())->setCustomPresenceMessage(message);
+
+    }
+
+    m_presenceMessageEdit->clearFocus();
 }

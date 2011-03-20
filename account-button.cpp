@@ -123,6 +123,7 @@ void AccountButton::setAccountStatus(QAction *action)
     Tp::SimplePresence presence;
     presence.type = qVariantValue<Tp::Presence>(action->data()).type();
     presence.status = qVariantValue<Tp::Presence>(action->data()).status();
+    presence.statusMessage = m_customPresenceMessage;
 
     Q_ASSERT(!m_account.isNull());
 
@@ -130,6 +131,12 @@ void AccountButton::setAccountStatus(QAction *action)
 
     connect(presenceRequest, SIGNAL(finished(Tp::PendingOperation*)),
             this, SLOT(updateToolTip()));
+
+    QPixmap pixmap = icon().pixmap(32, 32);
+    QPainter painter(&pixmap);
+    KIcon(action->icon()).paint(&painter, 15, 15, 16, 16);
+
+    setIcon(KIcon(pixmap));
 }
 
 void AccountButton::updateToolTip()
@@ -193,4 +200,21 @@ QString AccountButton::presenceDisplayString(const Tp::Presence)
     }
 
     return QString();
+}
+
+void AccountButton::setCustomPresenceMessage(const QString& message)
+{
+    m_customPresenceMessage = message;
+
+    Tp::SimplePresence presence;
+    presence.type = m_account->currentPresence().type();
+    presence.status = m_account->currentPresence().status();
+    presence.statusMessage = m_customPresenceMessage;
+
+    Q_ASSERT(!m_account.isNull());
+
+    Tp::PendingOperation* presenceRequest = m_account->setRequestedPresence(presence);
+
+    connect(presenceRequest, SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(updateToolTip()));
 }

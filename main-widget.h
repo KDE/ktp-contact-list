@@ -28,6 +28,8 @@
 
 #include <TelepathyQt4/AccountManager>
 
+#include <KXmlGuiWindow>
+
 #include "ui_main-widget.h"
 
 class KMenu;
@@ -37,7 +39,7 @@ class AccountFilterModel;
 class ContactDelegate;
 class FilterBar;
 
-class MainWidget : public QWidget, Ui::MainWidget
+class MainWidget : public KMainWindow, Ui::MainWindow
 {
     Q_OBJECT
 public:
@@ -74,6 +76,7 @@ public Q_SLOTS:
     void onAccountStateChanged(bool enabled);
     void onAccountRemoved();
     void toggleSearchWidget(bool show);
+    void setCustomPresenceMessage(const QString &message);
     //    void startAudioChannel();
     //    void startVideoChannel();
 

@@ -89,8 +89,8 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         userNameRect.setY(userNameRect.y() + 3);
         userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
 
-        QFont nameFont = painter->font();// KGlobalSettings::smallestReadableFont();
-        nameFont.setPixelSize(12);
+        QFont nameFont = KGlobalSettings::smallestReadableFont();
+        nameFont.setPointSize(nameFont.pointSize() + 1);
         nameFont.setWeight(QFont::Bold);
 
         const QFontMetrics nameFontMetrics(nameFont);
@@ -131,7 +131,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         groupLabelRect.setRight(groupLabelRect.right() - SPACING);
 
         QRect expandSignRect = groupLabelRect;
-        expandSignRect.setLeft(ACCOUNT_ICON_SIZE + SPACING);
+        expandSignRect.setLeft(ACCOUNT_ICON_SIZE + SPACING + SPACING);
         expandSignRect.setRight(groupLabelRect.left() + 20); //keep it by the left side
 
         QFont groupFont = KGlobalSettings::smallestReadableFont();

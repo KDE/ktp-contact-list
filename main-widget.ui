@@ -1,43 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWidget</class>
- <widget class="QWidget" name="MainWidget">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>324</width>
-    <height>618</height>
+    <width>300</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Telepathy KDE Contact List</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="margin">
-    <number>0</number>
-   </property>
-   <item>
-    <widget class="QToolBar" name="m_toolBar">
-     <property name="toolButtonStyle">
-      <enum>Qt::ToolButtonTextBesideIcon</enum>
-     </property>
-     <addaction name="m_actionAdd_contact"/>
-     <addaction name="m_actionGroup_contacts"/>
-     <addaction name="m_actionHide_offline"/>
-     <addaction name="m_actionSearch_contact"/>
-    </widget>
-   </item>
-   <item>
-    <widget class="QTreeView" name="m_contactsListView"/>
-   </item>
-   <item>
-    <widget class="FilterBar" name="m_filterBar" native="true"/>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="m_accountButtonsLayout"/>
-   </item>
-  </layout>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <property name="leftMargin">
+     <number>1</number>
+    </property>
+    <property name="rightMargin">
+     <number>1</number>
+    </property>
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="1">
+       <layout class="QHBoxLayout" name="m_accountButtonsLayout"/>
+      </item>
+      <item row="0" column="0" rowspan="3">
+       <widget class="QPushButton" name="m_userAccountIconButton">
+        <property name="minimumSize">
+         <size>
+          <width>64</width>
+          <height>64</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>64</width>
+          <height>64</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>64</width>
+          <height>64</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="KLineEdit" name="m_presenceMessageEdit">
+        <property name="placeholderText">
+         <string>Set your status message here...</string>
+        </property>
+        <property name="showClearButton" stdset="0">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="m_userAccountNameLabel">
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QToolBar" name="m_toolBar">
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonIconOnly</enum>
+      </property>
+      <addaction name="m_actionAdd_contact"/>
+      <addaction name="m_actionGroup_contacts"/>
+      <addaction name="m_actionHide_offline"/>
+      <addaction name="m_actionSearch_contact"/>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTreeView" name="m_contactsListView"/>
+    </item>
+    <item>
+     <widget class="FilterBar" name="m_filterBar" native="true"/>
+    </item>
+   </layout>
+  </widget>
   <action name="m_actionAdd_contact">
    <property name="text">
     <string>Add contact</string>
@@ -81,6 +139,11 @@
   </action>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>KLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>klineedit.h</header>
+  </customwidget>
   <customwidget>
    <class>FilterBar</class>
    <extends>QWidget</extends>
