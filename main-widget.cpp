@@ -386,11 +386,11 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
 
 void MainWidget::addOverlayButtons()
 {
-    TextChannelContactOverlay*  textOverlay = new TextChannelContactOverlay(this);
+    TextChannelContactOverlay*  textOverlay  = new TextChannelContactOverlay(this);
     AudioChannelContactOverlay* audioOverlay = new AudioChannelContactOverlay(this);
     VideoChannelContactOverlay* videoOverlay = new VideoChannelContactOverlay(this);
 
-    FileTransferContactOverlay* fileOverlay = new FileTransferContactOverlay(this);
+    FileTransferContactOverlay* fileOverlay  = new FileTransferContactOverlay(this);
 
     m_delegate->installOverlay(textOverlay);
     m_delegate->installOverlay(audioOverlay);

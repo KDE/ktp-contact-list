@@ -93,6 +93,7 @@ public:
      *  Per default it will be shown when the cursor enters an index and hidden when left.
      *  Reimplement slotEntered() and mouseMove() for more fine grained control. */
     AbstractWidgetDelegateOverlay(QObject* parent);
+    virtual ~AbstractWidgetDelegateOverlay();
 
     /** If active is true, this will call createWidget(), initialize the widget for use,
      *  and setup connections for the virtual slots.

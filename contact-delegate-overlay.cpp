@@ -103,6 +103,11 @@ AbstractWidgetDelegateOverlay::AbstractWidgetDelegateOverlay(QObject* parent)
 {
 }
 
+AbstractWidgetDelegateOverlay::~AbstractWidgetDelegateOverlay()
+{
+
+}
+
 void AbstractWidgetDelegateOverlay::setActive(bool active)
 {
     if (active) {
@@ -177,7 +182,6 @@ void AbstractWidgetDelegateOverlay::slotEntered(const QModelIndex& index)
     hide();
 
     if (index.isValid() && checkIndex(index)) {
-        //QTimer::singleShot(500, this, SLOT(slotWidgetAboutToShow(index)));
 //         QTimer::singleShot(500, m_widget, SLOT(show()));
         m_widget->show();
         emit overlayActivated(index);
@@ -219,38 +223,38 @@ void AbstractWidgetDelegateOverlay::viewportLeaveEvent(QObject*, QEvent*)
 
 bool AbstractWidgetDelegateOverlay::eventFilter(QObject* obj, QEvent* event)
 {
-    if (m_widget && obj == m_widget->parent()) {  // events on view's viewport
+    if (m_widget && obj == m_widget) {
         switch (event->type()) {
-        case QEvent::Leave:
-            viewportLeaveEvent(obj, event);
-            break;
-        case QEvent::MouseMove:
-            if (m_mouseButtonPressedOnWidget) {
-                // Don't forward mouse move events to the viewport,
-                // otherwise a rubberband selection will be shown when
-                // clicking on the selection toggle and moving the mouse
-                // above the viewport.
-                return true;
-            }
-            break;
-        case QEvent::MouseButtonRelease:
-            m_mouseButtonPressedOnWidget = false;
-            break;
-        default:
-            break;
+            case QEvent::MouseButtonPress:
+                if (static_cast<QMouseEvent*>(event)->buttons() & Qt::LeftButton) {
+                    m_mouseButtonPressedOnWidget = true;
+                }
+                break;
+            case QEvent::MouseButtonRelease:
+                m_mouseButtonPressedOnWidget = false;
+                break;
+            default:
+                break;
         }
-    } else if (obj == m_widget) {
+    } else {   // events on view's viewport
         switch (event->type()) {
-        case QEvent::MouseButtonPress:
-            if (static_cast<QMouseEvent*>(event)->buttons() & Qt::LeftButton) {
-                m_mouseButtonPressedOnWidget = true;
-            }
-            break;
-        case QEvent::MouseButtonRelease:
-            m_mouseButtonPressedOnWidget = false;
-            break;
-        default:
-            break;
+            case QEvent::Leave:
+                viewportLeaveEvent(obj, event);
+                break;
+            case QEvent::MouseMove:
+                if (m_mouseButtonPressedOnWidget) {
+                    // Don't forward mouse move events to the viewport,
+                    // otherwise a rubberband selection will be shown when
+                    // clicking on the selection toggle and moving the mouse
+                    // above the viewport.
+                    return true;
+                }
+                break;
+            case QEvent::MouseButtonRelease:
+                m_mouseButtonPressedOnWidget = false;
+                break;
+            default:
+                break;
         }
     }
 
@@ -335,6 +339,7 @@ void ContactDelegateOverlayContainer::removeOverlay(ContactDelegateOverlay* over
     overlay->setActive(false);
     overlay->setDelegate(0);
     m_overlays.removeAll(overlay);
+    QObject::disconnect(overlay, 0, asDelegate(), 0);
 }
 
 void ContactDelegateOverlayContainer::setAllOverlaysActive(bool active)
