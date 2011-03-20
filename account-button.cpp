@@ -98,6 +98,12 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
 
         if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
             a->setChecked(true);
+
+            QPixmap pixmap = icon().pixmap(32, 32);
+            QPainter painter(&pixmap);
+            KIcon(a->icon()).paint(&painter, 15, 15, 16, 16);
+
+            setIcon(KIcon(pixmap));
         }
     }
 
