@@ -34,9 +34,11 @@
 #include <TelepathyQt4/PendingChannelRequest>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/Constants>
+#include <TelepathyQt4/ContactManager>
 
 #include <KDebug>
 #include <KUser>
+#include <KMenu>
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
@@ -431,10 +433,189 @@ void MainWidget::toggleSearchWidget(bool show)
     }
 }
 
-void MainWidget::onCustomContextMenuRequested(const QPoint& point)
+void MainWidget::onCustomContextMenuRequested(const QPoint &)
 {
-    Q_UNUSED(point);
+    QModelIndex index = m_contactsListView->currentIndex();
+    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    if (contact.isNull()) {
+        kDebug() << "Contact is nulled";
+        return;
+    }
+
+    Tp::AccountPtr account = m_model->accountForContactIndex(m_modelFilter->mapToSource(index));
+    if (account.isNull()) {
+        kDebug() << "Account is nulled";
+        return;
+    }
+
+    QScopedPointer<KMenu> menu(new KMenu);
+    menu->addTitle(contact->alias());
+    QAction* action = menu->addAction(i18n("Start Chat..."));
+    action->setIcon(KIcon("mail-message-new"));
+    connect(action, SIGNAL(triggered(bool)),
+            SLOT(slotStartTextChat()));
+
+    Tp::ConnectionPtr accountConnection = account->connection();
+    if (accountConnection.isNull()) {
+        kDebug() << "Account connection is nulled.";
+        return;
+    }
+
+    if (accountConnection->capabilities().streamedMediaAudioCalls()) {
+        action = menu->addAction(i18n("Start Audio Call..."));
+        action->setIcon(KIcon("voicecall"));
+        action->setDisabled(true);
+    }
+
+    if (accountConnection->capabilities().streamedMediaVideoCalls()) {
+        action = menu->addAction(i18n("Start Video Call..."));
+        action->setIcon(KIcon("webcamsend"));
+        action->setDisabled(true);
+    }
+
+    if (accountConnection->capabilities().fileTransfers()) {
+        action = menu->addAction(i18n("Send File..."));
+        action->setDisabled(true);
+    }
+    menu->addSeparator();
+
+    if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
+        QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
+
+        QStringList currentGroups = contact->groups();
+        QStringList allGroups = accountConnection->contactManager()->allKnownGroups();
+        foreach (const QString &group, currentGroups) {
+            allGroups.removeAll(group);
+        }
+
+        groupAddMenu->addAction(i18n("Create New Group..."));
+        groupAddMenu->addSeparator();
+
+        foreach (const QString &group, allGroups) {
+            connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
+                    SLOT(slotAddContactToGroupTriggered()));
+        }
+    } else {
+        kDebug() << "Unable to support Groups";
+    }
+
+    //menu->addSeparator();
+
+    // TODO Remove when Telepathy actually supports blocking.
+    /*if (contact->isBlocked()) {
+     *        action = menu->addAction(i18n("Unlock User"));
+     *        connect(action, SIGNAL(triggered(bool)),
+     *                SLOT(slotUnblockContactTriggered()));
+} else {
+    action = menu->addAction(i18n("Block User"));
+    connect(action, SIGNAL(triggered(bool)),
+    SLOT(slotBlockContactTriggered()));
+}*/
+
+    menu->exec(QCursor::pos());
 }
+
+void MainWidget::slotAddContactToGroupFinished(Tp::PendingOperation* operation)
+{
+    if (operation->isError()) {
+        kDebug() << operation->errorName();
+        kDebug() << operation->errorMessage();
+    }
+}
+
+void MainWidget::slotAddContactToGroupTriggered()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    if (contact.isNull()) {
+        kDebug() << "Contact is nulled";
+        return;
+    }
+
+    QAction *action = qobject_cast<QAction*>(sender());
+    if (!action) {
+        kDebug() << "Invalid action";
+        return;
+    }
+
+    const QStringList currentGroups = contact->groups();
+
+    Tp::PendingOperation* operation = contact->addToGroup(action->text().remove('&'));
+    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(slotAddContactToGroupFinished(Tp::PendingOperation*)));
+
+    if (operation) {
+        foreach (const QString &group, currentGroups) {
+            Tp::PendingOperation* operation = contact->removeFromGroup(group);
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    SLOT(slotRemoveContactFromGroupFinished(Tp::PendingOperation*)));
+        }
+    }
+}
+
+void MainWidget::slotBlockContactFinished(Tp::PendingOperation *operation)
+{
+    if (operation->isError()) {
+        kDebug() << operation->errorName();
+        kDebug() << operation->errorMessage();
+    }
+}
+
+void MainWidget::slotBlockContactTriggered()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    if (contact.isNull()) {
+        kDebug() << "Contact is nulled";
+        return;
+    }
+
+    Tp::PendingOperation *operation = contact->block(true);
+    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(slotBlockContactFinished(Tp::PendingOperation*)));
+}
+
+void MainWidget::slotRemoveContactFromGroupFinished(Tp::PendingOperation *operation)
+{
+    if (operation->isError()) {
+        kDebug() << operation->errorName();
+        kDebug() << operation->errorMessage();
+    }
+}
+
+void MainWidget::slotStartTextChat()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    if (!index.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    startTextChannel(index);
+}
+
+void MainWidget::slotUnblockContactFinished(Tp::PendingOperation* operation)
+{
+    if (operation->isError()) {
+        kDebug() << operation->errorName();
+        kDebug() << operation->errorMessage();
+    }
+}
+
+void MainWidget::slotUnblockContactTriggered()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    if (contact.isNull()) {
+        kDebug() << "Contact is nulled";
+        return;
+    }
+
+    Tp::PendingOperation *operation = contact->block(false);
+    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(slotUnblockContactFinished(Tp::PendingOperation*)));
+}
+
 
 void MainWidget::setCustomPresenceMessage(const QString& message)
 {

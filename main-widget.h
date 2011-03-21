@@ -82,6 +82,16 @@ public Q_SLOTS:
 
     void onCustomContextMenuRequested(const QPoint &point);
 
+private Q_SLOTS:
+    void slotAddContactToGroupFinished(Tp::PendingOperation *operation);
+    void slotAddContactToGroupTriggered();
+    void slotBlockContactFinished(Tp::PendingOperation *operation);
+    void slotBlockContactTriggered();
+    void slotRemoveContactFromGroupFinished(Tp::PendingOperation *operation);
+    void slotStartTextChat();
+    void slotUnblockContactFinished(Tp::PendingOperation *operation);
+    void slotUnblockContactTriggered();
+
 private:
     AccountsModel          *m_model;
     AccountFilterModel     *m_modelFilter;
