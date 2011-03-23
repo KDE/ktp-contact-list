@@ -77,6 +77,7 @@ public Q_SLOTS:
     void onAccountRemoved();
     void toggleSearchWidget(bool show);
     void setCustomPresenceMessage(const QString &message);
+    void showSettingsKCM();
     //    void startAudioChannel();
     //    void startVideoChannel();
 

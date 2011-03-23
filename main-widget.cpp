@@ -39,6 +39,7 @@
 #include <KDebug>
 #include <KUser>
 #include <KMenu>
+#include <KSettings/Dialog>
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
@@ -65,7 +66,20 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_userAccountIconButton->setIcon(QIcon(QPixmap::fromImage(QImage(user.faceIconPath()))));
     m_userAccountNameLabel->setText(user.property(KUser::FullName).toString());
-//     m_toolBar->hide();
+
+    QToolButton *settingsButton = new QToolButton(this);
+    settingsButton->setIcon(KIcon("configure"));
+    settingsButton->setPopupMode(QToolButton::InstantPopup);
+
+    QMenu *settingsButtonMenu = new QMenu(settingsButton);
+    settingsButtonMenu->addAction(i18n("Configure accounts..."), this, SLOT(showSettingsKCM()));
+    settingsButtonMenu->addSeparator();
+    settingsButtonMenu->addMenu(helpMenu());
+
+    settingsButton->setMenu(settingsButtonMenu);
+
+    m_toolBar->addSeparator();
+    m_toolBar->addWidget(settingsButton);
 
     m_actionAdd_contact->setIcon(KIcon("list-add-user"));
     m_actionAdd_contact->setText(QString());
@@ -188,6 +202,9 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     connect(m_filterBar, SIGNAL(closeRequest()),
             m_actionSearch_contact, SLOT(toggle()));
+
+    connect(m_modelFilter, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)),
+        m_delegate, SLOT(contactRemoved(QModelIndex,int,int)));
 
     m_accountButtonsLayout->insertStretch(-1);
 
@@ -625,4 +642,14 @@ void MainWidget::setCustomPresenceMessage(const QString& message)
     }
 
     m_presenceMessageEdit->clearFocus();
+}
+
+void MainWidget::showSettingsKCM()
+{
+    KSettings::Dialog *dialog = new KSettings::Dialog(this);
+
+    dialog->addModule("kcm_telepathy_accounts");
+
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }

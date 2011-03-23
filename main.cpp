@@ -54,8 +54,9 @@ int main(int argc, char *argv[])
                          ki18n("Telepathy KDE Contact List"), KAboutData::License_GPL,
                          ki18n("(C) 2011, Martin Klapetek"));
 
-    aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), KLocalizedString(),
+    aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), ki18n("Developer"),
                         "martin.klapetek@gmail.com");
+    aboutData.setProductName("telepathy/contactlist"); //set the correct name for bug reporting
 
     KCmdLineArgs::init(argc, argv, &aboutData);
 
