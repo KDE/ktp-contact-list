@@ -32,6 +32,7 @@
 
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingChannelRequest>
+#include <TelepathyQt4/PendingContacts>
 #include <TelepathyQt4/ClientRegistrar>
 #include <TelepathyQt4/Constants>
 #include <TelepathyQt4/ContactManager>
@@ -49,6 +50,7 @@
 #include "account-filter-model.h"
 #include "contact-delegate.h"
 #include "contact-model-item.h"
+#include "add-contact-dialog.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 
@@ -159,7 +161,7 @@ MainWidget::MainWidget(QWidget *parent)
             m_contactsListView->viewport(), SLOT(repaint())); //update(QModelIndex)
 
     connect(m_actionAdd_contact, SIGNAL(triggered(bool)),
-            this, SLOT(onAddContactRequest(bool)));
+            this, SLOT(onAddContactRequest()));
 
     connect(m_actionGroup_contacts, SIGNAL(triggered(bool)),
             this, SLOT(onGroupContacts(bool)));
@@ -448,6 +450,29 @@ void MainWidget::toggleSearchWidget(bool show)
         m_modelFilter->clearFilterString();
         m_filterBar->clear();
         m_filterBar->hide();
+    }
+}
+
+void MainWidget::onAddContactRequest() {
+    AddContactDialog dialog(m_model, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        Tp::AccountPtr account = dialog.account();
+        QStringList identifiers = QStringList() << dialog.screenName();
+        Tp::PendingContacts* pendingContacts = account->connection()->contactManager()->contactsForIdentifiers(identifiers);
+        connect(pendingContacts, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAddContactRequestFoundContacts(Tp::PendingOperation*)));
+    }
+}
+
+void MainWidget::onAddContactRequestFoundContacts(Tp::PendingOperation *operation) {
+    Tp::PendingContacts *pendingContacts = qobject_cast<Tp::PendingContacts*>(operation);
+
+    if (! pendingContacts->isError()) {
+        //request subscription
+        pendingContacts->manager()->requestPresenceSubscription(pendingContacts->contacts());
+    }
+    else {
+        kDebug() << pendingContacts->errorName();
+        kDebug() << pendingContacts->errorMessage();
     }
 }
 

@@ -78,6 +78,9 @@ public Q_SLOTS:
     void toggleSearchWidget(bool show);
     void setCustomPresenceMessage(const QString &message);
     void showSettingsKCM();
+    void onAddContactRequest();
+    void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
+
     //    void startAudioChannel();
     //    void startVideoChannel();
 

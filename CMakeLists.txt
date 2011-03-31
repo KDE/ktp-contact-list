@@ -33,11 +33,13 @@ set (contactlist_SRCS
      filter-bar.cpp
      main.cpp
      main-widget.cpp
+    add-contact-dialog.cpp
 )
 
 
 kde4_add_ui_files (contactlist_SRCS
                    main-widget.ui
+                   add-contact-dialog.ui
 )
 
 kde4_add_executable (telepathy-kde-contactlist
