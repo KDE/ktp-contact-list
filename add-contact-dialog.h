@@ -17,7 +17,7 @@ class AddContactDialog : public KDialog
 
 public:
     explicit AddContactDialog(AccountsModel* accountModel, QWidget *parent = 0);
-    ~AddContactDialog();
+    virtual ~AddContactDialog();
     Tp::AccountPtr account() const;
     const QString screenName() const;
 

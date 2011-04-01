@@ -28,7 +28,7 @@ SubscribableAccountsModel::SubscribableAccountsModel(QObject *parent)
 
 bool SubscribableAccountsModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
-    AccountsModelItem* item = sourceModel()->index(source_row, 0, source_parent).data(AccountsModel::ItemRole).value<AccountsModelItem*>());
+    AccountsModelItem* item = sourceModel()->index(source_row, 0, source_parent).data(AccountsModel::ItemRole).value<AccountsModelItem*>();
 
     if (item) {
         Tp::AccountPtr account = item->account();
@@ -68,11 +68,10 @@ AddContactDialog::~AddContactDialog()
 Tp::AccountPtr AddContactDialog::account() const
 {
     QVariant itemData = ui->accountCombo->itemData(ui->accountCombo->currentIndex(),AccountsModel::ItemRole);
-    AccountsModelItem* item = itemData.value<AccountsModelItem*>());
+    AccountsModelItem* item = itemData.value<AccountsModelItem*>();
     if (item) {
         return item->account();
-    }
-    else {
+    } else {
         return Tp::AccountPtr();
     }
 }

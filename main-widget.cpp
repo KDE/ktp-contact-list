@@ -29,6 +29,8 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QPushButton>
 #include <QtGui/QToolButton>
+#include <QtCore/QWeakPointer>
+
 
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingChannelRequest>
@@ -285,8 +287,7 @@ void MainWidget::onAccountStateChanged(bool enabled)
 
     if(enabled) {
         findChild<AccountButton *>(account->uniqueIdentifier())->show();
-    }
-    else {
+    } else {
         findChild<AccountButton *>(account->uniqueIdentifier())->hide();
         showMessageToUser(i18n("Account %1 was disabled!").arg(account->displayName()),
                           MainWidget::SystemMessageError);
@@ -454,13 +455,14 @@ void MainWidget::toggleSearchWidget(bool show)
 }
 
 void MainWidget::onAddContactRequest() {
-    AddContactDialog dialog(m_model, this);
-    if (dialog.exec() == QDialog::Accepted) {
-        Tp::AccountPtr account = dialog.account();
-        QStringList identifiers = QStringList() << dialog.screenName();
+    QWeakPointer<AddContactDialog> dialog = new AddContactDialog(m_model, this);
+    if (dialog.data()->exec() == QDialog::Accepted) {
+	Tp::AccountPtr account = dialog.data()->account();
+        QStringList identifiers = QStringList() << dialog.data()->screenName();
         Tp::PendingContacts* pendingContacts = account->connection()->contactManager()->contactsForIdentifiers(identifiers);
         connect(pendingContacts, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAddContactRequestFoundContacts(Tp::PendingOperation*)));
     }
+    delete dialog.data();
 }
 
 void MainWidget::onAddContactRequestFoundContacts(Tp::PendingOperation *operation) {
