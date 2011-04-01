@@ -223,7 +223,7 @@ void MainWidget::onAccountReady(Tp::PendingOperation* op)
     }
 
     Tp::PendingReady *pendingReady = qobject_cast<Tp::PendingReady*>(op);
-    Q_ASSERT(pendingReady);   
+    Q_ASSERT(pendingReady);
 }
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
@@ -235,10 +235,7 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
         m_contactsListView->expandAll();
         break;
     case Tp::ConnectionStatusDisconnected:
-        // This will make sure that the empty account groups will be hidden
-        m_modelFilter->refilter();
-        break;
-    //Fall through
+        //Fall through
     case Tp::ConnectionStatusConnecting:
     default:
         break;
@@ -254,7 +251,7 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
             this, SLOT(onConnectionChanged(Tp::ConnectionPtr)));
 
     connect(account.data(),
-            SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), 
+            SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
             this, SLOT(onAccountConnectionStatusChanged(Tp::ConnectionStatus)));
 
     connect(account.data(), SIGNAL(stateChanged(bool)),
@@ -284,7 +281,7 @@ void MainWidget::onAccountStateChanged(bool enabled)
     }
     else {
         findChild<AccountButton *>(account->uniqueIdentifier())->hide();
-        showMessageToUser(i18n("Account %1 was disabled!").arg(account->displayName()), 
+        showMessageToUser(i18n("Account %1 was disabled!").arg(account->displayName()),
                           MainWidget::SystemMessageError);
     }
 }
@@ -294,7 +291,7 @@ void MainWidget::onAccountRemoved()
     Tp::AccountPtr account(static_cast<Tp::Account*>(sender()));
     delete findChild<AccountButton *>(account->uniqueIdentifier());
 
-    showMessageToUser(i18n("Account %1 was removed!").arg(account->displayName()), 
+    showMessageToUser(i18n("Account %1 was removed!").arg(account->displayName()),
                       MainWidget::SystemMessageError);
 }
 
@@ -317,7 +314,7 @@ void MainWidget::onContactListDoubleClick(const QModelIndex& index)
     }
     else {
         kDebug() << "Text chat requested for index" << index;
-        startTextChannel(index);    
+        startTextChannel(index);
     }
 }
 
@@ -390,10 +387,10 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
     a->setParent(msgFrame);
     a->setDuration(4000);
     a->setEasingCurve(QEasingCurve::OutExpo);
-    a->setStartValue(QPointF(m_contactsListView->viewport()->pos().x(), 
+    a->setStartValue(QPointF(m_contactsListView->viewport()->pos().x(),
                              m_contactsListView->viewport()->pos().y()+m_contactsListView->viewport()->height()));
 
-    a->setEndValue(QPointF(m_contactsListView->viewport()->pos().x(), 
+    a->setEndValue(QPointF(m_contactsListView->viewport()->pos().x(),
                            m_contactsListView->viewport()->pos().y()+m_contactsListView->viewport()->height()-50));
     a->start();
 
