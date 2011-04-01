@@ -73,6 +73,14 @@ private:
 
     ///The busy icon which is painted when connecting
     KPixmapSequenceOverlayPainter  *m_busyOverlay;
+
+    QPixmap m_errorPixmap;
+    QPixmap m_onlinePixmap;
+    QPixmap m_awayPixmap;
+    QPixmap m_busyPixmap;
+    QPixmap m_awayExPixmap;
+    QPixmap m_hiddenPixmap;
+    QPixmap m_offlinePixmap;
 };
 
 #endif // TELEPATHY_ACCOUNTBUTTON_H

@@ -26,6 +26,7 @@
 #include <KLocale>
 #include <KPixmapSequenceOverlayPainter>
 #include <KPixmapSequence>
+#include <KIconLoader>
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/PendingOperation>
@@ -41,6 +42,14 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     m_busyOverlay->setWidget(this);
     m_busyOverlay->setSequence(KPixmapSequence(QString("process-working")));
 
+    m_errorPixmap =   KIconLoader::global()->loadIcon("dialog-error", KIconLoader::NoGroup, 16);
+    m_onlinePixmap =  KIconLoader::global()->loadIcon("user-online", KIconLoader::NoGroup, 16);
+    m_awayPixmap =    KIconLoader::global()->loadIcon("user-away", KIconLoader::NoGroup, 16);
+    m_awayExPixmap =  KIconLoader::global()->loadIcon("user-away-extended", KIconLoader::NoGroup, 16);
+    m_busyPixmap =    KIconLoader::global()->loadIcon("user-busy", KIconLoader::NoGroup, 16);
+    m_hiddenPixmap =  KIconLoader::global()->loadIcon("user-invisible", KIconLoader::NoGroup, 16);
+    m_offlinePixmap = KIconLoader::global()->loadIcon("user-offline", KIconLoader::NoGroup, 16);
+
     QString iconPath = account->iconName();
 
     setIcon(KIcon(iconPath));
@@ -49,7 +58,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
         //we paint a warning symbol in the right-bottom corner
         QPixmap pixmap = icon().pixmap(32, 32);
         QPainter painter(&pixmap);
-        KIcon("dialog-error").paint(&painter, 15, 15, 16, 16);
+        painter.drawPixmap(15, 15, 16, 16, m_errorPixmap);
 
         setIcon(KIcon(pixmap));
     }
