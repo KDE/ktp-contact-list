@@ -22,9 +22,9 @@
 #define TELEPATHY_ACCOUNTBUTTON_H
 
 #include <QToolButton>
-#include <QLineEdit>
 
-#include <TelepathyQt4/Account>
+#include <TelepathyQt4/Types>
+#include <TelepathyQt4/Presence>
 
 class QAction;
 class KPixmapSequenceOverlayPainter;
@@ -40,7 +40,7 @@ public:
     QString accountId();
 
     ///Returns the action (menu item) string for displaying elsewhere on the screen
-    QString presenceDisplayString(const Tp::Presence);
+    QString presenceDisplayString(const Tp::Presence &presence);
 
 public Q_SLOTS:
     ///Sets the account status contained in action (connects to triggered(QAction*) signal)
@@ -50,7 +50,7 @@ public Q_SLOTS:
     void updateToolTip();
 
     ///Called when the connection status changes
-    void connectionChanged(Tp::ConnectionStatus status);
+    void connectionChanged(const Tp::ConnectionStatus &status);
 
     ///Shows the animated busy icon over the button
     void showBusyIndicator();
@@ -59,7 +59,7 @@ public Q_SLOTS:
     void hideBusyIndicator();
 
     ///Called when the account presence changes
-    void presenceChanged(Tp::Presence presence);
+    void presenceChanged(const Tp::Presence &presence);
 
     ///Sets the custom presence message
     void setCustomPresenceMessage(const QString &message);

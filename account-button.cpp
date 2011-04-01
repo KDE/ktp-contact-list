@@ -18,15 +18,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include <QAction>
-#include <QPainter>
-#include <QPixmap>
+#include <QtGui/QPainter>
+#include <QtGui/QPixmap>
 
+#include <KAction>
 #include <KIcon>
 #include <KLocale>
 #include <KPixmapSequenceOverlayPainter>
 #include <KPixmapSequence>
 
+#include <TelepathyQt4/Account>
 #include <TelepathyQt4/PendingOperation>
 
 #include "account-button.h"
@@ -62,14 +63,14 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     QActionGroup *presenceActions = new QActionGroup(this);
     presenceActions->setExclusive(true);
 
-    QAction *onlineAction =     new QAction(KIcon("user-online"), i18nc("@action:inmenu", "Available"), this);
-    QAction *awayAction =       new QAction(KIcon("user-away"), i18nc("@action:inmenu", "Away"), this);
-    QAction *brbAction =        new QAction(KIcon("user-busy"), i18nc("@action:inmenu", "Be right back"), this);
-    QAction *busyAction =       new QAction(KIcon("user-busy"), i18nc("@action:inmenu", "Busy"), this);
-    QAction *dndAction =        new QAction(KIcon("user-busy"), i18nc("@action:inmenu", "Do not disturb"), this);
-    QAction *xaAction =         new QAction(KIcon("user-away-extended"), i18nc("@action:inmenu", "Extended Away"), this);
-    QAction *invisibleAction =  new QAction(KIcon("user-invisible"), i18nc("@action:inmenu", "Invisible"), this);
-    QAction *offlineAction =    new QAction(KIcon("user-offline"), i18nc("@action:inmenu", "Offline"), this);
+    KAction *onlineAction =     new KAction(KIcon("user-online"), i18nc("@action:inmenu", "Available"), this);
+    KAction *awayAction =       new KAction(KIcon("user-away"), i18nc("@action:inmenu", "Away"), this);
+    KAction *brbAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu", "Be right back"), this);
+    KAction *busyAction =       new KAction(KIcon("user-busy"), i18nc("@action:inmenu", "Busy"), this);
+    KAction *dndAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu", "Do not disturb"), this);
+    KAction *xaAction =         new KAction(KIcon("user-away-extended"), i18nc("@action:inmenu", "Extended Away"), this);
+    KAction *invisibleAction =  new KAction(KIcon("user-invisible"), i18nc("@action:inmenu", "Invisible"), this);
+    KAction *offlineAction =    new KAction(KIcon("user-offline"), i18nc("@action:inmenu", "Offline"), this);
 
     //let's set the presences as data so we can easily just use the Tp::Presence when the action has been triggered
     onlineAction->setData(qVariantFromValue(Tp::Presence::available()));
@@ -158,7 +159,7 @@ void AccountButton::updateToolTip()
     }
 }
 
-void AccountButton::connectionChanged(Tp::ConnectionStatus status)
+void AccountButton::connectionChanged(const Tp::ConnectionStatus &status)
 {
     switch (status) {
     case Tp::ConnectionStatusConnecting:
@@ -183,7 +184,7 @@ void AccountButton::hideBusyIndicator()
     m_busyOverlay->stop();
 }
 
-void AccountButton::presenceChanged(Tp::Presence presence)
+void AccountButton::presenceChanged(const Tp::Presence &presence)
 {
     foreach (QAction *a, actions()) {
         if (presence.status() == qVariantValue<Tp::Presence>(a->data()).status()) {
@@ -197,7 +198,7 @@ void AccountButton::presenceChanged(Tp::Presence presence)
 /*  since there is no easy way to get this string by Tp::Presence,
     we need to loop through all the actions and return the right one.
     This will also get us i18n strings for free. */
-QString AccountButton::presenceDisplayString(const Tp::Presence)
+QString AccountButton::presenceDisplayString(const Tp::Presence &presence)
 {
     foreach (QAction *a, actions()) {
         if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
