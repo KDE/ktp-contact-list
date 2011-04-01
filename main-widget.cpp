@@ -328,8 +328,7 @@ void MainWidget::startTextChannel(const QModelIndex &index)
     }
 
     QModelIndex realIndex = m_modelFilter->mapToSource(index);
-    Tp::ContactPtr contact = static_cast<ContactModelItem*>(
-        qVariantValue<QObject *>(m_model->data(realIndex, AccountsModel::ItemRole)))->contact();
+    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
 
     kDebug() << "Requesting chat for contact" << contact->alias();
 
