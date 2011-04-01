@@ -64,8 +64,13 @@ MainWidget::MainWidget(QWidget *parent)
     m_filterBar->hide();
     setWindowIcon(KIcon("telepathy"));
 
-    m_userAccountIconButton->setIcon(QIcon(QPixmap::fromImage(QImage(user.faceIconPath()))));
-    m_userAccountNameLabel->setText(user.property(KUser::FullName).toString());
+//     QIcon icon;
+//     icon.addFile(user.faceIconPath());
+//     m_userAccountIconButton->setIcon(icon);
+
+    m_userAccountNameLabel->setText(user.property(KUser::FullName).isNull() ?
+        user.loginName() : user.property(KUser::FullName).toString()
+    );
 
     QToolButton *settingsButton = new QToolButton(this);
     settingsButton->setIcon(KIcon("configure"));
