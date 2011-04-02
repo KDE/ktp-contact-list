@@ -28,6 +28,7 @@
 
 class QAction;
 class KPixmapSequenceOverlayPainter;
+class KLineEdit;
 
 class AccountButton : public QToolButton
 {
@@ -73,6 +74,8 @@ private:
 
     ///The busy icon which is painted when connecting
     KPixmapSequenceOverlayPainter  *m_busyOverlay;
+
+    KLineEdit *m_presenceMessageWidget;
 
     QPixmap m_errorPixmap;
     QPixmap m_onlinePixmap;

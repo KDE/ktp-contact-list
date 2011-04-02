@@ -27,6 +27,7 @@
 #include <KPixmapSequenceOverlayPainter>
 #include <KPixmapSequence>
 #include <KIconLoader>
+#include <KLineEdit>
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/PendingOperation>
@@ -81,6 +82,21 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     KAction *invisibleAction =  new KAction(KIcon("user-invisible"), i18nc("@action:inmenu", "Invisible"), this);
     KAction *offlineAction =    new KAction(KIcon("user-offline"), i18nc("@action:inmenu", "Offline"), this);
 
+    m_presenceMessageWidget = new KLineEdit(this);
+    m_presenceMessageWidget->setClearButtonShown(true);
+    m_presenceMessageWidget->setClickMessage(i18n("Set message..."));
+    m_presenceMessageWidget->setTrapReturnKey(true);
+
+    connect(m_presenceMessageWidget, SIGNAL(returnPressed(QString)),
+            this, SLOT(setCustomPresenceMessage(QString)));
+
+    //this makes sure the klineedit loses focus once enter was pressed
+    connect(m_presenceMessageWidget, SIGNAL(returnPressed(QString)),
+            this, SLOT(setFocus()));
+
+    QWidgetAction *presenceMessageAction = new QWidgetAction(this);
+    presenceMessageAction->setDefaultWidget(m_presenceMessageWidget);
+
     //let's set the presences as data so we can easily just use the Tp::Presence when the action has been triggered
     onlineAction->setData(qVariantFromValue(Tp::Presence::available()));
     awayAction->setData(qVariantFromValue(Tp::Presence::away()));
@@ -99,23 +115,17 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     presenceActions->addAction(xaAction);
     presenceActions->addAction(invisibleAction);
     presenceActions->addAction(offlineAction);
+    presenceActions->addAction(presenceMessageAction);
 
     addActions(presenceActions->actions());
 
-    //make all the actions checkable and set the current status as checked
+    //make all the actions checkable
     foreach (QAction *a, actions()) {
         a->setCheckable(true);
-
-        if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
-            a->setChecked(true);
-
-            QPixmap pixmap = icon().pixmap(32, 32);
-            QPainter painter(&pixmap);
-            KIcon(a->icon()).paint(&painter, 15, 15, 16, 16);
-
-            setIcon(KIcon(pixmap));
-        }
     }
+
+    //set the current status as checked and paint presence overlay
+    presenceChanged(m_account->currentPresence());
 
     connect(this, SIGNAL(triggered(QAction*)),
             this, SLOT(setAccountStatus(QAction*)));
@@ -195,12 +205,27 @@ void AccountButton::hideBusyIndicator()
 
 void AccountButton::presenceChanged(const Tp::Presence &presence)
 {
+    bool accountPresenceFound = false;
+
     foreach (QAction *a, actions()) {
         if (presence.status() == qVariantValue<Tp::Presence>(a->data()).status()) {
             a->setChecked(true);
             updateToolTip();
+
+            accountPresenceFound = true;
+
+            QPixmap pixmap = icon().pixmap(32, 32);
+            QPainter painter(&pixmap);
+            KIcon(a->icon()).paint(&painter, 15, 15, 16, 16);
+
+            setIcon(KIcon(pixmap));
+
             break;
         }
+    }
+
+    if (!accountPresenceFound) {
+        presenceChanged(Tp::Presence::offline());
     }
 }
 
@@ -210,7 +235,7 @@ void AccountButton::presenceChanged(const Tp::Presence &presence)
 QString AccountButton::presenceDisplayString(const Tp::Presence &presence)
 {
     foreach (QAction *a, actions()) {
-        if (m_account->currentPresence().status() == qVariantValue<Tp::Presence>(a->data()).status()) {
+        if (presence.status() == qVariantValue<Tp::Presence>(a->data()).status()) {
             return a->text();
         }
     }
@@ -233,4 +258,6 @@ void AccountButton::setCustomPresenceMessage(const QString& message)
 
     connect(presenceRequest, SIGNAL(finished(Tp::PendingOperation*)),
             this, SLOT(updateToolTip()));
+
+    m_presenceMessageWidget->setText(message);
 }
