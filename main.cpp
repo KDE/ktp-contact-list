@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 
     // Add --debug as commandline option
     KCmdLineOptions options;
-    options.add("debug", ki18n("Show telepathy debbuging information"));
+    options.add("debug", ki18n("Show telepathy debugging information"));
     KCmdLineArgs::addCmdLineOptions(options);
 
     KApplication app;
