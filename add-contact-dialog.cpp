@@ -34,7 +34,7 @@ bool SubscribableAccountsModel::filterAcceptsRow(int source_row, const QModelInd
         Tp::AccountPtr account = item->account();
 
         //if there's no connection we can't add contacts as we have no contactmanager
-        if (! account->isOnline()) {
+        if (! account->connection()) {
             return false;
         }
 
