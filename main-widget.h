@@ -91,6 +91,9 @@ private Q_SLOTS:
     void slotAddContactToGroupTriggered();
     void slotBlockContactFinished(Tp::PendingOperation *operation);
     void slotBlockContactTriggered();
+    void slotDeleteContact();   /** deletes contact from user's contactlist */
+    /** called when a Tp::PendingOperation finishes. Used to check for errors */
+    void slotGenericOperationFinished(Tp::PendingOperation *operation);
     void slotRemoveContactFromGroupFinished(Tp::PendingOperation *operation);
     void slotStartTextChat();
     void slotUnblockContactFinished(Tp::PendingOperation *operation);

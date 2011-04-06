@@ -42,6 +42,7 @@
 #include <KDebug>
 #include <KUser>
 #include <KMenu>
+#include <KMessageBox>
 #include <KSettings/Dialog>
 
 #include "main-widget.h"
@@ -53,6 +54,7 @@
 #include "contact-delegate.h"
 #include "contact-model-item.h"
 #include "add-contact-dialog.h"
+#include "remove-contact-dialog.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 
@@ -524,6 +526,10 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     }
     menu->addSeparator();
 
+    // remove contact action
+    QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
+    connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(slotDeleteContact()));
+
     if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
         QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
 
@@ -610,6 +616,7 @@ void MainWidget::slotBlockContactTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+
     if (contact.isNull()) {
         kDebug() << "Contact is nulled";
         return;
@@ -618,6 +625,45 @@ void MainWidget::slotBlockContactTriggered()
     Tp::PendingOperation *operation = contact->block(true);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
             SLOT(slotBlockContactFinished(Tp::PendingOperation*)));
+}
+
+void MainWidget::slotDeleteContact()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+
+    if (contact.isNull()) {
+        kDebug() << "Contact is null";
+        return;
+    }
+
+    QList<Tp::ContactPtr>contactList;
+    contactList.append(contact);
+
+    // ask for confirmation
+    QWeakPointer<RemoveContactDialog> removeDialog = new RemoveContactDialog(contact, this);
+
+    if (removeDialog.data()->exec() == QDialog::Accepted) {
+        // remove from contact list
+        Tp::PendingOperation *deleteOp = contact->manager()->removeContacts(contactList);
+        connect(deleteOp, SIGNAL(finished(Tp::PendingOperation*)), this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+
+        if (removeDialog.data()->blockContact()) {
+            // block contact
+            Tp::PendingOperation *blockOp = contact->manager()->blockContacts(contactList);
+            connect(blockOp, SIGNAL(finished(Tp::PendingOperation*)), this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+        }
+    }
+
+    delete removeDialog.data();
+}
+
+void MainWidget::slotGenericOperationFinished(Tp::PendingOperation* operation)
+{
+    if (operation->isError()) {
+        kDebug() << operation->errorName();
+        kDebug() << operation->errorMessage();
+    }
 }
 
 void MainWidget::slotRemoveContactFromGroupFinished(Tp::PendingOperation *operation)
