@@ -47,6 +47,7 @@
 #include <KSharedConfig>
 #include <KFileDialog>
 #include <KMessageBox>
+#include <KAction>
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
@@ -486,6 +487,7 @@ void MainWidget::onAddContactRequestFoundContacts(Tp::PendingOperation *operatio
 void MainWidget::onCustomContextMenuRequested(const QPoint &)
 {
     QModelIndex index = m_contactsListView->currentIndex();
+
     Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
     if (contact.isNull()) {
         kDebug() << "Contact is nulled";
@@ -500,10 +502,16 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
 
     QScopedPointer<KMenu> menu(new KMenu);
     menu->addTitle(contact->alias());
+
     QAction* action = menu->addAction(i18n("Start Chat..."));
     action->setIcon(KIcon("mail-message-new"));
+    action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
             SLOT(slotStartTextChat()));
+
+    if (index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
+        action->setEnabled(true);
+    }
 
     Tp::ConnectionPtr accountConnection = account->connection();
     if (accountConnection.isNull()) {
@@ -511,22 +519,30 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
         return;
     }
 
-    if (accountConnection->capabilities().streamedMediaAudioCalls()) {
-        action = menu->addAction(i18n("Start Audio Call..."));
-        action->setIcon(KIcon("voicecall"));
-        action->setDisabled(true);
+    action = menu->addAction(i18n("Start Audio Call..."));
+    action->setIcon(KIcon("voicecall"));
+    action->setDisabled(true);
+
+    if (index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
+        action->setEnabled(true);
     }
 
-    if (accountConnection->capabilities().streamedMediaVideoCalls()) {
-        action = menu->addAction(i18n("Start Video Call..."));
-        action->setIcon(KIcon("webcamsend"));
-        action->setDisabled(true);
+    action = menu->addAction(i18n("Start Video Call..."));
+    action->setIcon(KIcon("webcamsend"));
+    action->setDisabled(true);
+
+    if (index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
+        action->setEnabled(true);
     }
 
-    if (accountConnection->capabilities().fileTransfers()) {
-        action = menu->addAction(i18n("Send File..."));
-        action->setDisabled(true);
+    action = menu->addAction(i18n("Send File..."));
+    action->setIcon(KIcon("mail-attachment"));
+    action->setDisabled(true);
+
+    if (index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
+        action->setEnabled(true);
     }
+
     menu->addSeparator();
 
     // remove contact action
