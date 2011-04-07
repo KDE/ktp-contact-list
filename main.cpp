@@ -50,7 +50,7 @@ namespace
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("telepathy-kde-contactslist", 0, ki18n("Telepathy KDE Contact List"), "0.1",
+    KAboutData aboutData("telepathy-kde-contactlist", 0, ki18n("Telepathy KDE Contact List"), "0.1",
                          ki18n("Telepathy KDE Contact List"), KAboutData::License_GPL,
                          ki18n("(C) 2011, Martin Klapetek"));
 
