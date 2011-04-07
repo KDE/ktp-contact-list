@@ -344,15 +344,7 @@ void MainWidget::startTextChannel(const QModelIndex &index)
     Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact,
                                                                         QDateTime::currentDateTime(),
                                                                         PREFERRED_TEXTCHAT_HANDLER);
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onChannelJoined(Tp::PendingOperation*)));
-}
-
-void MainWidget::onChannelJoined(Tp::PendingOperation* op)
-{
-    if (op->isError()) {
-        kDebug() << op->errorName();
-        kDebug() << op->errorMessage();
-    }
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
@@ -566,14 +558,6 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     menu->exec(QCursor::pos());
 }
 
-void MainWidget::slotAddContactToGroupFinished(Tp::PendingOperation* operation)
-{
-    if (operation->isError()) {
-        kDebug() << operation->errorName();
-        kDebug() << operation->errorMessage();
-    }
-}
-
 void MainWidget::slotAddContactToGroupTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
@@ -593,22 +577,14 @@ void MainWidget::slotAddContactToGroupTriggered()
 
     Tp::PendingOperation* operation = contact->addToGroup(action->text().remove('&'));
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotAddContactToGroupFinished(Tp::PendingOperation*)));
+            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 
     if (operation) {
         foreach (const QString &group, currentGroups) {
             Tp::PendingOperation* operation = contact->removeFromGroup(group);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(slotRemoveContactFromGroupFinished(Tp::PendingOperation*)));
+                    SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
         }
-    }
-}
-
-void MainWidget::slotBlockContactFinished(Tp::PendingOperation *operation)
-{
-    if (operation->isError()) {
-        kDebug() << operation->errorName();
-        kDebug() << operation->errorMessage();
     }
 }
 
@@ -624,7 +600,7 @@ void MainWidget::slotBlockContactTriggered()
 
     Tp::PendingOperation *operation = contact->block(true);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotBlockContactFinished(Tp::PendingOperation*)));
+            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 void MainWidget::slotDeleteContact()
@@ -661,16 +637,8 @@ void MainWidget::slotDeleteContact()
 void MainWidget::slotGenericOperationFinished(Tp::PendingOperation* operation)
 {
     if (operation->isError()) {
-        kDebug() << operation->errorName();
-        kDebug() << operation->errorMessage();
-    }
-}
-
-void MainWidget::slotRemoveContactFromGroupFinished(Tp::PendingOperation *operation)
-{
-    if (operation->isError()) {
-        kDebug() << operation->errorName();
-        kDebug() << operation->errorMessage();
+        QString errorMsg(operation->errorName() + ": " + operation->errorMessage());
+        showMessageToUser(errorMsg, SystemMessageError);
     }
 }
 
@@ -685,14 +653,6 @@ void MainWidget::slotStartTextChat()
     startTextChannel(index);
 }
 
-void MainWidget::slotUnblockContactFinished(Tp::PendingOperation* operation)
-{
-    if (operation->isError()) {
-        kDebug() << operation->errorName();
-        kDebug() << operation->errorMessage();
-    }
-}
-
 void MainWidget::slotUnblockContactTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
@@ -704,7 +664,7 @@ void MainWidget::slotUnblockContactTriggered()
 
     Tp::PendingOperation *operation = contact->block(false);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotUnblockContactFinished(Tp::PendingOperation*)));
+            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 
