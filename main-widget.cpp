@@ -47,7 +47,6 @@
 #include <KSharedConfig>
 #include <KFileDialog>
 #include <KMessageBox>
-#include <KAction>
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
@@ -227,7 +226,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_accountButtonsLayout->insertStretch(-1);
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
-    foreach (Tp::AccountPtr account, accounts) {
+    foreach (const Tp::AccountPtr account, accounts) {
         onNewAccountAdded(account);
     }
     m_contactsListView->expandAll();
@@ -753,7 +752,7 @@ void MainWidget::selectAvatarFromAccount(const QString &accountUID)
 
     Tp::Avatar avatar = qobject_cast<AccountsModelItem*>(m_model->accountItemForId(accountUID))->data(AccountsModel::AvatarRole).value<Tp::Avatar>();
 
-    foreach (Tp::AccountPtr account, m_accountManager->allAccounts()) {
+    foreach (const Tp::AccountPtr account, m_accountManager->allAccounts()) {
         //don't set the avatar for the account from where it was taken
         if (account->uniqueIdentifier() == accountUID) {
             continue;
@@ -796,7 +795,7 @@ void MainWidget::loadAvatarFromFile()
     }
 
     QFile imageBuffer(file.toLocalFile());
-    imageBuffer.open(QIODevice::ReadWrite);
+    imageBuffer.open(QIODevice::ReadOnly);
     if (!imageBuffer.isOpen() || !imageBuffer.isReadable()) {
         //FIXME: probably should also tell the user what to do, no? but what to do? :)
         KMessageBox::error(this, i18n("Sorry, the image couldn't be processed."));
@@ -808,7 +807,7 @@ void MainWidget::loadAvatarFromFile()
     avatar.avatarData = imageBuffer.readAll();
     avatar.MIMEType = mime->name();
 
-    foreach (Tp::AccountPtr account, m_accountManager->allAccounts()) {
+    foreach (const Tp::AccountPtr account, m_accountManager->allAccounts()) {
         Tp::PendingOperation *op = account->setAvatar(avatar);
 
         //connect for eventual error displaying
