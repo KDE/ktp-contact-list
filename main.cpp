@@ -29,7 +29,7 @@ extern "C"
 #include <KAboutData>
 #include <KCmdLineArgs>
 #include <KDebug>
-#include <KApplication>
+#include <KUniqueApplication>
 
 #include <TelepathyQt4/Types>
 #include <TelepathyQt4/Debug>
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
     options.add("debug", ki18n("Show telepathy debugging information"));
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KApplication app;
+    KUniqueApplication app;
 
     Tp::registerTypes();
     Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));
