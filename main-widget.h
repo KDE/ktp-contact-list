@@ -68,7 +68,6 @@ public Q_SLOTS:
     void startTextChannel(const QModelIndex &index);
     void onContactListDoubleClick(const QModelIndex &index);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
-    void onAccountReady(Tp::PendingOperation *op);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
     void showMessageToUser(const QString &text, const SystemMessageType type);
     void addOverlayButtons();
@@ -80,7 +79,10 @@ public Q_SLOTS:
     void showSettingsKCM();
     void onAddContactRequest();
     void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
-
+    void loadAvatar(const Tp::AccountPtr &account);
+    void selectAvatarFromAccount(const QString &accountUID);
+    void selectAvatarFromAccount();
+    void loadAvatarFromFile();
     //    void startAudioChannel();
     //    void startVideoChannel();
 
@@ -104,6 +106,7 @@ private:
     AccountFilterModel     *m_modelFilter;
     Tp::AccountManagerPtr   m_accountManager;
     KMenu                  *m_accountMenu;
+    KMenu                  *m_avatarButtonMenu;
     KSelectAction          *m_setStatusAction;
     ContactDelegate        *m_delegate;
 };

@@ -23,11 +23,34 @@
     </property>
     <item>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="horizontalSpacing">
+       <number>-1</number>
+      </property>
+      <property name="verticalSpacing">
+       <number>0</number>
+      </property>
       <item row="2" column="1">
        <layout class="QHBoxLayout" name="m_accountButtonsLayout"/>
       </item>
+      <item row="1" column="1">
+       <widget class="KLineEdit" name="m_presenceMessageEdit">
+        <property name="placeholderText">
+         <string>Set your status message here...</string>
+        </property>
+        <property name="showClearButton" stdset="0">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="m_userAccountNameLabel">
+        <property name="text">
+         <string>TextLabel</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0" rowspan="3">
-       <widget class="QPushButton" name="m_userAccountIconButton">
+       <widget class="QToolButton" name="m_userAccountIconButton">
         <property name="minimumSize">
          <size>
           <width>64</width>
@@ -48,23 +71,6 @@
           <width>64</width>
           <height>64</height>
          </size>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="KLineEdit" name="m_presenceMessageEdit">
-        <property name="placeholderText">
-         <string>Set your status message here...</string>
-        </property>
-        <property name="showClearButton" stdset="0">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="m_userAccountNameLabel">
-        <property name="text">
-         <string comment="KDE::DoNotExtract">TextLabel</string>
         </property>
        </widget>
       </item>

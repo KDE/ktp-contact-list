@@ -51,6 +51,7 @@ kde4_add_executable (telepathy-kde-contactlist
 target_link_libraries (telepathy-kde-contactlist
                        ${TELEPATHY_QT4_LIBRARIES}
                        ${KDE4_KDEUI_LIBS}
+                       ${KDE4_KIO_LIBS}
                        ${KDE4_KCMUTILS_LIBS}
 )
 

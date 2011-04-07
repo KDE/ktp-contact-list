@@ -30,7 +30,7 @@
 #include <QtGui/QPushButton>
 #include <QtGui/QToolButton>
 #include <QtCore/QWeakPointer>
-
+#include <QWidgetAction>
 
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingChannelRequest>
@@ -44,6 +44,9 @@
 #include <KMenu>
 #include <KMessageBox>
 #include <KSettings/Dialog>
+#include <KSharedConfig>
+#include <KFileDialog>
+#include <KMessageBox>
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
@@ -70,19 +73,22 @@ MainWidget::MainWidget(QWidget *parent)
     m_filterBar->hide();
     setWindowIcon(KIcon("telepathy"));
 
-//     QIcon icon;
-//     icon.addFile(user.faceIconPath());
-//     m_userAccountIconButton->setIcon(icon);
-
     m_userAccountNameLabel->setText(user.property(KUser::FullName).isNull() ?
         user.loginName() : user.property(KUser::FullName).toString()
     );
+
+    m_userAccountIconButton->setPopupMode(QToolButton::InstantPopup);
+
+    m_avatarButtonMenu = new KMenu(m_userAccountIconButton);
+    m_avatarButtonMenu->addAction(i18n("Load from file..."), this, SLOT(loadAvatarFromFile()));
+
+    m_userAccountIconButton->setMenu(m_avatarButtonMenu);
 
     QToolButton *settingsButton = new QToolButton(this);
     settingsButton->setIcon(KIcon("configure"));
     settingsButton->setPopupMode(QToolButton::InstantPopup);
 
-    QMenu *settingsButtonMenu = new QMenu(settingsButton);
+    KMenu *settingsButtonMenu = new KMenu(settingsButton);
     settingsButtonMenu->addAction(i18n("Configure accounts..."), this, SLOT(showSettingsKCM()));
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
@@ -226,17 +232,6 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_contactsListView->expandAll();
 }
 
-void MainWidget::onAccountReady(Tp::PendingOperation* op)
-{
-    if (op->isError()) {
-        qWarning() << "Account cannot become ready";
-        return;
-    }
-
-    Tp::PendingReady *pendingReady = qobject_cast<Tp::PendingReady*>(op);
-    Q_ASSERT(pendingReady);
-}
-
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 {
     kDebug() << "Connection status is" << status;
@@ -280,6 +275,14 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
 
     if(account->isEnabled()) {
         bt->show();
+        loadAvatar(account);
+    }
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup avatarGroup(config, "Avatar");
+    if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
+        //this also updates the avatar if it was changed somewhere else
+        selectAvatarFromAccount(avatarGroup.readEntry("source", QString()));
     }
 }
 
@@ -556,6 +559,9 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     /*if (contact->isBlocked()) {
      *        action = menu->addAction(i18n("Unlock User"));
      *        connect(action, SIGNAL(triggered(bool)),
+     T p::Avatar avatar = m_model->data(m_modelFilter->mapToSource(m_modelFilter->index(0, 0)*),
+     AccountsModel::AvatarRole).value<Tp::Avatar>();
+     icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(64, 64));
      *                SLOT(slotUnblockContactTriggered()));
 } else {
     action = menu->addAction(i18n("Block User"));
@@ -726,4 +732,126 @@ void MainWidget::showSettingsKCM()
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
+}
+
+void MainWidget::loadAvatar(const Tp::AccountPtr &account)
+{
+    if (!account->avatar().avatarData.isEmpty()) {
+        QIcon icon;
+        Tp::Avatar avatar = account->avatar();
+        icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(48, 48));
+
+        QToolButton *avatarButton = new QToolButton(this);
+        avatarButton->setIcon(icon);
+        avatarButton->setIconSize(QSize(48, 48));
+        avatarButton->setText(i18nc("String in menu saying Use avatar from account X",
+                                    "Use from %1").arg(account->displayName()));
+        avatarButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+        QWidgetAction *avatarAction = new QWidgetAction(m_avatarButtonMenu);
+        avatarAction->setDefaultWidget(avatarButton);
+        avatarAction->setData(account->uniqueIdentifier());
+
+        connect(avatarButton, SIGNAL(clicked(bool)),
+                avatarAction, SIGNAL(triggered(bool)));
+
+        connect(avatarAction, SIGNAL(triggered(bool)),
+                this, SLOT(selectAvatarFromAccount()));
+
+
+        m_avatarButtonMenu->addAction(avatarAction);
+    }
+}
+
+void MainWidget::selectAvatarFromAccount()
+{
+    selectAvatarFromAccount(qobject_cast<QWidgetAction*>(sender())->data().toString());
+}
+
+void MainWidget::selectAvatarFromAccount(const QString &accountUID)
+{
+    if (accountUID.isEmpty()) {
+        kDebug() << "Supplied accountUID is empty, aborting...";
+        return;
+    }
+
+    Tp::Avatar avatar = qobject_cast<AccountsModelItem*>(m_model->accountItemForId(accountUID))->data(AccountsModel::AvatarRole).value<Tp::Avatar>();
+
+    foreach (Tp::AccountPtr account, m_accountManager->allAccounts()) {
+        //don't set the avatar for the account from where it was taken
+        if (account->uniqueIdentifier() == accountUID) {
+            continue;
+        }
+
+        account->setAvatar(avatar);
+    }
+
+    //add the selected avatar as the icon of avatar button
+    QIcon icon;
+    icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(48, 48));
+    m_userAccountIconButton->setIcon(icon);
+
+    m_avatarButtonMenu->close();
+
+    //save the selected account into config
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup avatarGroup(config, "Avatar");
+    avatarGroup.writeEntry("method", "account");
+    avatarGroup.writeEntry("source", accountUID);
+    avatarGroup.config()->sync();
+
+}
+
+void MainWidget::loadAvatarFromFile()
+{
+    //FIXME: Think of network files, which QFile won't open
+    KUrl file = KFileDialog::getImageOpenUrl();
+
+    if (file.isEmpty() || !file.isValid()) {
+        return;
+    }
+
+    KMimeType::Ptr mime = KMimeType::findByUrl(file);
+
+    if (!mime->name().contains("image/")) {
+        KMessageBox::error(this, i18n("The file you have selected doesn't seem to be an image! \
+                                       Please select an image file."));
+        return;
+    }
+
+    QFile imageBuffer(file.toLocalFile());
+    imageBuffer.open(QIODevice::ReadWrite);
+    if (!imageBuffer.isOpen() || !imageBuffer.isReadable()) {
+        //FIXME: probably should also tell the user what to do, no? but what to do? :)
+        KMessageBox::error(this, i18n("Sorry, the image couldn't be processed."));
+        imageBuffer.close();
+        return;
+    }
+
+    Tp::Avatar avatar;
+    avatar.avatarData = imageBuffer.readAll();
+    avatar.MIMEType = mime->name();
+
+    foreach (Tp::AccountPtr account, m_accountManager->allAccounts()) {
+        Tp::PendingOperation *op = account->setAvatar(avatar);
+
+        //connect for eventual error displaying
+        connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+    }
+
+    //add the selected avatar to the avatar button
+    QIcon icon;
+    icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(48, 48));
+    m_userAccountIconButton->setIcon(icon);
+
+    //since all the accounts will have the same avatar,
+    //we take simply the first in AM and use this in config
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup avatarGroup(config, "Avatar");
+    avatarGroup.writeEntry("method", "account");
+    avatarGroup.writeEntry("source", m_accountManager->allAccounts().first()->uniqueIdentifier());
+    avatarGroup.config()->sync();
+
+    imageBuffer.close();
 }
