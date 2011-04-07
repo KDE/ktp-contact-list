@@ -64,7 +64,6 @@ public:
 
 public Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
-    void onChannelJoined(Tp::PendingOperation *op);
     void startTextChannel(const QModelIndex &index);
     void onContactListDoubleClick(const QModelIndex &index);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
@@ -89,16 +88,11 @@ public Q_SLOTS:
     void onCustomContextMenuRequested(const QPoint &point);
 
 private Q_SLOTS:
-    void slotAddContactToGroupFinished(Tp::PendingOperation *operation);
     void slotAddContactToGroupTriggered();
-    void slotBlockContactFinished(Tp::PendingOperation *operation);
     void slotBlockContactTriggered();
-    void slotDeleteContact();   /** deletes contact from user's contactlist */
-    /** called when a Tp::PendingOperation finishes. Used to check for errors */
-    void slotGenericOperationFinished(Tp::PendingOperation *operation);
-    void slotRemoveContactFromGroupFinished(Tp::PendingOperation *operation);
+    void slotDeleteContact();
+    void slotGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
     void slotStartTextChat();
-    void slotUnblockContactFinished(Tp::PendingOperation *operation);
     void slotUnblockContactTriggered();
 
 private:
