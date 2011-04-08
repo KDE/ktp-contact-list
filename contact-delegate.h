@@ -25,6 +25,13 @@ public Q_SLOTS:
     void reshowStatusMessageSlot();
     void fadeOutStatusMessageSlot();
     void triggerRepaint();
+    /**
+     * Reimplements the help tooltip for the contact delegate.
+     *
+     * When the user hovers over a contact it will display their information like Alias, which contact belongs to what account,
+     * is this contact blocked, their status message if their is one, etc.
+     */
+    bool helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index);
 
 Q_SIGNALS:
     void repaintItem(QModelIndex);

@@ -3,13 +3,17 @@
 #include <QtGui/QPainter>
 #include <QApplication>
 #include <QStyle>
+#include <QtGui/QToolTip>
 
 #include <KIconLoader>
 #include <KIcon>
 #include <KDebug>
 #include <KGlobalSettings>
+#include <KDE/KLocale>
 
 #include "accounts-model.h"
+#include "contact-model-item.h"
+#include <QHelpEvent>
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
@@ -223,4 +227,91 @@ void ContactDelegate::setFadingValue(int value)
 void ContactDelegate::triggerRepaint()
 {
     emit repaintItem(m_indexForHiding);
+}
+
+bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)
+{
+    Q_UNUSED(option);
+
+    // Check and make sure that we only want it to work on contacts and nothing else.
+    if (index.data(AccountsModel::ItemRole).userType() != qMetaTypeId<ContactModelItem*>()) {
+        return false;
+    }
+
+    if (event->type() != QEvent::ToolTip) {
+        return false;
+    }
+
+    const QString contactAvatar = index.data(AccountsModel::AvatarRole).toString();
+    const QString displayName = index.parent().data(AccountsModel::DisplayNameRole).toString();
+    const QString cmIconPath = KIconLoader::global()->iconPath(index.parent().data(AccountsModel::IconRole).toString(), 1);
+    const QString alias = index.data(AccountsModel::AliasRole).toString();
+    const QString presenceStatus = index.data(AccountsModel::PresenceMessageRole).toString();
+    QString presenseIconPath;
+    QString presenseText;
+
+    switch (index.data(AccountsModel::PresenceTypeRole).toUInt()) {
+    case Tp::ConnectionPresenceTypeAvailable:
+        presenseIconPath = KIconLoader().iconPath("user-online", 1);
+        presenseText = i18n("Online");
+        break;
+    case Tp::ConnectionPresenceTypeAway:
+        presenseIconPath = KIconLoader().iconPath("user-away", 1);
+        presenseText = i18n("Away");
+        break;
+    case Tp::ConnectionPresenceTypeExtendedAway:
+        presenseIconPath = KIconLoader().iconPath("user-away-extended", 1);
+        presenseText = i18n("Away");
+        break;
+    case Tp::ConnectionPresenceTypeBusy:
+        presenseIconPath = KIconLoader().iconPath("user-busy", 1);
+        presenseText = i18n("Busy");
+        break;
+    case Tp::ConnectionPresenceTypeOffline:
+        presenseIconPath = KIconLoader().iconPath("user-offline", 1);
+        presenseText = i18n("Offline");
+        break;
+    default:
+        presenseIconPath = KIconLoader().iconPath("task-attention", 1);
+        // What presense Text should be here??
+        break;
+    }
+
+    /* The tooltip is composed of a HTML table to display the items in it of the contact.
+     * -------------------------
+     * | account it belongs to |
+     * -------------------------
+     * | Avatar | Con's Alias  |
+     * -------------------------
+     * |        | Con's Status*|
+     * -------------------------
+     * |  Contact is blocked*  |
+     * -------------------------
+     * * Display actual status name if contact has no custom status message.
+     * * Contact is blocked will only show if the contact is blocked, else no display.
+     */
+
+    QString table;
+    table += QString("<table><th colspan='2' align='center'><b>%1</b> <img src='%2' height='16' width='16' /> %3</th>").arg(i18n("Account:"), cmIconPath, displayName);
+    if (contactAvatar.isEmpty()) {
+        table += "<tr><td></td>";
+    } else {
+        table += QString("<tr><td><img src='%1' /></td>").arg(contactAvatar);
+    }
+    table += "<td><table><tr>";
+    table += QString("<td align='right'><b>%1</b></td>").arg(i18n("Alias:"));
+    table += QString("<td>%1</td></tr>").arg(alias);
+    table += QString("<tr><td align='right'><b>%1</b></td>").arg(i18n("Status:"));
+    if (presenceStatus.isEmpty()) {
+        table += QString("<td><img src='%1' height='16' width='16' /> %2</td></tr>").arg(presenseIconPath, presenseText);
+    } else {
+        table += QString("<td><img src='%1' height='16' width='16' /> %2</td></tr>").arg(presenseIconPath, presenceStatus);
+    }
+    if (index.data(AccountsModel::BlockedRole).toBool()) {
+        table += QString("<td colspan='2'>%1</td></tr>").arg(i18n("User is blocked"));
+    }
+    table += "</table></td><tr></table>";
+    QToolTip::showText(QCursor::pos(), table, view);
+
+    return true;
 }

@@ -562,19 +562,16 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
 
     //menu->addSeparator();
 
-    // TODO Remove when Telepathy actually supports blocking.
+    // TODO: Remove when Telepathy actually supports blocking.
     /*if (contact->isBlocked()) {
-     *        action = menu->addAction(i18n("Unlock User"));
-     *        connect(action, SIGNAL(triggered(bool)),
-     T p::Avatar avatar = m_model->data(m_modelFilter->mapToSource(m_modelFilter->index(0, 0)*),
-     AccountsModel::AvatarRole).value<Tp::Avatar>();
-     icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(64, 64));
-     *                SLOT(slotUnblockContactTriggered()));
-} else {
-    action = menu->addAction(i18n("Block User"));
-    connect(action, SIGNAL(triggered(bool)),
-    SLOT(slotBlockContactTriggered()));
-}*/
+        action = menu->addAction(i18n("Unblock User"));
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(slotUnblockContactTriggered()));
+    } else {
+        action = menu->addAction(i18n("Blocked"));
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(slotBlockContactTriggered()));
+    }*/
 
     menu->exec(QCursor::pos());
 }
