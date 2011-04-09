@@ -1,0 +1,14 @@
+[Desktop Entry]
+Name=Telepathy Contact List
+Name[de]=Telepathy-Kontaktliste
+GenericName=Instant Messenger Contacts
+GenericName[de]=Messenger-Kontakte
+Comment=Displays your instant messenger contacts
+Comment[de]=Zeigt Ihre Instant-Messenger-Kontakte
+Exec=telepathy-kde-contactlist %u
+Type=Application
+Terminal=false
+Icon=telepathy
+Categories=Qt;KDE;Network;InstantMessaging;
+X-DBUS-StartupType=Unique
+X-KDE-ServiceTypes=DBUS/InstantMessenger

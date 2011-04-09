@@ -59,3 +59,7 @@ target_link_libraries (telepathy-kde-contactlist
 install (TARGETS telepathy-kde-contactlist
          DESTINATION ${BIN_INSTALL_DIR}
 )
+
+install (PROGRAMS telepathy-kde-contactlist.desktop
+         DESTINATION ${XDG_APPS_INSTALL_DIR}
+)
