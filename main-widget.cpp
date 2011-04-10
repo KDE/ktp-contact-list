@@ -80,7 +80,23 @@ MainWidget::MainWidget(QWidget *parent)
     m_userAccountIconButton->setPopupMode(QToolButton::InstantPopup);
 
     m_avatarButtonMenu = new KMenu(m_userAccountIconButton);
-    m_avatarButtonMenu->addAction(i18n("Load from file..."), this, SLOT(loadAvatarFromFile()));
+
+    QToolButton *loadFromFileButton = new QToolButton(this);
+    loadFromFileButton->setIcon(KIcon("document-open-folder"));
+    loadFromFileButton->setIconSize(QSize(48, 48));
+    loadFromFileButton->setText(i18n("Load from file..."));
+    loadFromFileButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+
+    QWidgetAction *loadFromFileAction = new QWidgetAction(this);
+    loadFromFileAction->setDefaultWidget(loadFromFileButton);
+
+    connect(loadFromFileButton, SIGNAL(clicked(bool)),
+            loadFromFileAction, SIGNAL(triggered(bool)));
+
+    connect(loadFromFileAction, SIGNAL(triggered(bool)),
+            this, SLOT(loadAvatarFromFile()));
+
+    m_avatarButtonMenu->addAction(loadFromFileAction);
 
     m_userAccountIconButton->setMenu(m_avatarButtonMenu);
 
