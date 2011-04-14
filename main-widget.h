@@ -103,10 +103,10 @@ private:
     KMenu                  *m_avatarButtonMenu;
     KSelectAction          *m_setStatusAction;
     ContactDelegate        *m_delegate;
-    KAction                *m_actionAdd_contact;
-    KAction                *m_actionGroup_contacts;
-    KAction                *m_actionHide_offline;
-    KAction                *m_actionSearch_contact;
+    KAction                *m_addContactAction;
+    KAction                *m_groupContactsAction;
+    KAction                *m_hideOfflineAction;
+    KAction                *m_searchContactAction;
 };
 
 

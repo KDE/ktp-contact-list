@@ -115,33 +115,33 @@ MainWidget::MainWidget(QWidget *parent)
     m_toolBar->addSeparator();
     m_toolBar->addWidget(settingsButton);
 
-    m_actionAdd_contact = new KAction(KIcon("list-add-user"), QString(), this);
-    m_actionAdd_contact->setToolTip(i18n("Add new contacts.."));
+    m_addContactAction = new KAction(KIcon("list-add-user"), QString(), this);
+    m_addContactAction->setToolTip(i18n("Add new contacts.."));
 
-    m_toolBar->addAction(m_actionAdd_contact);
+    m_toolBar->addAction(m_addContactAction);
 
-    m_actionGroup_contacts = new KAction(KIcon("user-group-properties"), QString(), this);
-    m_actionGroup_contacts->setCheckable(true);
-    m_actionGroup_contacts->setChecked(true);
+    m_groupContactsAction = new KAction(KIcon("user-group-properties"), QString(), this);
+    m_groupContactsAction->setCheckable(true);
+    m_groupContactsAction->setChecked(true);
     //TODO: Toggle the tooltip with the button? eg. once its Show, after click its Hide .. ?
-    m_actionGroup_contacts->setToolTip(i18n("Show/Hide groups"));
+    m_groupContactsAction->setToolTip(i18n("Show/Hide groups"));
 
-    m_toolBar->addAction(m_actionGroup_contacts);
+    m_toolBar->addAction(m_groupContactsAction);
 
-    m_actionHide_offline = new KAction(KIcon("meeting-attending-tentative"), QString(), this);
-    m_actionHide_offline->setCheckable(true);
-    m_actionHide_offline->setChecked(true);
-    m_actionHide_offline->setToolTip(i18n("Show/Hide offline users"));
+    m_hideOfflineAction = new KAction(KIcon("meeting-attending-tentative"), QString(), this);
+    m_hideOfflineAction->setCheckable(true);
+    m_hideOfflineAction->setChecked(true);
+    m_hideOfflineAction->setToolTip(i18n("Show/Hide offline users"));
 
-    m_toolBar->addAction(m_actionHide_offline);
+    m_toolBar->addAction(m_hideOfflineAction);
 
-    m_actionSearch_contact = new KAction(KIcon("edit-find-user"), QString(), this );
-    m_actionSearch_contact->setShortcut(KStandardShortcut::find());
-    m_actionSearch_contact->setCheckable(true);
-    m_actionSearch_contact->setChecked(false);
-    m_actionSearch_contact->setToolTip(i18n("Find contact"));
+    m_searchContactAction = new KAction(KIcon("edit-find-user"), QString(), this );
+    m_searchContactAction->setShortcut(KStandardShortcut::find());
+    m_searchContactAction->setCheckable(true);
+    m_searchContactAction->setChecked(false);
+    m_searchContactAction->setToolTip(i18n("Find contact"));
 
-    m_toolBar->addAction(m_actionSearch_contact);
+    m_toolBar->addAction(m_searchContactAction);
 
     // Start setting up the Telepathy AccountManager.
     Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
@@ -198,13 +198,13 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_delegate, SIGNAL(repaintItem(QModelIndex)),
             m_contactsListView->viewport(), SLOT(repaint())); //update(QModelIndex)
 
-    connect(m_actionAdd_contact, SIGNAL(triggered(bool)),
+    connect(m_addContactAction, SIGNAL(triggered(bool)),
             this, SLOT(onAddContactRequest()));
 
-    connect(m_actionGroup_contacts, SIGNAL(triggered(bool)),
+    connect(m_groupContactsAction, SIGNAL(triggered(bool)),
             this, SLOT(onGroupContacts(bool)));
 
-    connect(m_actionSearch_contact, SIGNAL(triggered(bool)),
+    connect(m_searchContactAction, SIGNAL(triggered(bool)),
             this, SLOT(toggleSearchWidget(bool)));
 
     connect(m_presenceMessageEdit, SIGNAL(returnPressed(QString)),
@@ -233,7 +233,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
 
-    connect(m_actionHide_offline, SIGNAL(toggled(bool)),
+    connect(m_hideOfflineAction, SIGNAL(toggled(bool)),
             m_modelFilter, SLOT(filterOfflineUsers(bool)));
 
     connect(m_filterBar, SIGNAL(filterChanged(QString)),
@@ -246,7 +246,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
             m_filterBar, SLOT(hide()));
 
     connect(m_filterBar, SIGNAL(closeRequest()),
-            m_actionSearch_contact, SLOT(toggle()));
+            m_searchContactAction, SLOT(toggle()));
 
     connect(m_modelFilter, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)),
         m_delegate, SLOT(contactRemoved(QModelIndex,int,int)));
