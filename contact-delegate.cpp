@@ -252,27 +252,27 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
 
     switch (index.data(AccountsModel::PresenceTypeRole).toUInt()) {
     case Tp::ConnectionPresenceTypeAvailable:
-        presenseIconPath = KIconLoader().iconPath("user-online", 1);
+        presenseIconPath = KIconLoader::global()->iconPath("user-online", 1);
         presenseText = i18n("Online");
         break;
     case Tp::ConnectionPresenceTypeAway:
-        presenseIconPath = KIconLoader().iconPath("user-away", 1);
+        presenseIconPath = KIconLoader::global()->iconPath("user-away", 1);
         presenseText = i18n("Away");
         break;
     case Tp::ConnectionPresenceTypeExtendedAway:
-        presenseIconPath = KIconLoader().iconPath("user-away-extended", 1);
+        presenseIconPath = KIconLoader::global()->iconPath("user-away-extended", 1);
         presenseText = i18n("Away");
         break;
     case Tp::ConnectionPresenceTypeBusy:
-        presenseIconPath = KIconLoader().iconPath("user-busy", 1);
+        presenseIconPath = KIconLoader::global()->iconPath("user-busy", 1);
         presenseText = i18n("Busy");
         break;
     case Tp::ConnectionPresenceTypeOffline:
-        presenseIconPath = KIconLoader().iconPath("user-offline", 1);
+        presenseIconPath = KIconLoader::global()->iconPath("user-offline", 1);
         presenseText = i18n("Offline");
         break;
     default:
-        presenseIconPath = KIconLoader().iconPath("task-attention", 1);
+        presenseIconPath = KIconLoader::global()->iconPath("task-attention", 1);
         // What presense Text should be here??
         break;
     }
@@ -291,13 +291,16 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
      * * Contact is blocked will only show if the contact is blocked, else no display.
      */
 
+    kDebug() << contactAvatar;
+
     QString table;
-    table += QString("<table><th colspan='2' align='center'><b>%1</b> <img src='%2' height='16' width='16' /> %3</th>").arg(i18n("Account:"), cmIconPath, displayName);
-    if (contactAvatar.isEmpty()) {
-        table += "<tr><td></td>";
+    table += QString("<table><th colspan='2' align='center'><img src='%2' height='16' width='16' /> %3</th>").arg(cmIconPath, displayName);
+    if (contactAvatar.isEmpty() || QPixmap(contactAvatar).isNull()) {
+        table += QString("<tr><td><img src='%1' width='96' /></td>").arg(KIconLoader::global()->iconPath("im-user", -1));
     } else {
-        table += QString("<tr><td><img src='%1' /></td>").arg(contactAvatar);
+        table += QString("<tr><td><img src='%1' width='96' /></td>").arg(contactAvatar);
     }
+    
     table += "<td><table><tr>";
     table += QString("<td align='right'><b>%1</b></td>").arg(i18n("Alias:"));
     table += QString("<td>%1</td></tr>").arg(alias);
