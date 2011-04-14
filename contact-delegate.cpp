@@ -1,6 +1,7 @@
 #include "contact-delegate.h"
 
 #include <QtGui/QPainter>
+#include <QtGui/QPainterPath>
 #include <QApplication>
 #include <QStyle>
 #include <QtGui/QToolTip>
@@ -38,6 +39,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
     painter->save();
 
+    painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
     painter->setClipRect(optV4.rect);
 
     QStyle *style = QApplication::style();
@@ -52,11 +54,26 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         QPixmap avatar = QPixmap::fromImage(QImage(index.data(AccountsModel::AvatarRole).toString()));
 
-        if (avatar.isNull()) {
+        bool noContactAvatar = avatar.isNull();
+
+        if (noContactAvatar) {
             avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
         }
 
+        QPainterPath roundedPath;
+        roundedPath.addRoundedRect(iconRect, 20, 20, Qt::RelativeSize);
+
+        if (!noContactAvatar) {
+            painter->save();
+            painter->setClipPath(roundedPath);
+        }
+
         painter->drawPixmap(iconRect, avatar);
+
+        if (!noContactAvatar) {
+            painter->restore();
+            painter->drawPath(roundedPath);
+        }
 
         QPixmap icon;
 
@@ -300,7 +317,7 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
     } else {
         table += QString("<tr><td><img src='%1' width='96' /></td>").arg(contactAvatar);
     }
-    
+
     table += "<td><table><tr>";
     table += QString("<td align='right'><b>%1</b></td>").arg(i18n("Alias:"));
     table += QString("<td>%1</td></tr>").arg(alias);
