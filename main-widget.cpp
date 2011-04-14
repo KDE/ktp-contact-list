@@ -47,6 +47,7 @@
 #include <KSharedConfig>
 #include <KFileDialog>
 #include <KMessageBox>
+#include <KStandardShortcut>
 
 #include "main-widget.h"
 #include "ui_main-widget.h"
@@ -114,22 +115,37 @@ MainWidget::MainWidget(QWidget *parent)
     m_toolBar->addSeparator();
     m_toolBar->addWidget(settingsButton);
 
-    m_actionAdd_contact->setIcon(KIcon("list-add-user"));
+    m_actionAdd_contact = new KAction(KIcon("list-add-user"), i18n("Add contact"), this);
     m_actionAdd_contact->setText(QString());
     m_actionAdd_contact->setToolTip(i18n("Add new contacts.."));
 
-    m_actionGroup_contacts->setIcon(KIcon("user-group-properties"));
+    m_toolBar->addAction(m_actionAdd_contact);
+
+    m_actionGroup_contacts = new KAction(KIcon("user-group-properties"), i18n("Group contacts"), this);
     m_actionGroup_contacts->setText(QString());
+    m_actionGroup_contacts->setCheckable(true);
+    m_actionGroup_contacts->setChecked(true);
     //TODO: Toggle the tooltip with the button? eg. once its Show, after click its Hide .. ?
     m_actionGroup_contacts->setToolTip(i18n("Show/Hide groups"));
 
-    m_actionHide_offline->setIcon(KIcon("meeting-attending-tentative"));
+    m_toolBar->addAction(m_actionGroup_contacts);
+
+    m_actionHide_offline = new KAction(KIcon("meeting-attending-tentative"), i18n("Hide offline"), this);
     m_actionHide_offline->setText(QString());
+    m_actionHide_offline->setCheckable(true);
+    m_actionHide_offline->setChecked(true);
     m_actionHide_offline->setToolTip(i18n("Show/Hide offline users"));
 
-    m_actionSearch_contact->setIcon(KIcon("edit-find-user"));
+    m_toolBar->addAction(m_actionHide_offline);
+
+    m_actionSearch_contact = new KAction(KIcon("edit-find-user"), i18n("Search contacts"), this );
+    m_actionSearch_contact->setShortcut(KStandardShortcut::find());
+    m_actionSearch_contact->setCheckable(true);
+    m_actionSearch_contact->setChecked(false);
     m_actionSearch_contact->setText(QString());
     m_actionSearch_contact->setToolTip(i18n("Find contact"));
+
+    m_toolBar->addAction(m_actionSearch_contact);
 
     // Start setting up the Telepathy AccountManager.
     Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),

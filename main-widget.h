@@ -29,7 +29,7 @@
 #include <TelepathyQt4/AccountManager>
 
 #include <KXmlGuiWindow>
-
+#include <KAction>
 #include "ui_main-widget.h"
 
 class KMenu;
@@ -103,6 +103,10 @@ private:
     KMenu                  *m_avatarButtonMenu;
     KSelectAction          *m_setStatusAction;
     ContactDelegate        *m_delegate;
+    KAction                *m_actionAdd_contact;
+    KAction                *m_actionGroup_contacts;
+    KAction                *m_actionHide_offline;
+    KAction                *m_actionSearch_contact;
 };
 
 

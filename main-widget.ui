@@ -88,10 +88,6 @@
       <property name="toolButtonStyle">
        <enum>Qt::ToolButtonIconOnly</enum>
       </property>
-      <addaction name="m_actionAdd_contact"/>
-      <addaction name="m_actionGroup_contacts"/>
-      <addaction name="m_actionHide_offline"/>
-      <addaction name="m_actionSearch_contact"/>
      </widget>
     </item>
     <item>
@@ -102,47 +98,6 @@
     </item>
    </layout>
   </widget>
-  <action name="m_actionAdd_contact">
-   <property name="text">
-    <string>Add contact</string>
-   </property>
-  </action>
-  <action name="m_actionGroup_contacts">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Group contacts</string>
-   </property>
-  </action>
-  <action name="m_actionHide_offline">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
-   </property>
-   <property name="text">
-    <string>Hide offline</string>
-   </property>
-  </action>
-  <action name="m_actionSearch_contact">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Search contacts</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+I</string>
-   </property>
-  </action>
  </widget>
  <customwidgets>
   <customwidget>
