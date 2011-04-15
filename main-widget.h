@@ -38,6 +38,7 @@ class AccountsModel;
 class AccountFilterModel;
 class ContactDelegate;
 class FilterBar;
+class KJob;
 
 class MainWidget : public KMainWindow, Ui::MainWindow
 {
@@ -94,6 +95,7 @@ private Q_SLOTS:
     void slotGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
     void slotStartTextChat();
     void slotUnblockContactTriggered();
+    void onAvatarFetched(KJob*);
 
 private:
     AccountsModel          *m_model;

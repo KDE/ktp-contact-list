@@ -40,6 +40,7 @@
 #include <TelepathyQt4/ContactManager>
 
 #include <KDebug>
+#include <KIO/Job>
 #include <KUser>
 #include <KMenu>
 #include <KMessageBox>
@@ -59,6 +60,7 @@
 #include "contact-model-item.h"
 #include "add-contact-dialog.h"
 #include "remove-contact-dialog.h"
+#include "fetch-avatar-job.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 
@@ -804,36 +806,26 @@ void MainWidget::selectAvatarFromAccount(const QString &accountUID)
 
 void MainWidget::loadAvatarFromFile()
 {
-    //FIXME: Think of network files, which QFile won't open
-    KUrl file = KFileDialog::getImageOpenUrl();
+    FetchAvatarJob *job = new FetchAvatarJob(KFileDialog::getImageOpenUrl(), this);
 
-    if (file.isEmpty() || !file.isValid()) {
+    connect(job, SIGNAL(result(KJob*)), this, SLOT(onAvatarFetched(KJob*)));
+
+    job->start();
+}
+
+void MainWidget::onAvatarFetched(KJob *job)
+{
+    if (job->error()) {
+        KMessageBox::error(this, job->errorText());
         return;
     }
 
-    KMimeType::Ptr mime = KMimeType::findByUrl(file);
+    FetchAvatarJob *fetchJob = qobject_cast< FetchAvatarJob* >(job);
 
-    if (!mime->name().contains("image/")) {
-        KMessageBox::error(this, i18n("The file you have selected doesn't seem to be an image! \
-                                       Please select an image file."));
-        return;
-    }
-
-    QFile imageBuffer(file.toLocalFile());
-    imageBuffer.open(QIODevice::ReadOnly);
-    if (!imageBuffer.isOpen() || !imageBuffer.isReadable()) {
-        //FIXME: probably should also tell the user what to do, no? but what to do? :)
-        KMessageBox::error(this, i18n("Sorry, the image couldn't be processed."));
-        imageBuffer.close();
-        return;
-    }
-
-    Tp::Avatar avatar;
-    avatar.avatarData = imageBuffer.readAll();
-    avatar.MIMEType = mime->name();
+    Q_ASSERT(fetchJob);
 
     foreach (const Tp::AccountPtr account, m_accountManager->allAccounts()) {
-        Tp::PendingOperation *op = account->setAvatar(avatar);
+        Tp::PendingOperation *op = account->setAvatar(fetchJob->avatar());
 
         //connect for eventual error displaying
         connect(op, SIGNAL(finished(Tp::PendingOperation*)),
@@ -842,7 +834,7 @@ void MainWidget::loadAvatarFromFile()
 
     //add the selected avatar to the avatar button
     QIcon icon;
-    icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(48, 48));
+    icon.addPixmap(QPixmap::fromImage(QImage::fromData(fetchJob->avatar().avatarData)).scaled(48, 48));
     m_userAccountIconButton->setIcon(icon);
 
     //since all the accounts will have the same avatar,
@@ -852,6 +844,4 @@ void MainWidget::loadAvatarFromFile()
     avatarGroup.writeEntry("method", "account");
     avatarGroup.writeEntry("source", m_accountManager->allAccounts().first()->uniqueIdentifier());
     avatarGroup.config()->sync();
-
-    imageBuffer.close();
 }
