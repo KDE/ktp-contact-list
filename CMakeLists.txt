@@ -35,6 +35,7 @@ set (contactlist_SRCS
      main-widget.cpp
      add-contact-dialog.cpp
      remove-contact-dialog.cpp
+     fetch-avatar-job.cpp
 )
 
 
