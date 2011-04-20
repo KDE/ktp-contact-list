@@ -806,7 +806,9 @@ void MainWidget::selectAvatarFromAccount(const QString &accountUID)
 
 void MainWidget::loadAvatarFromFile()
 {
-    FetchAvatarJob *job = new FetchAvatarJob(KFileDialog::getImageOpenUrl(), this);
+    FetchAvatarJob *job = new FetchAvatarJob(KFileDialog::getImageOpenUrl(KUrl(), this,
+                                                                          i18n("Please choose your avatar")),
+                                             this);
 
     connect(job, SIGNAL(result(KJob*)), this, SLOT(onAvatarFetched(KJob*)));
 
