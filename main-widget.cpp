@@ -733,7 +733,7 @@ void MainWidget::showSettingsKCM()
     dialog->addModule("kcm_telepathy_accounts");
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    dialog->exec();
 }
 
 void MainWidget::loadAvatar(const Tp::AccountPtr &account)
@@ -806,44 +806,72 @@ void MainWidget::selectAvatarFromAccount(const QString &accountUID)
 
 void MainWidget::loadAvatarFromFile()
 {
-    FetchAvatarJob *job = new FetchAvatarJob(KFileDialog::getImageOpenUrl(KUrl(), this,
-                                                                          i18n("Please choose your avatar")),
-                                             this);
+    if (m_accountManager->allAccounts().isEmpty()) {
+        int returnCode = KMessageBox::warningYesNo(this,
+                                           i18nc("Dialog text", "You have no accounts set. Would you like to set one now?"),
+                                           i18nc("Dialog caption", "No accounts set"));
 
-    connect(job, SIGNAL(result(KJob*)), this, SLOT(onAvatarFetched(KJob*)));
+        if (returnCode == KMessageBox::Yes) {
+            showSettingsKCM();
+            loadAvatarFromFile();
+        } else {
+            return;
+        }
+    } else {
+        FetchAvatarJob *job = new FetchAvatarJob(KFileDialog::getImageOpenUrl(KUrl(), this,
+                                                                              i18n("Please choose your avatar")),
+                                                                              this);
 
-    job->start();
+        connect(job, SIGNAL(result(KJob*)),
+                this, SLOT(onAvatarFetched(KJob*)));
+
+        job->start();
+    }
 }
 
 void MainWidget::onAvatarFetched(KJob *job)
 {
     if (job->error()) {
-        KMessageBox::error(this, job->errorText());
+        KMessageBox::error(this, job->errorString());
         return;
     }
 
-    FetchAvatarJob *fetchJob = qobject_cast< FetchAvatarJob* >(job);
+    //this should never be true, but better one "if" than a crash
+    if (m_accountManager->allAccounts().isEmpty()) {
+        int returnCode = KMessageBox::warningYesNo(this,
+                                                   i18nc("Dialog text", "You have no accounts set. Would you like to set one now?"),
+                                                   i18nc("Dialog caption", "No accounts set"));
 
-    Q_ASSERT(fetchJob);
+        if (returnCode == KMessageBox::Yes) {
+            showSettingsKCM();
+        } else {
+            return;
+        }
+    } else {
 
-    foreach (const Tp::AccountPtr account, m_accountManager->allAccounts()) {
-        Tp::PendingOperation *op = account->setAvatar(fetchJob->avatar());
+        FetchAvatarJob *fetchJob = qobject_cast< FetchAvatarJob* >(job);
 
-        //connect for eventual error displaying
-        connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+        Q_ASSERT(fetchJob);
+
+        foreach (const Tp::AccountPtr account, m_accountManager->allAccounts()) {
+            Tp::PendingOperation *op = account->setAvatar(fetchJob->avatar());
+
+            //connect for eventual error displaying
+            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                    this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+        }
+
+        //add the selected avatar to the avatar button
+        QIcon icon;
+        icon.addPixmap(QPixmap::fromImage(QImage::fromData(fetchJob->avatar().avatarData)).scaled(48, 48));
+        m_userAccountIconButton->setIcon(icon);
+
+        //since all the accounts will have the same avatar,
+        //we take simply the first in AM and use this in config
+        KSharedConfigPtr config = KGlobal::config();
+        KConfigGroup avatarGroup(config, "Avatar");
+        avatarGroup.writeEntry("method", "account");
+        avatarGroup.writeEntry("source", m_accountManager->allAccounts().first()->uniqueIdentifier());
+        avatarGroup.config()->sync();
     }
-
-    //add the selected avatar to the avatar button
-    QIcon icon;
-    icon.addPixmap(QPixmap::fromImage(QImage::fromData(fetchJob->avatar().avatarData)).scaled(48, 48));
-    m_userAccountIconButton->setIcon(icon);
-
-    //since all the accounts will have the same avatar,
-    //we take simply the first in AM and use this in config
-    KSharedConfigPtr config = KGlobal::config();
-    KConfigGroup avatarGroup(config, "Avatar");
-    avatarGroup.writeEntry("method", "account");
-    avatarGroup.writeEntry("source", m_accountManager->allAccounts().first()->uniqueIdentifier());
-    avatarGroup.config()->sync();
 }
