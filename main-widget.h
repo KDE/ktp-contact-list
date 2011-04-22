@@ -100,6 +100,7 @@ private Q_SLOTS:
     void onAccountsPresenceStatusFiltered();
     void onPresencePublicationRequested(const Tp::Contacts &contacts);
     void monitorPresence(const Tp::AccountPtr &account);
+    void onContactManagerStateChanged(Tp::ContactListState);
 
 private:
     AccountsModel          *m_model;

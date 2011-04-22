@@ -340,12 +340,24 @@ void MainWidget::monitorPresence(const Tp::AccountPtr &account)
     connect(account->connection()->contactManager().data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
             this, SLOT(onPresencePublicationRequested(Tp::Contacts)));
 
-    QFutureWatcher< Tp::ContactPtr > watcher;
-    connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
-    watcher.setFuture(QtConcurrent::filtered(account->connection()->contactManager()->allKnownContacts(),
-                                             kde_tp_filter_contacts_by_publication_status));
+    connect(account->connection()->contactManager().data(),
+            SIGNAL(stateChanged(Tp::ContactListState)),
+            this, SLOT(onContactManagerStateChanged(Tp::ContactListState)));
+    onContactManagerStateChanged(account->connection()->contactManager()->state());
+}
 
-    kDebug() << "Watcher is on";
+void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
+{
+    if (state == Tp::ContactListStateSuccess) {
+        Tp::ContactManagerPtr contactManager(qobject_cast< Tp::ContactManager* >(sender()));
+
+        QFutureWatcher< Tp::ContactPtr > watcher;
+        connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
+        watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
+                                                 kde_tp_filter_contacts_by_publication_status));
+
+        kDebug() << "Watcher is on";
+    }
 }
 
 void MainWidget::onAccountStateChanged(bool enabled)
