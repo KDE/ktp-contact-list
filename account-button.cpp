@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "account-button.h"
+
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 
@@ -31,8 +33,6 @@
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/PendingOperation>
-
-#include "account-button.h"
 
 AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
   : QToolButton(parent), m_busyOverlay(0)
@@ -261,3 +261,5 @@ void AccountButton::setCustomPresenceMessage(const QString& message)
 
     m_presenceMessageWidget->setText(message);
 }
+
+#include "account-button.moc"

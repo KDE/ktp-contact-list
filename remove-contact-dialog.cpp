@@ -54,3 +54,5 @@ bool RemoveContactDialog::blockContact() const
 {
     return ui->blockCheckbox->isChecked();
 }
+
+#include "remove-contact-dialog.moc"

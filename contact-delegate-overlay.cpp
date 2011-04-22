@@ -19,13 +19,14 @@
 *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "contact-delegate-overlay.h"
+
 #include <QEvent>
 #include <QTimer>
 #include <QMouseEvent>
 
 #include <KDebug>
 
-#include "contact-delegate-overlay.h"
 #include "contact-view-hover-button.h"
 
 ContactDelegateOverlay::ContactDelegateOverlay(QObject* parent)

@@ -335,3 +335,5 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
 
     return true;
 }
+
+#include "contact-delegate.moc"

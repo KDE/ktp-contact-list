@@ -80,3 +80,5 @@ const QString AddContactDialog::screenName() const
 {
     return ui->screenNameLineEdit->text();
 }
+
+#include "add-contact-dialog.moc"

@@ -19,7 +19,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "contact-overlays.moc"
+#include "contact-overlays.h"
 
 #include <KLocale>
 #include <KIconLoader>
@@ -428,3 +428,5 @@ bool FileTransferContactOverlay::checkIndex(const QModelIndex& index) const
 
     return false;
 }
+
+#include "contact-overlays.moc"

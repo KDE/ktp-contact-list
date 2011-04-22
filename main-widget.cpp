@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "main-widget.moc"
+#include "main-widget.h"
 
 #include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QPainter>
@@ -47,10 +47,8 @@
 #include <KSettings/Dialog>
 #include <KSharedConfig>
 #include <KFileDialog>
-#include <KMessageBox>
 #include <KStandardShortcut>
 
-#include "main-widget.h"
 #include "ui_main-widget.h"
 #include "account-button.h"
 #include "contact-overlays.h"
@@ -980,3 +978,5 @@ void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
         }
     }
 }
+
+#include "main-widget.moc"
