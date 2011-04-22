@@ -398,7 +398,7 @@ void MainWidget::onAccountStateChanged(bool enabled)
         findChild<AccountButton *>(account->uniqueIdentifier())->show();
     } else {
         findChild<AccountButton *>(account->uniqueIdentifier())->hide();
-        showMessageToUser(i18n("Account %1 was disabled!").arg(account->displayName()),
+        showMessageToUser(i18n("Account %1 was disabled!", account->displayName()),
                           MainWidget::SystemMessageError);
     }
 }
@@ -408,7 +408,7 @@ void MainWidget::onAccountRemoved()
     Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
     delete findChild<AccountButton *>(account->uniqueIdentifier());
 
-    showMessageToUser(i18n("Account %1 was removed!").arg(account->displayName()),
+    showMessageToUser(i18n("Account %1 was removed!", account->displayName()),
                       MainWidget::SystemMessageError);
 }
 
@@ -822,7 +822,7 @@ void MainWidget::loadAvatar(const Tp::AccountPtr &account)
         avatarButton->setIcon(icon);
         avatarButton->setIconSize(QSize(48, 48));
         avatarButton->setText(i18nc("String in menu saying Use avatar from account X",
-                                    "Use from %1").arg(account->displayName()));
+                                    "Use from %1", account->displayName()));
         avatarButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
         QWidgetAction *avatarAction = new QWidgetAction(m_avatarButtonMenu);

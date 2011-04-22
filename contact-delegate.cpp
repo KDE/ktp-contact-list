@@ -292,23 +292,23 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
     switch (index.data(AccountsModel::PresenceTypeRole).toUInt()) {
     case Tp::ConnectionPresenceTypeAvailable:
         presenseIconPath = KIconLoader::global()->iconPath("user-online", 1);
-        presenseText = i18n("Online");
+        presenseText = i18nc("This is an IM user status", "Online");
         break;
     case Tp::ConnectionPresenceTypeAway:
         presenseIconPath = KIconLoader::global()->iconPath("user-away", 1);
-        presenseText = i18n("Away");
+        presenseText = i18nc("This is an IM user status", "Away");
         break;
     case Tp::ConnectionPresenceTypeExtendedAway:
         presenseIconPath = KIconLoader::global()->iconPath("user-away-extended", 1);
-        presenseText = i18n("Away");
+        presenseText = i18nc("This is an IM user status", "Away");
         break;
     case Tp::ConnectionPresenceTypeBusy:
         presenseIconPath = KIconLoader::global()->iconPath("user-busy", 1);
-        presenseText = i18n("Busy");
+        presenseText = i18nc("This is an IM user status", "Busy");
         break;
     case Tp::ConnectionPresenceTypeOffline:
         presenseIconPath = KIconLoader::global()->iconPath("user-offline", 1);
-        presenseText = i18n("Offline");
+        presenseText = i18nc("This is an IM user status", "Offline");
         break;
     default:
         presenseIconPath = KIconLoader::global()->iconPath("task-attention", 1);
