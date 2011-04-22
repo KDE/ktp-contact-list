@@ -363,15 +363,12 @@ void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
     if (state == Tp::ContactListStateSuccess) {
         Tp::ContactManagerPtr contactManager(qobject_cast< Tp::ContactManager* >(sender()));
 
-        if (contactManager) {
+        QFutureWatcher< Tp::ContactPtr > watcher;
+        connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
+        watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
+                                                kde_tp_filter_contacts_by_publication_status));
 
-            QFutureWatcher< Tp::ContactPtr > watcher;
-            connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
-            watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
-                                                    kde_tp_filter_contacts_by_publication_status));
-
-            kDebug() << "Watcher is on";
-        }
+        kDebug() << "Watcher is on";
     }
 }
 
