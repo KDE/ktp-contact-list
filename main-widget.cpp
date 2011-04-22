@@ -223,10 +223,22 @@ MainWidget::MainWidget(QWidget *parent)
 
     connect(m_presenceMessageEdit, SIGNAL(returnPressed(QString)),
             this, SLOT(setCustomPresenceMessage(QString)));
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup filterBarGroup(config, "GUI");
+    if (filterBarGroup.readEntry("pin_filterbar", QString()) == QLatin1String("true")) {
+        toggleSearchWidget(true);
+        m_filterBar->setPinned(true);
+    }
 }
 
 MainWidget::~MainWidget()
 {
+    //save the state of the filter bar, pinned or not
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup filterBarGroup(config, "GUI");
+    filterBarGroup.writeEntry("pin_filterbar", m_filterBar->isPinned());
+    filterBarGroup.config()->sync();
 }
 
 void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)

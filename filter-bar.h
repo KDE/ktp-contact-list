@@ -23,6 +23,7 @@
 
 #include <QWidget>
 
+class QToolButton;
 class KLineEdit;
 
 /**
@@ -43,9 +44,30 @@ public:
      */
     void selectAll();
 
+    /**
+     * \returns true if the pin button is checked, false otherwise.
+     */
+    bool isPinned() const;
+
 public slots:
     /** Clears the input field. */
     void clear();
+
+    /**
+     * Sets the appearance of the pin button.
+     *
+     * Displays the pin button with a different icon according to its state
+     * (checked or unchecked).
+     *
+     * \param pinned if true, the pin button will be checked, otherwise it
+     * will be unchecked.
+     */
+    void setPinned(bool pinned);
+
+    /**
+     * Unpins the bar.
+     */
+    void unpinSlot();
 
 signals:
     /**
@@ -64,7 +86,15 @@ protected:
     virtual void keyReleaseEvent(QKeyEvent* event);
 
 private:
-    KLineEdit* m_filterInput;
+    KLineEdit *m_filterInput;
+    /**
+     * Button to pin the filter bar to the contact list.
+     *
+     * The status of the button (checked or unchecked) will be written in the
+     * config file when the contact list gets closed, and the filter bar will
+     * shown or hidden accordingly next time the contact list is launched.
+     */
+    QToolButton *m_pinButton;
 };
 
 #endif
