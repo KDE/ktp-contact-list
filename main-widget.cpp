@@ -343,14 +343,18 @@ void MainWidget::monitorPresence(const Tp::AccountPtr &account)
     connect(account->connection()->contactManager().data(),
             SIGNAL(stateChanged(Tp::ContactListState)),
             this, SLOT(onContactManagerStateChanged(Tp::ContactListState)));
-    onContactManagerStateChanged(account->connection()->contactManager()->state());
+    onContactManagerStateChanged(account->connection()->contactManager(),
+                                 account->connection()->contactManager()->state());
 }
 
 void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
 {
-    if (state == Tp::ContactListStateSuccess) {
-        Tp::ContactManagerPtr contactManager(qobject_cast< Tp::ContactManager* >(sender()));
+    onContactManagerStateChanged(Tp::ContactManagerPtr(qobject_cast< Tp::ContactManager* >(sender())), state);
+}
 
+void MainWidget::onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state)
+{
+    if (state == Tp::ContactListStateSuccess) {
         QFutureWatcher< Tp::ContactPtr > watcher;
         connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
         watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
