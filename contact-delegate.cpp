@@ -286,33 +286,33 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
     const QString cmIconPath = KIconLoader::global()->iconPath(index.parent().data(AccountsModel::IconRole).toString(), 1);
     const QString alias = index.data(AccountsModel::AliasRole).toString();
     const QString presenceStatus = index.data(AccountsModel::PresenceMessageRole).toString();
-    QString presenseIconPath;
-    QString presenseText;
+    QString presenceIconPath;
+    QString presenceText;
 
     switch (index.data(AccountsModel::PresenceTypeRole).toUInt()) {
     case Tp::ConnectionPresenceTypeAvailable:
-        presenseIconPath = KIconLoader::global()->iconPath("user-online", 1);
-        presenseText = i18nc("This is an IM user status", "Online");
+        presenceIconPath = KIconLoader::global()->iconPath("user-online", 1);
+        presenceText = i18nc("This is an IM user status", "Online");
         break;
     case Tp::ConnectionPresenceTypeAway:
-        presenseIconPath = KIconLoader::global()->iconPath("user-away", 1);
-        presenseText = i18nc("This is an IM user status", "Away");
+        presenceIconPath = KIconLoader::global()->iconPath("user-away", 1);
+        presenceText = i18nc("This is an IM user status", "Away");
         break;
     case Tp::ConnectionPresenceTypeExtendedAway:
-        presenseIconPath = KIconLoader::global()->iconPath("user-away-extended", 1);
-        presenseText = i18nc("This is an IM user status", "Away");
+        presenceIconPath = KIconLoader::global()->iconPath("user-away-extended", 1);
+        presenceText = i18nc("This is an IM user status", "Away");
         break;
     case Tp::ConnectionPresenceTypeBusy:
-        presenseIconPath = KIconLoader::global()->iconPath("user-busy", 1);
-        presenseText = i18nc("This is an IM user status", "Busy");
+        presenceIconPath = KIconLoader::global()->iconPath("user-busy", 1);
+        presenceText = i18nc("This is an IM user status", "Busy");
         break;
     case Tp::ConnectionPresenceTypeOffline:
-        presenseIconPath = KIconLoader::global()->iconPath("user-offline", 1);
-        presenseText = i18nc("This is an IM user status", "Offline");
+        presenceIconPath = KIconLoader::global()->iconPath("user-offline", 1);
+        presenceText = i18nc("This is an IM user status", "Offline");
         break;
     default:
-        presenseIconPath = KIconLoader::global()->iconPath("task-attention", 1);
-        // What presense Text should be here??
+        presenceIconPath = KIconLoader::global()->iconPath("task-attention", 1);
+        // What presence Text should be here??
         break;
     }
 
@@ -345,9 +345,9 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
     table += QString("<td>%1</td></tr>").arg(alias);
     table += QString("<tr><td align='right'><b>%1</b></td>").arg(i18n("Status:"));
     if (presenceStatus.isEmpty()) {
-        table += QString("<td><img src='%1' height='16' width='16' /> %2</td></tr>").arg(presenseIconPath, presenseText);
+        table += QString("<td><img src='%1' height='16' width='16' /> %2</td></tr>").arg(presenceIconPath, presenceText);
     } else {
-        table += QString("<td><img src='%1' height='16' width='16' /> %2</td></tr>").arg(presenseIconPath, presenceStatus);
+        table += QString("<td><img src='%1' height='16' width='16' /> %2</td></tr>").arg(presenceIconPath, presenceStatus);
     }
     if (index.data(AccountsModel::BlockedRole).toBool()) {
         table += QString("<td colspan='2'>%1</td></tr>").arg(i18n("User is blocked"));
