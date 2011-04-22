@@ -143,7 +143,7 @@ protected:
 
     bool eventFilter(QObject* obj, QEvent* event);
 
-    QWidget *m_widget;
+    QWeakPointer<QWidget> m_widget;
 
     bool m_mouseButtonPressedOnWidget;
 };
