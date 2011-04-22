@@ -41,7 +41,7 @@ public:
      * @param contact Tp::ContactPtr of the contact to remove
      * @param parent parent widget
      */
-    RemoveContactDialog(Tp::ContactPtr contact, QWidget *parent = 0);
+    explicit RemoveContactDialog(Tp::ContactPtr contact, QWidget *parent = 0);
 
     /** returns value of "block contact" checkbox */
     bool blockContact() const;

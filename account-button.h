@@ -35,7 +35,7 @@ class AccountButton : public QToolButton
     Q_OBJECT
 
 public:
-    AccountButton(const Tp::AccountPtr &account, QWidget *parent = 0);
+    explicit AccountButton(const Tp::AccountPtr &account, QWidget *parent = 0);
 
     ///Returns the unique account ID
     QString accountId();
