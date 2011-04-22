@@ -294,15 +294,19 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 {
     kDebug() << "Connection status is" << status;
+
+    Tp::AccountPtr account(qobject_cast< Tp::Account* >(sender()));
+    QModelIndex index = m_model->index(qobject_cast<AccountsModelItem*>(m_model->accountItemForId(account->uniqueIdentifier())));
+
     switch (status) {
     case Tp::ConnectionStatusConnected:
-        //FIXME: Get the account (sender()) index and expand only that index
-        m_contactsListView->expandAll();
-        monitorPresence(Tp::AccountPtr(qobject_cast< Tp::Account* >(sender())));
+        m_contactsListView->setExpanded(index, true);
+        monitorPresence(account);
         break;
     case Tp::ConnectionStatusDisconnected:
         //Fall through
     case Tp::ConnectionStatusConnecting:
+        m_contactsListView->setExpanded(index, false);
     default:
         break;
     }
