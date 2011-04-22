@@ -103,20 +103,6 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_userAccountIconButton->setMenu(m_avatarButtonMenu);
 
-    QToolButton *settingsButton = new QToolButton(this);
-    settingsButton->setIcon(KIcon("configure"));
-    settingsButton->setPopupMode(QToolButton::InstantPopup);
-
-    KMenu *settingsButtonMenu = new KMenu(settingsButton);
-    settingsButtonMenu->addAction(i18n("Configure accounts..."), this, SLOT(showSettingsKCM()));
-    settingsButtonMenu->addSeparator();
-    settingsButtonMenu->addMenu(helpMenu());
-
-    settingsButton->setMenu(settingsButtonMenu);
-
-    m_toolBar->addSeparator();
-    m_toolBar->addWidget(settingsButton);
-
     m_addContactAction = new KAction(KIcon("list-add-user"), QString(), this);
     m_addContactAction->setToolTip(i18n("Add new contacts.."));
 
@@ -144,6 +130,20 @@ MainWidget::MainWidget(QWidget *parent)
     m_searchContactAction->setToolTip(i18n("Find contact"));
 
     m_toolBar->addAction(m_searchContactAction);
+
+    QToolButton *settingsButton = new QToolButton(this);
+    settingsButton->setIcon(KIcon("configure"));
+    settingsButton->setPopupMode(QToolButton::InstantPopup);
+
+    KMenu *settingsButtonMenu = new KMenu(settingsButton);
+    settingsButtonMenu->addAction(i18n("Configure accounts..."), this, SLOT(showSettingsKCM()));
+    settingsButtonMenu->addSeparator();
+    settingsButtonMenu->addMenu(helpMenu());
+
+    settingsButton->setMenu(settingsButtonMenu);
+
+    m_toolBar->addSeparator();
+    m_toolBar->addWidget(settingsButton);
 
     // Start setting up the Telepathy AccountManager.
     Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
