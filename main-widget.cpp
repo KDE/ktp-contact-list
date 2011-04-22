@@ -394,7 +394,7 @@ void MainWidget::onContactManagerStateChanged(const Tp::ContactManagerPtr &conta
 
 void MainWidget::onAccountStateChanged(bool enabled)
 {
-    Tp::AccountPtr account(static_cast<Tp::Account*>(sender()));
+    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
 
     if(enabled) {
         findChild<AccountButton *>(account->uniqueIdentifier())->show();
@@ -407,7 +407,7 @@ void MainWidget::onAccountStateChanged(bool enabled)
 
 void MainWidget::onAccountRemoved()
 {
-    Tp::AccountPtr account(static_cast<Tp::Account*>(sender()));
+    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
     delete findChild<AccountButton *>(account->uniqueIdentifier());
 
     showMessageToUser(i18n("Account %1 was removed!").arg(account->displayName()),

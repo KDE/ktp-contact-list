@@ -76,7 +76,7 @@ TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
 
 TextChannelContactOverlay::Button *TextChannelContactOverlay::button() const
 {
-    return static_cast<Button*>(HoverButtonDelegateOverlay::button());
+    return dynamic_cast<Button*>(HoverButtonDelegateOverlay::button());
 }
 
 void TextChannelContactOverlay::setActive(bool active)

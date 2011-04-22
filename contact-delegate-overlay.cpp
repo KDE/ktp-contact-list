@@ -270,7 +270,7 @@ HoverButtonDelegateOverlay::HoverButtonDelegateOverlay(QObject* parent)
 
 ContactViewHoverButton* HoverButtonDelegateOverlay::button() const
 {
-    return static_cast<ContactViewHoverButton*>(m_widget);
+    return qobject_cast<ContactViewHoverButton*>(m_widget);
 }
 
 void HoverButtonDelegateOverlay::setActive(bool active)
