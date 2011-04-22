@@ -96,6 +96,11 @@ private Q_SLOTS:
     void slotStartTextChat();
     void slotUnblockContactTriggered();
     void onAvatarFetched(KJob*);
+    void onAccountReady(Tp::PendingOperation *operation);
+    void onAccountsPresenceStatusFiltered();
+    void onPresencePublicationRequested(const Tp::Contacts &contacts);
+    void monitorPresence(const Tp::AccountPtr &account);
+    void onContactManagerStateChanged(Tp::ContactListState);
 
 private:
     AccountsModel          *m_model;

@@ -64,6 +64,11 @@
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 
+bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
+{
+    return contact->publishState() == Tp::Contact::PresenceStateAsk;
+}
+
 MainWidget::MainWidget(QWidget *parent)
     : KMainWindow(parent),
    m_model(0),
@@ -269,6 +274,7 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
     case Tp::ConnectionStatusConnected:
         //FIXME: Get the account (sender()) index and expand only that index
         m_contactsListView->expandAll();
+        monitorPresence(Tp::AccountPtr(qobject_cast< Tp::Account* >(sender())));
         break;
     case Tp::ConnectionStatusDisconnected:
         //Fall through
@@ -280,7 +286,11 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 
 void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
 {
-    account->becomeReady();
+    Tp::PendingReady *ready = account->becomeReady();
+
+    connect(ready,
+            SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(onAccountReady(Tp::PendingOperation*)));
 
     connect(account.data(),
             SIGNAL(connectionChanged(Tp::ConnectionPtr)),
@@ -313,6 +323,40 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
     if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
         //this also updates the avatar if it was changed somewhere else
         selectAvatarFromAccount(avatarGroup.readEntry("source", QString()));
+    }
+}
+
+void MainWidget::onAccountReady(Tp::PendingOperation *operation)
+{
+    Tp::AccountPtr account = Tp::AccountPtr::dynamicCast(operation->object());
+
+    if (account->connectionStatus() == Tp::ConnectionStatusConnected) {
+        monitorPresence(account);
+    }
+}
+
+void MainWidget::monitorPresence(const Tp::AccountPtr &account)
+{
+    connect(account->connection()->contactManager().data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
+            this, SLOT(onPresencePublicationRequested(Tp::Contacts)));
+
+    connect(account->connection()->contactManager().data(),
+            SIGNAL(stateChanged(Tp::ContactListState)),
+            this, SLOT(onContactManagerStateChanged(Tp::ContactListState)));
+    onContactManagerStateChanged(account->connection()->contactManager()->state());
+}
+
+void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
+{
+    if (state == Tp::ContactListStateSuccess) {
+        Tp::ContactManagerPtr contactManager(qobject_cast< Tp::ContactManager* >(sender()));
+
+        QFutureWatcher< Tp::ContactPtr > watcher;
+        connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
+        watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
+                                                 kde_tp_filter_contacts_by_publication_status));
+
+        kDebug() << "Watcher is on";
     }
 }
 
@@ -873,5 +917,34 @@ void MainWidget::onAvatarFetched(KJob *job)
         avatarGroup.writeEntry("method", "account");
         avatarGroup.writeEntry("source", m_accountManager->allAccounts().first()->uniqueIdentifier());
         avatarGroup.config()->sync();
+    }
+}
+
+void MainWidget::onAccountsPresenceStatusFiltered()
+{
+    kDebug() << "Watcher is here";
+    QFutureWatcher< Tp::ContactPtr > *watcher = dynamic_cast< QFutureWatcher< Tp::ContactPtr > * >(sender());
+    kDebug() << "Watcher is casted";
+    Tp::Contacts contacts = watcher->future().results().toSet();
+    kDebug() << "Watcher is used";
+    if (!contacts.isEmpty()) {
+        onPresencePublicationRequested(contacts);
+    }
+}
+
+void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
+{
+    foreach (const Tp::ContactPtr &contact, contacts) {
+        if (KMessageBox::questionYesNo(this, i18n("The contact %1 added you to their contact list. "
+                                                  "Do you want to allow this person to see your presence "
+                                                  "and add them to your contact list?", contact->id()),
+                                       i18n("Subscription request")) == KDialog::Yes) {
+            Tp::ContactManagerPtr manager = contact->manager();
+            manager->authorizePresencePublication(QList< Tp::ContactPtr >() << contact);
+
+            if (manager->canRequestPresenceSubscription() && contact->subscriptionState() == Tp::Contact::PresenceStateNo) {
+                manager->requestPresenceSubscription(QList< Tp::ContactPtr >() << contact);
+            }
+        }
     }
 }
