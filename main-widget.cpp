@@ -698,10 +698,11 @@ void MainWidget::slotAddContactToGroupTriggered()
     const QStringList currentGroups = contact->groups();
 
     Tp::PendingOperation* operation = contact->addToGroup(action->text().remove('&'));
-    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 
     if (operation) {
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+
         foreach (const QString &group, currentGroups) {
             Tp::PendingOperation* operation = contact->removeFromGroup(group);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
