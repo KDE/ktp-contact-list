@@ -85,7 +85,6 @@ public Q_SLOTS:
     void loadAvatarFromFile();
     //    void startAudioChannel();
     //    void startVideoChannel();
-
     void onCustomContextMenuRequested(const QPoint &point);
 
 private Q_SLOTS:
@@ -114,6 +113,7 @@ private:
     KAction                *m_groupContactsAction;
     KAction                *m_hideOfflineAction;
     KAction                *m_searchContactAction;
+    KAction                *m_sortByPresenceAction;
 };
 
 

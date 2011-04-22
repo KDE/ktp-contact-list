@@ -23,6 +23,16 @@
 
 #include <QSortFilterProxyModel>
 
+/**
+  * \brief Class used to sort and filter the contacts.
+  *
+  * Filters:
+  *     Hide offline contacts
+  *     Hide contacts not matching a string in the search bar
+  * Sort contacts:
+  *     By name
+  *     By presence
+  */
 class AccountFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
@@ -31,13 +41,28 @@ public:
     AccountFilterModel(QObject *parent = 0);
     bool filterOfflineUsers() const;
 
+    /**
+     * \brief Flag to sort the contactlist by presence.
+     *
+     * If set to false, the contact list is only sorted by name.
+     */
+    bool isSortedByPresence() const;
+
+
 public slots:
     void filterOfflineUsers(bool filterOfflineUsers);
     void setFilterString(const QString &str);
     void clearFilterString();
+    /**
+     * \brief Lets the proxy know whether the model should get sorted by presence or not.
+     *
+     * \param enabled if true, the model will get sorted by presence, otherwise just by name.
+     */
+    void setSortByPresence(bool enabled);
 
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
+    bool lessThan ( const QModelIndex &left, const QModelIndex &right ) const;
 
 private:
     /// Filters out offline users

@@ -21,6 +21,7 @@
 
 #include "account-filter-model.h"
 #include "accounts-model.h"
+
 #include <KDebug>
 
 AccountFilterModel::AccountFilterModel(QObject *parent)
@@ -78,7 +79,7 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
     return rowAccepted;
 }
 
-void AccountFilterModel::setFilterString(const QString& str)
+void AccountFilterModel::setFilterString(const QString &str)
 {
     m_filterString = str;
     m_filterByName = true;
@@ -90,4 +91,50 @@ void AccountFilterModel::clearFilterString()
     m_filterString.clear();
     m_filterByName = false;
     invalidateFilter();
+}
+
+bool AccountFilterModel::lessThan( const QModelIndex &left, const QModelIndex &right ) const
+{
+    uint leftPresence;
+    uint rightPresence;
+
+    QString leftDisplayedName = sourceModel()->data(left).toString();
+    QString rightDisplayedName = sourceModel()->data(right).toString();
+
+    if (sortRole() == AccountsModel::PresenceTypeRole) {
+        leftPresence = sourceModel()->data(left, AccountsModel::PresenceTypeRole).toUInt();
+        rightPresence = sourceModel()->data(right, AccountsModel::PresenceTypeRole).toUInt();
+
+        if (leftPresence == rightPresence) {
+            return QString::localeAwareCompare(leftDisplayedName, rightDisplayedName) < 0;
+        } else {
+            if (leftPresence == Tp::ConnectionPresenceTypeAvailable) {
+                return true;
+            }
+            if (leftPresence == Tp::ConnectionPresenceTypeUnset ||
+                    leftPresence == Tp::ConnectionPresenceTypeOffline ||
+                    leftPresence == Tp::ConnectionPresenceTypeUnknown ||
+                    leftPresence == Tp::ConnectionPresenceTypeError) {
+                return false;
+            }
+
+            return leftPresence < rightPresence;
+        }
+    } else {
+        return QString::localeAwareCompare(leftDisplayedName, rightDisplayedName) < 0;
+    }
+}
+
+void AccountFilterModel::setSortByPresence(bool enabled)
+{
+    if (enabled) {
+        setSortRole(AccountsModel::PresenceTypeRole);
+    } else {
+        setSortRole(Qt::DisplayRole);
+    }
+}
+
+bool AccountFilterModel::isSortedByPresence() const
+{
+    return sortRole() == AccountsModel::PresenceTypeRole;
 }

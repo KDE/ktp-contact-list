@@ -128,6 +128,13 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_hideOfflineAction);
 
+    m_sortByPresenceAction = new KAction(KIcon("view-sort-ascending"), QString(), this);
+    m_sortByPresenceAction->setCheckable(true);
+    m_sortByPresenceAction->setChecked(false);
+    m_sortByPresenceAction->setToolTip(i18n("Sort by presence"));
+
+    m_toolBar->addAction(m_sortByPresenceAction);
+
     m_searchContactAction = new KAction(KIcon("edit-find-user"), QString(), this );
     m_searchContactAction->setShortcut(KStandardShortcut::find());
     m_searchContactAction->setCheckable(true);
@@ -233,9 +240,11 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_modelFilter = new AccountFilterModel(this);
     m_modelFilter->setSourceModel(m_model);
     m_modelFilter->setDynamicSortFilter(true);
-    m_modelFilter->filterOfflineUsers(true);
+    m_modelFilter->filterOfflineUsers(m_hideOfflineAction->isChecked());
     m_modelFilter->clearFilterString();
+    m_modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_modelFilter->setSortRole(Qt::DisplayRole);
+    m_modelFilter->setSortByPresence(m_sortByPresenceAction->isChecked());
     m_contactsListView->setModel(m_modelFilter);
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
@@ -254,6 +263,9 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     connect(m_filterBar, SIGNAL(closeRequest()),
             m_searchContactAction, SLOT(toggle()));
+
+    connect(m_sortByPresenceAction, SIGNAL(toggled(bool)),
+            m_modelFilter, SLOT(setSortByPresence(bool)));
 
     connect(m_modelFilter, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)),
         m_delegate, SLOT(contactRemoved(QModelIndex,int,int)));
@@ -351,12 +363,15 @@ void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
     if (state == Tp::ContactListStateSuccess) {
         Tp::ContactManagerPtr contactManager(qobject_cast< Tp::ContactManager* >(sender()));
 
-        QFutureWatcher< Tp::ContactPtr > watcher;
-        connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
-        watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
-                                                 kde_tp_filter_contacts_by_publication_status));
+        if (contactManager) {
 
-        kDebug() << "Watcher is on";
+            QFutureWatcher< Tp::ContactPtr > watcher;
+            connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
+            watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
+                                                    kde_tp_filter_contacts_by_publication_status));
+
+            kDebug() << "Watcher is on";
+        }
     }
 }
 
@@ -528,7 +543,7 @@ void MainWidget::toggleSearchWidget(bool show)
 void MainWidget::onAddContactRequest() {
     QWeakPointer<AddContactDialog> dialog = new AddContactDialog(m_model, this);
     if (dialog.data()->exec() == QDialog::Accepted) {
-	Tp::AccountPtr account = dialog.data()->account();
+    Tp::AccountPtr account = dialog.data()->account();
         QStringList identifiers = QStringList() << dialog.data()->screenName();
         Tp::PendingContacts* pendingContacts = account->connection()->contactManager()->contactsForIdentifiers(identifiers);
         connect(pendingContacts, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAddContactRequestFoundContacts(Tp::PendingOperation*)));
