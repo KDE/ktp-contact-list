@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "account-button.h"
+
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
 
@@ -31,8 +33,6 @@
 
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/PendingOperation>
-
-#include "account-button.h"
 
 AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
   : QToolButton(parent), m_busyOverlay(0)
@@ -73,14 +73,14 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     QActionGroup *presenceActions = new QActionGroup(this);
     presenceActions->setExclusive(true);
 
-    KAction *onlineAction =     new KAction(KIcon("user-online"), i18nc("@action:inmenu", "Available"), this);
-    KAction *awayAction =       new KAction(KIcon("user-away"), i18nc("@action:inmenu", "Away"), this);
-    KAction *brbAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu", "Be right back"), this);
-    KAction *busyAction =       new KAction(KIcon("user-busy"), i18nc("@action:inmenu", "Busy"), this);
-    KAction *dndAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu", "Do not disturb"), this);
-    KAction *xaAction =         new KAction(KIcon("user-away-extended"), i18nc("@action:inmenu", "Extended Away"), this);
-    KAction *invisibleAction =  new KAction(KIcon("user-invisible"), i18nc("@action:inmenu", "Invisible"), this);
-    KAction *offlineAction =    new KAction(KIcon("user-offline"), i18nc("@action:inmenu", "Offline"), this);
+    KAction *onlineAction =     new KAction(KIcon("user-online"), i18nc("@action:inmenu This is an IM user status", "Available"), this);
+    KAction *awayAction =       new KAction(KIcon("user-away"), i18nc("@action:inmenu This is an IM user status", "Away"), this);
+    KAction *brbAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Be right back"), this);
+    KAction *busyAction =       new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Busy"), this);
+    KAction *dndAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Do not disturb"), this);
+    KAction *xaAction =         new KAction(KIcon("user-away-extended"), i18nc("@action:inmenu This is an IM user status", "Extended Away"), this);
+    KAction *invisibleAction =  new KAction(KIcon("user-invisible"), i18nc("@action:inmenu This is an IM user status", "Invisible"), this);
+    KAction *offlineAction =    new KAction(KIcon("user-offline"), i18nc("@action:inmenu This is an IM user status", "Offline"), this);
 
     m_presenceMessageWidget = new KLineEdit(this);
     m_presenceMessageWidget->setClearButtonShown(true);
@@ -261,3 +261,5 @@ void AccountButton::setCustomPresenceMessage(const QString& message)
 
     m_presenceMessageWidget->setText(message);
 }
+
+#include "account-button.moc"

@@ -20,7 +20,7 @@
  *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "contact-view-hover-button.moc"
+#include "contact-view-hover-button.h"
 
 // Qt includes
 
@@ -210,3 +210,5 @@ void ContactViewHoverButton::stopFading()
     m_fadingTimeLine->stop();
     m_fadingValue = 0;
 }
+
+#include "contact-view-hover-button.moc"

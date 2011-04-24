@@ -19,13 +19,14 @@
 *  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "contact-delegate-overlay.h"
+
 #include <QEvent>
 #include <QTimer>
 #include <QMouseEvent>
 
 #include <KDebug>
 
-#include "contact-delegate-overlay.h"
 #include "contact-view-hover-button.h"
 
 ContactDelegateOverlay::ContactDelegateOverlay(QObject* parent)
@@ -98,7 +99,6 @@ QAbstractItemDelegate* ContactDelegateOverlay::delegate() const
 
 AbstractWidgetDelegateOverlay::AbstractWidgetDelegateOverlay(QObject* parent)
     : ContactDelegateOverlay(parent),
-      m_widget(0),
       m_mouseButtonPressedOnWidget(false)
 {
 }
@@ -111,18 +111,17 @@ AbstractWidgetDelegateOverlay::~AbstractWidgetDelegateOverlay()
 void AbstractWidgetDelegateOverlay::setActive(bool active)
 {
     if (active) {
-        if (m_widget) {
-            delete m_widget;
-            m_widget = 0;
+        if (!m_widget.isNull()) {
+            m_widget.data()->deleteLater();
         }
 
         m_widget = createWidget();
 
-        m_widget->setFocusPolicy(Qt::NoFocus);
-        m_widget->hide(); // hide per default
+        m_widget.data()->setFocusPolicy(Qt::NoFocus);
+        m_widget.data()->hide(); // hide per default
 
         m_view->viewport()->installEventFilter(this);
-        m_widget->installEventFilter(this);
+        m_widget.data()->installEventFilter(this);
 
         if (view()->model()) {
             connect(m_view->model(), SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
@@ -141,8 +140,7 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
         connect(m_view, SIGNAL(viewportEntered()),
                 this, SLOT(slotViewportEntered()));
     } else {
-        delete m_widget;
-        m_widget = 0;
+        m_widget.data()->deleteLater();
 
         if (m_view) {
             m_view->viewport()->removeEventFilter(this);
@@ -162,8 +160,8 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
 
 void AbstractWidgetDelegateOverlay::hide()
 {
-    if (m_widget) {
-        m_widget->hide();
+    if (!m_widget.isNull()) {
+        m_widget.data()->hide();
     }
 }
 
@@ -183,7 +181,7 @@ void AbstractWidgetDelegateOverlay::slotEntered(const QModelIndex& index)
 
     if (index.isValid() && checkIndex(index)) {
 //         QTimer::singleShot(500, m_widget, SLOT(show()));
-        m_widget->show();
+        m_widget.data()->show();
         emit overlayActivated(index);
     }
 }
@@ -191,7 +189,7 @@ void AbstractWidgetDelegateOverlay::slotEntered(const QModelIndex& index)
 void AbstractWidgetDelegateOverlay::slotWidgetAboutToShow(const QModelIndex& index)
 {
     Q_UNUSED(index);
-    m_widget->show();
+    m_widget.data()->show();
 }
 
 bool AbstractWidgetDelegateOverlay::checkIndex(const QModelIndex& index) const
@@ -223,7 +221,7 @@ void AbstractWidgetDelegateOverlay::viewportLeaveEvent(QObject*, QEvent*)
 
 bool AbstractWidgetDelegateOverlay::eventFilter(QObject* obj, QEvent* event)
 {
-    if (m_widget && obj == m_widget) {
+    if (!m_widget.isNull() && obj == m_widget.data()) {
         switch (event->type()) {
             case QEvent::MouseButtonPress:
                 if (static_cast<QMouseEvent*>(event)->buttons() & Qt::LeftButton) {
@@ -270,7 +268,7 @@ HoverButtonDelegateOverlay::HoverButtonDelegateOverlay(QObject* parent)
 
 ContactViewHoverButton* HoverButtonDelegateOverlay::button() const
 {
-    return static_cast<ContactViewHoverButton*>(m_widget);
+    return qobject_cast<ContactViewHoverButton*>(m_widget.data());
 }
 
 void HoverButtonDelegateOverlay::setActive(bool active)
@@ -289,7 +287,7 @@ QWidget* HoverButtonDelegateOverlay::createWidget()
 
 void HoverButtonDelegateOverlay::visualChange()
 {
-    if (m_widget && m_widget->isVisible()) {
+    if (!m_widget.isNull() && m_widget.data()->isVisible()) {
         updateButton(button()->index());
     }
 }

@@ -19,11 +19,6 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-extern "C"
-{
-#include <signal.h>
-}
-
 #include "main-widget.h"
 
 #include <KAboutData>
@@ -33,20 +28,6 @@ extern "C"
 
 #include <TelepathyQt4/Types>
 #include <TelepathyQt4/Debug>
-
-namespace
-{
-    static void signal_handler(int signal)
-    {
-        if ((signal == SIGTERM) || (signal == SIGINT)) {
-            QCoreApplication * const app(QCoreApplication::instance());
-            if (app != 0) {
-                kDebug() << "Signal Handler Called. Exiting...";
-                app->quit();
-            }
-        }
-    }
-}
 
 int main(int argc, char *argv[])
 {
@@ -70,15 +51,6 @@ int main(int argc, char *argv[])
     Tp::registerTypes();
     Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));
     Tp::enableWarnings(true);
-
-    // Set up signal handlers.
-    if (signal(SIGINT, signal_handler) == SIG_ERR) {
-        kWarning() << "Setting up SIGINT signal handler failed.";
-    }
-
-    if (signal(SIGTERM, signal_handler) == SIG_ERR) {
-        kWarning() << "Setting up SIGTERM signal handler failed.";
-    }
 
     // Create the main widget and show it.
     MainWidget *mainWidget = new MainWidget(0);

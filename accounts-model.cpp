@@ -2,7 +2,7 @@
  * Accounts and contacts model
  * This file is based on TelepathyQt4Yell Models
  *
- * Copyright (C) 2010 Collabora Ltd. <http://www.collabora.co.uk/>
+ * Copyright (C) 2010 Collabora Ltd. <info@collabora.co.uk>
  * Copyright (C) 2011 Martin Klapetek <martin dot klapetek at gmail dot com>
  *
  * This library is free software; you can redistribute it and/or
@@ -20,10 +20,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "accounts-model.h"
+
 #include <TelepathyQt4/ContactManager>
 #include <TelepathyQt4/PendingReady>
 
-#include "accounts-model.h"
 #include "accounts-model-item.h"
 #include "contact-model-item.h"
 
@@ -117,7 +118,7 @@ AccountsModel::AccountsModel(const Tp::AccountManagerPtr &am, QObject *parent)
 
 AccountsModel::~AccountsModel()
 {
-    delete mPriv->mTree;
+    mPriv->mTree->deleteLater();
     delete mPriv;
 }
 
@@ -303,3 +304,5 @@ QModelIndex AccountsModel::parent(const QModelIndex &index) const
         return QModelIndex();
     }
 }
+
+#include "accounts-model.moc"

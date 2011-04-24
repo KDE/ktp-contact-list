@@ -138,3 +138,5 @@ bool AccountFilterModel::isSortedByPresence() const
 {
     return sortRole() == AccountsModel::PresenceTypeRole;
 }
+
+#include "account-filter-model.moc"

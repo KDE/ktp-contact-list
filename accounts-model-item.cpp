@@ -2,7 +2,7 @@
  * Accounts model item, represents an account in the contactlist tree
  * This file is based on TelepathyQt4Yell Models
  *
- * Copyright (C) 2010 Collabora Ltd. <http://www.collabora.co.uk/>
+ * Copyright (C) 2010 Collabora Ltd. <info@collabora.co.uk>
  * Copyright (C) 2011 Martin Klapetek <martin dot klapetek at gmail dot com>
  *
  * This library is free software; you can redistribute it and/or
@@ -20,10 +20,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "accounts-model-item.h"
+
 #include <TelepathyQt4/Account>
 #include <TelepathyQt4/ContactManager>
 
-#include "accounts-model-item.h"
 #include "accounts-model.h"
 #include "contact-model-item.h"
 
@@ -381,3 +382,5 @@ void AccountsModelItem::addKnownContacts()
         emit childrenAdded(this, newNodes);
     }
 }
+
+#include "accounts-model-item.moc"

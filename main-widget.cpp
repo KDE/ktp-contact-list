@@ -20,7 +20,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "main-widget.moc"
+#include "main-widget.h"
 
 #include <QtGui/QSortFilterProxyModel>
 #include <QtGui/QPainter>
@@ -47,10 +47,8 @@
 #include <KSettings/Dialog>
 #include <KSharedConfig>
 #include <KFileDialog>
-#include <KMessageBox>
 #include <KStandardShortcut>
 
-#include "main-widget.h"
 #include "ui_main-widget.h"
 #include "account-button.h"
 #include "contact-overlays.h"
@@ -294,15 +292,19 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 {
     kDebug() << "Connection status is" << status;
+
+    Tp::AccountPtr account(qobject_cast< Tp::Account* >(sender()));
+    QModelIndex index = m_model->index(qobject_cast<AccountsModelItem*>(m_model->accountItemForId(account->uniqueIdentifier())));
+
     switch (status) {
     case Tp::ConnectionStatusConnected:
-        //FIXME: Get the account (sender()) index and expand only that index
-        m_contactsListView->expandAll();
-        monitorPresence(Tp::AccountPtr(qobject_cast< Tp::Account* >(sender())));
+        m_contactsListView->setExpanded(index, true);
+        monitorPresence(account);
         break;
     case Tp::ConnectionStatusDisconnected:
         //Fall through
     case Tp::ConnectionStatusConnecting:
+        m_contactsListView->setExpanded(index, false);
     default:
         break;
     }
@@ -390,23 +392,23 @@ void MainWidget::onContactManagerStateChanged(const Tp::ContactManagerPtr &conta
 
 void MainWidget::onAccountStateChanged(bool enabled)
 {
-    Tp::AccountPtr account(static_cast<Tp::Account*>(sender()));
+    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
 
     if(enabled) {
         findChild<AccountButton *>(account->uniqueIdentifier())->show();
     } else {
         findChild<AccountButton *>(account->uniqueIdentifier())->hide();
-        showMessageToUser(i18n("Account %1 was disabled!").arg(account->displayName()),
+        showMessageToUser(i18n("Account %1 was disabled!", account->displayName()),
                           MainWidget::SystemMessageError);
     }
 }
 
 void MainWidget::onAccountRemoved()
 {
-    Tp::AccountPtr account(static_cast<Tp::Account*>(sender()));
+    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
     delete findChild<AccountButton *>(account->uniqueIdentifier());
 
-    showMessageToUser(i18n("Account %1 was removed!").arg(account->displayName()),
+    showMessageToUser(i18n("Account %1 was removed!", account->displayName()),
                       MainWidget::SystemMessageError);
 }
 
@@ -696,10 +698,11 @@ void MainWidget::slotAddContactToGroupTriggered()
     const QStringList currentGroups = contact->groups();
 
     Tp::PendingOperation* operation = contact->addToGroup(action->text().remove('&'));
-    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 
     if (operation) {
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+
         foreach (const QString &group, currentGroups) {
             Tp::PendingOperation* operation = contact->removeFromGroup(group);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
@@ -819,7 +822,7 @@ void MainWidget::loadAvatar(const Tp::AccountPtr &account)
         avatarButton->setIcon(icon);
         avatarButton->setIconSize(QSize(48, 48));
         avatarButton->setText(i18nc("String in menu saying Use avatar from account X",
-                                    "Use from %1").arg(account->displayName()));
+                                    "Use from %1", account->displayName()));
         avatarButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
 
         QWidgetAction *avatarAction = new QWidgetAction(m_avatarButtonMenu);
@@ -976,3 +979,5 @@ void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
         }
     }
 }
+
+#include "main-widget.moc"
