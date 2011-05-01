@@ -61,6 +61,7 @@
 #include "fetch-avatar-job.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
+#define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
 
 bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 {
@@ -454,6 +455,46 @@ void MainWidget::startTextChannel(const QModelIndex &index)
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 }
 
+void MainWidget::startFileTransferChannel(const QModelIndex &index)
+{
+    if (! index.isValid()) {
+        return;
+    }
+
+    QModelIndex realIndex = m_modelFilter->mapToSource(index);
+    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+
+    kDebug() << "Requesting file transfer for contact" << contact->alias();
+
+    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
+
+    QString filename = KFileDialog::getOpenFileName(KUrl(), // TODO Remember directory
+                                                    QString(),
+                                                    this,
+                                                    i18n("Choose a file")
+    );
+
+    QFileInfo fileinfo(filename);
+
+    kDebug() << "Filename:" << filename;
+    kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
+    kDebug() << "Size:" << fileinfo.size();
+    kDebug() << "Last modified:" << fileinfo.lastModified();
+
+    Tp::FileTransferChannelCreationProperties fileTransferProperties(filename,
+                                                                     KMimeType::findByFileContent(filename)->name(),
+                                                                     fileinfo.size());
+    // TODO Add file hash? -- fileTransferProperties.setContentHash();
+    fileTransferProperties.setLastModificationTime(fileinfo.lastModified());
+    // TODO Let the user set a description? -- fileTransferProperties.setDescription();
+
+    Tp::PendingChannelRequest* channelRequest = account->createFileTransfer(contact,
+                                                                            fileTransferProperties,
+                                                                            QDateTime::currentDateTime(),
+                                                                            PREFERRED_FILETRANSFER_HANDLER);
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+}
+
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
 {
     QFrame *msgFrame = new QFrame(m_contactsListView);
@@ -541,6 +582,9 @@ void MainWidget::addOverlayButtons()
 
     connect(textOverlay, SIGNAL(activated(QModelIndex)),
             this, SLOT(startTextChannel(QModelIndex)));
+
+    connect(fileOverlay, SIGNAL(activated(QModelIndex)),
+            this, SLOT(startFileTransferChannel(QModelIndex)));
 }
 
 void MainWidget::toggleSearchWidget(bool show)
@@ -633,6 +677,8 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     action = menu->addAction(i18n("Send File..."));
     action->setIcon(KIcon("mail-attachment"));
     action->setDisabled(true);
+    connect(action, SIGNAL(triggered(bool)),
+            SLOT(slotStartFileTransfer()));
 
     if (index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
         action->setEnabled(true);
@@ -774,6 +820,17 @@ void MainWidget::slotStartTextChat()
     }
 
     startTextChannel(index);
+}
+
+void MainWidget::slotStartFileTransfer()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    if (!index.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    startFileTransferChannel(index);
 }
 
 void MainWidget::slotUnblockContactTriggered()
