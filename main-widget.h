@@ -66,6 +66,7 @@ public:
 public Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
     void startTextChannel(const QModelIndex &index);
+    void startFileTransferChannel(const QModelIndex &index);
     void onContactListDoubleClick(const QModelIndex &index);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
@@ -93,6 +94,7 @@ private Q_SLOTS:
     void slotDeleteContact();
     void slotGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
     void slotStartTextChat();
+    void slotStartFileTransfer();
     void slotUnblockContactTriggered();
     void onAvatarFetched(KJob*);
     void onAccountReady(Tp::PendingOperation *operation);
