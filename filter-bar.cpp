@@ -32,20 +32,12 @@
 FilterBar::FilterBar(QWidget* parent) :
     QWidget(parent)
 {
-    // Create the pin button
-    m_pinButton = new QToolButton(this);
-    m_pinButton->setCheckable(true);
-    m_pinButton->setToolTip(i18n("Pin the filter bar"));
-    connect(m_pinButton, SIGNAL(clicked(bool)), this, SLOT(setPinned(bool)));
-    setPinned(false);
-
     // Create close button
     QToolButton *closeButton = new QToolButton(this);
     closeButton->setAutoRaise(true);
     closeButton->setIcon(KIcon("dialog-close"));
     closeButton->setToolTip(i18nc("@info:tooltip", "Hide Filter Bar"));
     connect(closeButton, SIGNAL(clicked()), this, SIGNAL(closeRequest()));
-    connect(closeButton, SIGNAL(clicked()), this, SLOT(unpinSlot()));
 
     // Create label
     QLabel* filterLabel = new QLabel(i18nc("@label:textbox", "Filter:"), this);
@@ -61,7 +53,6 @@ FilterBar::FilterBar(QWidget* parent) :
     // Apply layout
     QHBoxLayout* hLayout = new QHBoxLayout(this);
     hLayout->setMargin(0);
-    hLayout->addWidget(m_pinButton);
     hLayout->addWidget(closeButton);
     hLayout->addWidget(filterLabel);
     hLayout->addWidget(m_filterInput);
@@ -100,26 +91,6 @@ void FilterBar::keyReleaseEvent(QKeyEvent* event)
             m_filterInput->clear();
         }
     }
-}
-
-bool FilterBar::isPinned() const
-{
-    return m_pinButton->isChecked();
-}
-
-void FilterBar::setPinned(bool pinned)
-{
-    if (pinned) {
-        m_pinButton->setIcon(KIcon("dialog-ok"));
-    } else {
-        m_pinButton->setIcon(KIcon("dialog-ok-apply"));
-    }
-    m_pinButton->setChecked(pinned);
-}
-
-void FilterBar::unpinSlot()
-{
-    setPinned(false);
 }
 
 #include "filter-bar.moc"
