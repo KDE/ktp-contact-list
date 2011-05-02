@@ -224,10 +224,10 @@ MainWidget::MainWidget(QWidget *parent)
             this, SLOT(setCustomPresenceMessage(QString)));
 
     KSharedConfigPtr config = KGlobal::config();
-    KConfigGroup filterBarGroup(config, "GUI");
-    if (filterBarGroup.readEntry("pin_filterbar", QString()) == QLatin1String("true")) {
+    KConfigGroup configGroup(config, "GUI");
+    if (configGroup.readEntry("pin_filterbar", true)) {
         toggleSearchWidget(true);
-        m_filterBar->setPinned(true);
+        m_searchContactAction->setChecked(true);
     }
 }
 
@@ -235,9 +235,9 @@ MainWidget::~MainWidget()
 {
     //save the state of the filter bar, pinned or not
     KSharedConfigPtr config = KGlobal::config();
-    KConfigGroup filterBarGroup(config, "GUI");
-    filterBarGroup.writeEntry("pin_filterbar", m_filterBar->isPinned());
-    filterBarGroup.config()->sync();
+    KConfigGroup configGroup(config, "GUI");
+    configGroup.writeEntry("pin_filterbar", m_searchContactAction->isChecked());
+    configGroup.config()->sync();
 }
 
 void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
