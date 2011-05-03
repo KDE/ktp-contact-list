@@ -45,6 +45,8 @@ kde4_add_ui_files (contactlist_SRCS
                    remove-contact-dialog.ui
 )
 
+add_subdirectory (icons)
+
 kde4_add_executable (telepathy-kde-contactlist
                      ${contactlist_SRCS}
 )
