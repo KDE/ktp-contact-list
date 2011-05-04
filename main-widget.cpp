@@ -301,7 +301,6 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
     switch (status) {
     case Tp::ConnectionStatusConnected:
         m_contactsListView->setExpanded(index, true);
-        monitorPresence(account);
         break;
     case Tp::ConnectionStatusDisconnected:
         //Fall through
@@ -358,21 +357,22 @@ void MainWidget::onAccountReady(Tp::PendingOperation *operation)
 {
     Tp::AccountPtr account = Tp::AccountPtr::dynamicCast(operation->object());
 
-    if (account->connectionStatus() == Tp::ConnectionStatusConnected) {
-        monitorPresence(account);
+    if (account->connection()) {
+        monitorPresence(account->connection());
     }
 }
 
-void MainWidget::monitorPresence(const Tp::AccountPtr &account)
+void MainWidget::monitorPresence(const Tp::ConnectionPtr &connection)
 {
-    connect(account->connection()->contactManager().data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
+    kDebug();
+    connect(connection->contactManager().data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
             this, SLOT(onPresencePublicationRequested(Tp::Contacts)));
 
-    connect(account->connection()->contactManager().data(),
+    connect(connection->contactManager().data(),
             SIGNAL(stateChanged(Tp::ContactListState)),
             this, SLOT(onContactManagerStateChanged(Tp::ContactListState)));
-    onContactManagerStateChanged(account->connection()->contactManager(),
-                                 account->connection()->contactManager()->state());
+    onContactManagerStateChanged(connection->contactManager(),
+                                 connection->contactManager()->state());
 }
 
 void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
@@ -416,8 +416,9 @@ void MainWidget::onAccountRemoved()
 
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
 {
-    Q_UNUSED(connection);
-    kDebug();
+    if(! connection.isNull()) {
+        monitorPresence(connection);
+    }
 }
 
 void MainWidget::onContactListDoubleClick(const QModelIndex& index)

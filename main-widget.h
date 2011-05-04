@@ -102,7 +102,7 @@ private Q_SLOTS:
     void onAccountReady(Tp::PendingOperation *operation);
     void onAccountsPresenceStatusFiltered();
     void onPresencePublicationRequested(const Tp::Contacts &contacts);
-    void monitorPresence(const Tp::AccountPtr &account);
+    void monitorPresence(const Tp::ConnectionPtr &connection);
     void onContactManagerStateChanged(Tp::ContactListState state);
     void onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state);
 
