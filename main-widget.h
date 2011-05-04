@@ -84,8 +84,8 @@ public Q_SLOTS:
     void selectAvatarFromAccount(const QString &accountUID);
     void selectAvatarFromAccount();
     void loadAvatarFromFile();
-    //    void startAudioChannel();
-    //    void startVideoChannel();
+    void startAudioChannel(const QModelIndex &index);
+    void startVideoChannel(const QModelIndex &index);
     void onCustomContextMenuRequested(const QPoint &point);
 
 private Q_SLOTS:
@@ -94,6 +94,8 @@ private Q_SLOTS:
     void slotDeleteContact();
     void slotGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
     void slotStartTextChat();
+    void slotStartAudioChat();
+    void slotStartVideoChat();
     void slotStartFileTransfer();
     void slotUnblockContactTriggered();
     void onAvatarFetched(KJob*);
