@@ -62,6 +62,7 @@
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
+#define PREFERRED_AUDIO_VIDEO_HANDLER "org.freedesktop.Telepathy.Client.telepathy_kde_call_ui"
 
 bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 {
@@ -452,8 +453,50 @@ void MainWidget::startTextChannel(const QModelIndex &index)
     Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact,
                                                                         QDateTime::currentDateTime(),
                                                                         PREFERRED_TEXTCHAT_HANDLER);
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 }
+
+void MainWidget::startAudioChannel(const QModelIndex& index)
+{
+    if (! index.isValid()) {
+        return;
+    }
+
+    QModelIndex realIndex = m_modelFilter->mapToSource(index);
+    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+
+    kDebug() << "Requesting audio for contact" << contact->alias();
+
+    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
+
+    Tp::PendingChannelRequest* channelRequest = account->ensureStreamedMediaAudioCall(contact,
+                                                                        QDateTime::currentDateTime(),
+                                                                        PREFERRED_AUDIO_VIDEO_HANDLER);
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+}
+
+void MainWidget::startVideoChannel(const QModelIndex& index)
+{
+    if (! index.isValid()) {
+        return;
+    }
+
+    QModelIndex realIndex = m_modelFilter->mapToSource(index);
+    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+
+    kDebug() << "Requesting video for contact" << contact->alias();
+
+    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
+
+    Tp::PendingChannelRequest* channelRequest = account->ensureStreamedMediaVideoCall(contact, true,
+                                                                        QDateTime::currentDateTime(),
+                                                                        PREFERRED_AUDIO_VIDEO_HANDLER);
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+}
+
 
 void MainWidget::startFileTransferChannel(const QModelIndex &index)
 {
@@ -585,6 +628,12 @@ void MainWidget::addOverlayButtons()
 
     connect(fileOverlay, SIGNAL(activated(QModelIndex)),
             this, SLOT(startFileTransferChannel(QModelIndex)));
+
+    connect(audioOverlay, SIGNAL(activated(QModelIndex)),
+            this, SLOT(startAudioChannel(QModelIndex)));
+
+    connect(videoOverlay, SIGNAL(activated(QModelIndex)),
+            this, SLOT(startVideoChannel(QModelIndex)));
 }
 
 void MainWidget::toggleSearchWidget(bool show)
@@ -661,6 +710,8 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     action = menu->addAction(i18n("Start Audio Call..."));
     action->setIcon(KIcon("voicecall"));
     action->setDisabled(true);
+    connect(action, SIGNAL(triggered(bool)),
+            SLOT(slotStartAudioChat()));
 
     if (index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
         action->setEnabled(true);
@@ -669,6 +720,8 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     action = menu->addAction(i18n("Start Video Call..."));
     action->setIcon(KIcon("webcamsend"));
     action->setDisabled(true);
+    connect(action, SIGNAL(triggered(bool)),
+            SLOT(slotStartVideoChat()));
 
     if (index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
         action->setEnabled(true);
@@ -820,6 +873,28 @@ void MainWidget::slotStartTextChat()
     }
 
     startTextChannel(index);
+}
+
+void MainWidget::slotStartAudioChat()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    if (!index.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    startAudioChannel(index);
+}
+
+void MainWidget::slotStartVideoChat()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    if (!index.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    startVideoChannel(index);
 }
 
 void MainWidget::slotStartFileTransfer()
