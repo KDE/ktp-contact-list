@@ -1,0 +1,44 @@
+[Global]
+IconName=dialog-error
+Name=Instant messaging
+Name[da]=Instant messaging
+Name[de]=Instant Messaging
+Name[et]=Kiirsuhtlus
+Name[nds]=Kortnarichten
+Name[nl]=Instant Messaging
+Name[pt]=Mensagem instantânea
+Name[pt_BR]=Mensagens instantâneas
+Name[sv]=Direktmeddelanden
+Name[uk]=Миттєвий обмін повідомленнями
+Name[x-test]=xxInstant messagingxx
+Comment=Instant messaging
+Comment[da]=Instant messaging
+Comment[de]=Instant Messaging
+Comment[et]=Kiirsuhtlus
+Comment[nds]=Kortnarichten
+Comment[nl]=Instant Messaging
+Comment[pt]=Mensagem instantânea
+Comment[pt_BR]=Mensagens instantâneas
+Comment[sv]=Direktmeddelanden
+Comment[uk]=Миттєвий обмін повідомленнями
+Comment[x-test]=xxInstant messagingxx
+
+[Event/telepathyError]
+Name=Instant messaging error
+Name[cs]=Chyba v instantní komunikaci
+Name[x-test]=xxInstant messaging errorxx
+Comment=An error occured within instant messaging
+Comment[cs]=Chybová zpráva instantní komunikace
+Comment[x-test]=xxAn error occured within instant messagingxx
+Sound=KDE-Im-Cant-Connect.ogg
+Action=Popup|Sound
+
+[Event/telepathyInfo]
+Name=Instant messaging info message
+Name[cs]=Informační zpráva instantní komunikace
+Name[x-test]=xxInstant messaging infoxx
+Comment=A general info message from instant messaging
+Comment[cs]=Informační zpráva instantní komunikace
+Comment[x-test]=xxA general info message from instant messagingxx
+Sound=KDE-Im-Low-Priority-Message.ogg
+Action=Popup|Sound
