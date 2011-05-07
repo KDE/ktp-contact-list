@@ -157,12 +157,6 @@ void AccountButton::setAccountStatus(QAction *action)
 
     connect(presenceRequest, SIGNAL(finished(Tp::PendingOperation*)),
             this, SLOT(updateToolTip()));
-
-    QPixmap pixmap = icon().pixmap(32, 32);
-    QPainter painter(&pixmap);
-    KIcon(action->icon()).paint(&painter, 15, 15, 16, 16);
-
-    setIcon(KIcon(pixmap));
 }
 
 void AccountButton::updateToolTip()
