@@ -48,6 +48,7 @@
 #include <KSharedConfig>
 #include <KFileDialog>
 #include <KStandardShortcut>
+#include <KNotification>
 
 #include "ui_main-widget.h"
 #include "account-button.h"
@@ -542,56 +543,16 @@ void MainWidget::startFileTransferChannel(const QModelIndex &index)
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
 {
-    QFrame *msgFrame = new QFrame(m_contactsListView);
-    msgFrame->setAttribute(Qt::WA_DeleteOnClose);
-    msgFrame->setMinimumSize(QSize(m_contactsListView->viewport()->width(), 55));
-    msgFrame->setFrameShape(QFrame::Box);
-    msgFrame->setFrameShadow(QFrame::Plain);
-    msgFrame->setAutoFillBackground(true);
-    msgFrame->setLineWidth(1);
-
-    if(type == MainWidget::SystemMessageError) {
-        msgFrame->setStyleSheet("background-color: #FFCBCB; color: #FF2222;");
-    }
-    else if(type == MainWidget::SystemMessageInfo) {
-        msgFrame->setStyleSheet("color: #2222FF;");
+    //The pointer is automatically deleted when the event is closed
+    KNotification *notification;
+    if (type == MainWidget::SystemMessageError) {
+        notification = new KNotification("telepathyError", this);
+    } else {
+        notification = new KNotification("telepathyInfo", this);
     }
 
-    QHBoxLayout *layout = new QHBoxLayout(msgFrame);
-    QVBoxLayout *closeBtLayout = new QVBoxLayout(msgFrame);
-
-    QLabel *message = new QLabel(text, msgFrame);
-    message->setAlignment(Qt::AlignVCenter);
-
-    QToolButton *closeButton = new QToolButton(msgFrame);
-    closeButton->setText("x");
-    closeButton->setAutoRaise(true);
-    closeButton->setMaximumSize(QSize(16,16));
-
-    connect(closeButton, SIGNAL(clicked(bool)), msgFrame, SLOT(close()));
-
-    closeBtLayout->addWidget(closeButton);
-    closeBtLayout->addStretch(-1);
-
-    layout->addWidget(message);
-    layout->addLayout(closeBtLayout);
-
-    msgFrame->show();
-
-    QPropertyAnimation *a = new QPropertyAnimation(msgFrame, "pos");
-    a->setParent(msgFrame);
-    a->setDuration(4000);
-    a->setEasingCurve(QEasingCurve::OutExpo);
-    a->setStartValue(QPointF(m_contactsListView->viewport()->pos().x(),
-                             m_contactsListView->viewport()->pos().y()+m_contactsListView->viewport()->height()));
-
-    a->setEndValue(QPointF(m_contactsListView->viewport()->pos().x(),
-                           m_contactsListView->viewport()->pos().y()+m_contactsListView->viewport()->height()-50));
-    a->start();
-
-    if(type == MainWidget::SystemMessageInfo) {
-        QTimer::singleShot(4500, msgFrame, SLOT(close()));
-    }
+    notification->setText(text);
+    notification->sendEvent();
 }
 
 void MainWidget::addOverlayButtons()
