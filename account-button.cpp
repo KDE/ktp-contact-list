@@ -199,10 +199,14 @@ void AccountButton::hideBusyIndicator()
 
 void AccountButton::presenceChanged(const Tp::Presence &presence)
 {
+    if (!presence.isValid()) {
+        return;
+    }
+
     bool accountPresenceFound = false;
 
     foreach (QAction *a, actions()) {
-        if (presence.status() == qVariantValue<Tp::Presence>(a->data()).status()) {
+        if (presence.type() == qVariantValue<Tp::Presence>(a->data()).type()) {
             a->setChecked(true);
             updateToolTip();
 
