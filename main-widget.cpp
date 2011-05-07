@@ -303,7 +303,8 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
         m_contactsListView->setExpanded(index, true);
         break;
     case Tp::ConnectionStatusDisconnected:
-        //Fall through
+        handleConnectionError(account);
+        break;
     case Tp::ConnectionStatusConnecting:
         m_contactsListView->setExpanded(index, false);
     default:
@@ -1112,5 +1113,27 @@ void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
         }
     }
 }
+
+void MainWidget::handleConnectionError(const Tp::AccountPtr& account)
+{
+    QString connectionError = account->connectionError();
+
+    // ignore user disconnect
+    if (connectionError == "org.freedesktop.Telepathy.Error.Cancelled") {
+        return;
+    }
+
+    Tp::ConnectionStatusReason reason = account->connectionStatusReason();
+
+    if (reason == Tp::ConnectionStatusReasonAuthenticationFailed) {
+        showMessageToUser(i18n("Couldn't connect %1. Authentication failed (is your password correct?)", account->displayName()), MainWidget::SystemMessageError);
+    } else if (reason == Tp::ConnectionStatusReasonNetworkError) {
+        showMessageToUser(i18n("Couldn't connect %1. There was a network error, check your connection", account->displayName()), MainWidget::SystemMessageError);
+    } else {
+        // other errors
+        showMessageToUser(i18n("An unexpected error has occured with %1: '%2'", account->displayName(), account->connectionError()), MainWidget::SystemMessageError);
+    }
+}
+
 
 #include "main-widget.moc"

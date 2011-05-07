@@ -107,6 +107,9 @@ private Q_SLOTS:
     void onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state);
 
 private:
+    /** handle connection errors for given account. This method provides visual notification */
+    void handleConnectionError(const Tp::AccountPtr &account);
+
     AccountsModel          *m_model;
     AccountFilterModel     *m_modelFilter;
     Tp::AccountManagerPtr   m_accountManager;
