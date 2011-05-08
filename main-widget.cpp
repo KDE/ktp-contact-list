@@ -1092,7 +1092,7 @@ void MainWidget::handleConnectionError(const Tp::AccountPtr& account)
         showMessageToUser(i18n("Couldn't connect %1. There was a network error, check your connection", account->displayName()), MainWidget::SystemMessageError);
     } else {
         // other errors
-        showMessageToUser(i18n("An unexpected error has occured with %1: '%2'", account->displayName(), account->connectionError()), MainWidget::SystemMessageError);
+        showMessageToUser(i18n("An unexpected error has occurred with %1: '%2'", account->displayName(), account->connectionError()), MainWidget::SystemMessageError);
     }
 }
 
