@@ -18,6 +18,10 @@ Name[sv]=Fel för direktmeddelanden
 Name[uk]=Помилка системи обміну повідомленнями
 Name[x-test]=xxInstant messaging errorxx
 Comment=An error occurred within instant messaging
+Comment[pt]=Ocorreu um erro nas mensagens instantâneas
+Comment[sv]=Ett fel uppstod med direktmeddelanden
+Comment[uk]=У системі обміну повідомленнями сталася помилка
+Comment[x-test]=xxAn error occurred within instant messagingxx
 Sound=KDE-Im-Cant-Connect.ogg
 Action=Popup|Sound
 
