@@ -4,6 +4,7 @@
  * Copyright (C) 2009-2010 Collabora Ltd. <info@collabora.co.uk>
  *   @Author George Goldberg <george.goldberg@collabora.co.uk>
  *   @Author Martin Klapetek <martin.klapetek@gmail.com>
+ *   @Author Keith Rusler <xzekecomax@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -709,16 +710,26 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
         QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
 
+        QStringList groupList;
+        QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
+        foreach (const Tp::AccountPtr account, accounts) {
+            if (!account->connection().isNull()) {
+                groupList.append(account->connection()->contactManager()->allKnownGroups());
+            }
+        }
+
+        groupList.removeDuplicates();
+
         QStringList currentGroups = contact->groups();
-        QStringList allGroups = accountConnection->contactManager()->allKnownGroups();
+
         foreach (const QString &group, currentGroups) {
-            allGroups.removeAll(group);
+            groupList.removeAll(group);
         }
 
         groupAddMenu->addAction(i18n("Create New Group..."));
         groupAddMenu->addSeparator();
 
-        foreach (const QString &group, allGroups) {
+        foreach (const QString &group, groupList) {
             connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
                     SLOT(slotAddContactToGroupTriggered()));
         }
