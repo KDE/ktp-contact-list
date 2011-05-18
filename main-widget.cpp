@@ -40,6 +40,7 @@
 #include <TelepathyQt4/ContactManager>
 
 #include <KDebug>
+#include <KDialog>
 #include <KIO/Job>
 #include <KUser>
 #include <KMenu>
@@ -286,6 +287,21 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_accountButtonsLayout->insertStretch(-1);
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
+
+    if(accounts.count() == 0) {
+        KDialog *dialog = new KDialog(this);
+        dialog->setCaption(i18n("No Accounts Found"));
+        dialog->setButtons(KDialog::Ok | KDialog::Cancel);
+        dialog->setMainWidget(new QLabel(i18n("No Accounts Found")));
+        dialog->setButtonText(KDialog::Ok, i18n("Configure Accounts"));
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->setInitialSize(dialog->sizeHint());
+        connect(dialog, SIGNAL(okClicked()), this, SLOT(showSettingsKCM()));
+        connect(dialog, SIGNAL(okClicked()), dialog, SLOT(close()));
+        connect(dialog, SIGNAL(cancelClicked()), dialog, SLOT(close()));
+        dialog->show();
+    }
+
     foreach (const Tp::AccountPtr account, accounts) {
         onNewAccountAdded(account);
     }
