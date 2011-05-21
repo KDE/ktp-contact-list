@@ -36,6 +36,10 @@ set (contactlist_SRCS
      add-contact-dialog.cpp
      remove-contact-dialog.cpp
      fetch-avatar-job.cpp
+
+     groups-model-item.cpp
+     groups-model.cpp
+     proxy-tree-node.cpp
 )
 
 

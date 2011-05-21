@@ -24,9 +24,10 @@
 
 #include <QtGui/QPainter>
 #include <QtGui/QPainterPath>
+#include <QtGui/QToolTip>
 #include <QApplication>
 #include <QStyle>
-#include <QtGui/QToolTip>
+#include <QHelpEvent>
 
 #include <KIconLoader>
 #include <KIcon>
@@ -36,7 +37,9 @@
 
 #include "accounts-model.h"
 #include "contact-model-item.h"
-#include <QHelpEvent>
+#include "proxy-tree-node.h"
+#include "groups-model-item.h"
+#include "groups-model.h"
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
@@ -67,7 +70,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
-    bool isContact = !index.data(AccountsModel::AliasRole).toString().isEmpty();
+    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
     if (isContact) {
         QRect iconRect = optV4.rect;
@@ -182,25 +185,35 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         QString counts;// = QString(" (%1/%2)").arg(index.data(AccountsModel::).toString(),
                         //               index.data(ModelRoles::AccountAllContactsCountRole).toString());
 
-        painter->fillRect(groupRect, m_palette->color(QPalette::AlternateBase));
-
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
-                                                   .pixmap(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
+        if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
+            painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
+                                                        .pixmap(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
+        } else {
+            painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),
+                                                                                          KIconLoader::Desktop));
+        }
 
         painter->setPen(m_palette->color(QPalette::WindowText));
         painter->setFont(groupFont);
         painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignRight,
-                          index.data(AccountsModel::DisplayNameRole).toString().append(counts));
+                          index.data(GroupsModel::GroupNameRole).toString().append(counts));
 
         QPen thinLinePen;
         thinLinePen.setWidth(0);
-        thinLinePen.setCosmetic(true);
-        thinLinePen.setColor(m_palette->color(QPalette::ButtonText));
+        thinLinePen.setColor(m_palette->color(QPalette::Disabled, QPalette::Button));
 
         painter->setPen(thinLinePen);
+        painter->setRenderHint(QPainter::Antialiasing, false);
 
-        painter->drawLine(groupRect.x(), groupRect.y(), groupRect.width(), groupRect.y());
-        painter->drawLine(groupRect.x(), groupRect.bottom(), groupRect.width(), groupRect.bottom());
+        QFontMetrics fm = painter->fontMetrics();
+        int groupNameWidth = fm.width(index.data(GroupsModel::GroupNameRole).toString());
+
+        painter->drawLine(expandSignRect.right() + SPACING * 2,
+                          groupRect.y() + groupRect.height() / 2,
+                          groupRect.width() - groupNameWidth - SPACING * 2,
+                          groupRect.y() + groupRect.height() / 2);
+
+        painter->setRenderHint(QPainter::Antialiasing, true);
 
         QStyleOption expandSignOption = option;
         expandSignOption.rect = expandSignRect;
@@ -218,12 +231,13 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option);
-//     if(option.state & QStyle::State_Selected)
-//         kDebug() << index.data(ModelRoles::UserNameRole).toString();
+    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
-    if (!index.data(AccountsModel::AliasRole).toString().isEmpty()) {
+    if (isContact) {
         return QSize(0, 32 + 4 * SPACING);
-    } else return QSize(0, 20);
+    } else {
+        return QSize(0, 20);
+    }
 }
 
 void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
@@ -329,8 +343,6 @@ bool ContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, cons
      * * Display actual status name if contact has no custom status message.
      * * Contact is blocked will only show if the contact is blocked, else no display.
      */
-
-    kDebug() << contactAvatar;
 
     QString table;
     table += QString("<table><th colspan='2' align='center'><img src='%2' height='16' width='16' /> %3</th>").arg(cmIconPath, displayName);

@@ -33,6 +33,7 @@
 #include <KAction>
 #include "ui_main-widget.h"
 
+class GroupsModel;
 class KMenu;
 class KSelectAction;
 class AccountsModel;
@@ -88,6 +89,7 @@ public Q_SLOTS:
     void startAudioChannel(const QModelIndex &index);
     void startVideoChannel(const QModelIndex &index);
     void onCustomContextMenuRequested(const QPoint &point);
+    void onGroupContacts(bool enabled);
 
 private Q_SLOTS:
     void slotAddContactToGroupTriggered();
@@ -112,6 +114,7 @@ private:
     void handleConnectionError(const Tp::AccountPtr &account);
 
     AccountsModel          *m_model;
+    GroupsModel            *m_groupsModel;
     AccountFilterModel     *m_modelFilter;
     Tp::AccountManagerPtr   m_accountManager;
     KMenu                  *m_accountMenu;

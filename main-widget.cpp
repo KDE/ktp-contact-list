@@ -62,6 +62,7 @@
 #include "add-contact-dialog.h"
 #include "remove-contact-dialog.h"
 #include "fetch-avatar-job.h"
+#include "groups-model.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
@@ -252,8 +253,15 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     }
 
     m_model = new AccountsModel(m_accountManager, this);
+    m_groupsModel = new GroupsModel(m_model, this);
     m_modelFilter = new AccountFilterModel(this);
-    m_modelFilter->setSourceModel(m_model);
+    if (m_groupContactsAction->isChecked()) {
+        m_modelFilter->setGroupsActive(true);
+        m_modelFilter->setSourceModel(m_groupsModel);
+    } else {
+        m_modelFilter->setGroupsActive(false);
+        m_modelFilter->setSourceModel(m_model);
+    }
     m_modelFilter->setDynamicSortFilter(true);
     m_modelFilter->filterOfflineUsers(m_hideOfflineAction->isChecked());
     m_modelFilter->clearFilterString();
@@ -306,7 +314,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     foreach (const Tp::AccountPtr account, accounts) {
         onNewAccountAdded(account);
     }
-    m_contactsListView->expandAll();
+//     m_contactsListView->expandAll();
 }
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
@@ -464,11 +472,22 @@ void MainWidget::startTextChannel(const QModelIndex &index)
     }
 
     QModelIndex realIndex = m_modelFilter->mapToSource(index);
-    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    Tp::ContactPtr contact;
+
+    if (m_groupContactsAction->isChecked()) {
+        contact = m_groupsModel->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    } else {
+        contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    }
 
     kDebug() << "Requesting chat for contact" << contact->alias();
 
-    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
+    Tp::AccountPtr account;
+    if (m_groupContactsAction->isChecked()) {
+        account = qobject_cast<AccountsModelItem*>(m_groupsModel->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->parent())->account();
+    } else {
+        account = m_model->accountForContactIndex(realIndex);
+    }
 
     Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact,
                                                                         QDateTime::currentDateTime(),
@@ -656,13 +675,25 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
 {
     QModelIndex index = m_contactsListView->currentIndex();
 
-    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    Tp::ContactPtr contact;
+    if (m_groupContactsAction->isChecked()) {
+        contact = m_groupsModel->data(m_modelFilter->mapToSource(index), AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    } else {
+        contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    }
+
     if (contact.isNull()) {
         kDebug() << "Contact is nulled";
         return;
     }
 
-    Tp::AccountPtr account = m_model->accountForContactIndex(m_modelFilter->mapToSource(index));
+    Tp::AccountPtr account;
+    if (m_groupContactsAction->isChecked()) {
+        account = qobject_cast<AccountsModelItem*>(m_groupsModel->data(m_modelFilter->mapToSource(index), AccountsModel::ItemRole).value<ContactModelItem*>()->parent())->account();
+    } else {
+        account = m_model->accountForContactIndex(m_modelFilter->mapToSource(index));
+    }
+
     if (account.isNull()) {
         kDebug() << "Account is nulled";
         return;
@@ -772,7 +803,12 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
 void MainWidget::slotAddContactToGroupTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
-    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    Tp::ContactPtr contact;
+    if (m_groupContactsAction->isChecked()) {
+        contact = m_groupsModel->data(m_modelFilter->mapToSource(index), AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    } else {
+        contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    }
     if (contact.isNull()) {
         kDebug() << "Contact is nulled";
         return;
@@ -1123,5 +1159,18 @@ void MainWidget::handleConnectionError(const Tp::AccountPtr& account)
     }
 }
 
+void MainWidget::onGroupContacts(bool enabled)
+{
+    if (enabled) {
+        m_modelFilter->setSourceModel(0);   //this prevents some crashes
+        m_modelFilter->setGroupsActive(true);
+        m_modelFilter->setSourceModel(m_groupsModel);
+    } else {
+        m_modelFilter->setSourceModel(0);
+        m_modelFilter->setGroupsActive(false);
+        m_modelFilter->setSourceModel(m_model);
+    }
+
+}
 
 #include "main-widget.moc"
