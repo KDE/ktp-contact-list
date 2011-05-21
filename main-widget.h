@@ -33,6 +33,7 @@
 #include <KAction>
 #include "ui_main-widget.h"
 
+class ContactDelegateCompact;
 class GroupsModel;
 class KMenu;
 class KSelectAction;
@@ -108,6 +109,11 @@ private Q_SLOTS:
     void monitorPresence(const Tp::ConnectionPtr &connection);
     void onContactManagerStateChanged(Tp::ContactListState state);
     void onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state);
+    void onSwitchToFullView();
+    void onSwitchToCompactView();
+
+Q_SIGNALS:
+    void enableOverlays(bool);
 
 private:
     /** handle connection errors for given account. This method provides visual notification */
@@ -121,6 +127,7 @@ private:
     KMenu                  *m_avatarButtonMenu;
     KSelectAction          *m_setStatusAction;
     ContactDelegate        *m_delegate;
+    ContactDelegateCompact *m_compactDelegate;
     KAction                *m_addContactAction;
     KAction                *m_groupContactsAction;
     KAction                *m_hideOfflineAction;

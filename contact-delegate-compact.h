@@ -1,8 +1,6 @@
 /*
- * Contact Delegate
+ * Contact Delegate - compact version
  *
- * Copyright (C) 2010-2011 Collabora Ltd. <info@collabora.co.uk>
- *   @Author Dario Freddi <dario.freddi@collabora.co.uk>
  * Copyright (C) 2011 Martin Klapetek <martin.klapetek@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -20,40 +18,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef CONTACTDELEGATE_H
-#define CONTACTDELEGATE_H
+#ifndef CONTACTDELEGATECOMPACT_H
+#define CONTACTDELEGATECOMPACT_H
 
 #include "abstract-contact-delegate.h"
-#include "contact-delegate-overlay.h"
 
-class ContactDelegate : public AbstractContactDelegate, public ContactDelegateOverlayContainer
+class ContactDelegateCompact : public AbstractContactDelegate
 {
     Q_OBJECT
-    Q_PROPERTY(int m_fadingValue READ fadingValue WRITE setFadingValue);
+//     Q_PROPERTY(int m_fadingValue READ fadingValue WRITE setFadingValue);
 
 public:
-    ContactDelegate(QObject *parent = 0);
-    ~ContactDelegate();
+    ContactDelegateCompact(QObject *parent = 0);
+    ~ContactDelegateCompact();
 
     void paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
     QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
-
-    int fadingValue() const;
-    void setFadingValue(int value);
-
-public Q_SLOTS:
-    void hideStatusMessageSlot(const QModelIndex& index);
-    void reshowStatusMessageSlot();
-    void fadeOutStatusMessageSlot();
-    void triggerRepaint();
-
-protected:
-    /// Returns the delegate, typically, the derived class
-    virtual QAbstractItemDelegate *asDelegate() { return this; }
-
-private:
-    QModelIndex m_indexForHiding;
-    int         m_fadingValue;
 };
 
-#endif // CONTACTDELEGATE_H
+#endif // CONTACTDELEGATECOMPACT_H

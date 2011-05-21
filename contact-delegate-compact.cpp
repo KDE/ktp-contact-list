@@ -1,8 +1,6 @@
 /*
- * Contact Delegate
+ * Contact Delegate - compact version
  *
- * Copyright (C) 2010-2011 Collabora Ltd. <info@collabora.co.uk>
- *   @Author Dario Freddi <dario.freddi@collabora.co.uk>
  * Copyright (C) 2011 Martin Klapetek <martin.klapetek@gmail.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -20,12 +18,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "contact-delegate.h"
+#include "contact-delegate-compact.h"
 
 #include <QtGui/QPainter>
 #include <QtGui/QPainterPath>
+#include <QtGui/QToolTip>
 #include <QApplication>
 #include <QStyle>
+#include <QHelpEvent>
 
 #include <KIconLoader>
 #include <KIcon>
@@ -40,22 +40,21 @@
 #include "groups-model.h"
 
 const int SPACING = 4;
-const int AVATAR_SIZE = 32;
-const int PRESENCE_ICON_SIZE = 22;
+const int AVATAR_SIZE = 22;
+const int PRESENCE_ICON_SIZE = 16;
 const int ACCOUNT_ICON_SIZE = 13;
 
-ContactDelegate::ContactDelegate(QObject * parent)
+ContactDelegateCompact::ContactDelegateCompact(QObject * parent)
     : AbstractContactDelegate(parent)
 {
-
 }
 
-ContactDelegate::~ContactDelegate()
+ContactDelegateCompact::~ContactDelegateCompact()
 {
 
 }
 
-void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+void ContactDelegateCompact::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
     QStyleOptionViewItemV4 optV4 = option;
     initStyleOption(&optV4, index);
@@ -83,20 +82,7 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
             avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
         }
 
-        QPainterPath roundedPath;
-        roundedPath.addRoundedRect(iconRect, 20, 20, Qt::RelativeSize);
-
-        if (!noContactAvatar) {
-            painter->save();
-            painter->setClipPath(roundedPath);
-        }
-
         painter->drawPixmap(iconRect, avatar);
-
-        if (!noContactAvatar) {
-            painter->restore();
-            painter->drawPath(roundedPath);
-        }
 
         QPixmap icon;
 
@@ -131,42 +117,34 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
 
         painter->drawPixmap(statusIconRect, icon);
 
-        QRect userNameRect = optV4.rect;
-        userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
-        userNameRect.setY(userNameRect.y() + 3);
-        userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
-
         QFont nameFont = KGlobalSettings::smallestReadableFont();
         nameFont.setPointSize(nameFont.pointSize() + 1);
-        nameFont.setWeight(QFont::Bold);
 
         const QFontMetrics nameFontMetrics(nameFont);
 
         painter->setFont(nameFont);
+
+        QRect userNameRect = optV4.rect;
+        userNameRect.setX(iconRect.x() + iconRect.width() + SPACING * 2);
+        userNameRect.setY(userNameRect.y() + (userNameRect.height()/2 - nameFontMetrics.height()/2));
+        userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
+
         painter->drawText(userNameRect,
                           nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
 
-        QRect statusMsgRect = optV4.rect;
-        statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
-        statusMsgRect.setY(userNameRect.top() + 16);
-        statusMsgRect.setWidth(statusMsgRect.width() - PRESENCE_ICON_SIZE - SPACING);
+        QRect presenceMessageRect = optV4.rect;
+        presenceMessageRect.setX(userNameRect.x() + nameFontMetrics.boundingRect(optV4.text).width() + SPACING * 2);
+        presenceMessageRect.setWidth(optV4.rect.width() - presenceMessageRect.x() - PRESENCE_ICON_SIZE - SPACING);
+        presenceMessageRect.setY(presenceMessageRect.y() + (presenceMessageRect.height()/2 - nameFontMetrics.height()/2));
 
-        QFont statusFont = KGlobalSettings::smallestReadableFont();
+        QPen presenceMessagePen = painter->pen();
+        presenceMessagePen.setColor(m_palette->color(QPalette::Disabled, QPalette::Text));
 
-        const QFontMetrics statusFontMetrics(statusFont);
+        painter->setPen(presenceMessagePen);
 
-        QColor fadingColor(m_palette->color(QPalette::WindowText));
-
-        if (index == m_indexForHiding) {
-            fadingColor.setAlpha(m_fadingValue);
-            painter->setPen(fadingColor);
-        }
-
-        painter->setFont(statusFont);
-        painter->drawText(statusMsgRect,
-                          statusFontMetrics.elidedText(index.data(AccountsModel::PresenceMessageRole).toString(),
-                                                       Qt::ElideRight, statusMsgRect.width()));
-
+        painter->drawText(presenceMessageRect,
+                          nameFontMetrics.elidedText(index.data(AccountsModel::PresenceMessageRole).toString(),
+                                                     Qt::ElideRight, presenceMessageRect.width()));
     } else {
         AbstractContactDelegate::paint(painter, option, index);
     }
@@ -174,58 +152,17 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     painter->restore();
 }
 
-QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize ContactDelegateCompact::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option);
     bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
     if (isContact) {
-        return QSize(0, 32 + 4 * SPACING);
+        return QSize(0, 28);
     } else {
         return AbstractContactDelegate::sizeHint(option, index);
     }
 }
 
-void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
-{
-    m_indexForHiding = index;
-    fadeOutStatusMessageSlot();
-}
 
-void ContactDelegate::reshowStatusMessageSlot()
-{
-    m_fadingValue = 255;
-    m_indexForHiding = QModelIndex();
-    emit repaintItem(m_indexForHiding);
-}
-
-void ContactDelegate::fadeOutStatusMessageSlot()
-{
-    QPropertyAnimation *a = new QPropertyAnimation(this, "m_fadingValue");
-    a->setParent(this);
-    a->setDuration(100);
-    a->setEasingCurve(QEasingCurve::OutExpo);
-    a->setStartValue(255);
-    a->setEndValue(0);
-    a->start();
-
-    connect(a, SIGNAL(valueChanged(QVariant)),
-            this, SLOT(triggerRepaint()));
-}
-
-int ContactDelegate::fadingValue() const
-{
-    return m_fadingValue;
-}
-
-void ContactDelegate::setFadingValue(int value)
-{
-    m_fadingValue = value;
-}
-
-void ContactDelegate::triggerRepaint()
-{
-    emit repaintItem(m_indexForHiding);
-}
-
-#include "contact-delegate.moc"
+#include "contact-delegate-compact.moc"

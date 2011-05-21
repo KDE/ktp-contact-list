@@ -58,6 +58,7 @@
 #include "accounts-model.h"
 #include "account-filter-model.h"
 #include "contact-delegate.h"
+#include "contact-delegate-compact.h"
 #include "contact-model-item.h"
 #include "add-contact-dialog.h"
 #include "remove-contact-dialog.h"
@@ -84,6 +85,9 @@ MainWidget::MainWidget(QWidget *parent)
     setupUi(this);
     m_filterBar->hide();
     setWindowIcon(KIcon("telepathy"));
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
 
     m_userAccountNameLabel->setText(user.property(KUser::FullName).isNull() ?
         user.loginName() : user.property(KUser::FullName).toString()
@@ -153,6 +157,29 @@ MainWidget::MainWidget(QWidget *parent)
 
     KMenu *settingsButtonMenu = new KMenu(settingsButton);
     settingsButtonMenu->addAction(i18n("Configure accounts..."), this, SLOT(showSettingsKCM()));
+
+    QActionGroup *delegateTypeGroup = new QActionGroup(this);
+    delegateTypeGroup->setExclusive(true);
+
+    KMenu *setDelegateTypeMenu = new KMenu(settingsButtonMenu);
+    setDelegateTypeMenu->setTitle(i18n("Contact list type"));
+    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use full list"),
+                                                                this, SLOT(onSwitchToFullView())));
+    delegateTypeGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("full")) {
+        delegateTypeGroup->actions().last()->setChecked(true);
+    }
+
+    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use compact list"),
+                                                                this, SLOT(onSwitchToCompactView())));
+    delegateTypeGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("compact")) {
+        delegateTypeGroup->actions().last()->setChecked(true);
+    }
+
+    settingsButtonMenu->addMenu(setDelegateTypeMenu);
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
 
@@ -195,17 +222,24 @@ MainWidget::MainWidget(QWidget *parent)
             this, SLOT(onNewAccountAdded(Tp::AccountPtr)));
 
     m_delegate = new ContactDelegate(this);
+    m_compactDelegate = new ContactDelegateCompact(this);
 
     m_contactsListView->header()->hide();
     m_contactsListView->setRootIsDecorated(false);
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->setContextMenuPolicy(Qt::CustomContextMenu);
-    m_contactsListView->setItemDelegate(m_delegate);
+    if (guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("compact")) {
+        m_contactsListView->setItemDelegate(m_compactDelegate);
+    } else {
+        m_contactsListView->setItemDelegate(m_delegate);
+    }
     m_contactsListView->setIndentation(0);
     m_contactsListView->setMouseTracking(true);
     m_contactsListView->setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
 
     addOverlayButtons();
+
+    emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("full"));
 
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
@@ -228,9 +262,7 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_presenceMessageEdit, SIGNAL(returnPressed(QString)),
             this, SLOT(setCustomPresenceMessage(QString)));
 
-    KSharedConfigPtr config = KGlobal::config();
-    KConfigGroup configGroup(config, "GUI");
-    if (configGroup.readEntry("pin_filterbar", true)) {
+    if (guiConfigGroup.readEntry("pin_filterbar", true)) {
         toggleSearchWidget(true);
         m_searchContactAction->setChecked(true);
     }
@@ -633,6 +665,19 @@ void MainWidget::addOverlayButtons()
 
     connect(videoOverlay, SIGNAL(activated(QModelIndex)),
             this, SLOT(startVideoChannel(QModelIndex)));
+
+    connect(this, SIGNAL(enableOverlays(bool)),
+            textOverlay, SLOT(setActive(bool)));
+
+    connect(this, SIGNAL(enableOverlays(bool)),
+            audioOverlay, SLOT(setActive(bool)));
+
+    connect(this, SIGNAL(enableOverlays(bool)),
+            videoOverlay, SLOT(setActive(bool)));
+
+    connect(this, SIGNAL(enableOverlays(bool)),
+            fileOverlay, SLOT(setActive(bool)));
+
 }
 
 void MainWidget::toggleSearchWidget(bool show)
@@ -1171,6 +1216,32 @@ void MainWidget::onGroupContacts(bool enabled)
         m_modelFilter->setSourceModel(m_model);
     }
 
+}
+
+void MainWidget::onSwitchToFullView()
+{
+    m_contactsListView->setItemDelegate(m_delegate);
+    m_contactsListView->doItemsLayout();
+
+    emit enableOverlays(true);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("selected_delegate", "full");
+    guiConfigGroup.config()->sync();
+}
+
+void MainWidget::onSwitchToCompactView()
+{
+    m_contactsListView->setItemDelegate(m_compactDelegate);
+    m_contactsListView->doItemsLayout();
+
+    emit enableOverlays(false);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("selected_delegate", "compact");
+    guiConfigGroup.config()->sync();
 }
 
 #include "main-widget.moc"

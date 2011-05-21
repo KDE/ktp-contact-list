@@ -34,6 +34,8 @@ class TextChannelContactOverlay : public HoverButtonDelegateOverlay
 public:
 
     TextChannelContactOverlay(QObject* parent);
+
+public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
@@ -67,6 +69,8 @@ class AudioChannelContactOverlay : public HoverButtonDelegateOverlay
 public:
 
     AudioChannelContactOverlay(QObject* parent);
+
+public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
@@ -100,6 +104,8 @@ class VideoChannelContactOverlay : public HoverButtonDelegateOverlay
 public:
 
     VideoChannelContactOverlay(QObject* parent);
+
+public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
@@ -133,6 +139,8 @@ class FileTransferContactOverlay : public HoverButtonDelegateOverlay
 public:
 
     FileTransferContactOverlay(QObject* parent);
+
+public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
