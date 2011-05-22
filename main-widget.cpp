@@ -721,16 +721,15 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     QModelIndex index = m_contactsListView->currentIndex();
 
     Tp::ContactPtr contact;
-    if (m_groupContactsAction->isChecked()) {
-        contact = m_groupsModel->data(m_modelFilter->mapToSource(index), AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
-    } else {
-        contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
-    }
+    QVariant item = index.data(AccountsModel::ItemRole);
 
-    if (contact.isNull()) {
-        kDebug() << "Contact is nulled";
+    //only handle contacts;
+    if(item.userType() != qMetaTypeId<ContactModelItem*>()) {
         return;
     }
+
+    contact = item.value<ContactModelItem*>()->contact();
+
 
     Tp::AccountPtr account;
     if (m_groupContactsAction->isChecked()) {
