@@ -84,7 +84,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     setupUi(this);
     m_filterBar->hide();
-    setWindowIcon(KIcon("telepathy"));
+    setWindowIcon(KIcon("kde-telepathy"));
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
