@@ -325,6 +325,10 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     connect(m_modelFilter, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)),
         m_delegate, SLOT(contactRemoved(QModelIndex,int,int)));
 
+    //FIXME FIXME FIXME -- this is an ugly workaround for some filter-misbehaving issues, need to investigate
+    connect(m_modelFilter->sourceModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)),
+            m_modelFilter, SLOT(invalidate()));
+
     m_accountButtonsLayout->insertStretch(-1);
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();

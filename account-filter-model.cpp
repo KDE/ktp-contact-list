@@ -30,9 +30,7 @@ AccountFilterModel::AccountFilterModel(QObject *parent)
       m_filterOfflineUsers(false),
       m_filterByName(false)
 {
-    //FIXME FIXME FIXME -- this is an ugly workaround for some filter-misbehaving issues, need to investigate
-    connect(sourceModel(), SIGNAL(dataChanged(QModelIndex,QModelIndex)),
-            this, SLOT(invalidate()));
+
 }
 
 void AccountFilterModel::filterOfflineUsers(bool filterOfflineUsers)
