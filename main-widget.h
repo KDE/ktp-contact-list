@@ -68,8 +68,7 @@ public:
 
 public Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
-    void startTextChannel(const QModelIndex &index);
-    void startFileTransferChannel(const QModelIndex &index);
+
     void onContactListDoubleClick(const QModelIndex &index);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
@@ -87,6 +86,8 @@ public Q_SLOTS:
     void selectAvatarFromAccount(const QString &accountUID);
     void selectAvatarFromAccount();
     void loadAvatarFromFile();
+    void startTextChannel(const QModelIndex &index);
+    void startFileTransferChannel(const QModelIndex &index);
     void startAudioChannel(const QModelIndex &index);
     void startVideoChannel(const QModelIndex &index);
     void onCustomContextMenuRequested(const QPoint &point);
