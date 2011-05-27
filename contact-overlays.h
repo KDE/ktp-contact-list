@@ -27,6 +27,8 @@
 #include "contact-delegate-overlay.h"
 #include "contact-view-hover-button.h"
 
+class ContactModelItem;
+
 class TextChannelContactOverlay : public HoverButtonDelegateOverlay
 {
     Q_OBJECT
@@ -39,8 +41,7 @@ public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
-
-    void activated(const QModelIndex index);
+    void activated(ContactModelItem *contactItem);
 
 protected:
 
@@ -67,15 +68,13 @@ class AudioChannelContactOverlay : public HoverButtonDelegateOverlay
     Q_OBJECT
 
 public:
-
     AudioChannelContactOverlay(QObject* parent);
 
 public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
-
-    void activated(const QModelIndex& index);
+    void activated(ContactModelItem *contactItem);
 
 protected:
 
@@ -109,8 +108,7 @@ public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
-
-    void activated(const QModelIndex& index);
+    void activated(ContactModelItem *contactItem);
 
 protected:
 
@@ -144,8 +142,7 @@ public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
-
-    void activated(const QModelIndex& index);
+    void activated(ContactModelItem *contactItem);
 
 protected:
 

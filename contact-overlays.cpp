@@ -26,6 +26,7 @@
 #include <KDebug>
 
 #include "accounts-model.h"
+#include "contact-model-item.h"
 
 class TextChannelContactOverlay::Button : public ContactViewHoverButton
 {
@@ -113,7 +114,10 @@ void TextChannelContactOverlay::slotClicked(bool checked)
     QModelIndex index = button()->index();
 
     if (index.isValid()) {
-        emit activated(index);
+        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        if (contactItem) {
+            emit activated(contactItem);
+        }
     }
 }
 
@@ -214,7 +218,10 @@ void AudioChannelContactOverlay::slotClicked(bool checked)
     QModelIndex index = button()->index();
 
     if (index.isValid()) {
-        emit activated(index);
+        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        if (contactItem) {
+            emit activated(contactItem);
+        }
     }
 }
 
@@ -315,7 +322,10 @@ void VideoChannelContactOverlay::slotClicked(bool checked)
     QModelIndex index = button()->index();
 
     if (index.isValid()) {
-        emit activated(index);
+        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        if (contactItem) {
+            emit activated(contactItem);
+        }
     }
 }
 
@@ -416,7 +426,10 @@ void FileTransferContactOverlay::slotClicked(bool checked)
     QModelIndex index = button()->index();
 
     if (index.isValid()) {
-        emit activated(index);
+        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        if (contactItem) {
+            emit activated(contactItem);
+        }
     }
 }
 

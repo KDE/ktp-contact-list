@@ -497,33 +497,18 @@ void MainWidget::onContactListDoubleClick(const QModelIndex& index)
     }
     else {
         kDebug() << "Text chat requested for index" << index;
-        startTextChannel(index);
+        startTextChannel(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
     }
 }
 
-void MainWidget::startTextChannel(const QModelIndex &index)
+void MainWidget::startTextChannel(ContactModelItem *contactItem)
 {
-    if (! index.isValid()) {
-        return;
-    }
-
-    QModelIndex realIndex = m_modelFilter->mapToSource(index);
-    Tp::ContactPtr contact;
-
-    if (m_groupContactsAction->isChecked()) {
-        contact = m_groupsModel->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
-    } else {
-        contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
-    }
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact = contactItem->contact();
 
     kDebug() << "Requesting chat for contact" << contact->alias();
 
-    Tp::AccountPtr account;
-    if (m_groupContactsAction->isChecked()) {
-        account = qobject_cast<AccountsModelItem*>(m_groupsModel->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->parent())->account();
-    } else {
-        account = m_model->accountForContactIndex(realIndex);
-    }
+    Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
 
     Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact,
                                                                         QDateTime::currentDateTime(),
@@ -532,18 +517,14 @@ void MainWidget::startTextChannel(const QModelIndex &index)
             this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 }
 
-void MainWidget::startAudioChannel(const QModelIndex& index)
+void MainWidget::startAudioChannel(ContactModelItem *contactItem)
 {
-    if (! index.isValid()) {
-        return;
-    }
-
-    QModelIndex realIndex = m_modelFilter->mapToSource(index);
-    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact = contactItem->contact();
 
     kDebug() << "Requesting audio for contact" << contact->alias();
 
-    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
+    Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
 
     Tp::PendingChannelRequest* channelRequest = account->ensureStreamedMediaAudioCall(contact,
                                                                         QDateTime::currentDateTime(),
@@ -552,18 +533,14 @@ void MainWidget::startAudioChannel(const QModelIndex& index)
             this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
 }
 
-void MainWidget::startVideoChannel(const QModelIndex& index)
+void MainWidget::startVideoChannel(ContactModelItem *contactItem)
 {
-    if (! index.isValid()) {
-        return;
-    }
-
-    QModelIndex realIndex = m_modelFilter->mapToSource(index);
-    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact = contactItem->contact();
 
     kDebug() << "Requesting video for contact" << contact->alias();
 
-    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
+    Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
 
     Tp::PendingChannelRequest* channelRequest = account->ensureStreamedMediaVideoCall(contact, true,
                                                                         QDateTime::currentDateTime(),
@@ -573,18 +550,14 @@ void MainWidget::startVideoChannel(const QModelIndex& index)
 }
 
 
-void MainWidget::startFileTransferChannel(const QModelIndex &index)
+void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
 {
-    if (! index.isValid()) {
-        return;
-    }
-
-    QModelIndex realIndex = m_modelFilter->mapToSource(index);
-    Tp::ContactPtr contact = m_model->data(realIndex, AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact = contactItem->contact();
 
     kDebug() << "Requesting file transfer for contact" << contact->alias();
 
-    Tp::AccountPtr account = m_model->accountForContactIndex(realIndex);
+    Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
 
     QString filename = KFileDialog::getOpenFileName(KUrl(), // TODO Remember directory
                                                     QString(),
@@ -658,17 +631,17 @@ void MainWidget::addOverlayButtons()
     connect(textOverlay, SIGNAL(overlayHidden()),
             m_delegate, SLOT(reshowStatusMessageSlot()));
 
-    connect(textOverlay, SIGNAL(activated(QModelIndex)),
-            this, SLOT(startTextChannel(QModelIndex)));
+    connect(textOverlay, SIGNAL(activated(ContactModelItem*)),
+            this, SLOT(startTextChannel(ContactModelItem*)));
 
-    connect(fileOverlay, SIGNAL(activated(QModelIndex)),
-            this, SLOT(startFileTransferChannel(QModelIndex)));
+    connect(fileOverlay, SIGNAL(activated(ContactModelItem*)),
+            this, SLOT(startFileTransferChannel(ContactModelItem*)));
 
-    connect(audioOverlay, SIGNAL(activated(QModelIndex)),
-            this, SLOT(startAudioChannel(QModelIndex)));
+    connect(audioOverlay, SIGNAL(activated(ContactModelItem*)),
+            this, SLOT(startAudioChannel(ContactModelItem*)));
 
-    connect(videoOverlay, SIGNAL(activated(QModelIndex)),
-            this, SLOT(startVideoChannel(QModelIndex)));
+    connect(videoOverlay, SIGNAL(activated(ContactModelItem*)),
+            this, SLOT(startVideoChannel(ContactModelItem*)));
 
     connect(this, SIGNAL(enableOverlays(bool)),
             textOverlay, SLOT(setActive(bool)));
@@ -735,12 +708,7 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
     contact = item.value<ContactModelItem*>()->contact();
 
 
-    Tp::AccountPtr account;
-    if (m_groupContactsAction->isChecked()) {
-        account = qobject_cast<AccountsModelItem*>(m_groupsModel->data(m_modelFilter->mapToSource(index), AccountsModel::ItemRole).value<ContactModelItem*>()->parent())->account();
-    } else {
-        account = m_model->accountForContactIndex(m_modelFilter->mapToSource(index));
-    }
+    Tp::AccountPtr account = m_model->accountForContactItem(item.value<ContactModelItem*>());
 
     if (account.isNull()) {
         kDebug() << "Account is nulled";
@@ -851,16 +819,10 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &)
 void MainWidget::slotAddContactToGroupTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
-    Tp::ContactPtr contact;
-    if (m_groupContactsAction->isChecked()) {
-        contact = m_groupsModel->data(m_modelFilter->mapToSource(index), AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
-    } else {
-        contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
-    }
-    if (contact.isNull()) {
-        kDebug() << "Contact is nulled";
-        return;
-    }
+    ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact =  contactItem->contact();
 
     QAction *action = qobject_cast<QAction*>(sender());
     if (!action) {
@@ -887,12 +849,10 @@ void MainWidget::slotAddContactToGroupTriggered()
 void MainWidget::slotBlockContactTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
-    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
 
-    if (contact.isNull()) {
-        kDebug() << "Contact is nulled";
-        return;
-    }
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact =  contactItem->contact();
 
     Tp::PendingOperation *operation = contact->block(true);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
@@ -902,12 +862,10 @@ void MainWidget::slotBlockContactTriggered()
 void MainWidget::slotDeleteContact()
 {
     QModelIndex index = m_contactsListView->currentIndex();
-    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
+    ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
 
-    if (contact.isNull()) {
-        kDebug() << "Contact is null";
-        return;
-    }
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact =  contactItem->contact();
 
     QList<Tp::ContactPtr>contactList;
     contactList.append(contact);
@@ -946,7 +904,10 @@ void MainWidget::slotStartTextChat()
         return;
     }
 
-    startTextChannel(index);
+    ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        startTextChannel(item);
+    }
 }
 
 void MainWidget::slotStartAudioChat()
@@ -957,7 +918,10 @@ void MainWidget::slotStartAudioChat()
         return;
     }
 
-    startAudioChannel(index);
+    ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        startAudioChannel(item);
+    }
 }
 
 void MainWidget::slotStartVideoChat()
@@ -967,8 +931,10 @@ void MainWidget::slotStartVideoChat()
         kDebug() << "Invalid index provided.";
         return;
     }
-
-    startVideoChannel(index);
+    ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        startVideoChannel(item);
+    }
 }
 
 void MainWidget::slotStartFileTransfer()
@@ -979,17 +945,19 @@ void MainWidget::slotStartFileTransfer()
         return;
     }
 
-    startFileTransferChannel(index);
+    ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        startFileTransferChannel(item);
+    }
 }
 
 void MainWidget::slotUnblockContactTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
-    Tp::ContactPtr contact = m_model->contactForIndex(m_modelFilter->mapToSource(index));
-    if (contact.isNull()) {
-        kDebug() << "Contact is nulled";
-        return;
-    }
+    ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    Q_ASSERT(item);
+
+    Tp::ContactPtr contact = item->contact();
 
     Tp::PendingOperation *operation = contact->block(false);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),

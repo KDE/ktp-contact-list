@@ -42,6 +42,7 @@ class AccountFilterModel;
 class ContactDelegate;
 class FilterBar;
 class KJob;
+class ContactModelItem;
 
 class MainWidget : public KMainWindow, Ui::MainWindow
 {
@@ -86,10 +87,10 @@ public Q_SLOTS:
     void selectAvatarFromAccount(const QString &accountUID);
     void selectAvatarFromAccount();
     void loadAvatarFromFile();
-    void startTextChannel(const QModelIndex &index);
-    void startFileTransferChannel(const QModelIndex &index);
-    void startAudioChannel(const QModelIndex &index);
-    void startVideoChannel(const QModelIndex &index);
+    void startTextChannel(ContactModelItem *contactItem);
+    void startFileTransferChannel(ContactModelItem *contactItem);
+    void startAudioChannel(ContactModelItem *contactItem);
+    void startVideoChannel(ContactModelItem *contactItem);
     void onCustomContextMenuRequested(const QPoint &point);
     void onGroupContacts(bool enabled);
 
