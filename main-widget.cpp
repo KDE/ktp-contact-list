@@ -372,11 +372,11 @@ void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
 
 void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
 {
-    Tp::PendingReady *ready = account->becomeReady();
+    Q_ASSERT(account->isReady(Tp::Account::FeatureCore));
 
-    connect(ready,
-            SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(onAccountReady(Tp::PendingOperation*)));
+    if (account->connection()) {
+        monitorPresence(account->connection());
+    }
 
     connect(account.data(),
             SIGNAL(connectionChanged(Tp::ConnectionPtr)),
@@ -409,15 +409,6 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
     if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
         //this also updates the avatar if it was changed somewhere else
         selectAvatarFromAccount(avatarGroup.readEntry("source", QString()));
-    }
-}
-
-void MainWidget::onAccountReady(Tp::PendingOperation *operation)
-{
-    Tp::AccountPtr account = Tp::AccountPtr::dynamicCast(operation->object());
-
-    if (account->connection()) {
-        monitorPresence(account->connection());
     }
 }
 

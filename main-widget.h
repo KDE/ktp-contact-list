@@ -105,7 +105,6 @@ private Q_SLOTS:
     void slotStartFileTransfer();
     void slotUnblockContactTriggered();
     void onAvatarFetched(KJob*);
-    void onAccountReady(Tp::PendingOperation *operation);
     void onAccountsPresenceStatusFiltered();
     void onPresencePublicationRequested(const Tp::Contacts &contacts);
     void monitorPresence(const Tp::ConnectionPtr &connection);
