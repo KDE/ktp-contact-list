@@ -1128,16 +1128,26 @@ void MainWidget::onAccountsPresenceStatusFiltered()
 void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
 {
     foreach (const Tp::ContactPtr &contact, contacts) {
-        if (KMessageBox::questionYesNo(this, i18n("The contact %1 added you to their contact list. "
+        Tp::ContactManagerPtr manager = contact->manager();
+        Tp::PendingOperation *op = 0;
+
+        if (contact->subscriptionState() == Tp::Contact::PresenceStateYes) {
+            op = manager->authorizePresencePublication(QList< Tp::ContactPtr >() << contact);
+        } else if (KMessageBox::questionYesNo(this, i18n("The contact %1 added you to their contact list. "
                                                   "Do you want to allow this person to see your presence "
                                                   "and add them to your contact list?", contact->id()),
                                        i18n("Subscription request")) == KMessageBox::Yes) {
-            Tp::ContactManagerPtr manager = contact->manager();
-            manager->authorizePresencePublication(QList< Tp::ContactPtr >() << contact);
+
+            op = manager->authorizePresencePublication(QList< Tp::ContactPtr >() << contact);
 
             if (manager->canRequestPresenceSubscription() && contact->subscriptionState() == Tp::Contact::PresenceStateNo) {
                 manager->requestPresenceSubscription(QList< Tp::ContactPtr >() << contact);
             }
+        }
+
+        if (op) {
+            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                    SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
 }
