@@ -433,9 +433,9 @@ void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
 void MainWidget::onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state)
 {
     if (state == Tp::ContactListStateSuccess) {
-        QFutureWatcher< Tp::ContactPtr > watcher;
-        connect(&watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
-        watcher.setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
+        QFutureWatcher< Tp::ContactPtr > *watcher = new QFutureWatcher< Tp::ContactPtr >(this);
+        connect(watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
+        watcher->setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
                                                 kde_tp_filter_contacts_by_publication_status));
 
         kDebug() << "Watcher is on";
@@ -1122,6 +1122,7 @@ void MainWidget::onAccountsPresenceStatusFiltered()
     if (!contacts.isEmpty()) {
         onPresencePublicationRequested(contacts);
     }
+    watcher->deleteLater();
 }
 
 void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
@@ -1130,7 +1131,7 @@ void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
         if (KMessageBox::questionYesNo(this, i18n("The contact %1 added you to their contact list. "
                                                   "Do you want to allow this person to see your presence "
                                                   "and add them to your contact list?", contact->id()),
-                                       i18n("Subscription request")) == KDialog::Yes) {
+                                       i18n("Subscription request")) == KMessageBox::Yes) {
             Tp::ContactManagerPtr manager = contact->manager();
             manager->authorizePresencePublication(QList< Tp::ContactPtr >() << contact);
 
