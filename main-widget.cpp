@@ -1054,14 +1054,19 @@ void MainWidget::loadAvatarFromFile()
             return;
         }
     } else {
-        FetchAvatarJob *job = new FetchAvatarJob(KFileDialog::getImageOpenUrl(KUrl(), this,
-                                                                              i18n("Please choose your avatar")),
-                                                                              this);
+        KUrl fileUrl = KFileDialog::getImageOpenUrl(KUrl(), this,
+                                     i18n("Please choose your avatar"));
 
-        connect(job, SIGNAL(result(KJob*)),
-                this, SLOT(onAvatarFetched(KJob*)));
+        if (!fileUrl.isEmpty()) {
+            FetchAvatarJob *job = new FetchAvatarJob(fileUrl, this);
 
-        job->start();
+            connect(job, SIGNAL(result(KJob*)),
+                    this, SLOT(onAvatarFetched(KJob*)));
+
+            job->start();
+        } else {
+            return;
+        }
     }
 }
 
