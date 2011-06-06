@@ -566,15 +566,10 @@ void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
 
     kDebug() << "Filename:" << filename;
     kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
-    kDebug() << "Size:" << fileinfo.size();
-    kDebug() << "Last modified:" << fileinfo.lastModified();
+    // TODO Let the user set a description?
 
     Tp::FileTransferChannelCreationProperties fileTransferProperties(filename,
-                                                                     KMimeType::findByFileContent(filename)->name(),
-                                                                     fileinfo.size());
-    // TODO Add file hash? -- fileTransferProperties.setContentHash();
-    fileTransferProperties.setLastModificationTime(fileinfo.lastModified());
-    // TODO Let the user set a description? -- fileTransferProperties.setDescription();
+                                                                     KMimeType::findByFileContent(filename)->name());
 
     Tp::PendingChannelRequest* channelRequest = account->createFileTransfer(contact,
                                                                             fileTransferProperties,
