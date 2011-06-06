@@ -552,6 +552,10 @@ void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
                                                     i18n("Choose a file")
     );
 
+    if (filename.isEmpty()) { // User hit cancel button
+        return;
+    }
+
     QFileInfo fileinfo(filename);
 
     kDebug() << "Filename:" << filename;
