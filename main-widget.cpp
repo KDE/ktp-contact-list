@@ -333,7 +333,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         KDialog *dialog = new KDialog(this);
         dialog->setCaption(i18n("No Accounts Found"));
         dialog->setButtons(KDialog::Ok | KDialog::Cancel);
-        dialog->setMainWidget(new QLabel(i18n("No Accounts Found")));
+        dialog->setMainWidget(new QLabel(i18n("You have no IM accounts configured. Would you like to do that now?")));
         dialog->setButtonText(KDialog::Ok, i18n("Configure Accounts"));
         dialog->setAttribute(Qt::WA_DeleteOnClose);
         dialog->setInitialSize(dialog->sizeHint());
@@ -1020,6 +1020,18 @@ void MainWidget::selectAvatarFromAccount(const QString &accountUID)
 {
     if (accountUID.isEmpty()) {
         kDebug() << "Supplied accountUID is empty, aborting...";
+        return;
+    }
+
+    if (m_model->accountItemForId(accountUID) == 0) {
+        kDebug() << "Chosen account ID does not exist, aborting..";
+
+        //no point of keeping the config if the previously set account ID does not exist
+        KSharedConfigPtr config = KGlobal::config();
+        KConfigGroup avatarGroup(config, "Avatar");
+        avatarGroup.deleteGroup();
+        avatarGroup.config()->sync();
+
         return;
     }
 
