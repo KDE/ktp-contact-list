@@ -77,8 +77,8 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 
     QFont groupFont = KGlobalSettings::smallestReadableFont();
 
-    QString counts;// = QString(" (%1/%2)").arg(index.data(AccountsModel::).toString(),
-    //               index.data(ModelRoles::AccountAllContactsCountRole).toString());
+    QString counts = QString(" (%1/%2)").arg(index.data(AccountsModel::OnlineUsersCountRole).toString(),
+                   index.data(AccountsModel::TotalUsersCountRole).toString());
 
     if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
         painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
@@ -101,7 +101,7 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     painter->setRenderHint(QPainter::Antialiasing, false);
 
     QFontMetrics fm = painter->fontMetrics();
-    int groupNameWidth = fm.width(index.data(GroupsModel::GroupNameRole).toString());
+    int groupNameWidth = fm.width(index.data(GroupsModel::GroupNameRole).toString().append(counts));
 
     painter->drawLine(expandSignRect.right() + SPACING * 2,
                       groupRect.y() + groupRect.height() / 2,

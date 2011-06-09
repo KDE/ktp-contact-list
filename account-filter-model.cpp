@@ -23,8 +23,6 @@
 #include "accounts-model.h"
 #include "groups-model.h"
 
-#include <KDebug>
-
 AccountFilterModel::AccountFilterModel(QObject *parent)
     : QSortFilterProxyModel(parent),
       m_filterOfflineUsers(false),
@@ -70,7 +68,16 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
         QModelIndex index = sourceModel()->index(source_row, 0);
         if (index.isValid()) {
             if (m_groupsActive) {
-                rowAccepted = true;
+                if (m_filterOfflineUsers) {
+                    if (index.data(AccountsModel::OnlineUsersCountRole).toInt() > 0) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    //if the offline users are shown, display all the groups
+                    return true;
+                }
             } else {
                 if (!index.data(AccountsModel::EnabledRole).toBool()) {
                     rowAccepted = false;
