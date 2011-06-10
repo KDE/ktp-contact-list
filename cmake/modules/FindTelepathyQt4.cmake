@@ -17,7 +17,11 @@ endif(TELEPATHY_QT4_INCLUDE_DIR AND TELEPATHY_QT4_LIBRARIES)
 
 find_package(PkgConfig)
 if(PKG_CONFIG_FOUND)
-    pkg_check_modules(PC_TELEPATHY_QT4 QUIET TelepathyQt4>=0.1.9)
+    if (TelepathyQt4_FIND_VERSION_EXACT)
+        pkg_check_modules(PC_TELEPATHY_QT4 QUIET TelepathyQt4=${TelepathyQt4_FIND_VERSION})
+    else (TelepathyQt4_FIND_VERSION_EXACT)
+        pkg_check_modules(PC_TELEPATHY_QT4 QUIET TelepathyQt4>=${TelepathyQt4_FIND_VERSION})
+    endif (TelepathyQt4_FIND_VERSION_EXACT)
 endif(PKG_CONFIG_FOUND)
 
 find_path(TELEPATHY_QT4_INCLUDE_DIR
