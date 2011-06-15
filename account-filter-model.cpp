@@ -23,6 +23,13 @@
 #include "accounts-model.h"
 #include "groups-model.h"
 
+#include "groups-model-item.h"
+#include "contact-model-item.h"
+#include "accounts-model-item.h"
+
+
+#include <KDebug>
+
 AccountFilterModel::AccountFilterModel(QObject *parent)
     : QSortFilterProxyModel(parent),
       m_showOfflineUsers(false),
@@ -42,56 +49,69 @@ bool AccountFilterModel::showOfflineUsers() const
     return m_showOfflineUsers;
 }
 
-bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
+bool AccountFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
+
+    int type = index.data(AccountsModel::ItemRole).userType();
+    if (type == qMetaTypeId<ContactModelItem*>()) {
+        return filterAcceptsContact(index);
+    }
+    else if (type == qMetaTypeId<AccountsModelItem*>()) {
+        return filterAcceptsAccount(index);
+    }
+    else if (type == qMetaTypeId<GroupsModelItem*>()) {
+        return filterAcceptsGroup(index);
+    }
+    else {
+        kDebug() << "Unknown type found in Account Filter";
+        return true;
+    }
+}
+
+bool AccountFilterModel::filterAcceptsAccount(const QModelIndex &index) const
 {
     bool rowAccepted = true;
-    //if we're looking at filtering an account or not
-    if (source_parent != QModelIndex()) {
-        //filter by name in the contact list
-        if (m_filterByName &&
-                !source_parent.child(source_row, 0).data(AccountsModel::AliasRole).toString()
-                .contains(m_filterString, Qt::CaseInsensitive)) {
+    //hide disabled accounts
+    if (!index.data(AccountsModel::EnabledRole).toBool()) {
+        rowAccepted = false;
+    }
+    //hide
+    if (index.data(AccountsModel::ConnectionStatusRole).toUInt()
+        != Tp::ConnectionStatusConnected) {
+        rowAccepted = false;
+    }
+    return rowAccepted;
+}
 
-            rowAccepted = false;
-        }
-
-        //filter offline users out
-        if (!m_showOfflineUsers &&
-                ((source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
-                == Tp::ConnectionPresenceTypeOffline) ||
-                (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
-                == Tp::ConnectionPresenceTypeUnknown))) {
-
-            rowAccepted = false;
-        }
-    } else {
-        QModelIndex index = sourceModel()->index(source_row, 0);
-        if (index.isValid()) {
-            if (m_groupsActive) {
-                if (!m_showOfflineUsers) {
-                    if (index.data(AccountsModel::OnlineUsersCountRole).toInt() > 0) {
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    //if the offline users are shown, display all the groups
-                    return true;
-                }
-            } else {
-                if (!index.data(AccountsModel::EnabledRole).toBool()) {
-                    rowAccepted = false;
-                }
-                if (index.data(AccountsModel::ConnectionStatusRole).toUInt()
-                    != Tp::ConnectionStatusConnected) {
-
-                    rowAccepted = false;
-                }
-            }
-        }
+bool AccountFilterModel::filterAcceptsContact(const QModelIndex &index) const
+{
+    bool rowAccepted = true;
+    if (m_filterByName &&
+            !index.data(AccountsModel::AliasRole).toString().contains(m_filterString, Qt::CaseInsensitive)) {
+        rowAccepted = false;
     }
 
+    //filter offline users out
+    if (!m_showOfflineUsers &&
+            ((index.data(AccountsModel::PresenceTypeRole).toUInt()
+            == Tp::ConnectionPresenceTypeOffline) ||
+            (index.data(AccountsModel::PresenceTypeRole).toUInt()
+            == Tp::ConnectionPresenceTypeUnknown))) {
+        rowAccepted = false;
+    }
     return rowAccepted;
+}
+
+bool AccountFilterModel::filterAcceptsGroup(const QModelIndex &index) const
+{
+    bool acceptRow = true;
+    if (!m_showOfflineUsers) {
+        if (index.data(AccountsModel::OnlineUsersCountRole).toInt() == 0) {
+            acceptRow = false;
+        }
+    }
+    return acceptRow;
 }
 
 void AccountFilterModel::setFilterString(const QString &str)

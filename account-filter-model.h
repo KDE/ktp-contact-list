@@ -23,6 +23,9 @@
 
 #include <QSortFilterProxyModel>
 
+class AccountsModelItem;
+class ContactModelItem;
+
 /**
   * \brief Class used to sort and filter the contacts.
   *
@@ -64,10 +67,15 @@ public slots:
     void setSortByPresence(bool enabled);
 
 protected:
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
     bool lessThan ( const QModelIndex &left, const QModelIndex &right ) const;
 
 private:
+
+    bool filterAcceptsAccount(const QModelIndex &index) const;
+    bool filterAcceptsContact(const QModelIndex &index) const;
+    bool filterAcceptsGroup(const QModelIndex &index) const;
+
     /// Shows offline users
     bool m_showOfflineUsers;
 
