@@ -546,23 +546,16 @@ void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
 
     Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
 
-    KSharedConfigPtr config = KSharedConfig::openConfig("ktelepathyrc");
-    KConfigGroup filetransferConfig = config->group("File Transfers");
-    QString lastDirectory = filetransferConfig.readPathEntry("lastDirectory", QDir::homePath());
-
-    QString filename = KFileDialog::getOpenFileName(KUrl(lastDirectory),
+    QString filename = KFileDialog::getOpenFileName(KUrl("kfiledialog:///FileTransferLastDirectory"),
                                                     QString(),
                                                     this,
-                                                    i18n("Choose a file")
-    );
+                                                    i18n("Choose a file"));
 
     if (filename.isEmpty()) { // User hit cancel button
         return;
     }
 
     QFileInfo fileinfo(filename);
-
-    filetransferConfig.writePathEntry("lastDirectory", fileinfo.canonicalFilePath());
 
     kDebug() << "Filename:" << filename;
     kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
