@@ -1,5 +1,4 @@
 [Global]
-IconName=dialog-error
 Name=Instant messaging
 Name[nl]=Instant Messaging
 Name[pt]=Mensagem instantânea
@@ -16,6 +15,7 @@ Comment[uk]=Миттєвий обмін повідомленнями
 Comment[x-test]=xxInstant messagingxx
 
 [Event/telepathyError]
+IconName=dialog-error
 Name=Instant messaging error
 Name[nl]=Fout met Instant Messaging
 Name[pt]=Erro das Mensagens Instantâneas
@@ -34,6 +34,7 @@ Sound=KDE-Im-Cant-Connect.ogg
 Action=Popup|Sound
 
 [Event/telepathyInfo]
+IconName=dialog-information
 Name=Instant messaging info message
 Name[nl]=Informatiemelding van Instant Messaging
 Name[pt]=Mensagem informativa instantânea
