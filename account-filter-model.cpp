@@ -25,21 +25,21 @@
 
 AccountFilterModel::AccountFilterModel(QObject *parent)
     : QSortFilterProxyModel(parent),
-      m_filterOfflineUsers(false),
+      m_showOfflineUsers(false),
       m_filterByName(false)
 {
 
 }
 
-void AccountFilterModel::filterOfflineUsers(bool filterOfflineUsers)
+void AccountFilterModel::showOfflineUsers(bool showOfflineUsers)
 {
-    m_filterOfflineUsers = filterOfflineUsers;
+    m_showOfflineUsers = showOfflineUsers;
     invalidateFilter();
 }
 
-bool AccountFilterModel::filterOfflineUsers() const
+bool AccountFilterModel::showOfflineUsers() const
 {
-    return m_filterOfflineUsers;
+    return m_showOfflineUsers;
 }
 
 bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
@@ -56,7 +56,7 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
         }
 
         //filter offline users out
-        if (m_filterOfflineUsers &&
+        if (!m_showOfflineUsers &&
                 ((source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
                 == Tp::ConnectionPresenceTypeOffline) ||
                 (source_parent.child(source_row, 0).data(AccountsModel::PresenceTypeRole).toUInt()
@@ -68,7 +68,7 @@ bool AccountFilterModel::filterAcceptsRow(int source_row, const QModelIndex &sou
         QModelIndex index = sourceModel()->index(source_row, 0);
         if (index.isValid()) {
             if (m_groupsActive) {
-                if (m_filterOfflineUsers) {
+                if (!m_showOfflineUsers) {
                     if (index.data(AccountsModel::OnlineUsersCountRole).toInt() > 0) {
                         return true;
                     } else {

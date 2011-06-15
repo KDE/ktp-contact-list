@@ -129,12 +129,12 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_groupContactsAction);
 
-    m_hideOfflineAction = new KAction(KIcon("meeting-attending-tentative"), QString(), this);
-    m_hideOfflineAction->setCheckable(true);
-    m_hideOfflineAction->setChecked(true);
-    m_hideOfflineAction->setToolTip(i18n("Show/Hide offline users"));
+    m_showOfflineAction = new KAction(KIcon("meeting-attending-tentative"), QString(), this);
+    m_showOfflineAction->setCheckable(true);
+    m_showOfflineAction->setChecked(false);
+    m_showOfflineAction->setToolTip(i18n("Hide/Show offline users"));
 
-    m_toolBar->addAction(m_hideOfflineAction);
+    m_toolBar->addAction(m_showOfflineAction);
 
     m_sortByPresenceAction = new KAction(KIcon("view-sort-ascending"), QString(), this);
     m_sortByPresenceAction->setCheckable(true);
@@ -295,7 +295,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         m_modelFilter->setSourceModel(m_model);
     }
     m_modelFilter->setDynamicSortFilter(true);
-    m_modelFilter->filterOfflineUsers(m_hideOfflineAction->isChecked());
+    m_modelFilter->showOfflineUsers(m_showOfflineAction->isChecked());
     m_modelFilter->clearFilterString();
     m_modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_modelFilter->setSortRole(Qt::DisplayRole);
@@ -304,8 +304,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
 
-    connect(m_hideOfflineAction, SIGNAL(toggled(bool)),
-            m_modelFilter, SLOT(filterOfflineUsers(bool)));
+    connect(m_showOfflineAction, SIGNAL(toggled(bool)),
+            m_modelFilter, SLOT(showOfflineUsers(bool)));
 
     connect(m_filterBar, SIGNAL(filterChanged(QString)),
             m_modelFilter, SLOT(setFilterString(QString)));

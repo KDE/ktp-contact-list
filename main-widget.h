@@ -131,7 +131,7 @@ private:
     ContactDelegateCompact *m_compactDelegate;
     KAction                *m_addContactAction;
     KAction                *m_groupContactsAction;
-    KAction                *m_hideOfflineAction;
+    KAction                *m_showOfflineAction;
     KAction                *m_searchContactAction;
     KAction                *m_sortByPresenceAction;
 };

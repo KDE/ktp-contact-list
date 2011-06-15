@@ -39,7 +39,7 @@ class AccountFilterModel : public QSortFilterProxyModel
 
 public:
     AccountFilterModel(QObject *parent = 0);
-    bool filterOfflineUsers() const;
+    bool showOfflineUsers() const;
 
     /**
      * \brief Flag to sort the contactlist by presence.
@@ -53,7 +53,7 @@ public:
 
 
 public slots:
-    void filterOfflineUsers(bool filterOfflineUsers);
+    void showOfflineUsers(bool showOfflineUsers);
     void setFilterString(const QString &str);
     void clearFilterString();
     /**
@@ -68,8 +68,8 @@ protected:
     bool lessThan ( const QModelIndex &left, const QModelIndex &right ) const;
 
 private:
-    /// Filters out offline users
-    bool m_filterOfflineUsers;
+    /// Shows offline users
+    bool m_showOfflineUsers;
 
     /// Used when searching for contact
     bool m_filterByName;
