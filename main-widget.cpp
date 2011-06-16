@@ -448,7 +448,7 @@ void MainWidget::onAccountStateChanged(bool enabled)
         findChild<AccountButton *>(account->uniqueIdentifier())->show();
     } else {
         findChild<AccountButton *>(account->uniqueIdentifier())->hide();
-        showMessageToUser(i18n("Account %1 was disabled!", account->displayName()),
+        showMessageToUser(i18n("Account %1 was disabled.", account->displayName()),
                           MainWidget::SystemMessageError);
     }
 }
@@ -458,7 +458,7 @@ void MainWidget::onAccountRemoved()
     Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
     delete findChild<AccountButton *>(account->uniqueIdentifier());
 
-    showMessageToUser(i18n("Account %1 was removed!", account->displayName()),
+    showMessageToUser(i18n("Account %1 was removed.", account->displayName()),
                       MainWidget::SystemMessageError);
 }
 
@@ -1177,9 +1177,9 @@ void MainWidget::handleConnectionError(const Tp::AccountPtr& account)
     Tp::ConnectionStatusReason reason = account->connectionStatusReason();
 
     if (reason == Tp::ConnectionStatusReasonAuthenticationFailed) {
-        showMessageToUser(i18n("Couldn't connect %1. Authentication failed (is your password correct?)", account->displayName()), MainWidget::SystemMessageError);
+        showMessageToUser(i18n("Could not connect %1. Authentication failed (is your password correct?)", account->displayName()), MainWidget::SystemMessageError);
     } else if (reason == Tp::ConnectionStatusReasonNetworkError) {
-        showMessageToUser(i18n("Couldn't connect %1. There was a network error, check your connection", account->displayName()), MainWidget::SystemMessageError);
+        showMessageToUser(i18n("Could not connect %1. There was a network error, check your connection", account->displayName()), MainWidget::SystemMessageError);
     } else {
         // other errors
         showMessageToUser(i18n("An unexpected error has occurred with %1: '%2'", account->displayName(), account->connectionError()), MainWidget::SystemMessageError);
