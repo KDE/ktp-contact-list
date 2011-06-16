@@ -51,10 +51,6 @@ public:
      */
     bool isSortedByPresence() const;
 
-    bool groupsActive() const;
-    void setGroupsActive(bool active);
-
-
 public slots:
     void showOfflineUsers(bool showOfflineUsers);
     void setFilterString(const QString &str);
@@ -84,9 +80,6 @@ private:
 
     /// Holds the string which is searched in the model
     QString m_filterString;
-
-    /// True if the source is groups model
-    bool m_groupsActive;
 };
 
 #endif // ACCOUNTFILTERMODEL_H

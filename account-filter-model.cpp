@@ -174,14 +174,5 @@ bool AccountFilterModel::isSortedByPresence() const
     return sortRole() == AccountsModel::PresenceTypeRole;
 }
 
-bool AccountFilterModel::groupsActive() const
-{
-    return m_groupsActive;
-}
-
-void AccountFilterModel::setGroupsActive(bool active)
-{
-    m_groupsActive = active;
-}
 
 #include "account-filter-model.moc"

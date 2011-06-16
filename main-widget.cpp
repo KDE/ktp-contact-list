@@ -288,10 +288,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_groupsModel = new GroupsModel(m_model, this);
     m_modelFilter = new AccountFilterModel(this);
     if (m_groupContactsAction->isChecked()) {
-        m_modelFilter->setGroupsActive(true);
         m_modelFilter->setSourceModel(m_groupsModel);
     } else {
-        m_modelFilter->setGroupsActive(false);
         m_modelFilter->setSourceModel(m_model);
     }
     m_modelFilter->setDynamicSortFilter(true);
@@ -1191,15 +1189,10 @@ void MainWidget::handleConnectionError(const Tp::AccountPtr& account)
 void MainWidget::onGroupContacts(bool enabled)
 {
     if (enabled) {
-        m_modelFilter->setSourceModel(0);   //this prevents some crashes
-        m_modelFilter->setGroupsActive(true);
         m_modelFilter->setSourceModel(m_groupsModel);
     } else {
-        m_modelFilter->setSourceModel(0);
-        m_modelFilter->setGroupsActive(false);
         m_modelFilter->setSourceModel(m_model);
     }
-
 }
 
 void MainWidget::onSwitchToFullView()
