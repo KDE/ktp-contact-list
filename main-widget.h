@@ -70,6 +70,7 @@ public:
 public Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
 
+    void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClick(const QModelIndex &index);
     void onConnectionChanged(const Tp::ConnectionPtr &connection);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);

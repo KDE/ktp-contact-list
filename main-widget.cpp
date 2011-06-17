@@ -244,6 +244,9 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
 
+    connect(m_contactsListView, SIGNAL(clicked(QModelIndex)),
+            this, SLOT(onContactListClicked(QModelIndex)));
+
     connect(m_contactsListView, SIGNAL(doubleClicked(QModelIndex)),
             this, SLOT(onContactListDoubleClick(QModelIndex)));
 
@@ -469,18 +472,28 @@ void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
     }
 }
 
-void MainWidget::onContactListDoubleClick(const QModelIndex& index)
+void MainWidget::onContactListClicked(const QModelIndex& index)
 {
-    if(!index.isValid()) {
+    if (!index.isValid()) {
         return;
     }
 
-    if(index.data(AccountsModel::AliasRole).toString().isEmpty()) {
-        if(m_contactsListView->isExpanded(index))
+    if (index.data(AccountsModel::AliasRole).toString().isEmpty()) {
+        if (m_contactsListView->isExpanded(index)) {
             m_contactsListView->collapse(index);
-        else m_contactsListView->expand(index);
+        } else {
+            m_contactsListView->expand(index);
+        }
     }
-    else {
+}
+
+void MainWidget::onContactListDoubleClick(const QModelIndex& index)
+{
+    if (!index.isValid()) {
+        return;
+    }
+
+    if (!index.data(AccountsModel::AliasRole).toString().isEmpty()) {
         kDebug() << "Text chat requested for index" << index;
         startTextChannel(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
     }
