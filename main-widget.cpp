@@ -692,9 +692,13 @@ void MainWidget::onAddContactRequestFoundContacts(Tp::PendingOperation *operatio
     }
 }
 
-void MainWidget::onCustomContextMenuRequested(const QPoint &)
+void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 {
-    QModelIndex index = m_contactsListView->currentIndex();
+    QModelIndex index = m_contactsListView->indexAt(pos);
+
+    if (!index.isValid()) {
+        return;
+    }
 
     Tp::ContactPtr contact;
     QVariant item = index.data(AccountsModel::ItemRole);
