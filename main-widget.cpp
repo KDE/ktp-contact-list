@@ -64,6 +64,7 @@
 #include "remove-contact-dialog.h"
 #include "fetch-avatar-job.h"
 #include "groups-model.h"
+#include "groups-model-item.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
@@ -478,7 +479,9 @@ void MainWidget::onContactListClicked(const QModelIndex& index)
         return;
     }
 
-    if (index.data(AccountsModel::AliasRole).toString().isEmpty()) {
+    if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()
+        || index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<GroupsModelItem*>()) {
+
         if (m_contactsListView->isExpanded(index)) {
             m_contactsListView->collapse(index);
         } else {
@@ -493,7 +496,7 @@ void MainWidget::onContactListDoubleClick(const QModelIndex& index)
         return;
     }
 
-    if (!index.data(AccountsModel::AliasRole).toString().isEmpty()) {
+    if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>()) {
         kDebug() << "Text chat requested for index" << index;
         startTextChannel(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
     }
