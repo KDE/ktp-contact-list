@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#ifndef ACCOUNTFILTERMODEL_H
-#define ACCOUNTFILTERMODEL_H
+#ifndef ACCOUNTSFILTERMODEL_H
+#define ACCOUNTSFILTERMODEL_H
 
 #include <QSortFilterProxyModel>
 
@@ -36,12 +36,13 @@ class ContactModelItem;
   *     By name
   *     By presence
   */
-class AccountFilterModel : public QSortFilterProxyModel
+class AccountsFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 
 public:
-    AccountFilterModel(QObject *parent = 0);
+    AccountsFilterModel(QObject *parent = 0);
+    
     bool showOfflineUsers() const;
 
     /**

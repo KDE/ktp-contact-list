@@ -38,7 +38,7 @@ class GroupsModel;
 class KMenu;
 class KSelectAction;
 class AccountsModel;
-class AccountFilterModel;
+class AccountsFilterModel;
 class ContactDelegate;
 class FilterBar;
 class KJob;
@@ -123,7 +123,7 @@ private:
 
     AccountsModel          *m_model;
     GroupsModel            *m_groupsModel;
-    AccountFilterModel     *m_modelFilter;
+    AccountsFilterModel     *m_modelFilter;
     Tp::AccountManagerPtr   m_accountManager;
     KMenu                  *m_accountMenu;
     KMenu                  *m_avatarButtonMenu;

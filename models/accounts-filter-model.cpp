@@ -19,10 +19,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "account-filter-model.h"
+#include "accounts-filter-model.h"
+
 #include "accounts-model.h"
 #include "groups-model.h"
-
 #include "groups-model-item.h"
 #include "contact-model-item.h"
 #include "accounts-model-item.h"
@@ -30,7 +30,7 @@
 
 #include <KDebug>
 
-AccountFilterModel::AccountFilterModel(QObject *parent)
+AccountsFilterModel::AccountsFilterModel(QObject *parent)
     : QSortFilterProxyModel(parent),
       m_showOfflineUsers(false),
       m_filterByName(false)
@@ -38,18 +38,18 @@ AccountFilterModel::AccountFilterModel(QObject *parent)
 
 }
 
-void AccountFilterModel::showOfflineUsers(bool showOfflineUsers)
+void AccountsFilterModel::showOfflineUsers(bool showOfflineUsers)
 {
     m_showOfflineUsers = showOfflineUsers;
     invalidateFilter();
 }
 
-bool AccountFilterModel::showOfflineUsers() const
+bool AccountsFilterModel::showOfflineUsers() const
 {
     return m_showOfflineUsers;
 }
 
-bool AccountFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+bool AccountsFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 
@@ -69,7 +69,7 @@ bool AccountFilterModel::filterAcceptsRow(int sourceRow, const QModelIndex &sour
     }
 }
 
-bool AccountFilterModel::filterAcceptsAccount(const QModelIndex &index) const
+bool AccountsFilterModel::filterAcceptsAccount(const QModelIndex &index) const
 {
     bool rowAccepted = true;
     //hide disabled accounts
@@ -84,7 +84,7 @@ bool AccountFilterModel::filterAcceptsAccount(const QModelIndex &index) const
     return rowAccepted;
 }
 
-bool AccountFilterModel::filterAcceptsContact(const QModelIndex &index) const
+bool AccountsFilterModel::filterAcceptsContact(const QModelIndex &index) const
 {
     bool rowAccepted = true;
     if (m_filterByName &&
@@ -103,7 +103,7 @@ bool AccountFilterModel::filterAcceptsContact(const QModelIndex &index) const
     return rowAccepted;
 }
 
-bool AccountFilterModel::filterAcceptsGroup(const QModelIndex &index) const
+bool AccountsFilterModel::filterAcceptsGroup(const QModelIndex &index) const
 {
     bool acceptRow = true;
     if (!m_showOfflineUsers) {
@@ -114,21 +114,21 @@ bool AccountFilterModel::filterAcceptsGroup(const QModelIndex &index) const
     return acceptRow;
 }
 
-void AccountFilterModel::setFilterString(const QString &str)
+void AccountsFilterModel::setFilterString(const QString &str)
 {
     m_filterString = str;
     m_filterByName = true;
     invalidateFilter();
 }
 
-void AccountFilterModel::clearFilterString()
+void AccountsFilterModel::clearFilterString()
 {
     m_filterString.clear();
     m_filterByName = false;
     invalidateFilter();
 }
 
-bool AccountFilterModel::lessThan( const QModelIndex &left, const QModelIndex &right ) const
+bool AccountsFilterModel::lessThan( const QModelIndex &left, const QModelIndex &right ) const
 {
         uint leftPresence;
         uint rightPresence;
@@ -160,7 +160,7 @@ bool AccountFilterModel::lessThan( const QModelIndex &left, const QModelIndex &r
         }
 }
 
-void AccountFilterModel::setSortByPresence(bool enabled)
+void AccountsFilterModel::setSortByPresence(bool enabled)
 {
     if (enabled) {
         setSortRole(AccountsModel::PresenceTypeRole);
@@ -169,10 +169,10 @@ void AccountFilterModel::setSortByPresence(bool enabled)
     }
 }
 
-bool AccountFilterModel::isSortedByPresence() const
+bool AccountsFilterModel::isSortedByPresence() const
 {
     return sortRole() == AccountsModel::PresenceTypeRole;
 }
 
 
-#include "account-filter-model.moc"
+#include "accounts-filter-model.moc"

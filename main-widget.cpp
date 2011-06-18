@@ -66,7 +66,7 @@
 #include "models/contact-model-item.h"
 #include "models/groups-model-item.h"
 #include "models/accounts-model.h"
-#include "models/account-filter-model.h"
+#include "models/accounts-filter-model.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
@@ -293,7 +293,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     m_model = new AccountsModel(m_accountManager, this);
     m_groupsModel = new GroupsModel(m_model, this);
-    m_modelFilter = new AccountFilterModel(this);
+    m_modelFilter = new AccountsFilterModel(this);
     if (m_groupContactsAction->isChecked()) {
         m_modelFilter->setSourceModel(m_groupsModel);
     } else {

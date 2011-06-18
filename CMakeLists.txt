@@ -33,7 +33,7 @@ set (contactlist_SRCS
      fetch-avatar-job.cpp
      dialogs/add-contact-dialog.cpp
      dialogs/remove-contact-dialog.cpp
-     models/account-filter-model.cpp
+     models/accounts-filter-model.cpp
      models/contact-model-item.cpp
      models/accounts-model-item.cpp
      models/tree-node.cpp
