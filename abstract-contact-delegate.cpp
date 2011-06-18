@@ -145,6 +145,7 @@ bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *vi
     const QString displayName = index.parent().data(AccountsModel::DisplayNameRole).toString();
     const QString cmIconPath = KIconLoader::global()->iconPath(index.parent().data(AccountsModel::IconRole).toString(), 1);
     const QString alias = index.data(AccountsModel::AliasRole).toString();
+    const QString id = index.data(AccountsModel::IdRole).toString();
     const QString presenceStatus = index.data(AccountsModel::PresenceMessageRole).toString();
     QString presenceIconPath;
     QString presenceText;
@@ -181,13 +182,14 @@ bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *vi
     }
 
     /* The tooltip is composed of a HTML table to display the items in it of the contact.
-     * -------------------------
-     * |        | Con's Alias  |
-     * - Avatar ----------------
-     * |        | Con's Status*|
-     * -------------------------
-     * |  Contact is blocked*  |
-     * -------------------------
+     * ---------------------------
+     * |          | Con's Alias  |
+     * |  Avatar  | (Con's Id)   |
+     * |          ----------------
+     * |          | Con's Status*|
+     * ---------------------------
+     * |  Contact is blocked*    |
+     * ---------------------------
      * * Display actual status name if contact has no custom status message.
      * * Contact is blocked will only show if the contact is blocked, else no display.
      */
@@ -202,7 +204,7 @@ bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *vi
 
     table += QString("</td>");
     table += QString("<td rowspan='2'><img src='%1' height='16' width='16' />&nbsp;</td>").arg(presenceIconPath);
-    table += QString("<td><b>%1</b></td></tr>").arg(alias);
+    table += QString("<td><b>%1</b><br>(%2)</td></tr>").arg(alias).arg(id);
     table += QString("<tr><td>");
     table += QString("%2").arg(presenceStatus.isEmpty() ? presenceText : presenceStatus);
     table += QString("</td></tr>");
