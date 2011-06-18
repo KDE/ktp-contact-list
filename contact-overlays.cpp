@@ -25,8 +25,8 @@
 #include <KIconLoader>
 #include <KDebug>
 
-#include "accounts-model.h"
-#include "contact-model-item.h"
+#include "models/accounts-model.h"
+#include "models/contact-model-item.h"
 
 class TextChannelContactOverlay::Button : public ContactViewHoverButton
 {

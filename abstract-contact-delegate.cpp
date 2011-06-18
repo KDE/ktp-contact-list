@@ -18,6 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
+#include "abstract-contact-delegate.h"
+
 #include <QApplication>
 #include <QtGui/QStyle>
 #include <QtGui/QPainter>
@@ -30,10 +32,9 @@
 #include <KDE/KIconLoader>
 #include <KDE/KIcon>
 
-#include "abstract-contact-delegate.h"
-#include "accounts-model.h"
-#include "groups-model.h"
-#include "contact-model-item.h"
+#include "models/accounts-model.h"
+#include "models/groups-model.h"
+#include "models/contact-model-item.h"
 
 const int SPACING = 2;
 const int ACCOUNT_ICON_SIZE = 13;

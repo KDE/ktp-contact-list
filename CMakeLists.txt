@@ -27,20 +27,20 @@ set (contactlist_SRCS
      contact-delegate.cpp
      contact-delegate-compact.cpp
      account-button.cpp
-     accounts-model.cpp
-     account-filter-model.cpp
-     contact-model-item.cpp
-     tree-node.cpp
-     accounts-model-item.cpp
      filter-bar.cpp
      main.cpp
      main-widget.cpp
      fetch-avatar-job.cpp
-     groups-model-item.cpp
-     groups-model.cpp
-     proxy-tree-node.cpp
      dialogs/add-contact-dialog.cpp
      dialogs/remove-contact-dialog.cpp
+     models/account-filter-model.cpp
+     models/contact-model-item.cpp
+     models/accounts-model-item.cpp
+     models/tree-node.cpp
+     models/accounts-model.cpp
+     models/groups-model-item.cpp
+     models/groups-model.cpp
+     models/proxy-tree-node.cpp
 )
 
 
