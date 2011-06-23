@@ -60,8 +60,8 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-model-item.h"
-#include "add-contact-dialog.h"
-#include "remove-contact-dialog.h"
+#include "dialogs/add-contact-dialog.h"
+#include "dialogs/remove-contact-dialog.h"
 #include "fetch-avatar-job.h"
 #include "groups-model.h"
 #include "groups-model-item.h"
@@ -181,6 +181,7 @@ MainWidget::MainWidget(QWidget *parent)
     }
 
     settingsButtonMenu->addMenu(setDelegateTypeMenu);
+
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
 

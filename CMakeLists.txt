@@ -35,20 +35,19 @@ set (contactlist_SRCS
      filter-bar.cpp
      main.cpp
      main-widget.cpp
-     add-contact-dialog.cpp
-     remove-contact-dialog.cpp
      fetch-avatar-job.cpp
-
      groups-model-item.cpp
      groups-model.cpp
      proxy-tree-node.cpp
+     dialogs/add-contact-dialog.cpp
+     dialogs/remove-contact-dialog.cpp
 )
 
 
 kde4_add_ui_files (contactlist_SRCS
                    main-widget.ui
-                   add-contact-dialog.ui
-                   remove-contact-dialog.ui
+                   dialogs/add-contact-dialog.ui
+                   dialogs/remove-contact-dialog.ui
 )
 
 add_subdirectory (icons)
