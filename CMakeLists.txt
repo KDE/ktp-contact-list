@@ -34,6 +34,7 @@ set (contactlist_SRCS
      dialogs/add-contact-dialog.cpp
      dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp
+     dialogs/contact-info.cpp
      models/accounts-filter-model.cpp
      models/contact-model-item.cpp
      models/accounts-model-item.cpp
@@ -50,6 +51,7 @@ kde4_add_ui_files (contactlist_SRCS
                    dialogs/add-contact-dialog.ui
                    dialogs/join-chat-room-dialog.ui
                    dialogs/remove-contact-dialog.ui
+                   dialogs/contact-info.ui
 )
 
 add_subdirectory (icons)

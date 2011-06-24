@@ -91,6 +91,7 @@ public Q_SLOTS:
     void selectAvatarFromAccount(const QString &accountUID);
     void selectAvatarFromAccount();
     void loadAvatarFromFile();
+    void showInfo(ContactModelItem *contactItem);
     void startTextChannel(ContactModelItem *contactItem);
     void startFileTransferChannel(ContactModelItem *contactItem);
     void startAudioChannel(ContactModelItem *contactItem);
@@ -105,6 +106,7 @@ private Q_SLOTS:
     void slotBlockContactTriggered();
     void slotDeleteContact();
     void slotGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
+    void slotShowInfo();
     void slotStartTextChat();
     void slotStartAudioChat();
     void slotStartVideoChat();

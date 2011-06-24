@@ -1,18 +1,20 @@
 #ifndef CONTACTINFO_H
 #define CONTACTINFO_H
 
-#include <QDialog>
+#include <KDialog>
+#include <TelepathyQt4/Contact>
+
 
 namespace Ui {
     class ContactInfo;
 }
 
-class ContactInfo : public QDialog
+class ContactInfo : public KDialog
 {
     Q_OBJECT
 
 public:
-    explicit ContactInfo(QWidget *parent = 0);
+    explicit ContactInfo(Tp::ContactPtr contact, QWidget *parent = 0);
     ~ContactInfo();
 
 private:

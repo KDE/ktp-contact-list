@@ -62,6 +62,8 @@
 #include "dialogs/add-contact-dialog.h"
 #include "dialogs/join-chat-room-dialog.h"
 #include "dialogs/remove-contact-dialog.h"
+#include "dialogs/contact-info.h"
+
 
 #include "models/groups-model.h"
 #include "models/contact-model-item.h"
@@ -837,15 +839,21 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
     //menu->addSeparator();
 
     // TODO: Remove when Telepathy actually supports blocking.
-    /*if (contact->isBlocked()) {
-        action = menu->addAction(i18n("Unblock User"));
-        connect(action, SIGNAL(triggered(bool)),
-                SLOT(slotUnblockContactTriggered()));
-    } else {
-        action = menu->addAction(i18n("Blocked"));
-        connect(action, SIGNAL(triggered(bool)),
-                SLOT(slotBlockContactTriggered()));
-    }*/
+//    if (contact->isBlocked()) {
+//        action = menu->addAction(i18n("Unblock User"));
+//        connect(action, SIGNAL(triggered(bool)),
+//                SLOT(slotUnblockContactTriggered()));
+//    } else {
+//        action = menu->addAction(i18n("Block"));
+//        connect(action, SIGNAL(triggered(bool)),
+//                SLOT(slotBlockContactTriggered()));
+//    }
+
+    menu->addSeparator();
+
+    action = menu->addAction(i18n("Show Info..."));
+    action->setIcon(KIcon(""));
+    connect(action, SIGNAL(triggered()), SLOT(slotShowInfo()));
 
     menu->exec(QCursor::pos());
 }
@@ -928,6 +936,26 @@ void MainWidget::slotGenericOperationFinished(Tp::PendingOperation* operation)
         QString errorMsg(operation->errorName() + ": " + operation->errorMessage());
         showMessageToUser(errorMsg, SystemMessageError);
     }
+}
+
+void MainWidget::slotShowInfo()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    if (!index.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        showInfo(item);
+    }
+}
+
+void MainWidget::showInfo(ContactModelItem *contactItem)
+{
+    ContactInfo contactInfoDialog(contactItem->contact(), this);
+    contactInfoDialog.exec();
 }
 
 void MainWidget::slotStartTextChat()
