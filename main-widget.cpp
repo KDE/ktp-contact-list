@@ -60,6 +60,7 @@
 #include "fetch-avatar-job.h"
 
 #include "dialogs/add-contact-dialog.h"
+#include "dialogs/join-chat-room-dialog.h"
 #include "dialogs/remove-contact-dialog.h"
 
 #include "models/groups-model.h"
@@ -79,8 +80,8 @@ bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 
 MainWidget::MainWidget(QWidget *parent)
     : KMainWindow(parent),
-   m_model(0),
-   m_modelFilter(0)
+    m_model(0),
+    m_modelFilter(0)
 {
     Tp::registerTypes();
     KUser user;
@@ -184,6 +185,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     settingsButtonMenu->addMenu(setDelegateTypeMenu);
 
+    settingsButtonMenu->addAction(i18n("Join chat room"), this, SLOT(onJoinChatRoomRequested()));
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
 
@@ -196,6 +198,7 @@ MainWidget::MainWidget(QWidget *parent)
     Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
                                                                        Tp::Features() << Tp::Account::FeatureCore
                                                                        << Tp::Account::FeatureAvatar
+                                                                       << Tp::Account::FeatureCapabilities
                                                                        << Tp::Account::FeatureProtocolInfo
                                                                        << Tp::Account::FeatureProfile);
 
@@ -1216,6 +1219,24 @@ void MainWidget::onGroupContacts(bool enabled)
     } else {
         m_modelFilter->setSourceModel(m_model);
     }
+}
+
+void MainWidget::onJoinChatRoomRequested()
+{
+    QWeakPointer<JoinChatRoomDialog> dialog = new JoinChatRoomDialog(m_accountManager);
+
+    if (dialog.data()->exec() == QDialog::Accepted) {
+        Tp::AccountPtr account = dialog.data()->selectedAccount();
+
+        // check account validity. Should NEVER be invalid
+        if (!account.isNull()) {
+            // ensure chat room
+            Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom());
+            connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+        }
+    }
+
+    delete dialog.data();
 }
 
 void MainWidget::onSwitchToFullView()

@@ -94,6 +94,7 @@ public Q_SLOTS:
     void startVideoChannel(ContactModelItem *contactItem);
     void onCustomContextMenuRequested(const QPoint &point);
     void onGroupContacts(bool enabled);
+    void onJoinChatRoomRequested();         /** join chat room action is triggered */
 
 private Q_SLOTS:
     void slotAddContactToGroupTriggered();

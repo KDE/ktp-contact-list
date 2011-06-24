@@ -32,6 +32,7 @@ set (contactlist_SRCS
      main-widget.cpp
      fetch-avatar-job.cpp
      dialogs/add-contact-dialog.cpp
+     dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp
      models/accounts-filter-model.cpp
      models/contact-model-item.cpp
@@ -47,6 +48,7 @@ set (contactlist_SRCS
 kde4_add_ui_files (contactlist_SRCS
                    main-widget.ui
                    dialogs/add-contact-dialog.ui
+                   dialogs/join-chat-room-dialog.ui
                    dialogs/remove-contact-dialog.ui
 )
 
