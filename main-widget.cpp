@@ -1231,7 +1231,9 @@ void MainWidget::onJoinChatRoomRequested()
         // check account validity. Should NEVER be invalid
         if (!account.isNull()) {
             // ensure chat room
-            Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom());
+            Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom(),
+                                                                                    QDateTime::currentDateTime(),
+                                                                                    PREFERRED_TEXTCHAT_HANDLER);
             connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
