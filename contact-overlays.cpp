@@ -71,8 +71,8 @@ void TextChannelContactOverlay::Button::updateToolTip()
 TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
     : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Start text channel"), "text-x-generic",
-                     i18n("Start text channel"), i18n("Whats this"));
+    m_gui = KGuiItem(i18n("Start Chat"), "text-x-generic",
+                     i18n("Start Chat"), i18n("Start a text chat"));
 }
 
 TextChannelContactOverlay::Button *TextChannelContactOverlay::button() const
@@ -175,8 +175,8 @@ void AudioChannelContactOverlay::Button::updateToolTip()
 AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
     : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Start audio channel"), "voicecall",
-                     i18n("Start audio channel"), i18n("Whats this"));
+    m_gui = KGuiItem(i18n("Start Audio Call"), "voicecall",
+                     i18n("Start Audio Call"), i18n("Start an audio call"));
 }
 
 AudioChannelContactOverlay::Button *AudioChannelContactOverlay::button() const
@@ -279,8 +279,8 @@ void VideoChannelContactOverlay::Button::updateToolTip()
 VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
     : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Start video channel"), "camera-web",
-                     i18n("Start video channel"), i18n("Whats this"));
+    m_gui = KGuiItem(i18n("Start Video Call"), "camera-web",
+                     i18n("Start Video Call"), i18n("Start a video call"));
 }
 
 VideoChannelContactOverlay::Button *VideoChannelContactOverlay::button() const
@@ -383,8 +383,8 @@ void FileTransferContactOverlay::Button::updateToolTip()
 FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
     : HoverButtonDelegateOverlay(parent)
 {
-    m_gui = KGuiItem(i18n("Send file"), "mail-attachment",
-                     i18n("Send file"), i18n("Whats this"));
+    m_gui = KGuiItem(i18n("Send File..."), "mail-attachment",
+                     i18n("Send File..."), i18n("Send a file"));
 }
 
 FileTransferContactOverlay::Button *FileTransferContactOverlay::button() const
