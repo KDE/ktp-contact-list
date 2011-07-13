@@ -284,6 +284,9 @@ MainWidget::~MainWidget()
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup configGroup(config, "GUI");
     configGroup.writeEntry("pin_filterbar", m_searchContactAction->isChecked());
+    configGroup.writeEntry("use_groups", m_groupContactsAction->isChecked());
+    configGroup.writeEntry("show_offline", m_showOfflineAction->isChecked());
+    configGroup.writeEntry("sort_by_presence", m_sortByPresenceAction->isChecked());
     configGroup.config()->sync();
 }
 
@@ -351,10 +354,29 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         dialog->show();
     }
 
-    foreach (const Tp::AccountPtr account, accounts) {
+    foreach (const Tp::AccountPtr &account, accounts) {
         onNewAccountAdded(account);
     }
-//     m_contactsListView->expandAll();
+
+    m_contactsListView->expandAll();
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+
+    if (guiConfigGroup.readEntry("use_groups", true)) {
+        onGroupContacts(true);
+        m_groupContactsAction->setChecked(true);
+    }
+
+    if (guiConfigGroup.readEntry("show_offline", false)) {
+        m_modelFilter->showOfflineUsers(true);
+        m_showOfflineAction->setChecked(true);
+    }
+
+    if (guiConfigGroup.readEntry("sort_by_presence", true)) {
+        m_modelFilter->setSortByPresence(true);
+        m_sortByPresenceAction->setChecked(true);
+    }
 }
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
