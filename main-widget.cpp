@@ -1293,49 +1293,24 @@ void MainWidget::closeEvent(QCloseEvent* e)
 {
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup generalConfigGroup(config, "General");
+    KConfigGroup notifyConigGroup(config, "Notification Messages");
 
-    bool checkForPlasmoid = generalConfigGroup.readEntry("check_for_plasmoid", true);
+    //the standard KMessageBox control saves "true" if you select the checkbox, therefore the reversed var name
+    bool dontCheckForPlasmoid = notifyConigGroup.readEntry("dont_check_for_plasmoid", false);
 
-    if (checkForPlasmoid) {
-
+    if (!dontCheckForPlasmoid) {
         if (!isPresencePlasmoidPresent()) {
-            KDialog *noPlasmoidDialog = new KDialog(this);
+            if (KMessageBox::warningYesNo(this,
+                    i18n("You do not have any other presence controls active (a Presence widget for example).\n"
+                         "Do you want to stay online or would you rather go offline?"),
+                    i18n("No Other Presence Controls Found"),
+                    KGuiItem(i18n("Stay Online"), KIcon("user-online")),
+                    KGuiItem(i18n("Go Offline"), KIcon("user-offline")),
+                    QString("dont_check_for_plasmoid")) == KDialog::No) {
 
-            QWidget *dialogMainWidget = new QWidget(noPlasmoidDialog);
-
-            QLabel *text = new QLabel(i18n("You don't have any other presence controls active (a Presence plasmoid for example).\n\n"
-                                           "Do you want to stay online or would you rather go offline?\n\n"),
-                                    dialogMainWidget);
-            QCheckBox *dontAskCheckbox = new QCheckBox(i18n("Remember my preference"), dialogMainWidget);
-
-            QLabel *icon = new QLabel();
-            icon->setPixmap(KIconLoader::global()->loadIcon("dialog-information", KIconLoader::Dialog, 48));
-
-            QHBoxLayout *mainLayout = new QHBoxLayout(dialogMainWidget);
-            mainLayout->addWidget(icon);
-
-            QVBoxLayout *innerLayout = new QVBoxLayout(dialogMainWidget);
-            innerLayout->addWidget(text);
-            innerLayout->addWidget(dontAskCheckbox);
-
-            mainLayout->addLayout(innerLayout);
-
-            noPlasmoidDialog->setCaption(i18n("No other presence controls found"));
-            noPlasmoidDialog->setButtons(KDialog::Yes | KDialog::No);
-            noPlasmoidDialog->setMainWidget(dialogMainWidget);
-            noPlasmoidDialog->setButtonText(KDialog::Yes, i18n("Stay online"));
-            noPlasmoidDialog->setButtonText(KDialog::No, i18n("Go offline"));
-
-            if (noPlasmoidDialog->exec() == KDialog::No) {
                 generalConfigGroup.writeEntry("go_offline_when_closing", true);
                 goOffline();
             }
-
-            if (dontAskCheckbox->isChecked()) {
-                generalConfigGroup.writeEntry("check_for_plasmoid", false);
-            }
-
-            generalConfigGroup.config()->sync();
         }
     } else {
         bool shouldGoOffline = generalConfigGroup.readEntry("go_offline_when_closing", false);
@@ -1343,6 +1318,8 @@ void MainWidget::closeEvent(QCloseEvent* e)
             goOffline();
         }
     }
+
+    generalConfigGroup.config()->sync();
 
     KMainWindow::closeEvent(e);
 }
