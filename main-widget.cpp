@@ -622,6 +622,9 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
     } else {
         notification = new KNotification("telepathyInfo", this);
     }
+   
+    KAboutData aboutData("ktelepathy",0,KLocalizedString(),0);
+    notification->setComponentData(KComponentData(aboutData));
 
     notification->setText(text);
     notification->sendEvent();
