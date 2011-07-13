@@ -1298,7 +1298,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
 
     if (checkForPlasmoid) {
 
-        if (!isPlasmoidPresent()) {
+        if (!isPresencePlasmoidPresent()) {
             KDialog *noPlasmoidDialog = new KDialog(this);
 
             QWidget *dialogMainWidget = new QWidget(noPlasmoidDialog);
@@ -1347,7 +1347,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
     KMainWindow::closeEvent(e);
 }
 
-bool MainWidget::isPlasmoidPresent()
+bool MainWidget::isPresencePlasmoidPresent()
 {
     QDBusInterface plasmoidOnDbus("org.kde.Telepathy.PresenceEngineActive", "/PresenceEngineActive");
 

@@ -51,7 +51,7 @@ public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
 
-    bool isPlasmoidPresent();
+    bool isPresencePlasmoidPresent();
 
     enum SystemMessageType {
         /*
