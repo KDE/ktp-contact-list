@@ -51,6 +51,8 @@ public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
 
+    bool isPlasmoidPresent();
+
     enum SystemMessageType {
         /*
          * this will show a system message to the user
@@ -95,6 +97,7 @@ public Q_SLOTS:
     void onCustomContextMenuRequested(const QPoint &point);
     void onGroupContacts(bool enabled);
     void onJoinChatRoomRequested();         /** join chat room action is triggered */
+    void goOffline();
 
 private Q_SLOTS:
     void slotAddContactToGroupTriggered();
@@ -121,6 +124,7 @@ Q_SIGNALS:
 private:
     /** handle connection errors for given account. This method provides visual notification */
     void handleConnectionError(const Tp::AccountPtr &account);
+    void closeEvent(QCloseEvent *e);
 
     AccountsModel          *m_model;
     GroupsModel            *m_groupsModel;

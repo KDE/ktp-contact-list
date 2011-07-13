@@ -806,7 +806,7 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 
         QStringList groupList;
         QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
-        foreach (const Tp::AccountPtr account, accounts) {
+        foreach (const Tp::AccountPtr &account, accounts) {
             if (!account->connection().isNull()) {
                 groupList.append(account->connection()->contactManager()->allKnownGroups());
             }
@@ -1071,7 +1071,7 @@ void MainWidget::selectAvatarFromAccount(const QString &accountUID)
 
     Tp::Avatar avatar = qobject_cast<AccountsModelItem*>(m_model->accountItemForId(accountUID))->data(AccountsModel::AvatarRole).value<Tp::Avatar>();
 
-    foreach (const Tp::AccountPtr account, m_accountManager->allAccounts()) {
+    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
         //don't set the avatar for the account from where it was taken
         if (account->uniqueIdentifier() == accountUID) {
             continue;
@@ -1150,7 +1150,7 @@ void MainWidget::onAvatarFetched(KJob *job)
 
         Q_ASSERT(fetchJob);
 
-        foreach (const Tp::AccountPtr account, m_accountManager->allAccounts()) {
+        foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             Tp::PendingOperation *op = account->setAvatar(fetchJob->avatar());
 
             //connect for eventual error displaying
@@ -1287,6 +1287,84 @@ void MainWidget::onSwitchToCompactView()
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("selected_delegate", "compact");
     guiConfigGroup.config()->sync();
+}
+
+void MainWidget::closeEvent(QCloseEvent* e)
+{
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup generalConfigGroup(config, "General");
+
+    bool checkForPlasmoid = generalConfigGroup.readEntry("check_for_plasmoid", true);
+
+    if (checkForPlasmoid) {
+
+        if (!isPlasmoidPresent()) {
+            KDialog *noPlasmoidDialog = new KDialog(this);
+
+            QWidget *dialogMainWidget = new QWidget(noPlasmoidDialog);
+
+            QLabel *text = new QLabel(i18n("You don't have any other presence controls active (a Presence plasmoid for example).\n\n"
+                                           "Do you want to stay online or would you rather go offline?\n\n"),
+                                    dialogMainWidget);
+            QCheckBox *dontAskCheckbox = new QCheckBox(i18n("Remember my preference"), dialogMainWidget);
+
+            QLabel *icon = new QLabel();
+            icon->setPixmap(KIconLoader::global()->loadIcon("dialog-information", KIconLoader::Dialog, 48));
+
+            QHBoxLayout *mainLayout = new QHBoxLayout(dialogMainWidget);
+            mainLayout->addWidget(icon);
+
+            QVBoxLayout *innerLayout = new QVBoxLayout(dialogMainWidget);
+            innerLayout->addWidget(text);
+            innerLayout->addWidget(dontAskCheckbox);
+
+            mainLayout->addLayout(innerLayout);
+
+            noPlasmoidDialog->setCaption(i18n("No other presence controls found"));
+            noPlasmoidDialog->setButtons(KDialog::Yes | KDialog::No);
+            noPlasmoidDialog->setMainWidget(dialogMainWidget);
+            noPlasmoidDialog->setButtonText(KDialog::Yes, i18n("Stay online"));
+            noPlasmoidDialog->setButtonText(KDialog::No, i18n("Go offline"));
+
+            if (noPlasmoidDialog->exec() == KDialog::No) {
+                generalConfigGroup.writeEntry("go_offline_when_closing", true);
+                goOffline();
+            }
+
+            if (dontAskCheckbox->isChecked()) {
+                generalConfigGroup.writeEntry("check_for_plasmoid", false);
+            }
+
+            generalConfigGroup.config()->sync();
+        }
+    } else {
+        bool shouldGoOffline = generalConfigGroup.readEntry("go_offline_when_closing", false);
+        if (shouldGoOffline) {
+            goOffline();
+        }
+    }
+
+    KMainWindow::closeEvent(e);
+}
+
+bool MainWidget::isPlasmoidPresent()
+{
+    QDBusInterface plasmoidOnDbus("org.kde.Telepathy.PresenceEngineActive", "/PresenceEngineActive");
+
+    if (plasmoidOnDbus.isValid()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+void MainWidget::goOffline()
+{
+    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
+        if (account->isEnabled() && account->isValid()) {
+            account->setRequestedPresence(Tp::Presence::offline());
+        }
+    }
 }
 
 #include "main-widget.moc"
