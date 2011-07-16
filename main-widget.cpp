@@ -1301,7 +1301,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
     //the standard KMessageBox control saves "true" if you select the checkbox, therefore the reversed var name
     bool dontCheckForPlasmoid = notifyConigGroup.readEntry("dont_check_for_plasmoid", false);
 
-    if (!dontCheckForPlasmoid) {
+    if (isAnyAccountOnline() && !dontCheckForPlasmoid) {
         if (!isPresencePlasmoidPresent()) {
             if (KMessageBox::warningYesNo(this,
                     i18n("You do not have any other presence controls active (a Presence widget for example).\n"
@@ -1309,13 +1309,13 @@ void MainWidget::closeEvent(QCloseEvent* e)
                     i18n("No Other Presence Controls Found"),
                     KGuiItem(i18n("Stay Online"), KIcon("user-online")),
                     KGuiItem(i18n("Go Offline"), KIcon("user-offline")),
-                    QString("dont_check_for_plasmoid")) == KDialog::No) {
+                    QString("dont_check_for_plasmoid")) == KMessageBox::No) {
 
                 generalConfigGroup.writeEntry("go_offline_when_closing", true);
                 goOffline();
             }
         }
-    } else {
+    } else if (isAnyAccountOnline() && dontCheckForPlasmoid) {
         bool shouldGoOffline = generalConfigGroup.readEntry("go_offline_when_closing", false);
         if (shouldGoOffline) {
             goOffline();
@@ -1327,7 +1327,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
     KMainWindow::closeEvent(e);
 }
 
-bool MainWidget::isPresencePlasmoidPresent()
+bool MainWidget::isPresencePlasmoidPresent() const
 {
     QDBusInterface plasmoidOnDbus("org.kde.Telepathy.PresenceEngineActive", "/PresenceEngineActive");
 
@@ -1340,11 +1340,23 @@ bool MainWidget::isPresencePlasmoidPresent()
 
 void MainWidget::goOffline()
 {
+    kDebug() << "Setting all accounts offline...";
     foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
         if (account->isEnabled() && account->isValid()) {
             account->setRequestedPresence(Tp::Presence::offline());
         }
     }
+}
+
+bool MainWidget::isAnyAccountOnline() const
+{
+    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
+        if (account->isEnabled() && account->isValid() && account->isOnline()) {
+            return true;
+        }
+    }
+
+    return false;
 }
 
 #include "main-widget.moc"

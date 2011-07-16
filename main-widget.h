@@ -51,7 +51,8 @@ public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
 
-    bool isPresencePlasmoidPresent();
+    bool isPresencePlasmoidPresent() const;
+    bool isAnyAccountOnline() const;
 
     enum SystemMessageType {
         /*
