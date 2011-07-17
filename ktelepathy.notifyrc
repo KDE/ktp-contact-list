@@ -283,6 +283,13 @@ Comment[x-test]=xxA new instant message has been receivedxx
 Sound=KDE-Im-Message-In.ogg
 Action=Popup|Sound
 
+[Event/incoming_file_transfer]
+Name=Incoming file transfer
+Comment=An incoming file transfer request has been received
+Sound=KDE-Im-Message-In.ogg
+Action=Popup|Sound
+Flags=Persistent
+
 #Adium extra protocol handler notifications
 #
 [Event/chatstyleRequest]
