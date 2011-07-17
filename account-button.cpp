@@ -35,7 +35,9 @@
 #include <TelepathyQt4/PendingOperation>
 
 AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
-  : QToolButton(parent), m_busyOverlay(0)
+  : QToolButton(parent),
+    m_busyOverlay(0),
+    m_offlineAction(0)
 {
     m_account = account;
 
@@ -43,23 +45,15 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     m_busyOverlay->setWidget(this);
     m_busyOverlay->setSequence(KPixmapSequence(QString("process-working")));
 
-    m_errorPixmap =   KIconLoader::global()->loadIcon("dialog-error", KIconLoader::NoGroup, 16);
-    m_onlinePixmap =  KIconLoader::global()->loadIcon("user-online", KIconLoader::NoGroup, 16);
-    m_awayPixmap =    KIconLoader::global()->loadIcon("user-away", KIconLoader::NoGroup, 16);
-    m_awayExPixmap =  KIconLoader::global()->loadIcon("user-away-extended", KIconLoader::NoGroup, 16);
-    m_busyPixmap =    KIconLoader::global()->loadIcon("user-busy", KIconLoader::NoGroup, 16);
-    m_hiddenPixmap =  KIconLoader::global()->loadIcon("user-invisible", KIconLoader::NoGroup, 16);
-    m_offlinePixmap = KIconLoader::global()->loadIcon("user-offline", KIconLoader::NoGroup, 16);
-
     QString iconPath = account->iconName();
 
     setIcon(KIcon(iconPath));
-
     if (!account->isValid()) {
         //we paint a warning symbol in the right-bottom corner
+        QPixmap errorPixmap = KIconLoader::global()->loadIcon("dialog-error", KIconLoader::NoGroup, 16);
         QPixmap pixmap = icon().pixmap(32, 32);
         QPainter painter(&pixmap);
-        painter.drawPixmap(15, 15, 16, 16, m_errorPixmap);
+        painter.drawPixmap(15, 15, 16, 16, errorPixmap);
 
         setIcon(KIcon(pixmap));
     }
@@ -75,12 +69,12 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
 
     KAction *onlineAction =     new KAction(KIcon("user-online"), i18nc("@action:inmenu This is an IM user status", "Available"), this);
     KAction *awayAction =       new KAction(KIcon("user-away"), i18nc("@action:inmenu This is an IM user status", "Away"), this);
-    KAction *brbAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Be right back"), this);
+    KAction *brbAction =        new KAction(KIcon("user-away"), i18nc("@action:inmenu This is an IM user status", "Be right back"), this);
     KAction *busyAction =       new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Busy"), this);
     KAction *dndAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Do not disturb"), this);
     KAction *xaAction =         new KAction(KIcon("user-away-extended"), i18nc("@action:inmenu This is an IM user status", "Extended Away"), this);
     KAction *invisibleAction =  new KAction(KIcon("user-invisible"), i18nc("@action:inmenu This is an IM user status", "Invisible"), this);
-    KAction *offlineAction =    new KAction(KIcon("user-offline"), i18nc("@action:inmenu This is an IM user status", "Offline"), this);
+    m_offlineAction =    new KAction(KIcon("user-offline"), i18nc("@action:inmenu This is an IM user status", "Offline"), this);
 
     m_presenceMessageWidget = new KLineEdit(this);
     m_presenceMessageWidget->setClearButtonShown(true);
@@ -102,10 +96,13 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     awayAction->setData(qVariantFromValue(Tp::Presence::away()));
     brbAction->setData(qVariantFromValue(Tp::Presence::brb()));
     busyAction->setData(qVariantFromValue(Tp::Presence::busy()));
-    dndAction->setData(qVariantFromValue(Tp::Presence::busy()));
+    dndAction->setData(qVariantFromValue(Tp::Presence(
+        Tp::ConnectionPresenceTypeBusy,
+        QLatin1String("dnd"),
+        QLatin1String(""))));
     xaAction->setData(qVariantFromValue(Tp::Presence::xa()));
     invisibleAction->setData(qVariantFromValue(Tp::Presence::hidden()));
-    offlineAction->setData(qVariantFromValue(Tp::Presence::offline()));
+    m_offlineAction->setData(qVariantFromValue(Tp::Presence::offline()));
 
     presenceActions->addAction(onlineAction);
     presenceActions->addAction(awayAction);
@@ -114,7 +111,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     presenceActions->addAction(dndAction);
     presenceActions->addAction(xaAction);
     presenceActions->addAction(invisibleAction);
-    presenceActions->addAction(offlineAction);
+    presenceActions->addAction(m_offlineAction);
     presenceActions->addAction(presenceMessageAction);
 
     addActions(presenceActions->actions());
@@ -203,28 +200,39 @@ void AccountButton::presenceChanged(const Tp::Presence &presence)
         return;
     }
 
-    bool accountPresenceFound = false;
+    QAction *action = actionForPresence(presence);
+    if (!action) {
+        action = m_offlineAction;
+    }
+
+    action->setChecked(true);
+    updateToolTip();
+
+    QPixmap pixmap = icon().pixmap(32, 32);
+    QPainter painter(&pixmap);
+    KIcon(action->icon()).paint(&painter, 15, 15, 16, 16);
+
+    setIcon(KIcon(pixmap));
+}
+
+QAction *AccountButton::actionForPresence(const Tp::Presence &presence) const
+{
+    QAction *match = 0;
 
     foreach (QAction *a, actions()) {
-        if (presence.type() == qVariantValue<Tp::Presence>(a->data()).type()) {
-            a->setChecked(true);
-            updateToolTip();
-
-            accountPresenceFound = true;
-
-            QPixmap pixmap = icon().pixmap(32, 32);
-            QPainter painter(&pixmap);
-            KIcon(a->icon()).paint(&painter, 15, 15, 16, 16);
-
-            setIcon(KIcon(pixmap));
-
-            break;
+        Tp::Presence actionPresence = qVariantValue<Tp::Presence>(a->data());
+        if (presence.status() == actionPresence.status()) {
+            // if a matching status is found, return it immediately
+            return a;
+        } else if (!match && presence.type() == actionPresence.type()) {
+            // if no matching status is found, the first action with matching
+            // type will be returned, so save it for later
+            match = a;
         }
     }
 
-    if (!accountPresenceFound) {
-        presenceChanged(Tp::Presence::offline());
-    }
+    // return the best match, which could be a null pointer
+    return match;
 }
 
 /*  since there is no easy way to get this string by Tp::Presence,
@@ -232,13 +240,12 @@ void AccountButton::presenceChanged(const Tp::Presence &presence)
     This will also get us i18n strings for free. */
 QString AccountButton::presenceDisplayString(const Tp::Presence &presence)
 {
-    foreach (QAction *a, actions()) {
-        if (presence.status() == qVariantValue<Tp::Presence>(a->data()).status()) {
-            return KGlobal::locale()->removeAcceleratorMarker(a->text());
-        }
+    QAction *action = actionForPresence(presence);
+    if (action) {
+        return KGlobal::locale()->removeAcceleratorMarker(action->text());
+    } else {
+        return QString();
     }
-
-    return QString();
 }
 
 void AccountButton::setCustomPresenceMessage(const QString& message)

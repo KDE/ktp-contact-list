@@ -66,6 +66,9 @@ public Q_SLOTS:
     void setCustomPresenceMessage(const QString &message);
 
 private:
+
+    QAction *actionForPresence(const Tp::Presence &presence) const;
+
     ///Holds the account it controls
     Tp::AccountPtr                  m_account;
 
@@ -77,13 +80,7 @@ private:
 
     KLineEdit *m_presenceMessageWidget;
 
-    QPixmap m_errorPixmap;
-    QPixmap m_onlinePixmap;
-    QPixmap m_awayPixmap;
-    QPixmap m_busyPixmap;
-    QPixmap m_awayExPixmap;
-    QPixmap m_hiddenPixmap;
-    QPixmap m_offlinePixmap;
+    QAction *m_offlineAction;
 };
 
 #endif // TELEPATHY_ACCOUNTBUTTON_H
