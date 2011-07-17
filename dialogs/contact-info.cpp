@@ -4,22 +4,49 @@
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/Presence>
 
+#include <QtGui/QPixmap>
+
+#include <KProtocolInfo>
 
 ContactInfo::ContactInfo(Tp::ContactPtr contact, QWidget *parent) :
     KDialog(parent),
     ui(new Ui::ContactInfo)
 {
-//    QWidget* widget = new QWidget(this);
-    ui->setupUi(this);
-//    setMainWidget(widget);
+    QWidget* widget = new QWidget(this);
+    setMainWidget(widget);
+    ui->setupUi(widget);
+
+    setWindowTitle(contact->alias());
+
     setButtons(KDialog::Close);
+
+    QPixmap avatar(contact->avatarData().fileName);
+
+    ui->avatarLabel->setPixmap(avatar.scaled(ui->avatarLabel->maximumSize(), Qt::KeepAspectRatio));
 
     ui->idLabel->setText(contact->id());
     ui->nameLabel->setText(contact->alias());
 
     QString presenceMessage = contact->presence().statusMessage();
-    ui->presenceLabel->setText(presenceMessage);
 
+    //find links in presence message
+    QRegExp linkRegExp("\\b(\\w+)://[^ \t\n\r\f\v]+");
+    int index = 0;
+    while ((index = linkRegExp.indexIn(presenceMessage, index)) != -1) {
+        QString realUrl = linkRegExp.cap(0);
+        QString protocol = linkRegExp.cap(1);
+        if (KProtocolInfo::protocols().contains(protocol, Qt::CaseInsensitive)) {
+            QString link = "<a href='" + realUrl + "'>" + realUrl + "</a>";
+            presenceMessage.replace(index, realUrl.length(), link);
+            index += link.length();
+        }
+        else {
+            index += realUrl.length();
+        }
+    }
+
+    ui->presenceLabel->setTextFormat(Qt::RichText);
+    ui->presenceLabel->setText(presenceMessage);
 
     QString blockedText;
     if (contact->isBlocked()) {
@@ -54,8 +81,6 @@ ContactInfo::ContactInfo(Tp::ContactPtr contact, QWidget *parent) :
         presencePublicationText = i18n("Unknown");
     }
     ui->publishStateLabel->setText(presencePublicationText);
-
-
 }
 
 ContactInfo::~ContactInfo()
