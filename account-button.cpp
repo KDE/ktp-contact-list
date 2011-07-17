@@ -234,7 +234,7 @@ QString AccountButton::presenceDisplayString(const Tp::Presence &presence)
 {
     foreach (QAction *a, actions()) {
         if (presence.status() == qVariantValue<Tp::Presence>(a->data()).status()) {
-            return a->text();
+            return KGlobal::locale()->removeAcceleratorMarker(a->text());
         }
     }
 
