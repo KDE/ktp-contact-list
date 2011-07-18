@@ -120,6 +120,9 @@ private Q_SLOTS:
     void onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state);
     void onSwitchToFullView();
     void onSwitchToCompactView();
+    void onCreateNewGroup();
+    void onRenameGroup();
+    void onDeleteGroup();
 
 Q_SIGNALS:
     void enableOverlays(bool);
@@ -128,6 +131,9 @@ private:
     /** handle connection errors for given account. This method provides visual notification */
     void handleConnectionError(const Tp::AccountPtr &account);
     void closeEvent(QCloseEvent *e);
+
+    KMenu* contactContextMenu(const QModelIndex &index);
+    KMenu* groupContextMenu(const QModelIndex &index);
 
     AccountsModel          *m_model;
     GroupsModel            *m_groupsModel;

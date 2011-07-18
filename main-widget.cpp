@@ -49,6 +49,7 @@
 #include <KSettings/Dialog>
 #include <KSharedConfig>
 #include <KFileDialog>
+#include <KInputDialog>
 #include <KStandardShortcut>
 #include <KNotification>
 
@@ -70,6 +71,7 @@
 #include "models/groups-model-item.h"
 #include "models/accounts-model.h"
 #include "models/accounts-filter-model.h"
+#include "models/proxy-tree-node.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
@@ -624,7 +626,7 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
     } else {
         notification = new KNotification("telepathyInfo", this);
     }
-   
+
     KAboutData aboutData("ktelepathy",0,KLocalizedString(),0);
     notification->setComponentData(KComponentData(aboutData));
 
@@ -736,22 +738,41 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
     Tp::ContactPtr contact;
     QVariant item = index.data(AccountsModel::ItemRole);
 
-    //only handle contacts;
-    if(item.userType() != qMetaTypeId<ContactModelItem*>()) {
-        return;
+    KMenu *menu = 0;
+
+    if (item.userType() == qMetaTypeId<ContactModelItem*>()) {
+        menu = contactContextMenu(index);
+    } else if (item.userType() == qMetaTypeId<GroupsModelItem*>()) {
+        menu = groupContextMenu(index);
     }
 
-    contact = item.value<ContactModelItem*>()->contact();
+    if (menu) {
+        menu->exec(QCursor::pos());
+        menu->deleteLater();
+    }
+}
 
+KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
+{
+    if (!index.isValid()) {
+        return 0;
+    }
 
-    Tp::AccountPtr account = m_model->accountForContactItem(item.value<ContactModelItem*>());
+    Tp::ContactPtr contact = index.data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+
+    if (contact.isNull()) {
+        kDebug() << "Contact is nulled";
+        return 0;
+    }
+
+    Tp::AccountPtr account = m_model->accountForContactItem(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
 
     if (account.isNull()) {
         kDebug() << "Account is nulled";
-        return;
+        return 0;
     }
 
-    QScopedPointer<KMenu> menu(new KMenu);
+    KMenu *menu = new KMenu();
     menu->addTitle(contact->alias());
 
     QAction* action = menu->addAction(i18n("Start Chat..."));
@@ -767,7 +788,7 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
     Tp::ConnectionPtr accountConnection = account->connection();
     if (accountConnection.isNull()) {
         kDebug() << "Account connection is nulled.";
-        return;
+        return 0;
     }
 
     action = menu->addAction(i18n("Start Audio Call..."));
@@ -825,7 +846,9 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
             groupList.removeAll(group);
         }
 
-        groupAddMenu->addAction(i18n("Create New Group..."));
+        connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
+                this, SLOT(onCreateNewGroup()));
+
         groupAddMenu->addSeparator();
 
         foreach (const QString &group, groupList) {
@@ -840,22 +863,45 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 
     // TODO: Remove when Telepathy actually supports blocking.
     /*if (contact->isBlocked()) {
-        action = menu->addAction(i18n("Unblock User"));
-        connect(action, SIGNAL(triggered(bool)),
-                SLOT(slotUnblockContactTriggered()));
-    } else {
-        action = menu->addAction(i18n("Blocked"));
-        connect(action, SIGNAL(triggered(bool)),
-                SLOT(slotBlockContactTriggered()));
-    }*/
-
-    menu->addSeparator();
-
-    action = menu->addAction(i18n("Show Info..."));
-    action->setIcon(KIcon(""));
-    connect(action, SIGNAL(triggered()), SLOT(slotShowInfo()));
+     * action = menu->addAction(i18n("Unblock User"));
+     * connect(action, SIGNAL(triggered(bool)),
+     *         SLOT(slotUnblockContactTriggered()));
+} else {
+    action = menu->addAction(i18n("Blocked"));
+    connect(action, SIGNAL(triggered(bool)),
+    SLOT(slotBlockContactTriggered()));
+}*/
 
     menu->exec(QCursor::pos());
+    return menu;
+}
+
+KMenu* MainWidget::groupContextMenu(const QModelIndex &index)
+{
+    if (!index.isValid()) {
+        return 0;
+    }
+
+    GroupsModelItem *groupItem = index.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
+
+    Q_ASSERT(groupItem);
+
+    KMenu *menu = new KMenu();
+    menu->addTitle(groupItem->groupName());
+
+    QAction *action = menu->addAction(i18n("Rename Group..."));
+    action->setIcon(KIcon("edit-rename"));
+
+    connect(action, SIGNAL(triggered(bool)),
+            this, SLOT(onRenameGroup()));
+
+    action = menu->addAction(i18n("Delete Group"));
+    action->setIcon(KIcon("edit-delete"));
+
+    connect(action, SIGNAL(triggered(bool)),
+            this, SLOT(onDeleteGroup()));
+
+    return menu;
 }
 
 void MainWidget::slotAddContactToGroupTriggered()
@@ -887,6 +933,70 @@ void MainWidget::slotAddContactToGroupTriggered()
         }
     }
 }
+
+void MainWidget::onCreateNewGroup()
+{
+    QString newGroupName = KInputDialog::getText(i18n("New Group Name"), i18n("Please enter the new group name"));
+
+    QModelIndex index = m_contactsListView->currentIndex();
+    ContactModelItem *contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact =  contactItem->contact();
+    Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
+
+    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+}
+
+void MainWidget::onRenameGroup()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+
+    GroupsModelItem *groupItem = index.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
+
+    Q_ASSERT(groupItem);
+
+    QString newGroupName = KInputDialog::getText(i18n("New Group Name"), i18n("Please enter the new group name"), groupItem->groupName());
+
+    for(int i = 0; i < groupItem->size(); i++) {
+        Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))
+                                                             ->data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+        Q_ASSERT(contact);
+
+        Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+
+        operation = contact->removeFromGroup(groupItem->groupName());
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+    }
+}
+
+void MainWidget::onDeleteGroup()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+
+    GroupsModelItem *groupItem = index.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
+
+    if (KMessageBox::warningContinueCancel(this,
+                                           i18n("Do you really want to remove group %1?\n\n"
+                                                "Note that all contacts will be moved to group 'Ungroupped'", groupItem->groupName()),
+                                           i18n("Remove Group")) == KMessageBox::Continue) {
+
+        for(int i = 0; i < groupItem->size(); i++) {
+            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))
+                                                                 ->data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+            Q_ASSERT(contact);
+
+            Tp::PendingOperation *operation = contact->removeFromGroup(groupItem->groupName());
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+        }
+    }
+}
+
 
 void MainWidget::slotBlockContactTriggered()
 {
