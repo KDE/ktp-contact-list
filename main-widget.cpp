@@ -999,6 +999,14 @@ void MainWidget::onDeleteGroup()
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
                     SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
         }
+
+        foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
+            if (account->connection()) {
+                Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupItem->groupName());
+                connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                        SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            }
+        }
     }
 }
 
