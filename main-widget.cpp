@@ -872,7 +872,12 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
     SLOT(slotBlockContactTriggered()));
 }*/
 
-    menu->exec(QCursor::pos());
+    menu->addSeparator();
+
+    action = menu->addAction(i18n("Show Info..."));
+    action->setIcon(KIcon(""));
+    connect(action, SIGNAL(triggered()), SLOT(slotShowInfo()));
+
     return menu;
 }
 
