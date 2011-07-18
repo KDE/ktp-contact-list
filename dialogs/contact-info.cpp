@@ -1,3 +1,23 @@
+/*
+ * Dialog for showing contact info
+ *
+ * Copyright (C) 2011 David Edmundson <kde@davidedmundson.co.uk>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ */
+
 #include "contact-info.h"
 #include "ui_contact-info.h"
 
@@ -8,11 +28,11 @@
 
 #include <KProtocolInfo>
 
-ContactInfo::ContactInfo(Tp::ContactPtr contact, QWidget *parent) :
+ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :
     KDialog(parent),
     ui(new Ui::ContactInfo)
 {
-    QWidget* widget = new QWidget(this);
+    QWidget *widget = new QWidget(this);
     setMainWidget(widget);
     ui->setupUi(widget);
 
@@ -39,8 +59,7 @@ ContactInfo::ContactInfo(Tp::ContactPtr contact, QWidget *parent) :
             QString link = "<a href='" + realUrl + "'>" + realUrl + "</a>";
             presenceMessage.replace(index, realUrl.length(), link);
             index += link.length();
-        }
-        else {
+        } else {
             index += realUrl.length();
         }
     }
@@ -48,42 +67,33 @@ ContactInfo::ContactInfo(Tp::ContactPtr contact, QWidget *parent) :
     ui->presenceLabel->setTextFormat(Qt::RichText);
     ui->presenceLabel->setText(presenceMessage);
 
-    QString blockedText;
+    KIcon blockedIcon;
     if (contact->isBlocked()) {
-        blockedText = i18n("Yes");
+        blockedIcon = KIcon("task-complete");
+    } else {
+        blockedIcon = KIcon("task-reject");
     }
-    else {
-        blockedText = i18n("No");
-    }
-    ui->blockedLabel->setText(blockedText);
+    ui->blockedLabel->setPixmap(blockedIcon.pixmap(16));
 
-    QString presenceSubscriptionText;
-    if (contact->subscriptionState() == Tp::Contact::PresenceStateYes) {
-        presenceSubscriptionText = i18n("Yes");
-    }
-    else if (contact->subscriptionState() == Tp::Contact::PresenceStateNo){
-        presenceSubscriptionText = i18n("No");
-    }
-    else {
-        presenceSubscriptionText = i18n("Unknown");
-    }
-    ui->subscriptionStateLabel->setText(presenceSubscriptionText);
-
-
-    QString presencePublicationText;
-    if (contact->publishState() == Tp::Contact::PresenceStateYes) {
-        presencePublicationText = i18n("Yes");
-    }
-    else if (contact->publishState() == Tp::Contact::PresenceStateNo){
-        presencePublicationText = i18n("No");
-    }
-    else {
-        presencePublicationText = i18n("Unknown");
-    }
-    ui->publishStateLabel->setText(presencePublicationText);
+    ui->subscriptionStateLabel->setPixmap(iconForPresenceState(contact->subscriptionState()).pixmap(16));
+    ui->publishStateLabel->setPixmap(iconForPresenceState(contact->publishState()).pixmap(16));
 }
 
 ContactInfo::~ContactInfo()
 {
     delete ui;
+}
+
+KIcon ContactInfo::iconForPresenceState(Tp::Contact::PresenceState state) const
+{
+    switch (state) {
+    case Tp::Contact::PresenceStateYes:
+        return KIcon("task-complete");
+    case Tp::Contact::PresenceStateNo:
+        return KIcon("task-reject");
+    case Tp::Contact::PresenceStateAsk:
+        /* Drop Through*/
+    default:
+        return KIcon("task-attempt");
+    }
 }

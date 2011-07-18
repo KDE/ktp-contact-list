@@ -839,15 +839,15 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
     //menu->addSeparator();
 
     // TODO: Remove when Telepathy actually supports blocking.
-//    if (contact->isBlocked()) {
-//        action = menu->addAction(i18n("Unblock User"));
-//        connect(action, SIGNAL(triggered(bool)),
-//                SLOT(slotUnblockContactTriggered()));
-//    } else {
-//        action = menu->addAction(i18n("Block"));
-//        connect(action, SIGNAL(triggered(bool)),
-//                SLOT(slotBlockContactTriggered()));
-//    }
+    /*if (contact->isBlocked()) {
+        action = menu->addAction(i18n("Unblock User"));
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(slotUnblockContactTriggered()));
+    } else {
+        action = menu->addAction(i18n("Blocked"));
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(slotBlockContactTriggered()));
+    }*/
 
     menu->addSeparator();
 
