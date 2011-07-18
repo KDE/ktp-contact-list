@@ -159,6 +159,11 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_searchContactAction);
 
+    QWidget *toolBarSpacer = new QWidget(this);
+    toolBarSpacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+
+    m_toolBar->addWidget(toolBarSpacer);
+
     QToolButton *settingsButton = new QToolButton(this);
     settingsButton->setIcon(KIcon("configure"));
     settingsButton->setPopupMode(QToolButton::InstantPopup);
@@ -195,7 +200,6 @@ MainWidget::MainWidget(QWidget *parent)
 
     settingsButton->setMenu(settingsButtonMenu);
 
-    m_toolBar->addSeparator();
     m_toolBar->addWidget(settingsButton);
 
     // Start setting up the Telepathy AccountManager.
