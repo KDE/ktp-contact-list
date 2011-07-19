@@ -1,6 +1,7 @@
 [Desktop Entry]
 Name=Telepathy Contact List
 Name[cs]=Seznam kontaktů Telepathy
+Name[da]=Telepathy kontaktliste
 Name[de]=Telepathy-Kontaktliste
 Name[et]=Telepathy kontaktide nimekiri
 Name[fr]=Liste de contacts de Telepathy
@@ -15,6 +16,7 @@ Name[uk]=Список контактів Telepathy
 Name[x-test]=xxTelepathy Contact Listxx
 GenericName=Instant Messenger Contacts
 GenericName[cs]=Kontakty IM
+GenericName[da]=Instant messaging-kontakter
 GenericName[de]=Instant-Messenger-Kontakte
 GenericName[et]=Kiirsuhtluskontaktid
 GenericName[fr]=Contacts de messagerie instantanée
@@ -27,6 +29,7 @@ GenericName[uk]=Контакти служб обміну повідомленн�
 GenericName[x-test]=xxInstant Messenger Contactsxx
 Comment=Displays your instant messenger contacts
 Comment[cs]=Zobrazuje vaše IM kontakty
+Comment[da]=Viser dine instant messaging-kontakter
 Comment[de]=Zeigt Ihre Instant-Messenger-Kontakte an
 Comment[et]=Sinu kiirsuhtlusrakenduse kontaktide näitamine
 Comment[fr]=Affiche vos contacts de messagerie instantanée
