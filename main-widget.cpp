@@ -32,6 +32,7 @@
 #include <QtGui/QToolButton>
 #include <QtCore/QWeakPointer>
 #include <QWidgetAction>
+#include <QCloseEvent>
 
 #include <TelepathyQt4/PendingReady>
 #include <TelepathyQt4/PendingChannelRequest>
@@ -1458,16 +1459,22 @@ void MainWidget::closeEvent(QCloseEvent* e)
 
     if (isAnyAccountOnline() && !dontCheckForPlasmoid) {
         if (!isPresencePlasmoidPresent()) {
-            if (KMessageBox::warningYesNo(this,
+            switch (KMessageBox::warningYesNoCancel(this,
                     i18n("You do not have any other presence controls active (a Presence widget for example).\n"
                          "Do you want to stay online or would you rather go offline?"),
                     i18n("No Other Presence Controls Found"),
                     KGuiItem(i18n("Stay Online"), KIcon("user-online")),
                     KGuiItem(i18n("Go Offline"), KIcon("user-offline")),
-                    QString("dont_check_for_plasmoid")) == KMessageBox::No) {
-
-                generalConfigGroup.writeEntry("go_offline_when_closing", true);
-                goOffline();
+                    KStandardGuiItem::cancel(),
+                    QString("dont_check_for_plasmoid"))) {
+                
+                case KMessageBox::No:
+                    generalConfigGroup.writeEntry("go_offline_when_closing", true);
+                    goOffline();
+                    break;
+                case KMessageBox::Cancel:
+                    e->ignore();
+                    return;
             }
         }
     } else if (isAnyAccountOnline() && dontCheckForPlasmoid) {
