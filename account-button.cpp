@@ -26,6 +26,7 @@
 #include <KAction>
 #include <KIcon>
 #include <KLocale>
+#include <KMenu>
 #include <KPixmapSequenceOverlayPainter>
 #include <KPixmapSequence>
 #include <KIconLoader>
@@ -114,7 +115,17 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     presenceActions->addAction(m_offlineAction);
     presenceActions->addAction(presenceMessageAction);
 
-    addActions(presenceActions->actions());
+    KMenu *presenceMenu = new KMenu(this);
+    presenceMenu->setMinimumWidth(180);
+    presenceMenu->addActions(presenceActions->actions());
+
+    QFont titleFont = KGlobalSettings::menuFont();
+    QFontMetrics *titleFontMetrics = new QFontMetrics(titleFont);
+    QString accountName = titleFontMetrics->elidedText(m_account->displayName(), Qt::ElideMiddle, presenceMenu->width());
+
+    presenceMenu->addTitle(KIcon(), accountName, presenceMenu->actions().first());
+
+    setMenu(presenceMenu);
 
     //make all the actions checkable
     foreach (QAction *a, actions()) {
@@ -219,7 +230,7 @@ QAction *AccountButton::actionForPresence(const Tp::Presence &presence) const
 {
     QAction *match = 0;
 
-    foreach (QAction *a, actions()) {
+    foreach (QAction *a, menu()->actions()) {
         Tp::Presence actionPresence = qVariantValue<Tp::Presence>(a->data());
         if (presence.status() == actionPresence.status()) {
             // if a matching status is found, return it immediately
