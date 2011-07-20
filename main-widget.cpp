@@ -372,20 +372,17 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
 
-    if (guiConfigGroup.readEntry("use_groups", true)) {
-        onGroupContacts(true);
-        m_groupContactsAction->setChecked(true);
-    }
+    bool useGroups = guiConfigGroup.readEntry("use_groups", true);
+    onGroupContacts(useGroups);
+    m_groupContactsAction->setChecked(useGroups);
 
-    if (guiConfigGroup.readEntry("show_offline", false)) {
-        m_modelFilter->showOfflineUsers(true);
-        m_showOfflineAction->setChecked(true);
-    }
+    bool showOffline = guiConfigGroup.readEntry("show_offline", false);
+    m_modelFilter->showOfflineUsers(showOffline);
+    m_showOfflineAction->setChecked(showOffline);
 
-    if (guiConfigGroup.readEntry("sort_by_presence", true)) {
-        m_modelFilter->setSortByPresence(true);
-        m_sortByPresenceAction->setChecked(true);
-    }
+    bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
+    m_modelFilter->setSortByPresence(sortByPresence);
+    m_sortByPresenceAction->setChecked(sortByPresence);
 }
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
@@ -1467,7 +1464,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
                     KGuiItem(i18n("Go Offline"), KIcon("user-offline")),
                     KStandardGuiItem::cancel(),
                     QString("dont_check_for_plasmoid"))) {
-                
+
                 case KMessageBox::No:
                     generalConfigGroup.writeEntry("go_offline_when_closing", true);
                     goOffline();
