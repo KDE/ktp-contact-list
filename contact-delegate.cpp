@@ -75,7 +75,8 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
         iconRect.setSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
         iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
 
-        QPixmap avatar = QPixmap::fromImage(QImage(index.data(AccountsModel::AvatarRole).toString()));
+        QPixmap avatar;
+        avatar.load(index.data(AccountsModel::AvatarRole).toString());
 
         bool noContactAvatar = avatar.isNull();
 
