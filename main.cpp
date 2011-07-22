@@ -29,6 +29,8 @@
 #include <TelepathyQt4/Types>
 #include <TelepathyQt4/Debug>
 
+#include "contact-list-application.h"
+
 int main(int argc, char *argv[])
 {
     KAboutData aboutData("telepathy-kde-contactlist", 0, ki18n("Telepathy KDE Contact List"), "0.1",
@@ -46,7 +48,7 @@ int main(int argc, char *argv[])
     options.add("debug", ki18n("Show Telepathy debugging information"));
     KCmdLineArgs::addCmdLineOptions(options);
 
-    KUniqueApplication app;
+    ContactListApplication app;
 
     Tp::registerTypes();
     Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));

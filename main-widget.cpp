@@ -60,6 +60,7 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "fetch-avatar-job.h"
+#include "contact-list-application.h"
 
 #include "dialogs/add-contact-dialog.h"
 #include "dialogs/join-chat-room-dialog.h"
@@ -1451,38 +1452,41 @@ void MainWidget::closeEvent(QCloseEvent* e)
     KConfigGroup generalConfigGroup(config, "General");
     KConfigGroup notifyConigGroup(config, "Notification Messages");
 
-    //the standard KMessageBox control saves "true" if you select the checkbox, therefore the reversed var name
-    bool dontCheckForPlasmoid = notifyConigGroup.readEntry("dont_check_for_plasmoid", false);
+    ContactListApplication *app = qobject_cast<ContactListApplication*>(kapp);
+    if (!app->isShuttingDown()) {    
+        //the standard KMessageBox control saves "true" if you select the checkbox, therefore the reversed var name
+        bool dontCheckForPlasmoid = notifyConigGroup.readEntry("dont_check_for_plasmoid", false);
 
-    if (isAnyAccountOnline() && !dontCheckForPlasmoid) {
-        if (!isPresencePlasmoidPresent()) {
-            switch (KMessageBox::warningYesNoCancel(this,
-                    i18n("You do not have any other presence controls active (a Presence widget for example).\n"
-                         "Do you want to stay online or would you rather go offline?"),
-                    i18n("No Other Presence Controls Found"),
-                    KGuiItem(i18n("Stay Online"), KIcon("user-online")),
-                    KGuiItem(i18n("Go Offline"), KIcon("user-offline")),
-                    KStandardGuiItem::cancel(),
-                    QString("dont_check_for_plasmoid"))) {
+        if (isAnyAccountOnline() && !dontCheckForPlasmoid) {
+            if (!isPresencePlasmoidPresent()) {
+                switch (KMessageBox::warningYesNoCancel(this,
+                        i18n("You do not have any other presence controls active (a Presence widget for example).\n"
+                            "Do you want to stay online or would you rather go offline?"),
+                        i18n("No Other Presence Controls Found"),
+                        KGuiItem(i18n("Stay Online"), KIcon("user-online")),
+                        KGuiItem(i18n("Go Offline"), KIcon("user-offline")),
+                        KStandardGuiItem::cancel(),
+                        QString("dont_check_for_plasmoid"))) {
 
-                case KMessageBox::No:
-                    generalConfigGroup.writeEntry("go_offline_when_closing", true);
-                    goOffline();
-                    break;
-                case KMessageBox::Cancel:
-                    e->ignore();
-                    return;
+                    case KMessageBox::No:
+                        generalConfigGroup.writeEntry("go_offline_when_closing", true);
+                        goOffline();
+                        break;
+                    case KMessageBox::Cancel:
+                        e->ignore();
+                        return;
+                }
+            }
+        } else if (isAnyAccountOnline() && dontCheckForPlasmoid) {
+            bool shouldGoOffline = generalConfigGroup.readEntry("go_offline_when_closing", false);
+            if (shouldGoOffline) {
+                goOffline();
             }
         }
-    } else if (isAnyAccountOnline() && dontCheckForPlasmoid) {
-        bool shouldGoOffline = generalConfigGroup.readEntry("go_offline_when_closing", false);
-        if (shouldGoOffline) {
-            goOffline();
-        }
+        
+        generalConfigGroup.config()->sync();
     }
-
-    generalConfigGroup.config()->sync();
-
+    
     KMainWindow::closeEvent(e);
 }
 
