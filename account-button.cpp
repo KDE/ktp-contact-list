@@ -120,8 +120,8 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     presenceMenu->addActions(presenceActions->actions());
 
     QFont titleFont = KGlobalSettings::menuFont();
-    QFontMetrics *titleFontMetrics = new QFontMetrics(titleFont);
-    QString accountName = titleFontMetrics->elidedText(m_account->displayName(), Qt::ElideMiddle, presenceMenu->width());
+    QFontMetrics titleFontMetrics(titleFont);
+    QString accountName = titleFontMetrics.elidedText(m_account->displayName(), Qt::ElideMiddle, presenceMenu->width());
 
     presenceMenu->addTitle(KIcon(), accountName, presenceMenu->actions().first());
 
