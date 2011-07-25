@@ -1,4 +1,5 @@
 [Global]
+IconName=telepathy-kde
 Name=Instant messaging
 Name[cs]=IM
 Name[da]=Instant messaging
@@ -46,7 +47,6 @@ Comment[pt_BR]=O grupo no qual o contato está inserido
 Comment[sv]=Gruppen där kontakten ingår
 Comment[uk]=Група, до якої належать контакти
 Comment[x-test]=xxThe group where the contact residesxx
-Icon=folder
 
 [Context/contact]
 Name=Contact
@@ -68,7 +68,6 @@ Comment[pt_BR]=O contato específico
 Comment[sv]=Den angivna kontakten
 Comment[uk]=Вказаний контакт
 Comment[x-test]=xxThe specified contactxx
-Icon=metacontact
 
 [Context/class]
 Name=Class
@@ -90,7 +89,6 @@ Comment[pt_BR]=A classe de mensagens
 Comment[sv]=Meddelandeklassen
 Comment[uk]=Клас повідомлення
 Comment[x-test]=xxThe message classxx
-Icon=highlight
 
 #Text-ui and contactlist notifications
 #
@@ -156,6 +154,7 @@ Action=Popup|Sound
 #Contactlist notifications
 #
 [Event/kde_telepathy_contact_incoming]
+IconName=mail-unread-new
 Name=Incoming Message
 Name[da]=Indkommende besked
 Name[fr]=Message entrant
@@ -180,6 +179,7 @@ Action=Popup|Taskbar
 Persistant=true
 
 [Event/kde_telepathy_contact_incoming_active_window]
+IconName=mail-unread-new
 Name=Incoming Message in Active Chat
 Name[da]=Indkommende besked i aktiv chat
 Name[fr]=Message entrant dans la discussion en cours
@@ -203,6 +203,7 @@ Sound=KDE-Im-Message-In.ogg
 Action=Sound
 
 [Event/kde_telepathy_outgoing]
+IconName=mail-queued
 Name=Outgoing Message
 Name[da]=Udgående besked
 Name[fr]=Message sortant
@@ -226,6 +227,7 @@ Sound=KDE-Im-Message-Out.ogg
 Action=None
 
 [Event/kde_telepathy_contact_highlight]
+IconName=mail-tagged
 Name=Highlight
 Name[da]=Fremhævning
 Name[fr]=Surlignage
@@ -273,6 +275,7 @@ Sound=KDE-Im-Nudge.ogg
 Action=Popup|Sound|Taskbar
 
 [Event/message_dropped]
+IconName=mail-mark-junk
 Name=Message Dropped
 Name[da]=Besked afvist
 Name[fr]=Message rejeté
@@ -294,6 +297,7 @@ Comment[x-test]=xxA message was filtered by the Privacy Pluginxx
 Action=Popup
 
 [Event/kde_telepathy_info_event]
+IconName=mail-mark-important
 Name=Service Message
 Name[da]=Tjenestebesked
 Name[fr]=Message du service
@@ -318,6 +322,7 @@ Sound=
 #Approver notifications
 #
 [Event/new_text_message]
+IconName=mail-unread-new
 Name=New incoming chat
 Name[da]=Ny indkommende chat
 Name[fr]=Nouvelle discussion entrante
@@ -340,6 +345,7 @@ Sound=KDE-Im-Message-In.ogg
 Action=Popup|Sound
 
 [Event/incoming_file_transfer]
+IconName=go-down-search
 Name=Incoming file transfer
 Name[da]=Indkommende filoverførsel
 Name[it]=Trasferimento di file in arrivo
@@ -363,6 +369,7 @@ Flags=Persistent
 #Adium extra protocol handler notifications
 #
 [Event/chatstyleRequest]
+IconName=telepathy-kde
 Name=Chatstyle Install Request
 Name[da]=Installationsanmodning om chatstil
 Name[fr]=Requête d'installation de  Chatstyle
@@ -372,11 +379,11 @@ Name[pt_BR]=Pedido de instalação do estilo de bate-papo
 Name[sv]=Installationsbegäran av Chatstyle
 Name[uk]=Запит щодо встановлення стилю спілкування
 Name[x-test]=xxChatstyle Install Requestxx
-IconName=telepathy
 Action=Popup
 Flags=Persistent
 
 [Event/chatstyleSuccess]
+IconName=dialog-ok-apply
 Name=Installed Chatstyle successfully
 Name[da]=Chatstil installeret
 Name[fr]=Chatstyle a été installé avec succès
@@ -386,12 +393,11 @@ Name[pt_BR]=O estilo de bate-papo foi instalado com sucesso
 Name[sv]=Installerade Chatstyle med lyckat resultat
 Name[uk]=Стиль спілкування успішно встановлено
 Name[x-test]=xxInstalled Chatstyle successfullyxx
-IconName=telepathy
 Action=Popup
 Flags=Persistent
 
-
 [Event/chatstyleFailure]
+IconName=dialog-error
 Name=Install Chatstyle Installation failed
 Name[da]=Installation af chatstil mislykkedes
 Name[fr]=L'installation de Chatstyle a échoué
@@ -401,11 +407,11 @@ Name[pt_BR]=A instalação do estilo de bate-papo falhou
 Name[sv]=Misslyckades installera Chatstyle
 Name[uk]=Спроба встановлення стилю спілкування зазнала невдачі
 Name[x-test]=xxInstall Chatstyle Installation failedxx
-IconName=telepathy
 Action=Popup
 Flags=Persistent
 
 [Event/emoticonsRequest]
+IconName=telepathy-kde
 Name=Emoticonset Install Request
 Name[da]=Installationsanmodning om emotikonsæt
 Name[fr]=Demande d'installation d'un ensemble d'émoticônes
@@ -415,11 +421,11 @@ Name[pt_BR]=Pedido de instalação do conjunto de emoticons
 Name[sv]=Installationsbegäran av smilisar
 Name[uk]=Запит щодо встановлення емоційок
 Name[x-test]=xxEmoticonset Install Requestxx
-IconName=telepathy
 Action=Popup
 Flags=Persistent
 
 [Event/emoticonsSuccess]
+IconName=dialog-ok-apply
 Name=Installed Emoticonset successfully
 Name[da]=Emotikonsæt installeret
 Name[fr]=L'ensemble d'émoticônes a été installé avec succès
@@ -429,12 +435,12 @@ Name[pt_BR]=O conjunto de emoticons foi instalado com sucesso
 Name[sv]=installerade smilisar med lyckat resultat
 Name[uk]=Набір емоційок успішно встановлено
 Name[x-test]=xxInstalled Emoticonset successfullyxx
-IconName=telepathy
 Action=Popup
 Flags=Persistent
 
 
 [Event/emoticonsFailure]
+IconName=dialog-error
 Name=Emoticonset Installation failed
 Name[da]=Installation af emotikonsæt mislykkedes
 Name[fr]=L'installation de l'ensemble d'émoticônes a échoué
@@ -444,6 +450,5 @@ Name[pt_BR]=A instalação do conjunto de emoticons falhou
 Name[sv]=Misslyckades installera smilisar
 Name[uk]=Спроба встановлення емоційок зазнала невдачі
 Name[x-test]=xxEmoticonset Installation failedxx
-IconName=telepathy
 Action=Popup
 Flags=Persistent
