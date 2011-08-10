@@ -49,7 +49,16 @@ Q_SIGNALS:
     void repaintItem(QModelIndex);
 
 protected:
-    QPalette   *m_palette;
+    /** Paint contact items. Pure virtual, items should be subclass this for painting*/
+    virtual void paintContact(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const = 0;
+    /** The size hint for painting contact items*/
+    virtual QSize sizeHintContact(const QStyleOptionViewItem& option, const QModelIndex& index) const = 0;
+    QPalette *m_palette;
+
+private:
+    /** Paints header items*/
+    void paintHeader(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    QSize sizeHintHeader(const QStyleOptionViewItem& option, const QModelIndex& index) const;
 };
 
 #endif // ABSTRACT_CONTACT_DELEGATE_H

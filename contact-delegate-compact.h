@@ -32,8 +32,8 @@ public:
     ContactDelegateCompact(QObject *parent = 0);
     ~ContactDelegateCompact();
 
-    void paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
-    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    void paintContact(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    QSize sizeHintContact(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 };
 
 #endif // CONTACTDELEGATECOMPACT_H

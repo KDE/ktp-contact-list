@@ -35,8 +35,8 @@ public:
     ContactDelegate(QObject *parent = 0);
     ~ContactDelegate();
 
-    void paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
-    QSize sizeHint(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    virtual void paintContact(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    virtual QSize sizeHintContact(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
     int fadingValue() const;
     void setFadingValue(int value);

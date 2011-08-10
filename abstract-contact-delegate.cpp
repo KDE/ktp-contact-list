@@ -52,6 +52,30 @@ AbstractContactDelegate::~AbstractContactDelegate()
 
 void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+
+    if (isContact) {
+        paintContact(painter, option, index);
+    } else {
+        paintHeader(painter, option, index);
+    }
+}
+
+QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    Q_UNUSED(option);
+    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+
+    if (isContact) {
+        return sizeHintContact(option, index);
+    } else {
+        return sizeHintHeader(option, index);
+    }
+}
+
+
+void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
     QStyleOptionViewItemV4 optV4 = option;
     initStyleOption(&optV4, index);
 
@@ -73,7 +97,7 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     groupLabelRect.setRight(groupLabelRect.right() - SPACING);
 
     QRect expandSignRect = groupLabelRect;
-    expandSignRect.setLeft(ACCOUNT_ICON_SIZE + SPACING + SPACING);
+    expandSignRect.setLeft(ACCOUNT_ICON_SIZE + (SPACING*3));
     expandSignRect.setRight(groupLabelRect.left() + 20); //keep it by the left side
 
     QFont groupFont = KGlobalSettings::smallestReadableFont();
@@ -90,15 +114,15 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     }
 
     //create an area for text which does not overlap with the icons.
-    QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*3),0,0,0);
+    QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*4),0,0,0);
     QString groupHeaderString =  index.data(GroupsModel::GroupNameRole).toString().append(counts);
-    
+
     painter->setPen(m_palette->color(QPalette::WindowText));
     painter->setFont(groupFont);
     painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignRight,
                       optV4.fontMetrics.elidedText(groupHeaderString, Qt::ElideRight, textRect.width()));
 
-    
+
     QPen thinLinePen;
     thinLinePen.setWidth(0);
     thinLinePen.setColor(m_palette->color(QPalette::Disabled, QPalette::Button));
@@ -131,11 +155,12 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     painter->restore();
 }
 
-QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize AbstractContactDelegate::sizeHintHeader(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    return QSize(0, 20);
+    Q_UNUSED(option);
+    Q_UNUSED(index);
+    return QSize(0,20);
 }
-
 
 bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
@@ -226,3 +251,5 @@ bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *vi
 
     return true;
 }
+
+

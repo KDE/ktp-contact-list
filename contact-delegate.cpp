@@ -55,7 +55,7 @@ ContactDelegate::~ContactDelegate()
 
 }
 
-void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
     QStyleOptionViewItemV4 optV4 = option;
     initStyleOption(&optV4, index);
@@ -68,123 +68,112 @@ void ContactDelegate::paint(QPainter * painter, const QStyleOptionViewItem & opt
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
-    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+    QRect iconRect = optV4.rect;
+    iconRect.setSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
+    iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
 
-    if (isContact) {
-        QRect iconRect = optV4.rect;
-        iconRect.setSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
-        iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
+    QPixmap avatar;
+    avatar.load(index.data(AccountsModel::AvatarRole).toString());
 
-        QPixmap avatar;
-        avatar.load(index.data(AccountsModel::AvatarRole).toString());
+    bool noContactAvatar = avatar.isNull();
 
-        bool noContactAvatar = avatar.isNull();
-
-        if (noContactAvatar) {
-            avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
-        }
-
-        QPainterPath roundedPath;
-        roundedPath.addRoundedRect(iconRect, 20, 20, Qt::RelativeSize);
-
-        if (!noContactAvatar) {
-            painter->save();
-            painter->setClipPath(roundedPath);
-        }
-
-        painter->drawPixmap(iconRect, avatar);
-
-        if (!noContactAvatar) {
-            painter->restore();
-            painter->drawPath(roundedPath);
-        }
-
-        QPixmap icon;
-
-        switch (index.data(AccountsModel::PresenceTypeRole).toInt()) {
-        case Tp::ConnectionPresenceTypeAvailable:
-            icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
-            break;
-        case Tp::ConnectionPresenceTypeAway:
-            icon = SmallIcon("user-away", KIconLoader::SizeSmallMedium);
-            break;
-        case Tp::ConnectionPresenceTypeExtendedAway:
-            icon = SmallIcon("user-away-extended", KIconLoader::SizeSmallMedium);
-            break;
-        case Tp::ConnectionPresenceTypeBusy:
-            icon = SmallIcon("user-busy", KIconLoader::SizeSmallMedium);
-            break;
-        case Tp::ConnectionPresenceTypeHidden:
-            icon = SmallIcon("user-invisible", KIconLoader::SizeSmallMedium);
-            break;
-        case Tp::ConnectionPresenceTypeOffline:
-            icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
-            break;
-        default:
-            icon = SmallIcon("task-attention", KIconLoader::SizeSmallMedium);
-            break;
-        }
-
-        QRect statusIconRect = optV4.rect;
-        statusIconRect.setSize(QSize(PRESENCE_ICON_SIZE, PRESENCE_ICON_SIZE));
-        statusIconRect.moveTo(QPoint(optV4.rect.right() - PRESENCE_ICON_SIZE - SPACING,
-                                     optV4.rect.top() + (optV4.rect.height() - PRESENCE_ICON_SIZE) / 2));
-
-        painter->drawPixmap(statusIconRect, icon);
-
-        QRect userNameRect = optV4.rect;
-        userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
-        userNameRect.setY(userNameRect.y() + 3);
-        userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
-
-        QFont nameFont = KGlobalSettings::smallestReadableFont();
-        nameFont.setPointSize(nameFont.pointSize() + 1);
-        nameFont.setWeight(QFont::Bold);
-
-        const QFontMetrics nameFontMetrics(nameFont);
-
-        painter->setFont(nameFont);
-        painter->drawText(userNameRect,
-                          nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
-
-        QRect statusMsgRect = optV4.rect;
-        statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
-        statusMsgRect.setY(userNameRect.top() + 16);
-        statusMsgRect.setWidth(statusMsgRect.width() - PRESENCE_ICON_SIZE - SPACING);
-
-        QFont statusFont = KGlobalSettings::smallestReadableFont();
-
-        const QFontMetrics statusFontMetrics(statusFont);
-
-        QColor fadingColor(m_palette->color(QPalette::WindowText));
-
-        if (index == m_indexForHiding) {
-            fadingColor.setAlpha(m_fadingValue);
-            painter->setPen(fadingColor);
-        }
-
-        painter->setFont(statusFont);
-        painter->drawText(statusMsgRect,
-                          statusFontMetrics.elidedText(index.data(AccountsModel::PresenceMessageRole).toString(),
-                                                       Qt::ElideRight, statusMsgRect.width()));
-
-    } else {
-        AbstractContactDelegate::paint(painter, option, index);
+    if (noContactAvatar) {
+        avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
     }
+
+    QPainterPath roundedPath;
+    roundedPath.addRoundedRect(iconRect, 20, 20, Qt::RelativeSize);
+
+    if (!noContactAvatar) {
+        painter->save();
+        painter->setClipPath(roundedPath);
+    }
+
+    painter->drawPixmap(iconRect, avatar);
+
+    if (!noContactAvatar) {
+        painter->restore();
+        painter->drawPath(roundedPath);
+    }
+
+    QPixmap icon;
+
+    switch (index.data(AccountsModel::PresenceTypeRole).toInt()) {
+    case Tp::ConnectionPresenceTypeAvailable:
+        icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
+        break;
+    case Tp::ConnectionPresenceTypeAway:
+        icon = SmallIcon("user-away", KIconLoader::SizeSmallMedium);
+        break;
+    case Tp::ConnectionPresenceTypeExtendedAway:
+        icon = SmallIcon("user-away-extended", KIconLoader::SizeSmallMedium);
+        break;
+    case Tp::ConnectionPresenceTypeBusy:
+        icon = SmallIcon("user-busy", KIconLoader::SizeSmallMedium);
+        break;
+    case Tp::ConnectionPresenceTypeHidden:
+        icon = SmallIcon("user-invisible", KIconLoader::SizeSmallMedium);
+        break;
+    case Tp::ConnectionPresenceTypeOffline:
+        icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
+        break;
+    default:
+        icon = SmallIcon("task-attention", KIconLoader::SizeSmallMedium);
+        break;
+    }
+
+    QRect statusIconRect = optV4.rect;
+    statusIconRect.setSize(QSize(PRESENCE_ICON_SIZE, PRESENCE_ICON_SIZE));
+    statusIconRect.moveTo(QPoint(optV4.rect.right() - PRESENCE_ICON_SIZE - SPACING,
+                                 optV4.rect.top() + (optV4.rect.height() - PRESENCE_ICON_SIZE) / 2));
+
+    painter->drawPixmap(statusIconRect, icon);
+
+    QRect userNameRect = optV4.rect;
+    userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
+    userNameRect.setY(userNameRect.y() + 3);
+    userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
+
+    QFont nameFont = KGlobalSettings::smallestReadableFont();
+    nameFont.setPointSize(nameFont.pointSize() + 1);
+    nameFont.setWeight(QFont::Bold);
+
+    const QFontMetrics nameFontMetrics(nameFont);
+
+    painter->setFont(nameFont);
+    painter->drawText(userNameRect,
+                      nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
+
+    QRect statusMsgRect = optV4.rect;
+    statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
+    statusMsgRect.setY(userNameRect.top() + 16);
+    statusMsgRect.setWidth(statusMsgRect.width() - PRESENCE_ICON_SIZE - SPACING);
+
+    QFont statusFont = KGlobalSettings::smallestReadableFont();
+
+    const QFontMetrics statusFontMetrics(statusFont);
+
+    QColor fadingColor(m_palette->color(QPalette::WindowText));
+
+    if (index == m_indexForHiding) {
+        fadingColor.setAlpha(m_fadingValue);
+        painter->setPen(fadingColor);
+    }
+
+    painter->setFont(statusFont);
+    painter->drawText(statusMsgRect,
+                      statusFontMetrics.elidedText(index.data(AccountsModel::PresenceMessageRole).toString(),
+                                                   Qt::ElideRight, statusMsgRect.width()));
+
 
     painter->restore();
 }
 
-QSize ContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+QSize ContactDelegate::sizeHintContact(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option);
-    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
-
-    if (isContact) {
-        return QSize(0, 32 + 4 * SPACING);
-    } else {
-        return AbstractContactDelegate::sizeHint(option, index);
-    }
+    Q_UNUSED(index);
+    return QSize(0, 32 + 4 * SPACING);
 }
 
 void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
