@@ -40,7 +40,7 @@ const int SPACING = 2;
 const int ACCOUNT_ICON_SIZE = 13;
 
 AbstractContactDelegate::AbstractContactDelegate(QObject* parent)
-    : QStyledItemDelegate(parent), m_palette(0)
+        : QStyledItemDelegate(parent), m_palette(0)
 {
     m_palette = new QPalette(QApplication::palette());
 }
@@ -79,21 +79,26 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     QFont groupFont = KGlobalSettings::smallestReadableFont();
 
     QString counts = QString(" (%1/%2)").arg(index.data(AccountsModel::OnlineUsersCountRole).toString(),
-                   index.data(AccountsModel::TotalUsersCountRole).toString());
+                     index.data(AccountsModel::TotalUsersCountRole).toString());
 
     if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
         painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
-        .pixmap(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
+                            .pixmap(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
     } else {
         painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),
-                                                                                      KIconLoader::Desktop));
+                            KIconLoader::Desktop));
     }
 
+    //create an area for text which does not overlap with the icons.
+    QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*3),0,0,0);
+    QString groupHeaderString =  index.data(GroupsModel::GroupNameRole).toString().append(counts);
+    
     painter->setPen(m_palette->color(QPalette::WindowText));
     painter->setFont(groupFont);
-    painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignRight,
-                      index.data(GroupsModel::GroupNameRole).toString().append(counts));
+    painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignRight,
+                      optV4.fontMetrics.elidedText(groupHeaderString, Qt::ElideRight, textRect.width()));
 
+    
     QPen thinLinePen;
     thinLinePen.setWidth(0);
     thinLinePen.setColor(m_palette->color(QPalette::Disabled, QPalette::Button));
@@ -102,12 +107,15 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     painter->setRenderHint(QPainter::Antialiasing, false);
 
     QFontMetrics fm = painter->fontMetrics();
-    int groupNameWidth = fm.width(index.data(GroupsModel::GroupNameRole).toString().append(counts));
+    int groupNameWidth = fm.width(groupHeaderString);
 
-    painter->drawLine(expandSignRect.right() + SPACING * 2,
-                      groupRect.y() + groupRect.height() / 2,
-                      groupRect.width() - groupNameWidth - SPACING * 2,
-                      groupRect.y() + groupRect.height() / 2);
+    //show a horizontal line padding the header if there is any space left.
+    if (groupNameWidth < textRect.width()) {
+        painter->drawLine(expandSignRect.right() + SPACING * 2,
+                          groupRect.y() + groupRect.height() / 2,
+                          groupRect.width() - groupNameWidth - SPACING * 2,
+                          groupRect.y() + groupRect.height() / 2);
+    }
 
     painter->setRenderHint(QPainter::Antialiasing, true);
 
@@ -152,34 +160,34 @@ bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *vi
     QString presenceText;
 
     switch (index.data(AccountsModel::PresenceTypeRole).toUInt()) {
-        case Tp::ConnectionPresenceTypeAvailable:
-            presenceIconPath = KIconLoader::global()->iconPath("user-online", 1);
-            presenceText = i18nc("This is an IM user status", "Online");
-            break;
-        case Tp::ConnectionPresenceTypeAway:
-            presenceIconPath = KIconLoader::global()->iconPath("user-away", 1);
-            presenceText = i18nc("This is an IM user status", "Away");
-            break;
-        case Tp::ConnectionPresenceTypeExtendedAway:
-            presenceIconPath = KIconLoader::global()->iconPath("user-away-extended", 1);
-            presenceText = i18nc("This is an IM user status", "Away");
-            break;
-        case Tp::ConnectionPresenceTypeBusy:
-            presenceIconPath = KIconLoader::global()->iconPath("user-busy", 1);
-            presenceText = i18nc("This is an IM user status", "Busy");
-            break;
-        case Tp::ConnectionPresenceTypeHidden:
-            presenceIconPath = KIconLoader::global()->iconPath("user-invisible", 1);
-            presenceText = i18nc("This is an IM user status", "Invisible");
-            break;
-        case Tp::ConnectionPresenceTypeOffline:
-            presenceIconPath = KIconLoader::global()->iconPath("user-offline", 1);
-            presenceText = i18nc("This is an IM user status", "Offline");
-            break;
-        default:
-            presenceIconPath = KIconLoader::global()->iconPath("task-attention", 1);
-            // What presence Text should be here??
-            break;
+    case Tp::ConnectionPresenceTypeAvailable:
+        presenceIconPath = KIconLoader::global()->iconPath("user-online", 1);
+        presenceText = i18nc("This is an IM user status", "Online");
+        break;
+    case Tp::ConnectionPresenceTypeAway:
+        presenceIconPath = KIconLoader::global()->iconPath("user-away", 1);
+        presenceText = i18nc("This is an IM user status", "Away");
+        break;
+    case Tp::ConnectionPresenceTypeExtendedAway:
+        presenceIconPath = KIconLoader::global()->iconPath("user-away-extended", 1);
+        presenceText = i18nc("This is an IM user status", "Away");
+        break;
+    case Tp::ConnectionPresenceTypeBusy:
+        presenceIconPath = KIconLoader::global()->iconPath("user-busy", 1);
+        presenceText = i18nc("This is an IM user status", "Busy");
+        break;
+    case Tp::ConnectionPresenceTypeHidden:
+        presenceIconPath = KIconLoader::global()->iconPath("user-invisible", 1);
+        presenceText = i18nc("This is an IM user status", "Invisible");
+        break;
+    case Tp::ConnectionPresenceTypeOffline:
+        presenceIconPath = KIconLoader::global()->iconPath("user-offline", 1);
+        presenceText = i18nc("This is an IM user status", "Offline");
+        break;
+    default:
+        presenceIconPath = KIconLoader::global()->iconPath("task-attention", 1);
+        // What presence Text should be here??
+        break;
     }
 
     /* The tooltip is composed of a HTML table to display the items in it of the contact.
