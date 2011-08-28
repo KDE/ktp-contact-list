@@ -990,7 +990,7 @@ void MainWidget::onDeleteGroup()
 
     if (KMessageBox::warningContinueCancel(this,
                                            i18n("Do you really want to remove group %1?\n\n"
-                                                "Note that all contacts will be moved to group 'Ungroupped'", groupItem->groupName()),
+                                                "Note that all contacts will be moved to group 'Ungrouped'", groupItem->groupName()),
                                            i18n("Remove Group")) == KMessageBox::Continue) {
 
         for(int i = 0; i < groupItem->size(); i++) {
