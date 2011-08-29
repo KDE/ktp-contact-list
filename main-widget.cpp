@@ -537,9 +537,13 @@ void MainWidget::startTextChannel(ContactModelItem *contactItem)
 
     Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
 
+    Tp::ChannelRequestHints hints;
+    hints.setHint("org.kde.telepathy","forceRaiseWindow", QVariant(true));
+
     Tp::PendingChannelRequest* channelRequest = account->ensureTextChat(contact,
                                                                         QDateTime::currentDateTime(),
-                                                                        PREFERRED_TEXTCHAT_HANDLER);
+                                                                        PREFERRED_TEXTCHAT_HANDLER,
+                                                                        hints);
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
