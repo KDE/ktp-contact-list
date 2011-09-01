@@ -95,6 +95,7 @@ MainWidget::MainWidget(QWidget *parent)
     setupUi(this);
     m_filterBar->hide();
     setWindowIcon(KIcon("telepathy-kde"));
+    setAutoSaveSettings();
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -1453,7 +1454,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
     KConfigGroup notifyConigGroup(config, "Notification Messages");
 
     ContactListApplication *app = qobject_cast<ContactListApplication*>(kapp);
-    if (!app->isShuttingDown()) {    
+    if (!app->isShuttingDown()) {
         //the standard KMessageBox control saves "true" if you select the checkbox, therefore the reversed var name
         bool dontCheckForPlasmoid = notifyConigGroup.readEntry("dont_check_for_plasmoid", false);
 
@@ -1483,10 +1484,10 @@ void MainWidget::closeEvent(QCloseEvent* e)
                 goOffline();
             }
         }
-        
+
         generalConfigGroup.config()->sync();
     }
-    
+
     KMainWindow::closeEvent(e);
 }
 
