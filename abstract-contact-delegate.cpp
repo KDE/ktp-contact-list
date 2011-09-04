@@ -251,5 +251,3 @@ bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *vi
 
     return true;
 }
-
-
