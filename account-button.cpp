@@ -127,11 +127,6 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
 
     setMenu(presenceMenu);
 
-    //make all the actions checkable
-    foreach (QAction *a, actions()) {
-        a->setCheckable(true);
-    }
-
     //set the current status as checked and paint presence overlay
     presenceChanged(m_account->currentPresence());
 
@@ -211,12 +206,17 @@ void AccountButton::presenceChanged(const Tp::Presence &presence)
         return;
     }
 
+    resetMenuFormatting();
+    QFont presenceFont = KGlobalSettings::generalFont();
+    presenceFont.setBold(true);
+    presenceFont.setItalic(true);
+
     QAction *action = actionForPresence(presence);
     if (!action) {
         action = m_offlineAction;
     }
 
-    action->setChecked(true);
+    action->setFont(presenceFont);
     updateToolTip();
 
     QPixmap pixmap = icon().pixmap(32, 32);
@@ -276,6 +276,17 @@ void AccountButton::setCustomPresenceMessage(const QString& message)
             this, SLOT(updateToolTip()));
 
     m_presenceMessageWidget->setText(message);
+}
+
+void AccountButton::resetMenuFormatting()
+{
+    QFont presenceFont = KGlobalSettings::generalFont();
+    presenceFont.setBold(false);
+    presenceFont.setItalic(false);
+
+    foreach (QAction *a, menu()->actions()) {
+        a->setFont(presenceFont);
+    }
 }
 
 #include "account-button.moc"

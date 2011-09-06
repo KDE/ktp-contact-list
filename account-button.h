@@ -68,6 +68,7 @@ public Q_SLOTS:
 private:
 
     QAction *actionForPresence(const Tp::Presence &presence) const;
+    void resetMenuFormatting();
 
     ///Holds the account it controls
     Tp::AccountPtr                  m_account;
