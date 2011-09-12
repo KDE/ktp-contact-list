@@ -287,6 +287,13 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     if (op->isError()) {
         kDebug() << op->errorName();
         kDebug() << op->errorMessage();
+
+        KMessageBox::error(this,
+                           i18n("Something unexpected happened to the core part of your Instant Messaging system "
+                                "and it couldn't be initialized. Try restarting the Contact List."),
+                           i18n("IM system failed to initialize"));
+
+        return;
     }
 
     m_model = new AccountsModel(m_accountManager, this);
