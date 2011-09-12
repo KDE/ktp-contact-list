@@ -53,9 +53,6 @@ AvatarButton::AvatarButton(QWidget *parent)
     connect(loadFromFileButton, SIGNAL(clicked(bool)),
             this, SLOT(loadAvatarFromFile()));
 
-    connect(loadFromFileAction, SIGNAL(triggered(bool)),
-            this, SLOT(loadAvatarFromFile()));
-
     m_avatarButtonMenu->addAction(loadFromFileAction);
 
     setMenu(m_avatarButtonMenu);
@@ -90,8 +87,10 @@ void AvatarButton::loadAvatar(const Tp::AccountPtr &account)
         avatarAction->setDefaultWidget(avatarMenuItem);
         avatarAction->setData(account->uniqueIdentifier());
 
-        connect(this, SIGNAL(clicked(bool)),
-                this, SLOT(selectAvatarFromAccount()));
+        //this connect is chained to the avatarAction, because avatarAction holds the account id
+        //which is then extracted and used
+        connect(avatarMenuItem, SIGNAL(clicked(bool)),
+                avatarAction, SIGNAL(triggered(bool)));
 
         connect(avatarAction, SIGNAL(triggered(bool)),
                 this, SLOT(selectAvatarFromAccount()));
