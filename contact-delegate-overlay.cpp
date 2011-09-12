@@ -77,17 +77,17 @@ QAbstractItemView* ContactDelegateOverlay::view() const
 
 void ContactDelegateOverlay::setDelegate(QAbstractItemDelegate* delegate)
 {
-    if (m_delegate) {
-        disconnect(m_delegate, SIGNAL(visualChange()),
-                   this, SLOT(visualChange()));
-    }
+//     if (m_delegate) {
+//         disconnect(m_delegate, SIGNAL(visualChange()),
+//                    this, SLOT(visualChange()));
+//     }
 
     m_delegate = delegate;
 
-    if (m_delegate) {
-        connect(m_delegate, SIGNAL(visualChange()),
-                this, SLOT(visualChange()));
-    }
+//     if (m_delegate) {
+//         connect(m_delegate, SIGNAL(visualChange()),
+//                 this, SLOT(visualChange()));
+//     }
 }
 
 QAbstractItemDelegate* ContactDelegateOverlay::delegate() const
@@ -328,8 +328,8 @@ void ContactDelegateOverlayContainer::installOverlay(ContactDelegateOverlay* ove
     m_overlays << overlay;
     // let the view call setActive
 
-    QObject::connect(overlay, SIGNAL(destroyed(QObject*)),
-                     asDelegate(), SLOT(overlayDestroyed(QObject*)));
+//     QObject::connect(overlay, SIGNAL(destroyed(QObject*)),
+//                      asDelegate(), SLOT(overlayDestroyed(QObject*)));
 }
 
 void ContactDelegateOverlayContainer::removeOverlay(ContactDelegateOverlay* overlay)
