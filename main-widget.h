@@ -119,8 +119,8 @@ private Q_SLOTS:
     void onSwitchToFullView();
     void onSwitchToCompactView();
 
-    void onGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
-
+    void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
+    void onOpenLinkTriggered(QAction *action);                          /** triggered from custom contact menu when user clicks contact link */
     void groupContacts(bool enabled);
     void monitorPresence(const Tp::ConnectionPtr &connection);
 
@@ -128,8 +128,8 @@ Q_SIGNALS:
     void enableOverlays(bool);
 
 private:
-    /** handle connection errors for given account. This method provides visual notification */
-    void handleConnectionError(const Tp::AccountPtr &account);
+    QStringList extractLinksFromIndex(const QModelIndex &index);    /** extract links from a QModelIndex pointing to a contact */
+    void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
 
     KMenu* contactContextMenu(const QModelIndex &index);

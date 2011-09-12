@@ -47,12 +47,14 @@
 #include <KUser>
 #include <KMenu>
 #include <KMessageBox>
+#include <KProtocolInfo>
 #include <KSettings/Dialog>
 #include <KSharedConfig>
 #include <KFileDialog>
 #include <KInputDialog>
 #include <KStandardShortcut>
 #include <KNotification>
+#include <KToolInvocation>
 
 #include "ui_main-widget.h"
 #include "account-button.h"
@@ -819,6 +821,22 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
         action->setEnabled(true);
     }
 
+    // add "goto" submenu for navigating to links the contact has in presence message
+    // first check to see if there are any links in the contact's presence message
+    QStringList contactLinks = extractLinksFromIndex(index);
+
+    if (!contactLinks.empty()) {
+        KMenu *subMenu = new KMenu(i18np("Presence message link", "Presence message links", contactLinks.count()));
+
+        foreach(const QString &link, contactLinks) {
+            action = subMenu->addAction(link);
+            action->setData(link);
+        }
+        connect(subMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenLinkTriggered(QAction*)));
+        menu->addMenu(subMenu);
+    }
+
+
     menu->addSeparator();
 
     // remove contact action
@@ -1059,6 +1077,11 @@ void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
     }
 }
 
+void MainWidget::onOpenLinkTriggered(QAction *action)
+{
+    KToolInvocation::invokeBrowser(action->data().toString());
+}
+
 void MainWidget::onShowInfoTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
@@ -1206,6 +1229,59 @@ void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
                     SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
+}
+
+QStringList MainWidget::extractLinksFromIndex(const QModelIndex& index)
+{
+    QStringList links;
+    QString presenceMsg = index.data(AccountsModel::PresenceMessageRole).toString();
+
+    if (presenceMsg.isEmpty()) {
+        return links;
+    } else {
+        // link detection taken from chatHandler adium-theme-view.cpp
+        QRegExp linkRegExp("\\b(?:(\\w+)://|(www\\.))([^\\s]+)");
+        int index = 0;
+
+        while ((index = linkRegExp.indexIn(presenceMsg, index)) != -1) {
+            QString realUrl = linkRegExp.cap(0);
+            QString protocol = linkRegExp.cap(1);
+
+            //if cap(1) is empty cap(2) was matched -> starts with www.
+            const bool startsWithWWW = protocol.isEmpty();
+
+            kDebug() << "Found URL " << realUrl << "with protocol : " << (startsWithWWW ? QLatin1String("http") : protocol);
+
+            // if url has a supported protocol
+            if (startsWithWWW || KProtocolInfo::protocols().contains(protocol, Qt::CaseInsensitive)) {
+
+                // text not wanted in a link ( <,> )
+                QRegExp unwanted("(&lt;|&gt;)");
+
+                if (!realUrl.contains(unwanted)) {
+                    // check for newline and cut link when found
+                    if (realUrl.contains("<br/>")) {
+                        int findIndex = realUrl.indexOf("<br/>");
+                        realUrl.truncate(findIndex);
+                    }
+
+                    // check prefix
+                    if (startsWithWWW) {
+                        realUrl.prepend("http://");
+                    }
+
+                    // add to links list
+                    links.push_back(realUrl);
+
+                    // advance position otherwise I end up parsing the same link
+                    index += realUrl.length();
+                }
+            } else {
+                index += linkRegExp.matchedLength();
+            }
+        }
+    }
+    return links;
 }
 
 void MainWidget::handleConnectionError(const Tp::AccountPtr& account)
