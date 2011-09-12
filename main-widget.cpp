@@ -127,38 +127,35 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_userAccountIconButton->setMenu(m_avatarButtonMenu);
 
-    m_addContactAction = new KAction(KIcon("list-add-user"), QString(), this);
-    m_addContactAction->setToolTip(i18n("Add new contacts.."));
+    m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+
+    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add new contacts.."), this);
 
     m_toolBar->addAction(m_addContactAction);
 
-    m_groupContactsAction = new KAction(KIcon("user-group-properties"), QString(), this);
+    m_groupContactsAction = new KAction(KIcon("user-group-properties"), i18n("Show/Hide groups"), this);
     m_groupContactsAction->setCheckable(true);
     m_groupContactsAction->setChecked(true);
     //TODO: Toggle the tooltip with the button? eg. once its Show, after click its Hide .. ?
-    m_groupContactsAction->setToolTip(i18n("Show/Hide groups"));
 
     m_toolBar->addAction(m_groupContactsAction);
 
-    m_showOfflineAction = new KAction(KIcon("meeting-attending-tentative"), QString(), this);
+    m_showOfflineAction = new KAction(KIcon("meeting-attending-tentative"), i18n("Hide/Show offline users"), this);
     m_showOfflineAction->setCheckable(true);
     m_showOfflineAction->setChecked(false);
-    m_showOfflineAction->setToolTip(i18n("Hide/Show offline users"));
 
     m_toolBar->addAction(m_showOfflineAction);
 
-    m_sortByPresenceAction = new KAction(KIcon("view-sort-ascending"), QString(), this);
+    m_sortByPresenceAction = new KAction(KIcon("view-sort-ascending"), i18n("Sort by presence"), this);
     m_sortByPresenceAction->setCheckable(true);
     m_sortByPresenceAction->setChecked(false);
-    m_sortByPresenceAction->setToolTip(i18n("Sort by presence"));
 
     m_toolBar->addAction(m_sortByPresenceAction);
 
-    m_searchContactAction = new KAction(KIcon("edit-find-user"), QString(), this );
+    m_searchContactAction = new KAction(KIcon("edit-find-user"), i18n("Find contact"), this );
     m_searchContactAction->setShortcut(KStandardShortcut::find());
     m_searchContactAction->setCheckable(true);
     m_searchContactAction->setChecked(false);
-    m_searchContactAction->setToolTip(i18n("Find contact"));
 
     m_toolBar->addAction(m_searchContactAction);
 
