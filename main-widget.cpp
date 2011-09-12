@@ -251,6 +251,9 @@ MainWidget::MainWidget(QWidget *parent)
     m_contactsListView->setIndentation(0);
     m_contactsListView->setMouseTracking(true);
     m_contactsListView->setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
+    m_contactsListView->setDragEnabled(true);
+    m_contactsListView->viewport()->setAcceptDrops(true);
+    m_contactsListView->setDropIndicatorShown(true);
 
     addOverlayButtons();
 
@@ -341,8 +344,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     connect(m_sortByPresenceAction, SIGNAL(toggled(bool)),
             m_modelFilter, SLOT(setSortByPresence(bool)));
 
-    connect(m_modelFilter, SIGNAL(rowsAboutToBeRemoved(QModelIndex, int, int)),
-        m_delegate, SLOT(contactRemoved(QModelIndex,int,int)));
+    connect(m_groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
+            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
     m_accountButtonsLayout->insertStretch(-1);
 
