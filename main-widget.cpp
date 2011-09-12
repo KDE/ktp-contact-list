@@ -67,7 +67,6 @@
 #include "dialogs/remove-contact-dialog.h"
 #include "dialogs/contact-info.h"
 
-
 #include "models/groups-model.h"
 #include "models/contact-model-item.h"
 #include "models/groups-model-item.h"
@@ -104,28 +103,7 @@ MainWidget::MainWidget(QWidget *parent)
         user.loginName() : user.property(KUser::FullName).toString()
     );
 
-    m_userAccountIconButton->setPopupMode(QToolButton::InstantPopup);
-
-    m_avatarButtonMenu = new KMenu(m_userAccountIconButton);
-
-    QToolButton *loadFromFileButton = new QToolButton(this);
-    loadFromFileButton->setIcon(KIcon("document-open-folder"));
-    loadFromFileButton->setIconSize(QSize(48, 48));
-    loadFromFileButton->setText(i18n("Load from file..."));
-    loadFromFileButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-    QWidgetAction *loadFromFileAction = new QWidgetAction(this);
-    loadFromFileAction->setDefaultWidget(loadFromFileButton);
-
-    connect(loadFromFileButton, SIGNAL(clicked(bool)),
-            loadFromFileAction, SIGNAL(triggered(bool)));
-
-    connect(loadFromFileAction, SIGNAL(triggered(bool)),
-            this, SLOT(loadAvatarFromFile()));
-
-    m_avatarButtonMenu->addAction(loadFromFileAction);
-
-    m_userAccountIconButton->setMenu(m_avatarButtonMenu);
+    m_avatarButton->setPopupMode(QToolButton::InstantPopup);
 
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
@@ -266,7 +244,7 @@ MainWidget::MainWidget(QWidget *parent)
             this, SLOT(onContactListClicked(QModelIndex)));
 
     connect(m_contactsListView, SIGNAL(doubleClicked(QModelIndex)),
-            this, SLOT(onContactListDoubleClick(QModelIndex)));
+            this, SLOT(onContactListDoubleClicked(QModelIndex)));
 
     connect(m_delegate, SIGNAL(repaintItem(QModelIndex)),
             m_contactsListView->viewport(), SLOT(repaint())); //update(QModelIndex)
@@ -275,13 +253,16 @@ MainWidget::MainWidget(QWidget *parent)
             this, SLOT(onAddContactRequest()));
 
     connect(m_groupContactsAction, SIGNAL(triggered(bool)),
-            this, SLOT(onGroupContacts(bool)));
+            this, SLOT(groupContacts(bool)));
 
     connect(m_searchContactAction, SIGNAL(triggered(bool)),
             this, SLOT(toggleSearchWidget(bool)));
 
     connect(m_presenceMessageEdit, SIGNAL(returnPressed(QString)),
             this, SLOT(setCustomPresenceMessage(QString)));
+
+    connect(m_avatarButton, SIGNAL(operationFinished(Tp::PendingOperation*)),
+            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
     if (guiConfigGroup.readEntry("pin_filterbar", true)) {
         toggleSearchWidget(true);
@@ -349,6 +330,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     m_accountButtonsLayout->insertStretch(-1);
 
+    m_avatarButton->initialize(m_model, m_accountManager);
+
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
 
     if(accounts.count() == 0) {
@@ -375,7 +358,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     KConfigGroup guiConfigGroup(config, "GUI");
 
     bool useGroups = guiConfigGroup.readEntry("use_groups", true);
-    onGroupContacts(useGroups);
+    groupContacts(useGroups);
     m_groupContactsAction->setChecked(useGroups);
 
     bool showOffline = guiConfigGroup.readEntry("show_offline", false);
@@ -439,14 +422,14 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
 
     if(account->isEnabled()) {
         bt->show();
-        loadAvatar(account);
+        m_avatarButton->loadAvatar(account);
     }
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup avatarGroup(config, "Avatar");
     if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
         //this also updates the avatar if it was changed somewhere else
-        selectAvatarFromAccount(avatarGroup.readEntry("source", QString()));
+        m_avatarButton->selectAvatarFromAccount(avatarGroup.readEntry("source", QString()));
     }
 }
 
@@ -526,7 +509,7 @@ void MainWidget::onContactListClicked(const QModelIndex& index)
     }
 }
 
-void MainWidget::onContactListDoubleClick(const QModelIndex& index)
+void MainWidget::onContactListDoubleClicked(const QModelIndex& index)
 {
     if (!index.isValid()) {
         return;
@@ -551,7 +534,7 @@ void MainWidget::startTextChannel(ContactModelItem *contactItem)
                                                                         QDateTime::currentDateTime(),
                                                                         PREFERRED_TEXTCHAT_HANDLER);
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 void MainWidget::startAudioChannel(ContactModelItem *contactItem)
@@ -567,7 +550,7 @@ void MainWidget::startAudioChannel(ContactModelItem *contactItem)
                                                                         QDateTime::currentDateTime(),
                                                                         PREFERRED_AUDIO_VIDEO_HANDLER);
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 void MainWidget::startVideoChannel(ContactModelItem *contactItem)
@@ -583,7 +566,7 @@ void MainWidget::startVideoChannel(ContactModelItem *contactItem)
                                                                         QDateTime::currentDateTime(),
                                                                         PREFERRED_AUDIO_VIDEO_HANDLER);
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 
@@ -618,7 +601,7 @@ void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
                                                                             fileTransferProperties,
                                                                             QDateTime::currentDateTime(),
                                                                             PREFERRED_FILETRANSFER_HANDLER);
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
@@ -783,7 +766,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
     action->setIcon(KIcon("mail-message-new"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
-            SLOT(slotStartTextChat()));
+            SLOT(onStartTextChatTriggered()));
 
     if (index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
         action->setEnabled(true);
@@ -799,7 +782,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
     action->setIcon(KIcon("voicecall"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
-            SLOT(slotStartAudioChat()));
+            SLOT(onStartAudioChatTriggered()));
 
     if (index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
         action->setEnabled(true);
@@ -809,7 +792,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
     action->setIcon(KIcon("webcamsend"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
-            SLOT(slotStartVideoChat()));
+            SLOT(onStartVideoChatTriggered()));
 
     if (index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
         action->setEnabled(true);
@@ -819,7 +802,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
     action->setIcon(KIcon("mail-attachment"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
-            SLOT(slotStartFileTransfer()));
+            SLOT(onStartFileTransferTriggered()));
 
     if (index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
         action->setEnabled(true);
@@ -829,7 +812,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
 
     // remove contact action
     QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
-    connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(slotDeleteContact()));
+    connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
 
     if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
         QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
@@ -851,13 +834,13 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
         }
 
         connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
-                this, SLOT(onCreateNewGroup()));
+                this, SLOT(onCreateNewGroupTriggered()));
 
         groupAddMenu->addSeparator();
 
         foreach (const QString &group, groupList) {
             connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
-                    SLOT(slotAddContactToGroupTriggered()));
+                    SLOT(onAddContactToGroupTriggered()));
         }
     } else {
         kDebug() << "Unable to support Groups";
@@ -880,7 +863,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
 
     action = menu->addAction(i18n("Show Info..."));
     action->setIcon(KIcon(""));
-    connect(action, SIGNAL(triggered()), SLOT(slotShowInfo()));
+    connect(action, SIGNAL(triggered()), SLOT(onShowInfoTriggered()));
 
     return menu;
 }
@@ -913,7 +896,7 @@ KMenu* MainWidget::groupContextMenu(const QModelIndex &index)
     return menu;
 }
 
-void MainWidget::slotAddContactToGroupTriggered()
+void MainWidget::onAddContactToGroupTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
@@ -933,17 +916,17 @@ void MainWidget::slotAddContactToGroupTriggered()
 
     if (operation) {
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+                SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
         foreach (const QString &group, currentGroups) {
             Tp::PendingOperation* operation = contact->removeFromGroup(group);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+                    SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
 }
 
-void MainWidget::onCreateNewGroup()
+void MainWidget::onCreateNewGroupTriggered()
 {
     QString newGroupName = KInputDialog::getText(i18n("New Group Name"), i18n("Please enter the new group name"));
 
@@ -955,10 +938,10 @@ void MainWidget::onCreateNewGroup()
     Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
 
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
-void MainWidget::onRenameGroup()
+void MainWidget::onRenameGroupTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
 
@@ -975,15 +958,15 @@ void MainWidget::onRenameGroup()
 
         Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+                SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
         operation = contact->removeFromGroup(groupItem->groupName());
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+                SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
     }
 }
 
-void MainWidget::onDeleteGroup()
+void MainWidget::onDeleteGroupTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
 
@@ -1001,21 +984,21 @@ void MainWidget::onDeleteGroup()
 
             Tp::PendingOperation *operation = contact->removeFromGroup(groupItem->groupName());
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+                    SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
 
         foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->connection()) {
                 Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupItem->groupName());
                 connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                        SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+                        SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
             }
         }
     }
 }
 
 
-void MainWidget::slotBlockContactTriggered()
+void MainWidget::onBlockContactTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
@@ -1025,10 +1008,10 @@ void MainWidget::slotBlockContactTriggered()
 
     Tp::PendingOperation *operation = contact->block(true);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
-void MainWidget::slotDeleteContact()
+void MainWidget::onDeleteContactTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
@@ -1045,19 +1028,19 @@ void MainWidget::slotDeleteContact()
     if (removeDialog.data()->exec() == QDialog::Accepted) {
         // remove from contact list
         Tp::PendingOperation *deleteOp = contact->manager()->removeContacts(contactList);
-        connect(deleteOp, SIGNAL(finished(Tp::PendingOperation*)), this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+        connect(deleteOp, SIGNAL(finished(Tp::PendingOperation*)), this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
         if (removeDialog.data()->blockContact()) {
             // block contact
             Tp::PendingOperation *blockOp = contact->manager()->blockContacts(contactList);
-            connect(blockOp, SIGNAL(finished(Tp::PendingOperation*)), this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            connect(blockOp, SIGNAL(finished(Tp::PendingOperation*)), this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
 
     delete removeDialog.data();
 }
 
-void MainWidget::slotGenericOperationFinished(Tp::PendingOperation* operation)
+void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
 {
     if (operation->isError()) {
         QString errorMsg(operation->errorName() + ": " + operation->errorMessage());
@@ -1065,7 +1048,7 @@ void MainWidget::slotGenericOperationFinished(Tp::PendingOperation* operation)
     }
 }
 
-void MainWidget::slotShowInfo()
+void MainWidget::onShowInfoTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     if (!index.isValid()) {
@@ -1085,7 +1068,7 @@ void MainWidget::showInfo(ContactModelItem *contactItem)
     contactInfoDialog.exec();
 }
 
-void MainWidget::slotStartTextChat()
+void MainWidget::onStartTextChatTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     if (!index.isValid()) {
@@ -1099,7 +1082,7 @@ void MainWidget::slotStartTextChat()
     }
 }
 
-void MainWidget::slotStartAudioChat()
+void MainWidget::onStartAudioChatTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     if (!index.isValid()) {
@@ -1113,7 +1096,7 @@ void MainWidget::slotStartAudioChat()
     }
 }
 
-void MainWidget::slotStartVideoChat()
+void MainWidget::onStartVideoChatTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     if (!index.isValid()) {
@@ -1126,7 +1109,7 @@ void MainWidget::slotStartVideoChat()
     }
 }
 
-void MainWidget::slotStartFileTransfer()
+void MainWidget::onStartFileTransferTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     if (!index.isValid()) {
@@ -1140,7 +1123,7 @@ void MainWidget::slotStartFileTransfer()
     }
 }
 
-void MainWidget::slotUnblockContactTriggered()
+void MainWidget::onUnblockContactTriggered()
 {
     QModelIndex index = m_contactsListView->currentIndex();
     ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
@@ -1150,7 +1133,7 @@ void MainWidget::slotUnblockContactTriggered()
 
     Tp::PendingOperation *operation = contact->block(false);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
 
@@ -1172,163 +1155,6 @@ void MainWidget::showSettingsKCM()
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
-}
-
-void MainWidget::loadAvatar(const Tp::AccountPtr &account)
-{
-    if (!account->avatar().avatarData.isEmpty()) {
-        QIcon icon;
-        Tp::Avatar avatar = account->avatar();
-        icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(48, 48));
-
-        QToolButton *avatarButton = new QToolButton(this);
-        avatarButton->setIcon(icon);
-        avatarButton->setIconSize(QSize(48, 48));
-        avatarButton->setText(i18nc("String in menu saying Use avatar from account X",
-                                    "Use from %1", account->displayName()));
-        avatarButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-
-        QWidgetAction *avatarAction = new QWidgetAction(m_avatarButtonMenu);
-        avatarAction->setDefaultWidget(avatarButton);
-        avatarAction->setData(account->uniqueIdentifier());
-
-        connect(avatarButton, SIGNAL(clicked(bool)),
-                avatarAction, SIGNAL(triggered(bool)));
-
-        connect(avatarAction, SIGNAL(triggered(bool)),
-                this, SLOT(selectAvatarFromAccount()));
-
-
-        m_avatarButtonMenu->addAction(avatarAction);
-    }
-}
-
-void MainWidget::selectAvatarFromAccount()
-{
-    selectAvatarFromAccount(qobject_cast<QWidgetAction*>(sender())->data().toString());
-}
-
-void MainWidget::selectAvatarFromAccount(const QString &accountUID)
-{
-    if (accountUID.isEmpty()) {
-        kDebug() << "Supplied accountUID is empty, aborting...";
-        return;
-    }
-
-    if (m_model->accountItemForId(accountUID) == 0) {
-        kDebug() << "Chosen account ID does not exist, aborting..";
-
-        //no point of keeping the config if the previously set account ID does not exist
-        KSharedConfigPtr config = KGlobal::config();
-        KConfigGroup avatarGroup(config, "Avatar");
-        avatarGroup.deleteGroup();
-        avatarGroup.config()->sync();
-
-        return;
-    }
-
-    Tp::Avatar avatar = qobject_cast<AccountsModelItem*>(m_model->accountItemForId(accountUID))->data(AccountsModel::AvatarRole).value<Tp::Avatar>();
-
-    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
-        //don't set the avatar for the account from where it was taken
-        if (account->uniqueIdentifier() == accountUID) {
-            continue;
-        }
-
-        account->setAvatar(avatar);
-    }
-
-    //add the selected avatar as the icon of avatar button
-    QIcon icon;
-    icon.addPixmap(QPixmap::fromImage(QImage::fromData(avatar.avatarData)).scaled(48, 48));
-    m_userAccountIconButton->setIcon(icon);
-
-    m_avatarButtonMenu->close();
-
-    //save the selected account into config
-    KSharedConfigPtr config = KGlobal::config();
-    KConfigGroup avatarGroup(config, "Avatar");
-    avatarGroup.writeEntry("method", "account");
-    avatarGroup.writeEntry("source", accountUID);
-    avatarGroup.config()->sync();
-
-}
-
-void MainWidget::loadAvatarFromFile()
-{
-    if (m_accountManager->allAccounts().isEmpty()) {
-        int returnCode = KMessageBox::warningYesNo(this,
-                                           i18nc("Dialog text", "You have no accounts set. Would you like to set one now?"),
-                                           i18nc("Dialog caption", "No accounts set"));
-
-        if (returnCode == KMessageBox::Yes) {
-            showSettingsKCM();
-            loadAvatarFromFile();
-        } else {
-            return;
-        }
-    } else {
-        KUrl fileUrl = KFileDialog::getImageOpenUrl(KUrl(), this,
-                                     i18n("Please choose your avatar"));
-
-        if (!fileUrl.isEmpty()) {
-            FetchAvatarJob *job = new FetchAvatarJob(fileUrl, this);
-
-            connect(job, SIGNAL(result(KJob*)),
-                    this, SLOT(onAvatarFetched(KJob*)));
-
-            job->start();
-        } else {
-            return;
-        }
-    }
-}
-
-void MainWidget::onAvatarFetched(KJob *job)
-{
-    if (job->error()) {
-        KMessageBox::error(this, job->errorString());
-        return;
-    }
-
-    //this should never be true, but better one "if" than a crash
-    if (m_accountManager->allAccounts().isEmpty()) {
-        int returnCode = KMessageBox::warningYesNo(this,
-                                                   i18nc("Dialog text", "You have no accounts set. Would you like to set one now?"),
-                                                   i18nc("Dialog caption", "No accounts set"));
-
-        if (returnCode == KMessageBox::Yes) {
-            showSettingsKCM();
-        } else {
-            return;
-        }
-    } else {
-
-        FetchAvatarJob *fetchJob = qobject_cast< FetchAvatarJob* >(job);
-
-        Q_ASSERT(fetchJob);
-
-        foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
-            Tp::PendingOperation *op = account->setAvatar(fetchJob->avatar());
-
-            //connect for eventual error displaying
-            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                    this, SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
-        }
-
-        //add the selected avatar to the avatar button
-        QIcon icon;
-        icon.addPixmap(QPixmap::fromImage(QImage::fromData(fetchJob->avatar().avatarData)).scaled(48, 48));
-        m_userAccountIconButton->setIcon(icon);
-
-        //since all the accounts will have the same avatar,
-        //we take simply the first in AM and use this in config
-        KSharedConfigPtr config = KGlobal::config();
-        KConfigGroup avatarGroup(config, "Avatar");
-        avatarGroup.writeEntry("method", "account");
-        avatarGroup.writeEntry("source", m_accountManager->allAccounts().first()->uniqueIdentifier());
-        avatarGroup.config()->sync();
-    }
 }
 
 void MainWidget::onAccountsPresenceStatusFiltered()
@@ -1366,7 +1192,7 @@ void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
 
         if (op) {
             connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+                    SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
 }
@@ -1392,7 +1218,7 @@ void MainWidget::handleConnectionError(const Tp::AccountPtr& account)
     }
 }
 
-void MainWidget::onGroupContacts(bool enabled)
+void MainWidget::groupContacts(bool enabled)
 {
     if (enabled) {
         m_modelFilter->setSourceModel(m_groupsModel);
@@ -1414,7 +1240,7 @@ void MainWidget::onJoinChatRoomRequested()
             Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom(),
                                                                                     QDateTime::currentDateTime(),
                                                                                     PREFERRED_TEXTCHAT_HANDLER);
-            connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(slotGenericOperationFinished(Tp::PendingOperation*)));
+            connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
 

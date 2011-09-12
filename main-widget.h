@@ -1,5 +1,5 @@
 /*
- * This file is part of telepathy-contactslist-prototype
+ * This file is part of telepathy-contact-list
  *
  * Copyright (C) 2009-2010 Collabora Ltd. <info@collabora.co.uk>
  *   @Author George Goldberg <george.goldberg@collabora.co.uk>
@@ -53,6 +53,7 @@ public:
 
     bool isPresencePlasmoidPresent() const;
     bool isAnyAccountOnline() const;
+    void addOverlayButtons();
 
     enum SystemMessageType {
         /*
@@ -71,58 +72,57 @@ public:
     };
 
 public Q_SLOTS:
-    void onAccountManagerReady(Tp::PendingOperation *op);
-
-    void onContactListClicked(const QModelIndex &index);
-    void onContactListDoubleClick(const QModelIndex &index);
-    void onConnectionChanged(const Tp::ConnectionPtr &connection);
-    void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
-    void showMessageToUser(const QString &text, const SystemMessageType type);
-    void addOverlayButtons();
+    void onAddContactRequest();
+    void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
     void onNewAccountAdded(const Tp::AccountPtr &account);
     void onAccountStateChanged(bool enabled);
     void onAccountRemoved();
+
     void toggleSearchWidget(bool show);
     void setCustomPresenceMessage(const QString &message);
     void showSettingsKCM();
-    void onAddContactRequest();
-    void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
-    void loadAvatar(const Tp::AccountPtr &account);
-    void selectAvatarFromAccount(const QString &accountUID);
-    void selectAvatarFromAccount();
-    void loadAvatarFromFile();
+    void showMessageToUser(const QString &text, const SystemMessageType type);
     void showInfo(ContactModelItem *contactItem);
     void startTextChannel(ContactModelItem *contactItem);
     void startFileTransferChannel(ContactModelItem *contactItem);
     void startAudioChannel(ContactModelItem *contactItem);
     void startVideoChannel(ContactModelItem *contactItem);
-    void onCustomContextMenuRequested(const QPoint &point);
-    void onGroupContacts(bool enabled);
-    void onJoinChatRoomRequested();         /** join chat room action is triggered */
+
     void goOffline();
 
 private Q_SLOTS:
-    void slotAddContactToGroupTriggered();
-    void slotBlockContactTriggered();
-    void slotDeleteContact();
-    void slotGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
-    void slotShowInfo();
-    void slotStartTextChat();
-    void slotStartAudioChat();
-    void slotStartVideoChat();
-    void slotStartFileTransfer();
-    void slotUnblockContactTriggered();
-    void onAvatarFetched(KJob*);
+    void onAddContactToGroupTriggered();
+    void onBlockContactTriggered();
+    void onStartTextChatTriggered();
+    void onStartAudioChatTriggered();
+    void onStartVideoChatTriggered();
+    void onStartFileTransferTriggered();
+    void onUnblockContactTriggered();
+    void onCreateNewGroupTriggered();
+    void onRenameGroupTriggered();
+    void onDeleteGroupTriggered();
+    void onShowInfoTriggered();
+    void onDeleteContactTriggered();
+    void onJoinChatRoomRequested();         /** join chat room action is triggered */
+
+    void onAccountManagerReady(Tp::PendingOperation *op);
+    void onContactListClicked(const QModelIndex &index);
+    void onContactListDoubleClicked(const QModelIndex &index);
+    void onConnectionChanged(const Tp::ConnectionPtr &connection);
+    void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
+    void onCustomContextMenuRequested(const QPoint &point);
+
     void onAccountsPresenceStatusFiltered();
     void onPresencePublicationRequested(const Tp::Contacts &contacts);
-    void monitorPresence(const Tp::ConnectionPtr &connection);
     void onContactManagerStateChanged(Tp::ContactListState state);
     void onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state);
     void onSwitchToFullView();
     void onSwitchToCompactView();
-    void onCreateNewGroup();
-    void onRenameGroup();
-    void onDeleteGroup();
+
+    void onGenericOperationFinished(Tp::PendingOperation *operation); /** called when a Tp::PendingOperation finishes. Used to check for errors */
+
+    void groupContacts(bool enabled);
+    void monitorPresence(const Tp::ConnectionPtr &connection);
 
 Q_SIGNALS:
     void enableOverlays(bool);
@@ -137,10 +137,9 @@ private:
 
     AccountsModel          *m_model;
     GroupsModel            *m_groupsModel;
-    AccountsFilterModel     *m_modelFilter;
+    AccountsFilterModel    *m_modelFilter;
     Tp::AccountManagerPtr   m_accountManager;
     KMenu                  *m_accountMenu;
-    KMenu                  *m_avatarButtonMenu;
     KSelectAction          *m_setStatusAction;
     ContactDelegate        *m_delegate;
     ContactDelegateCompact *m_compactDelegate;
