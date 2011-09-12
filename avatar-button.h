@@ -60,3 +60,5 @@ private:
     Tp::AccountManagerPtr  m_accountManager;
     AccountsModel         *m_accountsModel;
 };
+
+#endif  //AVATAR_BUTTON_H
