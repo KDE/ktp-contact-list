@@ -18,9 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-#include "../models/accounts-model.h"
 #include "join-chat-room-dialog.h"
 #include "ui_join-chat-room-dialog.h"
+#include "../models/accounts-model.h"
 
 #include <KDE/KPushButton>
 #include <TelepathyQt4/AccountManager>
