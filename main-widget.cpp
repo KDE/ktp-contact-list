@@ -57,7 +57,7 @@
 #include <KToolInvocation>
 
 #include "ui_main-widget.h"
-#include "account-button.h"
+#include "account-buttons-panel.h"
 #include "contact-overlays.h"
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
@@ -334,9 +334,10 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     connect(m_groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
-    m_accountButtonsLayout->insertStretch(-1);
+
 
     m_avatarButton->initialize(m_model, m_accountManager);
+    m_accountButtons->setAccountManager(m_accountManager);
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
 
@@ -413,24 +414,6 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
             SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
             this, SLOT(onAccountConnectionStatusChanged(Tp::ConnectionStatus)));
 
-    connect(account.data(), SIGNAL(stateChanged(bool)),
-            this, SLOT(onAccountStateChanged(bool)));
-
-    connect(account.data(),
-            SIGNAL(removed()),
-            this, SLOT(onAccountRemoved()));
-
-    AccountButton *bt = new AccountButton(account, this);
-    bt->setObjectName(account->uniqueIdentifier());
-    bt->hide();
-
-    m_accountButtonsLayout->insertWidget(m_accountButtonsLayout->count() - 1, bt);
-
-    if(account->isEnabled()) {
-        bt->show();
-        m_avatarButton->loadAvatar(account);
-    }
-
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup avatarGroup(config, "Avatar");
     if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
@@ -469,27 +452,7 @@ void MainWidget::onContactManagerStateChanged(const Tp::ContactManagerPtr &conta
     }
 }
 
-void MainWidget::onAccountStateChanged(bool enabled)
-{
-    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
 
-    if(enabled) {
-        findChild<AccountButton *>(account->uniqueIdentifier())->show();
-    } else {
-        findChild<AccountButton *>(account->uniqueIdentifier())->hide();
-        showMessageToUser(i18n("Account %1 was disabled.", account->displayName()),
-                          MainWidget::SystemMessageError);
-    }
-}
-
-void MainWidget::onAccountRemoved()
-{
-    Tp::AccountPtr account(qobject_cast<Tp::Account*>(sender()));
-    delete findChild<AccountButton *>(account->uniqueIdentifier());
-
-    showMessageToUser(i18n("Account %1 was removed.", account->displayName()),
-                      MainWidget::SystemMessageError);
-}
 
 void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
 {
@@ -1181,9 +1144,18 @@ void MainWidget::onUnblockContactTriggered()
 
 void MainWidget::setCustomPresenceMessage(const QString& message)
 {
-    for (int i = 0; i < m_accountButtonsLayout->count() - 1; i++) {
-        qobject_cast<AccountButton*>(m_accountButtonsLayout->itemAt(i)->widget())->setCustomPresenceMessage(message);
+    //loop through all enabled account setting to the same presence but with a new presence message.
+    foreach(const Tp::AccountPtr account, m_accountManager->allAccounts()) {
+        if (! account->isEnabled()) {
+            continue;
+        }
 
+        Tp::SimplePresence presence;
+        presence.type = account->currentPresence().type();
+        presence.status = account->currentPresence().status();
+        presence.statusMessage = message;
+
+        account->setRequestedPresence(presence);
     }
 
     m_presenceMessageEdit->clearFocus();

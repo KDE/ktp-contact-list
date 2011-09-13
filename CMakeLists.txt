@@ -28,6 +28,7 @@ set (contactlist_SRCS avatar-button.cpp
      contact-delegate.cpp
      contact-delegate-compact.cpp
      account-button.cpp
+     account-buttons-panel.cpp
      filter-bar.cpp
      main.cpp
      main-widget.cpp

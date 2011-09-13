@@ -29,9 +29,6 @@
       <property name="verticalSpacing">
        <number>0</number>
       </property>
-      <item row="2" column="1">
-       <layout class="QHBoxLayout" name="m_accountButtonsLayout"/>
-      </item>
       <item row="1" column="1">
        <widget class="KLineEdit" name="m_presenceMessageEdit">
         <property name="placeholderText">
@@ -74,6 +71,9 @@
         </property>
        </widget>
       </item>
+      <item row="2" column="1">
+       <widget class="AccountButtonsPanel" name="m_accountButtons" native="true"/>
+      </item>
      </layout>
     </item>
     <item>
@@ -115,6 +115,12 @@
    <class>AvatarButton</class>
    <extends>QToolButton</extends>
    <header>avatar-button.h</header>
+  </customwidget>
+  <customwidget>
+   <class>AccountButtonsPanel</class>
+   <extends>QWidget</extends>
+   <header>account-buttons-panel.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

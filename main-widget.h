@@ -75,9 +75,6 @@ public Q_SLOTS:
     void onAddContactRequest();
     void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
     void onNewAccountAdded(const Tp::AccountPtr &account);
-    void onAccountStateChanged(bool enabled);
-    void onAccountRemoved();
-
     void toggleSearchWidget(bool show);
     void setCustomPresenceMessage(const QString &message);
     void showSettingsKCM();
