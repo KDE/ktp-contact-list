@@ -706,10 +706,21 @@ void MainWidget::toggleSearchWidget(bool show)
 void MainWidget::onAddContactRequest() {
     QWeakPointer<AddContactDialog> dialog = new AddContactDialog(m_model, this);
     if (dialog.data()->exec() == QDialog::Accepted) {
-    Tp::AccountPtr account = dialog.data()->account();
-        QStringList identifiers = QStringList() << dialog.data()->screenName();
-        Tp::PendingContacts* pendingContacts = account->connection()->contactManager()->contactsForIdentifiers(identifiers);
-        connect(pendingContacts, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAddContactRequestFoundContacts(Tp::PendingOperation*)));
+        Tp::AccountPtr account = dialog.data()->account();
+        if (account.isNull()) {
+            KMessageBox::error(this,
+                               i18n("Seems like you forgot to select an account. Also don't forget to connect it first."),
+                               i18n("No Account Selected"));
+        }
+        else if (account->connection().isNull()) {
+            KMessageBox::error(this,
+                               i18n("An error we didn't anticipate just happened and so the contact couldn't be added. Sorry."),
+                               i18n("Account Error"));
+        } else {
+            QStringList identifiers = QStringList() << dialog.data()->screenName();
+            Tp::PendingContacts* pendingContacts = account->connection()->contactManager()->contactsForIdentifiers(identifiers);
+            connect(pendingContacts, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAddContactRequestFoundContacts(Tp::PendingOperation*)));
+        }
     }
     delete dialog.data();
 }
