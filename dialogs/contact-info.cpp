@@ -41,6 +41,9 @@ ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :
     setButtons(KDialog::Close);
 
     QPixmap avatar(contact->avatarData().fileName);
+    if (avatar.isNull()) {
+        avatar = KIconLoader::global()->loadIcon("im-user", KIconLoader::Desktop, 128);
+    }
 
     ui->avatarLabel->setPixmap(avatar.scaled(ui->avatarLabel->maximumSize(), Qt::KeepAspectRatio));
 

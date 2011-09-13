@@ -101,11 +101,8 @@
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
       <widget class="QLabel" name="label_3">
-       <property name="toolTip">
-        <string>Can see when you are online</string>
-       </property>
        <property name="text">
-        <string>Publish State:</string>
+        <string>Contact can see when you are online:</string>
        </property>
       </widget>
      </item>
@@ -118,11 +115,8 @@
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_5">
-       <property name="toolTip">
-        <string>You can see when they are online</string>
-       </property>
        <property name="text">
-        <string>Subscription State:</string>
+        <string>You can see when the contact is online:</string>
        </property>
       </widget>
      </item>
@@ -136,7 +130,7 @@
      <item row="2" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
-        <string>Blocked:</string>
+        <string>Contact is blocked:</string>
        </property>
       </widget>
      </item>
