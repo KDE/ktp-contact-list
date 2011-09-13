@@ -46,7 +46,7 @@ FilterBar::FilterBar(QWidget* parent) :
     m_filterInput = new KLineEdit(this);
     m_filterInput->setLayoutDirection(Qt::LeftToRight);
     m_filterInput->setClearButtonShown(true);
-    connect(m_filterInput, SIGNAL(textChanged(const QString&)),
+    connect(m_filterInput, SIGNAL(textEdited(const QString&)),
             this, SIGNAL(filterChanged(const QString&)));
     setFocusProxy(m_filterInput);
 

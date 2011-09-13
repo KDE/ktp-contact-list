@@ -307,7 +307,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         m_modelFilter->setSourceModel(m_model);
     }
     m_modelFilter->setDynamicSortFilter(true);
-    m_modelFilter->showOfflineUsers(m_showOfflineAction->isChecked());
+    m_modelFilter->setShowOfflineUsers(m_showOfflineAction->isChecked());
     m_modelFilter->clearFilterString();
     m_modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_modelFilter->setSortRole(Qt::DisplayRole);
@@ -317,19 +317,16 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
 
     connect(m_showOfflineAction, SIGNAL(toggled(bool)),
-            m_modelFilter, SLOT(showOfflineUsers(bool)));
+            m_modelFilter, SLOT(setShowOfflineUsers(bool)));
 
     connect(m_filterBar, SIGNAL(filterChanged(QString)),
             m_modelFilter, SLOT(setFilterString(QString)));
 
     connect(m_filterBar, SIGNAL(closeRequest()),
-            m_modelFilter, SLOT(clearFilterString()));
-
-    connect(m_filterBar, SIGNAL(closeRequest()),
             m_filterBar, SLOT(hide()));
 
     connect(m_filterBar, SIGNAL(closeRequest()),
-            m_searchContactAction, SLOT(toggle()));
+            m_searchContactAction, SLOT(trigger()));
 
     connect(m_sortByPresenceAction, SIGNAL(toggled(bool)),
             m_modelFilter, SLOT(setSortByPresence(bool)));
@@ -371,7 +368,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_groupContactsAction->setChecked(useGroups);
 
     bool showOffline = guiConfigGroup.readEntry("show_offline", false);
-    m_modelFilter->showOfflineUsers(showOffline);
+    m_modelFilter->setShowOfflineUsers(showOffline);
     m_showOfflineAction->setChecked(showOffline);
 
     bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
@@ -697,7 +694,7 @@ void MainWidget::toggleSearchWidget(bool show)
         m_filterBar->show();
     }
     else {
-        m_modelFilter->clearFilterString();
+        m_modelFilter->clearFilterStringAndHideOfflineUsers(m_showOfflineAction->isChecked());
         m_filterBar->clear();
         m_filterBar->hide();
     }
