@@ -55,6 +55,7 @@
 #include <KStandardShortcut>
 #include <KNotification>
 #include <KToolInvocation>
+#include <kservice.h>
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
@@ -1164,6 +1165,14 @@ void MainWidget::setCustomPresenceMessage(const QString& message)
 void MainWidget::showSettingsKCM()
 {
     KSettings::Dialog *dialog = new KSettings::Dialog(this);
+
+    KService::Ptr tpAccKcm = KService::serviceByDesktopName("kcm_telepathy_accounts");
+
+    if (!tpAccKcm) {
+        KMessageBox::error(this,
+                           i18n("It appears you don't have the IM Accounts control module installed. Please install telepathy-accounts-kcm package."),
+                           i18n("IM Accounts KCM Plugin Is Not Installed"));
+    }
 
     dialog->addModule("kcm_telepathy_accounts");
 
