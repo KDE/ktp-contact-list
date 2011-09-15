@@ -91,7 +91,11 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeView" name="m_contactsListView"/>
+     <widget class="QTreeView" name="m_contactsListView">
+      <property name="animated">
+       <bool>true</bool>
+      </property>
+     </widget>
     </item>
     <item>
      <widget class="FilterBar" name="m_filterBar" native="true"/>
