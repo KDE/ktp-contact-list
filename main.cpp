@@ -1,5 +1,5 @@
 /*
- * This file is part of telepathy-contactslist-prototype
+ * This file is part of Telepathy Contact List
  *
  * Copyright (C) 2009-2010 Collabora Ltd. <info@collabora.co.uk>
  *   @Author George Goldberg <george.goldberg@collabora.co.uk>
