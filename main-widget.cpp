@@ -1313,9 +1313,14 @@ void MainWidget::onJoinChatRoomRequested()
         // check account validity. Should NEVER be invalid
         if (!account.isNull()) {
             // ensure chat room
+            Tp::ChannelRequestHints hints;
+            hints.setHint("org.kde.telepathy","forceRaiseWindow", QVariant(true));
+
             Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom(),
                                                                                     QDateTime::currentDateTime(),
-                                                                                    PREFERRED_TEXTCHAT_HANDLER);
+                                                                                    PREFERRED_TEXTCHAT_HANDLER,
+                                                                                    hints);
+
             connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
     }
