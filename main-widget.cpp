@@ -302,17 +302,17 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_model = new AccountsModel(m_accountManager, this);
     m_groupsModel = new GroupsModel(m_model, this);
     m_modelFilter = new AccountsFilterModel(this);
-    if (m_groupContactsAction->isChecked()) {
-        m_modelFilter->setSourceModel(m_groupsModel);
-    } else {
-        m_modelFilter->setSourceModel(m_model);
-    }
     m_modelFilter->setDynamicSortFilter(true);
     m_modelFilter->setShowOfflineUsers(m_showOfflineAction->isChecked());
     m_modelFilter->clearFilterString();
     m_modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_modelFilter->setSortRole(Qt::DisplayRole);
     m_modelFilter->setSortByPresence(m_sortByPresenceAction->isChecked());
+    if (m_groupContactsAction->isChecked()) {
+        m_modelFilter->setSourceModel(m_groupsModel);
+    } else {
+        m_modelFilter->setSourceModel(m_model);
+    }
     m_contactsListView->setModel(m_modelFilter);
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
