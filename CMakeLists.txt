@@ -47,6 +47,8 @@ set (contactlist_SRCS
      main.cpp
      main-widget.cpp
      fetch-avatar-job.cpp
+     global-presence.cpp
+     global-presence-chooser.cpp
      dialogs/add-contact-dialog.cpp
      dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp

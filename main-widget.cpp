@@ -341,6 +341,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     m_avatarButton->initialize(m_model, m_accountManager);
     m_accountButtons->setAccountManager(m_accountManager);
+    m_presenceChooser->setAccountManager(m_accountManager);
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
 
