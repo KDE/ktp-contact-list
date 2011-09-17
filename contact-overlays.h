@@ -29,13 +29,14 @@
 
 class ContactModelItem;
 
-class TextChannelContactOverlay : public HoverButtonDelegateOverlay
+class StartChannelContactOverlay : public HoverButtonDelegateOverlay
 {
     Q_OBJECT
 
 public:
 
-    TextChannelContactOverlay(QObject* parent);
+    StartChannelContactOverlay(QObject* parent, const KGuiItem & gui,
+                               int capabilityRole, int xpos);
 
 public Q_SLOTS:
     virtual void setActive(bool active);
@@ -53,113 +54,51 @@ protected Q_SLOTS:
 
     void slotClicked(bool checked);
 
-protected:
+private:
 
     KGuiItem m_gui;
-
-    class Button;
-    Button *button() const;
+    int m_capabilityRole;
+    int m_xpos;
 };
 
 // ---------------------------------------------------------------------
 
-class AudioChannelContactOverlay : public HoverButtonDelegateOverlay
+class TextChannelContactOverlay : public StartChannelContactOverlay
+{
+    Q_OBJECT
+
+public:
+    TextChannelContactOverlay(QObject* parent);
+};
+
+// ---------------------------------------------------------------------
+
+class AudioChannelContactOverlay : public StartChannelContactOverlay
 {
     Q_OBJECT
 
 public:
     AudioChannelContactOverlay(QObject* parent);
-
-public Q_SLOTS:
-    virtual void setActive(bool active);
-
-Q_SIGNALS:
-    void activated(ContactModelItem *contactItem);
-
-protected:
-
-    virtual ContactViewHoverButton* createButton();
-    virtual void updateButton(const QModelIndex& index);
-    virtual bool checkIndex(const QModelIndex& index) const;
-
-protected Q_SLOTS:
-
-    void slotClicked(bool checked);
-
-protected:
-
-    KGuiItem m_gui;
-
-    class Button;
-    Button *button() const;
 };
 
 // ---------------------------------------------------------------------
 
-class VideoChannelContactOverlay : public HoverButtonDelegateOverlay
+class VideoChannelContactOverlay : public StartChannelContactOverlay
 {
     Q_OBJECT
 
 public:
-
     VideoChannelContactOverlay(QObject* parent);
-
-public Q_SLOTS:
-    virtual void setActive(bool active);
-
-Q_SIGNALS:
-    void activated(ContactModelItem *contactItem);
-
-protected:
-
-    virtual ContactViewHoverButton* createButton();
-    virtual void updateButton(const QModelIndex& index);
-    virtual bool checkIndex(const QModelIndex& index) const;
-
-protected Q_SLOTS:
-
-    void slotClicked(bool checked);
-
-protected:
-
-    KGuiItem m_gui;
-
-    class Button;
-    Button *button() const;
 };
 
 // ---------------------------------------------------------------------
 
-class FileTransferContactOverlay : public HoverButtonDelegateOverlay
+class FileTransferContactOverlay : public StartChannelContactOverlay
 {
     Q_OBJECT
 
 public:
-
     FileTransferContactOverlay(QObject* parent);
-
-public Q_SLOTS:
-    virtual void setActive(bool active);
-
-Q_SIGNALS:
-    void activated(ContactModelItem *contactItem);
-
-protected:
-
-    virtual ContactViewHoverButton* createButton();
-    virtual void updateButton(const QModelIndex& index);
-    virtual bool checkIndex(const QModelIndex& index) const;
-
-protected Q_SLOTS:
-
-    void slotClicked(bool checked);
-
-protected:
-
-    KGuiItem m_gui;
-
-    class Button;
-    Button *button() const;
 };
 
 #endif // VERSIONSOVERLAYS_H

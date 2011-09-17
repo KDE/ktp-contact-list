@@ -28,59 +28,57 @@
 #include "models/accounts-model.h"
 #include "models/contact-model-item.h"
 
-class TextChannelContactOverlay::Button : public ContactViewHoverButton
+class GuiItemContactViewHoverButton : public ContactViewHoverButton
 {
 public:
 
-    Button(QAbstractItemView* parentView, const KGuiItem& gui);
+    GuiItemContactViewHoverButton(QAbstractItemView* parentView, const KGuiItem& gui);
     virtual QSize sizeHint() const;
 
 protected:
 
-    KGuiItem gui;
-
     virtual QPixmap icon();
     virtual void updateToolTip();
 
+private:
+
+    KGuiItem m_guiItem;
 };
 
-TextChannelContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
-    : ContactViewHoverButton(parentView), gui(gui)
+GuiItemContactViewHoverButton::GuiItemContactViewHoverButton(QAbstractItemView* parentView, const KGuiItem& gui)
+    : ContactViewHoverButton(parentView), m_guiItem(gui)
 {
 }
 
-QSize TextChannelContactOverlay::Button::sizeHint() const
+QSize GuiItemContactViewHoverButton::sizeHint() const
 {
     return QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
 }
 
-QPixmap TextChannelContactOverlay::Button::icon()
+QPixmap GuiItemContactViewHoverButton::icon()
 {
-    return KIconLoader::global()->loadIcon(gui.iconName(),
+    return KIconLoader::global()->loadIcon(m_guiItem.iconName(),
                                            KIconLoader::NoGroup,
                                            KIconLoader::SizeSmall);
 }
 
-void TextChannelContactOverlay::Button::updateToolTip()
+void GuiItemContactViewHoverButton::updateToolTip()
 {
-    setToolTip(gui.toolTip());
+    setToolTip(m_guiItem.toolTip());
 }
 
 // -------------------------------------------------------------------------
 
-TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
-    : HoverButtonDelegateOverlay(parent)
+StartChannelContactOverlay::StartChannelContactOverlay(QObject* parent, const KGuiItem & gui,
+                                                       int capabilityRole, int xpos)
+    : HoverButtonDelegateOverlay(parent),
+      m_gui(gui),
+      m_capabilityRole(capabilityRole),
+      m_xpos(xpos)
 {
-    m_gui = KGuiItem(i18n("Start Chat"), "text-x-generic",
-                     i18n("Start Chat"), i18n("Start a text chat"));
 }
 
-TextChannelContactOverlay::Button *TextChannelContactOverlay::button() const
-{
-    return dynamic_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void TextChannelContactOverlay::setActive(bool active)
+void StartChannelContactOverlay::setActive(bool active)
 {
     HoverButtonDelegateOverlay::setActive(active);
 
@@ -92,23 +90,23 @@ void TextChannelContactOverlay::setActive(bool active)
     }
 }
 
-ContactViewHoverButton* TextChannelContactOverlay::createButton()
+ContactViewHoverButton* StartChannelContactOverlay::createButton()
 {
-    return new Button(view(), m_gui);
+    return new GuiItemContactViewHoverButton(view(), m_gui);
 }
 
-void TextChannelContactOverlay::updateButton(const QModelIndex& index)
+void StartChannelContactOverlay::updateButton(const QModelIndex& index)
 {
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
 
     const int gap = 5;
-    const int x   = rect.left() + 40;// rect.right() - gap - 96 - size.width();
+    const int x   = rect.left() + m_xpos; // rect.right() - gap - 96 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
 }
 
-void TextChannelContactOverlay::slotClicked(bool checked)
+void StartChannelContactOverlay::slotClicked(bool checked)
 {
     Q_UNUSED(checked);
     QModelIndex index = button()->index();
@@ -121,325 +119,58 @@ void TextChannelContactOverlay::slotClicked(bool checked)
     }
 }
 
-bool TextChannelContactOverlay::checkIndex(const QModelIndex& index) const
+bool StartChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    if (index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
-        return true;
-    }
-
-    return false;
+    return index.data(m_capabilityRole).toBool();
 }
 
 // ------------------------------------------------------------------------
 
-class AudioChannelContactOverlay::Button : public ContactViewHoverButton
-{
-public:
-
-    Button(QAbstractItemView* parentView, const KGuiItem& gui);
-    virtual QSize sizeHint() const;
-
-protected:
-
-    KGuiItem gui;
-
-    virtual QPixmap icon();
-    virtual void updateToolTip();
-
-};
-
-AudioChannelContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
-    : ContactViewHoverButton(parentView), gui(gui)
+TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
+    : StartChannelContactOverlay(
+        parent,
+        KGuiItem(i18n("Start Chat"), "text-x-generic",
+                 i18n("Start Chat"), i18n("Start a text chat")),
+        AccountsModel::TextChatCapabilityRole,
+        40)
 {
 }
 
-QSize AudioChannelContactOverlay::Button::sizeHint() const
-{
-    return QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
-}
-
-QPixmap AudioChannelContactOverlay::Button::icon()
-{
-    return KIconLoader::global()->loadIcon(gui.iconName(),
-                                           KIconLoader::NoGroup,
-                                           KIconLoader::SizeSmall);
-}
-
-void AudioChannelContactOverlay::Button::updateToolTip()
-{
-    setToolTip(gui.toolTip());
-}
-
-// -------------------------------------------------------------------------
+// ------------------------------------------------------------------------
 
 AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
-    : HoverButtonDelegateOverlay(parent)
+    : StartChannelContactOverlay(
+        parent,
+        KGuiItem(i18n("Start Audio Call"), "voicecall",
+                 i18n("Start Audio Call"), i18n("Start an audio call")),
+        AccountsModel::AudioCallCapabilityRole,
+        64)
+
 {
-    m_gui = KGuiItem(i18n("Start Audio Call"), "voicecall",
-                     i18n("Start Audio Call"), i18n("Start an audio call"));
-}
-
-AudioChannelContactOverlay::Button *AudioChannelContactOverlay::button() const
-{
-    return static_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void AudioChannelContactOverlay::setActive(bool active)
-{
-    HoverButtonDelegateOverlay::setActive(active);
-
-    if (active) {
-        connect(button(), SIGNAL(clicked(bool)),
-                this, SLOT(slotClicked(bool)));
-    } else {
-        // button is deleted
-    }
-}
-
-ContactViewHoverButton* AudioChannelContactOverlay::createButton()
-{
-    return new Button(view(), m_gui);
-}
-
-void AudioChannelContactOverlay::updateButton(const QModelIndex& index)
-{
-    const QRect rect = m_view->visualRect(index);
-    const QSize size = button()->size();
-
-    const int gap = 5;
-    const int x   = rect.left() + 64; //rect.right() - gap - 72 - size.width();
-    const int y   = rect.bottom() - gap - size.height();
-    button()->move(QPoint(x, y));
-}
-
-void AudioChannelContactOverlay::slotClicked(bool checked)
-{
-    Q_UNUSED(checked);
-    QModelIndex index = button()->index();
-
-    if (index.isValid()) {
-        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
-        if (contactItem) {
-            emit activated(contactItem);
-        }
-    }
-}
-
-bool AudioChannelContactOverlay::checkIndex(const QModelIndex& index) const
-{
-    if (index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
-        return true;
-    }
-
-    return false;
-}
-
-// ----------------------------------------------------------
-
-class VideoChannelContactOverlay::Button : public ContactViewHoverButton
-{
-public:
-
-    Button(QAbstractItemView* parentView, const KGuiItem& gui);
-    virtual QSize sizeHint() const;
-
-protected:
-
-    KGuiItem gui;
-
-    virtual QPixmap icon();
-    virtual void updateToolTip();
-
-};
-
-VideoChannelContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
-    : ContactViewHoverButton(parentView), gui(gui)
-{
-}
-
-QSize VideoChannelContactOverlay::Button::sizeHint() const
-{
-    return QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
-}
-
-QPixmap VideoChannelContactOverlay::Button::icon()
-{
-    return KIconLoader::global()->loadIcon(gui.iconName(),
-                                           KIconLoader::NoGroup,
-                                           KIconLoader::SizeSmall);
-}
-
-void VideoChannelContactOverlay::Button::updateToolTip()
-{
-    setToolTip(gui.toolTip());
 }
 
 // -------------------------------------------------------------------------
 
 VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
-    : HoverButtonDelegateOverlay(parent)
+    : StartChannelContactOverlay(
+        parent,
+        KGuiItem(i18n("Start Video Call"), "camera-web",
+                 i18n("Start Video Call"), i18n("Start a video call")),
+        AccountsModel::VideoCallCapabilityRole,
+        88)
 {
-    m_gui = KGuiItem(i18n("Start Video Call"), "camera-web",
-                     i18n("Start Video Call"), i18n("Start a video call"));
-}
-
-VideoChannelContactOverlay::Button *VideoChannelContactOverlay::button() const
-{
-    return static_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void VideoChannelContactOverlay::setActive(bool active)
-{
-    HoverButtonDelegateOverlay::setActive(active);
-
-    if (active) {
-        connect(button(), SIGNAL(clicked(bool)),
-                this, SLOT(slotClicked(bool)));
-    } else {
-        // button is deleted
-    }
-}
-
-ContactViewHoverButton* VideoChannelContactOverlay::createButton()
-{
-    return new Button(view(), m_gui);
-}
-
-void VideoChannelContactOverlay::updateButton(const QModelIndex& index)
-{
-    const QRect rect = m_view->visualRect(index);
-    const QSize size = button()->size();
-
-    const int gap = 5;
-    const int x   = rect.left() + 88;// rect.right() - gap - 50 - size.width();
-    const int y   = rect.bottom() - gap - size.height();
-    button()->move(QPoint(x, y));
-}
-
-void VideoChannelContactOverlay::slotClicked(bool checked)
-{
-    Q_UNUSED(checked);
-    QModelIndex index = button()->index();
-
-    if (index.isValid()) {
-        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
-        if (contactItem) {
-            emit activated(contactItem);
-        }
-    }
-}
-
-bool VideoChannelContactOverlay::checkIndex(const QModelIndex& index) const
-{
-    if (index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
-        return true;
-    }
-
-    return false;
-}
-
-// ----------------------------------------------------------
-
-class FileTransferContactOverlay::Button : public ContactViewHoverButton
-{
-public:
-
-    Button(QAbstractItemView* parentView, const KGuiItem& gui);
-    virtual QSize sizeHint() const;
-
-protected:
-
-    KGuiItem gui;
-
-    virtual QPixmap icon();
-    virtual void updateToolTip();
-
-};
-
-FileTransferContactOverlay::Button::Button(QAbstractItemView* parentView, const KGuiItem& gui)
-    : ContactViewHoverButton(parentView), gui(gui)
-{
-}
-
-QSize FileTransferContactOverlay::Button::sizeHint() const
-{
-    return QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
-}
-
-QPixmap FileTransferContactOverlay::Button::icon()
-{
-    return KIconLoader::global()->loadIcon(gui.iconName(),
-                                           KIconLoader::NoGroup,
-                                           KIconLoader::SizeSmall);
-}
-
-void FileTransferContactOverlay::Button::updateToolTip()
-{
-    setToolTip(gui.toolTip());
 }
 
 // -------------------------------------------------------------------------
 
 FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
-    : HoverButtonDelegateOverlay(parent)
+    : StartChannelContactOverlay(
+        parent,
+        KGuiItem(i18n("Send File..."), "mail-attachment",
+                 i18n("Send File..."), i18n("Send a file")),
+        AccountsModel::FileTransferCapabilityRole,
+        128)
 {
-    m_gui = KGuiItem(i18n("Send File..."), "mail-attachment",
-                     i18n("Send File..."), i18n("Send a file"));
-}
-
-FileTransferContactOverlay::Button *FileTransferContactOverlay::button() const
-{
-    return static_cast<Button*>(HoverButtonDelegateOverlay::button());
-}
-
-void FileTransferContactOverlay::setActive(bool active)
-{
-    HoverButtonDelegateOverlay::setActive(active);
-
-    if (active) {
-        connect(button(), SIGNAL(clicked(bool)),
-                this, SLOT(slotClicked(bool)));
-    } else {
-        // button is deleted
-    }
-}
-
-ContactViewHoverButton* FileTransferContactOverlay::createButton()
-{
-    return new Button(view(), m_gui);
-}
-
-void FileTransferContactOverlay::updateButton(const QModelIndex& index)
-{
-    const QRect rect = m_view->visualRect(index);
-    const QSize size = button()->size();
-
-    const int gap = 5;
-    const int x   = rect.left() + 128;//rect.right() - gap - 132 - size.width();
-    const int y   = rect.bottom() - gap - size.height();
-    button()->move(QPoint(x, y));
-}
-
-void FileTransferContactOverlay::slotClicked(bool checked)
-{
-    Q_UNUSED(checked);
-    QModelIndex index = button()->index();
-
-    if (index.isValid()) {
-        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
-        if (contactItem) {
-            emit activated(contactItem);
-        }
-    }
-}
-
-bool FileTransferContactOverlay::checkIndex(const QModelIndex& index) const
-{
-    if (index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
-        return true;
-    }
-
-    return false;
 }
 
 #include "contact-overlays.moc"
