@@ -101,4 +101,14 @@ public:
     FileTransferContactOverlay(QObject* parent);
 };
 
+// ---------------------------------------------------------------------
+
+class DesktopSharingContactOverlay : public StartChannelContactOverlay
+{
+    Q_OBJECT
+
+public:
+    DesktopSharingContactOverlay(QObject* parent);
+};
+
 #endif // VERSIONSOVERLAYS_H

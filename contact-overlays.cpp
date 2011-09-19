@@ -173,4 +173,17 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
 {
 }
 
+// -------------------------------------------------------------------------
+
+DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject* parent)
+    : StartChannelContactOverlay(
+        parent,
+        KGuiItem(i18n("Share my desktop"), "krfb",
+                 i18n("Share my desktop"), i18n("Share desktop using RFB")),
+        AccountsModel::DesktopSharingCapabilityRole,
+        152)
+{
+}
+
+
 #include "contact-overlays.moc"
