@@ -80,6 +80,7 @@
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
 #define PREFERRED_AUDIO_VIDEO_HANDLER "org.freedesktop.Telepathy.Client.KDE.CallUi"
+#define PREFERRED_RFB_HANDLER "org.freedesktop.Telepathy.Client.krfb_rfb_handler"
 
 bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 {
@@ -543,6 +544,21 @@ void MainWidget::startVideoChannel(ContactModelItem *contactItem)
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
 
+void MainWidget::startDesktopSharing(ContactModelItem* contactItem)
+{
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact = contactItem->contact();
+
+    kDebug() << "Requesting desktop sharing for contact" << contact->alias();
+
+    Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
+
+    Tp::PendingChannelRequest* channelRequest = account->createStreamTube(contact,
+            QLatin1String("rfb"), QDateTime::currentDateTime(), PREFERRED_RFB_HANDLER);
+
+    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+}
 
 void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
 {
@@ -602,11 +618,13 @@ void MainWidget::addOverlayButtons()
     VideoChannelContactOverlay* videoOverlay = new VideoChannelContactOverlay(this);
 
     FileTransferContactOverlay* fileOverlay  = new FileTransferContactOverlay(this);
+    DesktopSharingContactOverlay *desktopOverlay = new DesktopSharingContactOverlay(this);
 
     m_delegate->installOverlay(textOverlay);
     m_delegate->installOverlay(audioOverlay);
     m_delegate->installOverlay(videoOverlay);
     m_delegate->installOverlay(fileOverlay);
+    m_delegate->installOverlay(desktopOverlay);
 
     textOverlay->setView(m_contactsListView);
     textOverlay->setActive(true);
@@ -620,11 +638,15 @@ void MainWidget::addOverlayButtons()
     fileOverlay->setView(m_contactsListView);
     fileOverlay->setActive(true);
 
+    desktopOverlay->setView(m_contactsListView);
+    desktopOverlay->setActive(true);
+
     connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
             m_delegate, SLOT(hideStatusMessageSlot(QModelIndex)));
 
     connect(textOverlay, SIGNAL(overlayHidden()),
             m_delegate, SLOT(reshowStatusMessageSlot()));
+
 
     connect(textOverlay, SIGNAL(activated(ContactModelItem*)),
             this, SLOT(startTextChannel(ContactModelItem*)));
@@ -638,6 +660,10 @@ void MainWidget::addOverlayButtons()
     connect(videoOverlay, SIGNAL(activated(ContactModelItem*)),
             this, SLOT(startVideoChannel(ContactModelItem*)));
 
+    connect(desktopOverlay, SIGNAL(activated(ContactModelItem*)),
+            this, SLOT(startDesktopSharing(ContactModelItem*)));
+
+
     connect(this, SIGNAL(enableOverlays(bool)),
             textOverlay, SLOT(setActive(bool)));
 
@@ -650,6 +676,8 @@ void MainWidget::addOverlayButtons()
     connect(this, SIGNAL(enableOverlays(bool)),
             fileOverlay, SLOT(setActive(bool)));
 
+    connect(this, SIGNAL(enableOverlays(bool)),
+            desktopOverlay, SLOT(setActive(bool)));
 }
 
 void MainWidget::toggleSearchWidget(bool show)
@@ -790,6 +818,16 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
             SLOT(onStartFileTransferTriggered()));
 
     if (index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
+        action->setEnabled(true);
+    }
+
+    action = menu->addAction(i18n("Share my desktop..."));
+    action->setIcon(KIcon("krfb"));
+    action->setDisabled(true);
+    connect(action, SIGNAL(triggered(bool)),
+            SLOT(onStartDesktopSharingTriggered()));
+
+    if (index.data(AccountsModel::DesktopSharingCapabilityRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -1126,6 +1164,20 @@ void MainWidget::onStartFileTransferTriggered()
     ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         startFileTransferChannel(item);
+    }
+}
+
+void MainWidget::onStartDesktopSharingTriggered()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    if (!index.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    ContactModelItem* item = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        startDesktopSharing(item);
     }
 }
 

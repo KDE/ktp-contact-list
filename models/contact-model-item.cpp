@@ -21,15 +21,23 @@
  */
 
 #include "contact-model-item.h"
+#include "accounts-model.h"
+#include "../service-availability-checker.h"
 
 #include <QImage>
+
+#include <KGlobal>
 
 #include <TelepathyQt4/AvatarData>
 #include <TelepathyQt4/ContactCapabilities>
 #include <TelepathyQt4/ContactManager>
 #include <TelepathyQt4/RequestableChannelClassSpec>
 
-#include "accounts-model.h"
+
+
+K_GLOBAL_STATIC_WITH_ARGS(ServiceAvailabilityChecker, s_krfbAvailableChecker,
+                          (QLatin1String("org.freedesktop.Telepathy.Client.krfb_rfb_handler")));
+
 
 struct ContactModelItem::Private
 {
@@ -44,6 +52,10 @@ struct ContactModelItem::Private
 ContactModelItem::ContactModelItem(const Tp::ContactPtr &contact)
     : mPriv(new Private(contact))
 {
+    //This effectively constructs the s_krfbAvailableChecker object the first
+    //time that this code is executed. This is to start the d-bus query early, so
+    //that data are available when we need them later in desktopSharingCapability()
+    (void) s_krfbAvailableChecker.operator->();
 
     connect(contact.data(),
             SIGNAL(aliasChanged(QString)),
@@ -123,9 +135,10 @@ QVariant ContactModelItem::data(int role) const
         return videoCallCapability();
     case AccountsModel::UpgradeCallCapabilityRole:
         return mPriv->mContact->capabilities().upgradingStreamedMediaCalls();
-    case AccountsModel::FileTransferCapabilityRole: {
+    case AccountsModel::FileTransferCapabilityRole:
         return fileTransferCapability();
-    }
+    case AccountsModel::DesktopSharingCapabilityRole:
+        return desktopSharingCapability();
     default:
         break;
     }
@@ -192,6 +205,13 @@ bool ContactModelItem::fileTransferCapability() const
     bool contactCanHandleFiles = mPriv->mContact->capabilities().fileTransfers();
     bool selfCanHandleFiles = mPriv->mContact->manager()->connection()->selfContact()->capabilities().fileTransfers();
     return contactCanHandleFiles && selfCanHandleFiles;
+}
+
+bool ContactModelItem::desktopSharingCapability() const
+{
+    bool contactCanHandleRfb = mPriv->mContact->capabilities().streamTubes("rfb");
+    bool selfCanHandleRfb = s_krfbAvailableChecker->isAvailable();
+    return contactCanHandleRfb && selfCanHandleRfb;
 }
 
 #include "contact-model-item.moc"

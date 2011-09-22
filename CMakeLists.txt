@@ -19,7 +19,8 @@ include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
 )
 
-set (contactlist_SRCS avatar-button.cpp
+set (contactlist_SRCS
+     avatar-button.cpp
      abstract-contact-delegate.cpp
      contact-list-application.cpp
      contact-view-hover-button.cpp
@@ -33,6 +34,7 @@ set (contactlist_SRCS avatar-button.cpp
      main.cpp
      main-widget.cpp
      fetch-avatar-job.cpp
+     service-availability-checker.cpp
      dialogs/add-contact-dialog.cpp
      dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp

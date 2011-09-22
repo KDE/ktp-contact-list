@@ -84,6 +84,7 @@ public Q_SLOTS:
     void startFileTransferChannel(ContactModelItem *contactItem);
     void startAudioChannel(ContactModelItem *contactItem);
     void startVideoChannel(ContactModelItem *contactItem);
+    void startDesktopSharing(ContactModelItem *contactItem);
 
     void goOffline();
 
@@ -94,6 +95,7 @@ private Q_SLOTS:
     void onStartAudioChatTriggered();
     void onStartVideoChatTriggered();
     void onStartFileTransferTriggered();
+    void onStartDesktopSharingTriggered();
     void onUnblockContactTriggered();
     void onCreateNewGroupTriggered();
     void onRenameGroupTriggered();
