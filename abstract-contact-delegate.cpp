@@ -97,7 +97,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     groupLabelRect.setRight(groupLabelRect.right() - SPACING);
 
     QRect expandSignRect = groupLabelRect;
-    expandSignRect.setLeft(ACCOUNT_ICON_SIZE + (SPACING*3));
+    expandSignRect.setLeft(ACCOUNT_ICON_SIZE + (SPACING*5));
     expandSignRect.setRight(groupLabelRect.left() + 20); //keep it by the left side
 
     QFont groupFont = KGlobalSettings::smallestReadableFont();
@@ -135,7 +135,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     //show a horizontal line padding the header if there is any space left.
     if (groupNameWidth < textRect.width()) {
-        painter->drawLine(expandSignRect.right() + SPACING * 2,
+        painter->drawLine(expandSignRect.right() + SPACING * 4,
                           groupRect.y() + groupRect.height() / 2,
                           groupRect.width() - groupNameWidth - SPACING * 2,
                           groupRect.y() + groupRect.height() / 2);
