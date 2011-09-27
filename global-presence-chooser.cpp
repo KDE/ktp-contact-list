@@ -4,13 +4,17 @@
 
 #include <KIcon>
 #include <KLocale>
+#include <KLineEdit>
 
 #include <TelepathyQt4/Presence>
 
 GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
-    QComboBox(parent),
+    KComboBox(parent),
     m_globalPresence(new GlobalPresence(this))
 {
+    setEditable(true);
+    setInsertPolicy(NoInsert);
+//     setTrapReturnKey(true);
     addItem(KIcon("user-online"), i18n("Available"), qVariantFromValue(Tp::Presence::available()));
     addItem(KIcon("user-away"), i18n("Away"), qVariantFromValue(Tp::Presence::away()));
     addItem(KIcon("user-away"), i18n("Be Right Back"), qVariantFromValue(Tp::Presence::brb()));
@@ -25,6 +29,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
 
     connect(this, SIGNAL(activated(int)), SLOT(onCurrentIndexChanged(int)));
     connect(m_globalPresence, SIGNAL(currentPresenceChanged(Tp::Presence)), SLOT(onPresenceChanged(Tp::Presence)));
+    connect(this, SIGNAL(returnPressed(QString)), SLOT(onPresenceMessageChanged(QString)));
 }
 
 void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accountManager)
@@ -52,3 +57,38 @@ void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
     //FIXME if we can't find the correct value, create an entry.
 }
 
+// void GlobalPresenceChooser::enterEvent(QEvent* event)
+// {
+//     setEditable(true);
+// }
+//
+// void GlobalPresenceChooser::leaveEvent(QEvent* event)
+// {
+//     setEditable(false);
+// }
+
+void GlobalPresenceChooser::onPresenceMessageChanged(const QString &message)
+{
+    Tp::Presence presence = m_globalPresence->currentPresence();
+    presence.setStatus(presence.type(), presence.status(), message);
+
+    bool presenceExists = false;
+    int currentPresenceIndex;
+    for (int i=0; i < count() ; i++) {
+        Tp::Presence itemPresence = itemData(i).value<Tp::Presence>();
+        if (itemPresence.type() == presence.type()) {
+            currentPresenceIndex = i;
+        }
+        if (itemPresence.type() == presence.type() && itemPresence.status() == presence.status() && itemPresence.statusMessage() == presence.statusMessage()) {
+            qDebug() << "This presence already exists, setting this one instead";
+            setCurrentIndex(i);
+            presenceExists = true;
+            break;
+        }
+    }
+
+    if (!presenceExists) {
+        qDebug() << "Adding new presence";
+        insertItem(currentPresenceIndex, itemIcon(currentIndex()), message, qVariantFromValue(presence));
+    }
+}
