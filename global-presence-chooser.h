@@ -5,6 +5,8 @@
 
 #include <TelepathyQt4/AccountManager>
 
+class QFocusEvent;
+class QMouseEvent;
 class GlobalPresence;
 
 class GlobalPresenceChooser : public KComboBox
@@ -14,9 +16,11 @@ public:
     explicit GlobalPresenceChooser(QWidget *parent = 0);
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
-// protected:
-//     void enterEvent(QEvent *event);
-//     void leaveEvent(QEvent *event);
+protected:
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
+    void mousePressEvent(QMouseEvent *event);
+    void focusOutEvent(QFocusEvent *event);
 
 private slots:
     void onCurrentIndexChanged(int index);

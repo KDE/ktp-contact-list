@@ -7,14 +7,14 @@
 #include <KLineEdit>
 
 #include <TelepathyQt4/Presence>
+#include <QMouseEvent>
 
 GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     KComboBox(parent),
     m_globalPresence(new GlobalPresence(this))
 {
-    setEditable(true);
     setInsertPolicy(NoInsert);
-//     setTrapReturnKey(true);
+    setTrapReturnKey(true);
     addItem(KIcon("user-online"), i18n("Available"), qVariantFromValue(Tp::Presence::available()));
     addItem(KIcon("user-away"), i18n("Away"), qVariantFromValue(Tp::Presence::away()));
     addItem(KIcon("user-away"), i18n("Be Right Back"), qVariantFromValue(Tp::Presence::brb()));
@@ -41,6 +41,9 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 {
     Tp::Presence presence = itemData(index).value<Tp::Presence>();
     m_globalPresence->setPresence(presence);
+    setEditable(true);
+    lineEdit()->selectAll();
+    lineEdit()->setFocus();
 }
 
 void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
@@ -59,12 +62,10 @@ void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
 
 // void GlobalPresenceChooser::enterEvent(QEvent* event)
 // {
-//     setEditable(true);
 // }
 //
 // void GlobalPresenceChooser::leaveEvent(QEvent* event)
 // {
-//     setEditable(false);
 // }
 
 void GlobalPresenceChooser::onPresenceMessageChanged(const QString &message)
@@ -91,4 +92,18 @@ void GlobalPresenceChooser::onPresenceMessageChanged(const QString &message)
         qDebug() << "Adding new presence";
         insertItem(currentPresenceIndex, itemIcon(currentIndex()), message, qVariantFromValue(presence));
     }
+}
+
+void GlobalPresenceChooser::mousePressEvent(QMouseEvent *event)
+{
+    if (!isEditable()) {
+        setEditable(true);
+    }
+
+    KComboBox::mousePressEvent(event);
+}
+
+void GlobalPresenceChooser::focusOutEvent(QFocusEvent* event)
+{
+    setEditable(false);
 }
