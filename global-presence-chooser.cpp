@@ -14,7 +14,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_globalPresence(new GlobalPresence(this))
 {
     setInsertPolicy(NoInsert);
-    setTrapReturnKey(true);
+    //setTrapReturnKey(true);
     addItem(KIcon("user-online"), i18n("Available"), qVariantFromValue(Tp::Presence::available()));
     addItem(KIcon("user-away"), i18n("Away"), qVariantFromValue(Tp::Presence::away()));
     addItem(KIcon("user-away"), i18n("Be Right Back"), qVariantFromValue(Tp::Presence::brb()));
@@ -60,14 +60,6 @@ void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
     //FIXME if we can't find the correct value, create an entry.
 }
 
-// void GlobalPresenceChooser::enterEvent(QEvent* event)
-// {
-// }
-//
-// void GlobalPresenceChooser::leaveEvent(QEvent* event)
-// {
-// }
-
 void GlobalPresenceChooser::onPresenceMessageChanged(const QString &message)
 {
     Tp::Presence presence = m_globalPresence->currentPresence();
@@ -91,7 +83,11 @@ void GlobalPresenceChooser::onPresenceMessageChanged(const QString &message)
     if (!presenceExists) {
         qDebug() << "Adding new presence";
         insertItem(currentPresenceIndex, itemIcon(currentIndex()), message, qVariantFromValue(presence));
+        setCurrentIndex(currentPresenceIndex);
+        m_globalPresence->setPresence(presence);
     }
+
+    setEditable(false);
 }
 
 void GlobalPresenceChooser::mousePressEvent(QMouseEvent *event)

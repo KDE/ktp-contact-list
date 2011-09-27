@@ -262,9 +262,6 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_searchContactAction, SIGNAL(triggered(bool)),
             this, SLOT(toggleSearchWidget(bool)));
 
-    connect(m_presenceMessageEdit, SIGNAL(returnPressed(QString)),
-            this, SLOT(setCustomPresenceMessage(QString)));
-
     connect(m_avatarButton, SIGNAL(operationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
@@ -1200,26 +1197,6 @@ void MainWidget::onUnblockContactTriggered()
     Tp::PendingOperation *operation = contact->block(false);
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
             SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
-}
-
-
-void MainWidget::setCustomPresenceMessage(const QString& message)
-{
-    //loop through all enabled account setting to the same presence but with a new presence message.
-    foreach(const Tp::AccountPtr account, m_accountManager->allAccounts()) {
-        if (! account->isEnabled()) {
-            continue;
-        }
-
-        Tp::SimplePresence presence;
-        presence.type = account->currentPresence().type();
-        presence.status = account->currentPresence().status();
-        presence.statusMessage = message;
-
-        account->setRequestedPresence(presence);
-    }
-
-    m_presenceMessageEdit->clearFocus();
 }
 
 void MainWidget::showSettingsKCM()

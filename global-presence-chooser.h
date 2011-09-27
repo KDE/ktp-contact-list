@@ -17,8 +17,6 @@ public:
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
 protected:
-//     void enterEvent(QEvent *event);
-//     void leaveEvent(QEvent *event);
     void mousePressEvent(QMouseEvent *event);
     void focusOutEvent(QFocusEvent *event);
 
