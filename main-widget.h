@@ -128,7 +128,8 @@ Q_SIGNALS:
 
 private:
     QStringList extractLinksFromIndex(const QModelIndex &index);    /** extract links from a QModelIndex pointing to a contact */
-    void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
+    ///Was moved to telepathy-kded-module
+    //void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
 
     KMenu* contactContextMenu(const QModelIndex &index);
