@@ -505,6 +505,7 @@ Flags=Persistent
 [Event/chatstyleRequest]
 IconName=telepathy-kde
 Name=Chatstyle Install Request
+Name[cs]=Požadavek na instalaci stylu rozhovoru
 Name[da]=Installationsanmodning om chatstil
 Name[fr]=Requête d'installation de  Chatstyle
 Name[hu]=Csevegésstílus-telepítési kérés
@@ -522,6 +523,7 @@ Flags=Persistent
 [Event/chatstyleSuccess]
 IconName=dialog-ok-apply
 Name=Installed Chatstyle successfully
+Name[cs]=Stylu rozhovoru byl úspěšně nainstalován
 Name[da]=Chatstil installeret
 Name[fr]=Chatstyle a été installé avec succès
 Name[hu]=A csevegőstílus sikeresen telepítve
@@ -539,6 +541,7 @@ Flags=Persistent
 [Event/chatstyleFailure]
 IconName=dialog-error
 Name=Install Chatstyle Installation failed
+Name[cs]=Instalace stylu rozhovoru selhala
 Name[da]=Installation af chatstil mislykkedes
 Name[fr]=L'installation de Chatstyle a échoué
 Name[hu]=A csevegőstílus telepítése meghiúsult
