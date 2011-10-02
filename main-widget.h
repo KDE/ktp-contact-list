@@ -117,6 +117,7 @@ private Q_SLOTS:
     void onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state);
     void onSwitchToFullView();
     void onSwitchToCompactView();
+    void onNewGroupModelItemsInserted(const QModelIndex &index, int start, int end);
 
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
     void onOpenLinkTriggered(QAction *action);                          /** triggered from custom contact menu when user clicks contact link */
