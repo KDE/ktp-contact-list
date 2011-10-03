@@ -318,7 +318,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
 
-    connect(m_groupsModel, SIGNAL(rowsInserted(QModelIndex, int, int)),
+    connect(m_modelFilter, SIGNAL(rowsInserted(QModelIndex, int, int)),
             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
 
     connect(m_showOfflineAction, SIGNAL(toggled(bool)),
@@ -477,16 +477,10 @@ void MainWidget::onContactListClicked(const QModelIndex& index)
 
         if (m_contactsListView->isExpanded(index)) {
             m_contactsListView->collapse(index);
-
-            if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<GroupsModelItem*>()) {
-                groupsConfig.writeEntry(index.data(GroupsModel::GroupNameRole).toString(), false);
-            }
+            groupsConfig.writeEntry(index.data(AccountsModel::IdRole).toString(), false);
         } else {
             m_contactsListView->expand(index);
-
-            if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<GroupsModelItem*>()) {
-                groupsConfig.writeEntry(index.data(GroupsModel::GroupNameRole).toString(), true);
-            }
+            groupsConfig.writeEntry(index.data(AccountsModel::IdRole).toString(), true);
         }
 
         groupsConfig.config()->sync();
@@ -1489,16 +1483,14 @@ void MainWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int star
 
     //if there is no parent, we deal with top-level item that we want to expand/collapse, ie. group or account
     if (!index.parent().isValid()) {
-        QModelIndex mappedIndex = m_modelFilter->mapFromSource(index);
-
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
         KConfigGroup groupsConfig = config->group("GroupsState");
 
         //we're probably dealing with group item, so let's check if it is expanded first
-        if (!m_contactsListView->isExpanded(mappedIndex)) {
+        if (!m_contactsListView->isExpanded(index)) {
             //if it's not expanded, check the config if we should expand it or not
-            if (groupsConfig.readEntry(index.data(GroupsModel::GroupNameRole).toString(), true)) {
-                m_contactsListView->expand(mappedIndex);
+            if (groupsConfig.readEntry(index.data(AccountsModel::IdRole).toString(), false)) {
+                m_contactsListView->expand(index);
             }
         }
     }
