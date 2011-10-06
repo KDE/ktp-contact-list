@@ -1,6 +1,7 @@
 #include "presence-model.h"
 
 #include <QFont>
+#include <QUuid>
 
 #include <KIcon>
 #include <KLocalizedString>
@@ -13,10 +14,24 @@
 PresenceModel::PresenceModel(QObject *parent) :
     QAbstractListModel(parent)
 {
-    loadDefaultPresences();
-
     KSharedConfigPtr config = KSharedConfig::openConfig("telepathy-kde-contactlistrc");
-    m_presenceGroup = new KConfigGroup( config, "Custom Presence List" );
+    m_presenceGroup = config->group("Custom Presence List");
+
+    loadDefaultPresences();
+    loadCustomPresences();
+}
+
+PresenceModel::~PresenceModel()
+{
+    Q_FOREACH(const KPresence &presence, m_presences) {
+        if (!presence.statusMessage().isEmpty()) {
+            QVariantList presenceVariant;
+            presenceVariant.append(presence.type());
+            presenceVariant.append(presence.statusMessage());
+            QString id = QString::number(presence.type()).append(presence.statusMessage());
+            m_presenceGroup.writeEntry(id, presenceVariant);
+        }
+    }
 }
 
 QVariant PresenceModel::data(const QModelIndex &index, int role) const
@@ -71,24 +86,37 @@ int PresenceModel::rowCount(const QModelIndex &parent) const
 void PresenceModel::loadDefaultPresences()
 {
     addPresence(Tp::Presence::available());
-
     addPresence(Tp::Presence::busy());
-
-    addPresence(Tp::Presence::xa());
-    addPresence(Tp::Presence::xa("Abducted by aliens, back later"));
-
-
     addPresence(Tp::Presence::away());
-    addPresence(Tp::Presence::away("Back Soon!"));
-    addPresence(Tp::Presence::away("Off to eat some cheese"));
-
-
+    addPresence(Tp::Presence::xa());
     addPresence(Tp::Presence::hidden());
     addPresence(Tp::Presence::offline());
 
 
     //FIXME FIXME FIXIME this is just a hack!
     addPresence(Tp::Presence::offline("Configure Custom Messages..."));
+}
+
+
+void PresenceModel::loadCustomPresences()
+{
+    Q_FOREACH(const QString key, m_presenceGroup.keyList()) {
+        QVariantList entry = m_presenceGroup.readEntry(key, QVariantList());
+
+        QString statusMessage = entry.last().toString();
+
+        switch (entry.first().toInt()) {
+        case Tp::ConnectionPresenceTypeAvailable:
+            addPresence(Tp::Presence::available(statusMessage));
+            break;
+        case Tp::ConnectionPresenceTypeAway:
+            addPresence(Tp::Presence::away(statusMessage));
+            break;
+        case Tp::ConnectionPresenceTypeBusy:
+            addPresence(Tp::Presence::busy(statusMessage));
+            break;
+        }
+    }
 }
 
 QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
@@ -100,9 +128,6 @@ QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
     //this is technically a backwards and wrong, but I can't get a row from a const iterator, and using qLowerBound does seem a good approach
     beginInsertRows(QModelIndex(), index, index);
     endInsertRows();
-
-    //save changes
-    m_presenceGroup->writeEntry("presences", presence);
 
     return createIndex(index, 0);
 }
@@ -116,3 +141,4 @@ void PresenceModel::removePresence(const Tp::Presence &presence)
 
     //FIXME edit the config file too
 }
+

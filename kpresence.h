@@ -5,7 +5,6 @@
 
 #include <KIcon>
 
-
 class KPresence : public Tp::Presence
 {
 public:
@@ -13,7 +12,7 @@ public:
     KPresence(const Tp::Presence &presence);
     KIcon icon() const;
 
-
+    /** Returns which presence is "more available" */
     bool operator <(const KPresence &other) const;
 };
 

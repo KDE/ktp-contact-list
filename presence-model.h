@@ -5,13 +5,14 @@
 
 #include <QAbstractListModel>
 
-class KConfigGroup;
+#include <KConfigGroup>
 
 class PresenceModel : public QAbstractListModel
 {
     Q_OBJECT
 public:
     explicit PresenceModel(QObject *parent = 0);
+    ~PresenceModel();
 
     enum Roles {
         //Also supplies Qt::DisplayRole and Qt::DecorationRole
@@ -48,7 +49,7 @@ private:
     QList<KPresence> m_presences;
 
     //this is wrong, KConfigGroup is a sharedptr..
-    KConfigGroup *m_presenceGroup;
+    KConfigGroup m_presenceGroup;
 };
 
 #endif // PRESENCEMODEL_H

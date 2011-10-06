@@ -3,7 +3,6 @@
 KPresence::KPresence() :
     Tp::Presence()
 {
-
 }
 
 KPresence::KPresence(const Tp::Presence &presence) :

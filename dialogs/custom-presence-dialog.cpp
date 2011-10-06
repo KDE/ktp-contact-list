@@ -107,13 +107,6 @@ void CustomPresenceDialog::setupDialog()
 
     setMainWidget(mainDialogWidget);
 
-
-//    int presenceIcon;
-//    foreach(const QString& presenceString, m_presenceGroup->keyList()) {
-//       presenceIcon = m_presenceGroup->readEntry<int>(presenceString, 0);
-//       new QListWidgetItem(iconForIndex(presenceIcon), presenceString.left(presenceString.size() - 2), m_listView);
-//    }
-    
     connect(addStatus, SIGNAL(clicked()), SLOT(addCustomPresence()));
     connect(removeStatus, SIGNAL(clicked()), SLOT(removeCustomPresence()));
     connect(m_statusMessage, SIGNAL(returnPressed()), SLOT(addCustomPresence()));
@@ -126,10 +119,6 @@ void CustomPresenceDialog::addCustomPresence()
     presence.setStatus(presence.type(), QString(), m_statusMessage->currentText());
 
     m_model->addPresence(presence);
-
-//    QString uniquePresenceString = m_statusMessage->currentText() + "_" + QString::number(m_statusMessage->currentIndex());
-//    m_presenceGroup->writeEntry(uniquePresenceString, m_statusMessage->currentIndex());
-//    m_presenceGroup->sync();
 }
 
 void CustomPresenceDialog::removeCustomPresence()
