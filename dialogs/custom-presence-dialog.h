@@ -27,26 +27,22 @@
 
 //Forward declrare classes
 class KIcon;
-class QListWidget;
-class KConfig;
-class KConfigGroup;
+class QListView;
+class PresenceModel;
 
 class CustomPresenceDialog : public KDialog
 {
   Q_OBJECT
 
 public:
-    explicit CustomPresenceDialog(QWidget *parent = 0);
+    explicit CustomPresenceDialog(PresenceModel *model, QWidget *parent = 0);
 
-public Q_SLOTS:
+private Q_SLOTS:
     ///Adds a custom presence to the config file
     void addCustomPresence();
 
     ///Removes a custom presence from the config file
     void removeCustomPresence();
-
-Q_SIGNALS:
-  void configChanged();
 
 private:
     ///Setup the initial dialog
@@ -55,20 +51,15 @@ private:
     ///Returns corresponding icon for index read from the config file
     static KIcon iconForIndex(int index);
 
-    ///Retruns corresponding index for icon
-    static int indexForIcon(KIcon icon);
-
     ///ListWidget to display custom presence's
-    QListWidget  *m_listWidget;
+    QListView  *m_listView;
 
     ///Combobox to type custom presence's
     KComboBox    *m_statusMessage;
 
-    ///KConfig variable to read/write/sync changes to disk
-    KConfig      *m_config;
 
-    ///KConfigGroup variable to read/write/sync changes to disk
-    KConfigGroup *m_presenceGroup;
+
+    PresenceModel *m_model;
   
 };
 

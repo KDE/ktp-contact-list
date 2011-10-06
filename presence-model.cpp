@@ -5,10 +5,18 @@
 #include <KIcon>
 #include <KLocalizedString>
 
+#include <KConfig>
+#include <KConfigGroup>
+
+
+
 PresenceModel::PresenceModel(QObject *parent) :
     QAbstractListModel(parent)
 {
     loadDefaultPresences();
+
+    KSharedConfigPtr config = KSharedConfig::openConfig("telepathy-kde-contactlistrc");
+    m_presenceGroup = new KConfigGroup( config, "Custom Presence List" );
 }
 
 QVariant PresenceModel::data(const QModelIndex &index, int role) const
@@ -63,27 +71,48 @@ int PresenceModel::rowCount(const QModelIndex &parent) const
 void PresenceModel::loadDefaultPresences()
 {
     addPresence(Tp::Presence::available());
+
     addPresence(Tp::Presence::busy());
+
+    addPresence(Tp::Presence::xa());
+    addPresence(Tp::Presence::xa("Abducted by aliens, back later"));
+
+
     addPresence(Tp::Presence::away());
     addPresence(Tp::Presence::away("Back Soon!"));
     addPresence(Tp::Presence::away("Off to eat some cheese"));
-    addPresence(Tp::Presence::xa());
-    addPresence(Tp::Presence::xa("Abducted by aliens, back later"));
+
+
     addPresence(Tp::Presence::hidden());
     addPresence(Tp::Presence::offline());
 
-    addPresence(Tp::Presence::available("Configure Custom Messages..."));
+
+    //FIXME FIXME FIXIME this is just a hack!
+    addPresence(Tp::Presence::offline("Configure Custom Messages..."));
 }
 
 QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
 {
-    qDebug() << presence.status();
-    qDebug() << presence.statusMessage();
+    QList<KPresence>::iterator i = qLowerBound(m_presences.begin(), m_presences.end(), KPresence(presence));
 
-
-    beginInsertRows(QModelIndex(), m_presences.size(), m_presences.size());
-    m_presences.append(presence);
+    m_presences.insert(i, presence);
+    int index = m_presences.indexOf(presence);
+    //this is technically a backwards and wrong, but I can't get a row from a const iterator, and using qLowerBound does seem a good approach
+    beginInsertRows(QModelIndex(), index, index);
     endInsertRows();
 
-    return createIndex(m_presences.size(), 0);
+    //save changes
+    m_presenceGroup->writeEntry("presences", presence);
+
+    return createIndex(index, 0);
+}
+
+void PresenceModel::removePresence(const Tp::Presence &presence)
+{
+    int row = m_presences.indexOf(presence);
+    beginRemoveRows(QModelIndex(), row, row);
+    m_presences.removeOne(presence);
+    endRemoveRows();
+
+    //FIXME edit the config file too
 }

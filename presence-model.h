@@ -5,6 +5,8 @@
 
 #include <QAbstractListModel>
 
+class KConfigGroup;
+
 class PresenceModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -21,6 +23,8 @@ public:
     */
     QModelIndex addPresence(const Tp::Presence &presence);
 
+    void removePresence(const Tp::Presence &presence);
+
     /** Returns the index of a given presence, adding it if needed*/
     QModelIndex indexOf(const Tp::Presence &presence);
 
@@ -33,13 +37,18 @@ signals:
 public slots:
 
 private:
-    QList<KPresence> m_presences;
 
     /** Loads standard presences (online, away etc) into */
     void loadDefaultPresences();
 
     /** Loads any user custom presences into the model*/
     void loadCustomPresences();
+
+
+    QList<KPresence> m_presences;
+
+    //this is wrong, KConfigGroup is a sharedptr..
+    KConfigGroup *m_presenceGroup;
 };
 
 #endif // PRESENCEMODEL_H

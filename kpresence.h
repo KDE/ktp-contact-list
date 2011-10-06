@@ -11,7 +11,10 @@ class KPresence : public Tp::Presence
 public:
     KPresence();
     KPresence(const Tp::Presence &presence);
-    KIcon icon();
+    KIcon icon() const;
+
+
+    bool operator <(const KPresence &other) const;
 };
 
 #endif // KPRESENCE_H

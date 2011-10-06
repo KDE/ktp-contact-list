@@ -2,6 +2,7 @@
 
 #include "global-presence.h"
 #include "presence-model.h"
+#include "dialogs/custom-presence-dialog.h"
 
 #include <KIcon>
 #include <KLocale>
@@ -32,8 +33,15 @@ void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accou
 
 void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 {
-    Tp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<Tp::Presence>();
-    m_globalPresence->setPresence(presence);
+    //FIXME hack - if they select the "configure item"
+    if (index == count()-1) {
+        CustomPresenceDialog dialog(m_model, this);
+        dialog.exec();
+        onPresenceChanged(m_globalPresence->currentPresence());
+    } else {
+        Tp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<Tp::Presence>();
+        m_globalPresence->setPresence(presence);
+    }
 }
 
 void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
