@@ -53,6 +53,7 @@ set (contactlist_SRCS
      dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp
      dialogs/contact-info.cpp
+     dialogs/custom-presence-dialog.cpp
      common/models/accounts-filter-model.cpp
      common/models/contact-model-item.cpp
      common/models/accounts-model-item.cpp
