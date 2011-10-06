@@ -62,6 +62,8 @@ set (contactlist_SRCS
      common/models/groups-model.cpp
      common/models/proxy-tree-node.cpp
      common/service-availability-checker.cpp
+     presence-model.cpp
+     kpresence.cpp
 )
 
 
