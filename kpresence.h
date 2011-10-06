@@ -9,6 +9,7 @@
 class KPresence : public Tp::Presence
 {
 public:
+    KPresence();
     KPresence(const Tp::Presence &presence);
     KIcon icon();
 };

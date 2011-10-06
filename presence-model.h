@@ -1,9 +1,9 @@
 #ifndef PRESENCEMODEL_H
 #define PRESENCEMODEL_H
 
-#include <QAbstractListModel>
+#include "kpresence.h"
 
-#include <TelepathyQt4/Presence>
+#include <QAbstractListModel>
 
 class PresenceModel : public QAbstractListModel
 {
@@ -33,7 +33,7 @@ signals:
 public slots:
 
 private:
-    QList<Tp::Presence> m_presences;
+    QList<KPresence> m_presences;
 
     /** Loads standard presences (online, away etc) into */
     void loadDefaultPresences();

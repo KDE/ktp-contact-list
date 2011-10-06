@@ -13,7 +13,7 @@ PresenceModel::PresenceModel(QObject *parent) :
 
 QVariant PresenceModel::data(const QModelIndex &index, int role) const
 {
-    Tp::Presence presence = m_presences[index.row()];
+    KPresence presence = m_presences[index.row()];
     switch (role) {
     case Qt::DisplayRole:
         if (presence.statusMessage().isEmpty()) {
@@ -38,22 +38,7 @@ QVariant PresenceModel::data(const QModelIndex &index, int role) const
         }
 
     case Qt::DecorationRole:
-        switch (presence.type()) {
-        case Tp::ConnectionPresenceTypeAvailable:
-            return KIcon("user-online");
-        case Tp::ConnectionPresenceTypeBusy:
-            return KIcon("user-busy");
-        case Tp::ConnectionPresenceTypeAway:
-            return KIcon("user-away");
-        case Tp::ConnectionPresenceTypeExtendedAway:
-            return KIcon("user-away-extended");
-        case Tp::ConnectionPresenceTypeHidden:
-            return KIcon("user-invisible");
-        case Tp::ConnectionPresenceTypeOffline:
-            return KIcon("user-offline");
-        default:
-            return KIcon("");
-        }
+        return presence.icon();
 
     case Qt::FontRole:
         if (presence.statusMessage().isEmpty()) {
@@ -63,7 +48,7 @@ QVariant PresenceModel::data(const QModelIndex &index, int role) const
         }
 
     case PresenceModel::PresenceRole:
-        return QVariant::fromValue(presence);
+        return QVariant::fromValue<Tp::Presence>(presence);
 
     }
 
@@ -92,6 +77,10 @@ void PresenceModel::loadDefaultPresences()
 
 QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
 {
+    qDebug() << presence.status();
+    qDebug() << presence.statusMessage();
+
+
     beginInsertRows(QModelIndex(), m_presences.size(), m_presences.size());
     m_presences.append(presence);
     endInsertRows();

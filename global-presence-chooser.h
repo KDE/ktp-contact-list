@@ -8,6 +8,7 @@
 class QFocusEvent;
 class QMouseEvent;
 class GlobalPresence;
+class PresenceModel;
 
 class GlobalPresenceChooser : public KComboBox
 {
@@ -16,17 +17,13 @@ public:
     explicit GlobalPresenceChooser(QWidget *parent = 0);
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
-protected:
-    void mousePressEvent(QMouseEvent *event);
-    void focusOutEvent(QFocusEvent *event);
-
 private slots:
     void onCurrentIndexChanged(int index);
     void onPresenceChanged(const Tp::Presence &presence);
-    void onPresenceMessageChanged(const QString &message);
 
 private:
     GlobalPresence *m_globalPresence;
+    PresenceModel *m_model;
 };
 
 #endif // GLOBALPRESENCECHOOSER_H

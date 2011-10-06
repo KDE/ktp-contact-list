@@ -1,5 +1,11 @@
 #include "kpresence.h"
 
+KPresence::KPresence() :
+    Tp::Presence()
+{
+
+}
+
 KPresence::KPresence(const Tp::Presence &presence) :
     Tp::Presence(presence)
 {
