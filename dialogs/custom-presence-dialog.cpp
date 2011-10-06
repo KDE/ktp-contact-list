@@ -33,19 +33,18 @@
 
 #include <TelepathyQt4/Presence>	
 
-customPresenceDialog::customPresenceDialog(QWidget* parent)
-  : QWidget(parent)
+CustomPresenceDialog::CustomPresenceDialog(QWidget* parent)
+  : KDialog(parent)
 {
     setupDialog();
 }
 
-void customPresenceDialog::setupDialog()
+void CustomPresenceDialog::setupDialog()
 {
-    KDialog *dialog = new KDialog(this);
-    dialog->setCaption(i18n("Edit Custom Messages"));
-    dialog->setButtons(KDialog::Close);
+    setCaption(i18n("Edit Custom Messages"));
+    setButtons(KDialog::Close);
  
-    QWidget *mainDialogWidget = new QWidget(dialog);
+    QWidget *mainDialogWidget = new QWidget(this);
     m_listWidget = new QListWidget(mainDialogWidget);
     m_statusMessage = new KComboBox(true, mainDialogWidget);
     m_statusMessage->setTrapReturnKey(false);
@@ -74,9 +73,8 @@ void customPresenceDialog::setupDialog()
     hLayout->addLayout(vLayout2);
     vLayout->addLayout(hLayout);
 
-    dialog->setMainWidget(mainDialogWidget);
-    dialog->show();
-    
+    setMainWidget(mainDialogWidget);
+
     KSharedConfigPtr config = KSharedConfig::openConfig("telepathy-kde-contactlistrc");
     m_presenceGroup = new KConfigGroup( config, "Custom Presence List" );
     int presenceIcon;
@@ -90,7 +88,7 @@ void customPresenceDialog::setupDialog()
     connect(m_statusMessage, SIGNAL(returnPressed()), SLOT(addCustomPresence()));
 }
 
-void customPresenceDialog::addCustomPresence()
+void CustomPresenceDialog::addCustomPresence()
 {
     int presenceIndex = m_statusMessage->currentIndex();
     QString uniquePresenceString = m_statusMessage->currentText() + "_" + QString::number(m_statusMessage->currentIndex());
@@ -100,7 +98,7 @@ void customPresenceDialog::addCustomPresence()
     emit configChanged();
 }
 
-void customPresenceDialog::removeCustomPresence()
+void CustomPresenceDialog::removeCustomPresence()
 {
    int index = indexForIcon(KIcon(m_listWidget->currentItem()->icon()));
    if(index == -1) {
@@ -113,7 +111,7 @@ void customPresenceDialog::removeCustomPresence()
    }
 }
 
-KIcon customPresenceDialog::iconForIndex(int index)
+KIcon CustomPresenceDialog::iconForIndex(int index)
 {
     QString iconName;
 
@@ -132,7 +130,7 @@ KIcon customPresenceDialog::iconForIndex(int index)
     return KIcon(iconName);
 }
 
-int customPresenceDialog::indexForIcon(KIcon icon)
+int CustomPresenceDialog::indexForIcon(KIcon icon)
 {
     if (icon.name() == QLatin1String("user-online")) {
       return 0;

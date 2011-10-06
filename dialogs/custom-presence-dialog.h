@@ -21,11 +21,9 @@
 #ifndef CUSTOM_PRESENCE_DIALOG_H
 #define CUSTOM_PRESENCE_DIALOG_H
 
-//Qt includes
-#include <QWidget>
-
 //KDE includes
 #include <KComboBox>
+#include <KDialog>
 
 //Forward declrare classes
 class KIcon;
@@ -33,12 +31,12 @@ class QListWidget;
 class KConfig;
 class KConfigGroup;
 
-class customPresenceDialog : public QWidget
+class CustomPresenceDialog : public KDialog
 {
   Q_OBJECT
 
 public:
-    explicit customPresenceDialog(QWidget *parent = 0);
+    explicit CustomPresenceDialog(QWidget *parent = 0);
 
 public Q_SLOTS:
     ///Adds a custom presence to the config file
