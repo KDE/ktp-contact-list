@@ -128,9 +128,9 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_showOfflineAction);
 
-    m_sortByPresenceAction = new KAction(KIcon("view-sort-ascending"), i18n("Sort by presence"), this);
-    m_sortByPresenceAction->setCheckable(true);
-    m_sortByPresenceAction->setChecked(false);
+    m_sortByPresenceAction = new KDualAction(i18n("Sort by presence"), i18n("Sort by name"), this);
+    m_sortByPresenceAction->setActiveIcon(KIcon("user-online"));
+    m_sortByPresenceAction->setInactiveIcon(KIcon("view-sort-ascending"));
 
     m_toolBar->addAction(m_sortByPresenceAction);
 
@@ -282,7 +282,7 @@ MainWidget::~MainWidget()
     configGroup.writeEntry("pin_filterbar", m_searchContactAction->isChecked());
     configGroup.writeEntry("use_groups", m_groupContactsAction->isChecked());
     configGroup.writeEntry("show_offline", m_showOfflineAction->isChecked());
-    configGroup.writeEntry("sort_by_presence", m_sortByPresenceAction->isChecked());
+    configGroup.writeEntry("sort_by_presence", m_sortByPresenceAction->isActive());
     configGroup.config()->sync();
 }
 
@@ -308,7 +308,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_modelFilter->clearFilterString();
     m_modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_modelFilter->setSortRole(Qt::DisplayRole);
-    m_modelFilter->setSortByPresence(m_sortByPresenceAction->isChecked());
+    m_modelFilter->setSortByPresence(m_sortByPresenceAction->isActive());
     if (m_groupContactsAction->isChecked()) {
         m_modelFilter->setSourceModel(m_groupsModel);
     } else {
@@ -333,7 +333,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     connect(m_filterBar, SIGNAL(closeRequest()),
             m_searchContactAction, SLOT(trigger()));
 
-    connect(m_sortByPresenceAction, SIGNAL(toggled(bool)),
+    connect(m_sortByPresenceAction, SIGNAL(activeChanged(bool)),
             m_modelFilter, SLOT(setSortByPresence(bool)));
 
     connect(m_groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
@@ -377,7 +377,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
     m_modelFilter->setSortByPresence(sortByPresence);
-    m_sortByPresenceAction->setChecked(sortByPresence);
+    m_sortByPresenceAction->setActive(sortByPresence);
 }
 
 void MainWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)

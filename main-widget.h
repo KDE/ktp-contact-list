@@ -31,6 +31,7 @@
 
 #include <KXmlGuiWindow>
 #include <KAction>
+#include <KDualAction>
 #include "ui_main-widget.h"
 
 class ContactDelegateCompact;
@@ -148,7 +149,7 @@ private:
     KAction                *m_groupContactsAction;
     KAction                *m_showOfflineAction;
     KAction                *m_searchContactAction;
-    KAction                *m_sortByPresenceAction;
+    KDualAction                *m_sortByPresenceAction;
 };
 
 
