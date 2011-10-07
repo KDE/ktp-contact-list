@@ -8,6 +8,7 @@
 
 #include <KConfig>
 #include <KConfigGroup>
+#include <KGlobalSettings>
 
 
 
@@ -66,7 +67,7 @@ QVariant PresenceModel::data(const QModelIndex &index, int role) const
 
     case Qt::FontRole:
         if (presence.statusMessage().isEmpty()) {
-            QFont font;
+            QFont font = KGlobalSettings::generalFont();
             font.setBold(true);
             return font;
         }
