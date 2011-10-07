@@ -22,7 +22,7 @@
 #ifndef ABSTRACT_CONTACT_DELEGATE_H
 #define ABSTRACT_CONTACT_DELEGATE_H
 
-#include <QStyledItemDelegate>
+#include <QtGui/QStyledItemDelegate>
 
 
 class AbstractContactDelegate : public QStyledItemDelegate

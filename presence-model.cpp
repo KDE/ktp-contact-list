@@ -1,14 +1,13 @@
 #include "presence-model.h"
 
-#include <QFont>
-#include <QUuid>
+#include <QtGui/QFont>
 
-#include <KIcon>
-#include <KLocalizedString>
+#include <KDE/KIcon>
+#include <KDE/KLocalizedString>
 
-#include <KConfig>
-#include <KConfigGroup>
-#include <KGlobalSettings>
+#include <KDE/KConfig>
+#include <KDE/KConfigGroup>
+#include <KDE/KGlobalSettings>
 
 
 

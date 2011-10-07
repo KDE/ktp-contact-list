@@ -20,7 +20,7 @@
 
 #include "abstract-contact-delegate.h"
 
-#include <QApplication>
+#include <QtGui/QApplication>
 #include <QtGui/QStyle>
 #include <QtGui/QPainter>
 #include <QtGui/QToolTip>

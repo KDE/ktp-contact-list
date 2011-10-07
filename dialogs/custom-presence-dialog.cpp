@@ -23,19 +23,19 @@
 
 #include "presence-model.h"
 
-#include <QListView>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QSortFilterProxyModel>
-#include <QModelIndex>
+#include <QtGui/QListView>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QPushButton>
+#include <QtGui/QSortFilterProxyModel>
+#include <QtCore/QModelIndex>
 
 
 
-#include <KDialog>
-#include <KLocalizedString>
-#include <KConfig>
-#include <KSharedConfigPtr>
+#include <KDE/KDialog>
+#include <KDE/KLocalizedString>
+#include <KDE/KConfig>
+#include <KDE/KSharedConfigPtr>
 
 #include <TelepathyQt4/Presence>
 
