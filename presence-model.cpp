@@ -32,6 +32,7 @@ PresenceModel::~PresenceModel()
             m_presenceGroup.writeEntry(id, presenceVariant);
         }
     }
+    m_presenceGroup.sync();
 }
 
 QVariant PresenceModel::data(const QModelIndex &index, int role) const
@@ -138,7 +139,11 @@ void PresenceModel::removePresence(const Tp::Presence &presence)
     beginRemoveRows(QModelIndex(), row, row);
     m_presences.removeOne(presence);
     endRemoveRows();
+    QString id = QString::number(presence.type()).append(presence.statusMessage());
 
-    //FIXME edit the config file too
+    if(m_presenceGroup.keyList().contains(id)) {
+        m_presenceGroup.deleteEntry(id);
+        m_presenceGroup.sync();
+    }
 }
 
