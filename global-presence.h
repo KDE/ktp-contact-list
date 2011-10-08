@@ -61,8 +61,6 @@ signals:
     void currentPresenceChanged(const Tp::Presence &presence);
     void changingPresence(bool isChanging);
 
-public slots:
-
 private slots:
     void onCurrentPresenceChanged();
     void onRequestedPresenceChanged();
