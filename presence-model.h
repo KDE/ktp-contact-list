@@ -30,6 +30,7 @@
 class PresenceModel : public QAbstractListModel
 {
     Q_OBJECT
+
 public:
     explicit PresenceModel(QObject *parent = 0);
     ~PresenceModel();
@@ -49,13 +50,9 @@ public:
     /** Returns the index of a given presence, adding it if needed*/
     QModelIndex indexOf(const Tp::Presence &presence);
 
-//protected:
+    //protected:
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual int rowCount(const QModelIndex &parent) const;
-
-signals:
-
-public slots:
 
 private:
 
@@ -64,7 +61,6 @@ private:
 
     /** Loads any user custom presences into the model*/
     void loadCustomPresences();
-
 
     QList<KPresence> m_presences;
 
