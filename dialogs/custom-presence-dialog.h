@@ -32,7 +32,7 @@ class PresenceModel;
 
 class CustomPresenceDialog : public KDialog
 {
-  Q_OBJECT
+    Q_OBJECT
 
 public:
     explicit CustomPresenceDialog(PresenceModel *model, QWidget *parent = 0);
@@ -57,10 +57,8 @@ private:
     ///Combobox to type custom presence's
     KComboBox    *m_statusMessage;
 
-
-
     PresenceModel *m_model;
-  
+
 };
 
 #endif // CUSTOM_PRESENCE_DIALOG_H

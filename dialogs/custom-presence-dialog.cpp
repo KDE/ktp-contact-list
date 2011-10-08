@@ -59,17 +59,17 @@ bool FilteredModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourcePar
 }
 
 CustomPresenceDialog::CustomPresenceDialog(PresenceModel *model, QWidget *parent)
-  : KDialog(parent),
-    m_model(model)
+    : KDialog(parent),
+      m_model(model)
 {
     setupDialog();
 }
 
 void CustomPresenceDialog::setupDialog()
 {
-    setCaption(i18n("Edit Custom Messages"));
+    setCaption(i18n("Edit Custom Presences"));
     setButtons(KDialog::Close);
- 
+
     QWidget *mainDialogWidget = new QWidget(this);
 
     FilteredModel *filteredModel = new FilteredModel(this);
@@ -80,28 +80,28 @@ void CustomPresenceDialog::setupDialog()
 
     m_statusMessage = new KComboBox(true, mainDialogWidget);
     m_statusMessage->setTrapReturnKey(false);
- 
+
     m_statusMessage->addItem(KIcon("user-online"), i18n("Set custom available message ..."),qVariantFromValue(Tp::Presence::available()));
     m_statusMessage->addItem(KIcon("user-busy"), i18n("Set custom busy message ..."), qVariantFromValue(Tp::Presence::busy()));
     m_statusMessage->addItem(KIcon("user-away"), i18n("Set custom away message ..."), qVariantFromValue(Tp::Presence::away()));
- 
+
     m_statusMessage->setAutoCompletion(false);
     m_statusMessage->show();
- 
-    QPushButton *addStatus = new QPushButton(KIcon("list-add"), i18n("Add Status"), mainDialogWidget);
-    QPushButton *removeStatus = new QPushButton(KIcon("list-remove"), i18n("Remove Status"), mainDialogWidget);
- 
+
+    QPushButton *addStatus = new QPushButton(KIcon("list-add"), i18n("Add Presence"), mainDialogWidget);
+    QPushButton *removeStatus = new QPushButton(KIcon("list-remove"), i18n("Remove Presence"), mainDialogWidget);
+
     QVBoxLayout *vLayout = new QVBoxLayout(mainDialogWidget);
     vLayout->addWidget(m_statusMessage);
- 
+
     QHBoxLayout *hLayout = new QHBoxLayout();
     hLayout->addWidget(m_listView);
- 
+
     QVBoxLayout *vLayout2 = new QVBoxLayout();
     vLayout2->addWidget(addStatus);
     vLayout2->addWidget(removeStatus);
     vLayout2->addStretch(1);
- 
+
     hLayout->addLayout(vLayout2);
     vLayout->addLayout(hLayout);
 
@@ -123,13 +123,10 @@ void CustomPresenceDialog::addCustomPresence()
 
 void CustomPresenceDialog::removeCustomPresence()
 {
-   if (! m_listView->currentIndex().isValid()) {
-       return;
-   }
+    if (! m_listView->currentIndex().isValid()) {
+        return;
+    }
 
-   Tp::Presence presence = m_listView->currentIndex().data(PresenceModel::PresenceRole).value<Tp::Presence>();
-   m_model->removePresence(presence);
+    Tp::Presence presence = m_listView->currentIndex().data(PresenceModel::PresenceRole).value<Tp::Presence>();
+    m_model->removePresence(presence);
 }
-
-
-#include "custom-presence-dialog.moc"
