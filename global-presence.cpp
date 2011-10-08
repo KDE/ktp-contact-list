@@ -125,3 +125,4 @@ void GlobalPresence::onChangingPresence()
     }
 }
 
+#include "global-presence.moc"

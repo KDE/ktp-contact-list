@@ -92,10 +92,6 @@ void PresenceModel::loadDefaultPresences()
     addPresence(Tp::Presence::xa());
     addPresence(Tp::Presence::hidden());
     addPresence(Tp::Presence::offline());
-
-
-    //FIXME FIXME FIXIME this is just a hack!
-    addPresence(Tp::Presence::offline("Configure Custom Messages..."));
 }
 
 

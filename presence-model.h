@@ -29,7 +29,7 @@ public:
     /** Returns the index of a given presence, adding it if needed*/
     QModelIndex indexOf(const Tp::Presence &presence);
 
-protected:
+//protected:
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual int rowCount(const QModelIndex &parent) const;
 
