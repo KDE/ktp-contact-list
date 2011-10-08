@@ -25,8 +25,6 @@
 
 #include <TelepathyQt4/AccountManager>
 
-class QFocusEvent;
-class QMouseEvent;
 class GlobalPresence;
 class PresenceModel;
 
