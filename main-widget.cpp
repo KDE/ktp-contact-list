@@ -70,12 +70,12 @@
 #include "dialogs/remove-contact-dialog.h"
 #include "dialogs/contact-info.h"
 
-#include "models/groups-model.h"
-#include "models/contact-model-item.h"
-#include "models/groups-model-item.h"
-#include "models/accounts-model.h"
-#include "models/accounts-filter-model.h"
-#include "models/proxy-tree-node.h"
+#include "common/models/groups-model.h"
+#include "common/models/contact-model-item.h"
+#include "common/models/groups-model-item.h"
+#include "common/models/accounts-model.h"
+#include "common/models/accounts-filter-model.h"
+#include "common/models/proxy-tree-node.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"

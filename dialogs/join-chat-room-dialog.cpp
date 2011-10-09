@@ -20,9 +20,11 @@
 
 #include "join-chat-room-dialog.h"
 #include "ui_join-chat-room-dialog.h"
-#include "../models/accounts-model.h"
+
+#include "common/models/accounts-model.h"
 
 #include <KDE/KPushButton>
+
 #include <TelepathyQt4/AccountManager>
 
 JoinChatRoomDialog::JoinChatRoomDialog(Tp::AccountManagerPtr accountManager, QWidget* parent)

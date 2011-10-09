@@ -29,7 +29,7 @@
 #include <KLocalizedString>
 #include <KSharedConfig>
 
-#include "models/accounts-model.h"
+#include "common/models/accounts-model.h"
 #include "fetch-avatar-job.h"
 
 AvatarButton::AvatarButton(QWidget *parent)

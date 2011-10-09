@@ -19,6 +19,19 @@ include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
 )
 
+
+
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.gitmodules)
+execute_process(COMMAND git submodule init
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+execute_process(COMMAND git submodule update
+                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.gitmodules)
+
+
 set (contactlist_SRCS
      avatar-button.cpp
      abstract-contact-delegate.cpp
@@ -39,14 +52,14 @@ set (contactlist_SRCS
      dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp
      dialogs/contact-info.cpp
-     models/accounts-filter-model.cpp
-     models/contact-model-item.cpp
-     models/accounts-model-item.cpp
-     models/tree-node.cpp
-     models/accounts-model.cpp
-     models/groups-model-item.cpp
-     models/groups-model.cpp
-     models/proxy-tree-node.cpp
+     common/models/accounts-filter-model.cpp
+     common/models/contact-model-item.cpp
+     common/models/accounts-model-item.cpp
+     common/models/tree-node.cpp
+     common/models/accounts-model.cpp
+     common/models/groups-model-item.cpp
+     common/models/groups-model.cpp
+     common/models/proxy-tree-node.cpp
 )
 
 
