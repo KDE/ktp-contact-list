@@ -47,7 +47,6 @@ set (contactlist_SRCS
      main.cpp
      main-widget.cpp
      fetch-avatar-job.cpp
-     service-availability-checker.cpp
      dialogs/add-contact-dialog.cpp
      dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp
@@ -60,6 +59,7 @@ set (contactlist_SRCS
      common/models/groups-model-item.cpp
      common/models/groups-model.cpp
      common/models/proxy-tree-node.cpp
+     common/service-availability-checker.cpp
 )
 
 
