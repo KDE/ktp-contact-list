@@ -18,7 +18,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include "custom-presence-dialog.h"
 
 #include "presence-model.h"
@@ -30,15 +29,12 @@
 #include <QtGui/QSortFilterProxyModel>
 #include <QtCore/QModelIndex>
 
-
-
 #include <KDE/KDialog>
 #include <KDE/KLocalizedString>
 #include <KDE/KConfig>
 #include <KDE/KSharedConfigPtr>
 
 #include <TelepathyQt4/Presence>
-
 
 class FilteredModel : public QSortFilterProxyModel {
 public:

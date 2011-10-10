@@ -68,17 +68,10 @@ int PresenceModelPlusConfig::rowCount(const QModelIndex &parent) const
 
 QVariant PresenceModelPlusConfig::data(const QModelIndex &index, int role) const
 {
-/*    //if it's our new button
-    if (index.row() == rowCount(index.parent())-2) {
-        switch(role) {
-        case Qt::AccessibleDescriptionRole:
-            return QLatin1String("separator");
-        }
-    } else */
     if (index.row() == rowCount(index.parent())-1) {
         switch(role) {
         case Qt::DisplayRole:
-            return i18n("Configure Custom Presences");
+            return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
             return KIcon("configure");
         }
@@ -134,12 +127,11 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 
 void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
 {
-    kDebug() << "presence changing";
+    kDebug();
     for (int i=0; i < count() ; i++) {
         Tp::Presence itemPresence = itemData(i, PresenceModel::PresenceRole).value<Tp::Presence>();
         if (itemPresence.type() == presence.type() && itemPresence.statusMessage() == presence.statusMessage()) {
             setCurrentIndex(i);
-            kDebug() << "found item";
             return;
         }
     }

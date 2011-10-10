@@ -38,10 +38,7 @@ public:
     explicit CustomPresenceDialog(PresenceModel *model, QWidget *parent = 0);
 
 private Q_SLOTS:
-    ///Adds a custom presence to the config file
     void addCustomPresence();
-
-    ///Removes a custom presence from the config file
     void removeCustomPresence();
 
 private:
@@ -58,7 +55,6 @@ private:
     KComboBox    *m_statusMessage;
 
     PresenceModel *m_model;
-
 };
 
 #endif // CUSTOM_PRESENCE_DIALOG_H

@@ -34,7 +34,7 @@
 PresenceModel::PresenceModel(QObject *parent) :
     QAbstractListModel(parent)
 {
-    KSharedConfigPtr config = KSharedConfig::openConfig("telepathy-kde-contactlistrc");
+    KSharedConfigPtr config = KSharedConfig::openConfig("ktelepathyrc");
     m_presenceGroup = config->group("Custom Presence List");
 
     loadDefaultPresences();
@@ -132,12 +132,18 @@ void PresenceModel::loadCustomPresences()
         case Tp::ConnectionPresenceTypeBusy:
             addPresence(Tp::Presence::busy(statusMessage));
             break;
+        case Tp::ConnectionPresenceTypeExtendedAway:
+            addPresence(Tp::Presence::xa(statusMessage));
         }
     }
 }
 
 QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
 {
+    if(m_presences.contains(presence)) {
+        return createIndex(m_presences.indexOf(presence),0);
+    }
+
     QList<KPresence>::iterator i = qLowerBound(m_presences.begin(), m_presences.end(), KPresence(presence));
 
     m_presences.insert(i, presence);

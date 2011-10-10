@@ -340,6 +340,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_accountButtons->setAccountManager(m_accountManager);
     m_presenceChooser->setAccountManager(m_accountManager);
 
+    m_accountButtons->hide();
+
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
 
     if(accounts.count() == 0) {
