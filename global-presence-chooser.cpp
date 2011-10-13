@@ -32,6 +32,7 @@
 #include <TelepathyQt4/Presence>
 
 #include <QMouseEvent>
+#include <KPixmapSequenceOverlayPainter>
 
 //A sneaky class that adds an extra entry to the end of the presence model
 //called "Configure Presences"
@@ -93,6 +94,7 @@ void PresenceModelPlusConfig::sourceRowsRemoved(const QModelIndex &index, int st
     endRemoveRows();
 }
 
+//----------------------------------------------------------------------------------------------------------
 
 GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     KComboBox(parent),
@@ -101,8 +103,16 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
 {
     this->setModel(new PresenceModelPlusConfig(m_model, this));
 
+    m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
+    m_busyOverlay->setSequence(KPixmapSequence("process-working"));
+    m_busyOverlay->setWidget(this);
+    QPoint topLeft(sizeHint().width() - m_busyOverlay->sequence().frameSize().width() - 22,
+                   (sizeHint().height() - m_busyOverlay->sequence().frameSize().height())/2);
+    m_busyOverlay->setRect(QRect(topLeft, m_busyOverlay->sequence().frameSize()));
+
     connect(this, SIGNAL(activated(int)), SLOT(onCurrentIndexChanged(int)));
     connect(m_globalPresence, SIGNAL(currentPresenceChanged(Tp::Presence)), SLOT(onPresenceChanged(Tp::Presence)));
+    connect(m_globalPresence, SIGNAL(changingPresence(bool)), SLOT(onPresenceChanging(bool)));
 
     onPresenceChanged(m_globalPresence->currentPresence());
 }
@@ -139,6 +149,15 @@ void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
     //FIXME this needs to only be a temporary presence, which we delete afterwards
     QModelIndex index = m_model->addPresence(presence);
     setCurrentIndex(index.row());
+}
+
+void GlobalPresenceChooser::onPresenceChanging(bool isChanging)
+{
+    if (isChanging) {
+        m_busyOverlay->start();
+    } else {
+        m_busyOverlay->stop();
+    }
 }
 
 #include "global-presence-chooser.moc"

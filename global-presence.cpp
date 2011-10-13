@@ -132,16 +132,16 @@ void GlobalPresence::onRequestedPresenceChanged()
 
 void GlobalPresence::onChangingPresence()
 {
-    bool changingPresence = false;
+    bool isChangingPresence = false;
     Q_FOREACH(const Tp::AccountPtr &account, m_enabledAccounts->accounts()) {
         if (account->isChangingPresence()) {
-            changingPresence = true;
+            isChangingPresence = true;
         }
     }
 
-    if (changingPresence != m_changingPresence) {
-        m_changingPresence = changingPresence;
-        Q_EMIT (m_changingPresence);
+    if (isChangingPresence != m_changingPresence) {
+        m_changingPresence = isChangingPresence;
+        Q_EMIT changingPresence(m_changingPresence);
     }
 }
 

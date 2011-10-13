@@ -29,8 +29,6 @@
 #include <KDE/KConfigGroup>
 #include <KDE/KGlobalSettings>
 
-
-
 PresenceModel::PresenceModel(QObject *parent) :
     QAbstractListModel(parent)
 {
@@ -168,4 +166,3 @@ void PresenceModel::removePresence(const Tp::Presence &presence)
         m_presenceGroup.sync();
     }
 }
-

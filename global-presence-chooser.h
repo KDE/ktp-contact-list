@@ -25,6 +25,7 @@
 
 #include <TelepathyQt4/AccountManager>
 
+class KPixmapSequenceOverlayPainter;
 class GlobalPresence;
 class PresenceModel;
 
@@ -38,10 +39,12 @@ public:
 private slots:
     void onCurrentIndexChanged(int index);
     void onPresenceChanged(const Tp::Presence &presence);
+    void onPresenceChanging(bool isChanging);
 
 private:
     GlobalPresence *m_globalPresence;
     PresenceModel *m_model;
+    KPixmapSequenceOverlayPainter *m_busyOverlay;
 };
 
 #endif // GLOBALPRESENCECHOOSER_H
