@@ -28,12 +28,15 @@
 #include <KLocale>
 #include <KLineEdit>
 #include <KDebug>
-
-#include <TelepathyQt4/Presence>
-
-#include <QMouseEvent>
 #include <KPixmapSequence>
 #include <KPixmapSequenceOverlayPainter>
+
+#include <TelepathyQt4/Presence>
+#include <TelepathyQt4/Account>
+
+#include <QMouseEvent>
+#include <QtGui/QToolTip>
+
 
 //A sneaky class that adds an extra entry to the end of the presence model
 //called "Configure Presences"
@@ -127,7 +130,36 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
 
 void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
+    m_accountManager = accountManager;
     m_globalPresence->setAccountManager(accountManager);
+}
+
+bool GlobalPresenceChooser::event(QEvent *e)
+{
+    if (e->type() == QEvent::ToolTip) {
+        if (m_accountManager.isNull()) {
+            return false;
+        }
+
+        QHelpEvent *helpEvent = static_cast<QHelpEvent *>(e);
+
+        QString toolTipText;
+
+        Q_FOREACH(const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
+            if (account->isEnabled()) {
+                KPresence accountPresence(account->currentPresence());
+                QString presenceIconPath = KIconLoader::global()->iconPath(accountPresence.icon().name(), 1);
+                QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
+                QString accountIconPath = KIconLoader::global()->iconPath(account->iconName(), 1);
+                QString accountIconString = QString::fromLatin1("<img src=\"%1\">").arg(accountIconPath);
+                toolTipText.append(QString::fromLatin1("<p>%1 %2 %3</p>").arg(presenceIconString, account->displayName(), accountIconString));
+            }
+        }
+
+        QToolTip::showText(helpEvent->globalPos(), toolTipText, this);
+        return true;
+    }
+    return QComboBox::event(e);
 }
 
 void GlobalPresenceChooser::onCurrentIndexChanged(int index)

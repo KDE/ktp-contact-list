@@ -36,6 +36,9 @@ public:
     explicit GlobalPresenceChooser(QWidget *parent = 0);
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
+protected:
+    virtual bool event(QEvent *event);
+
 private slots:
     void onCurrentIndexChanged(int index);
     void onPresenceChanged(const Tp::Presence &presence);
@@ -45,6 +48,7 @@ private:
     GlobalPresence *m_globalPresence;
     PresenceModel *m_model;
     KPixmapSequenceOverlayPainter *m_busyOverlay;
+    Tp::AccountManagerPtr m_accountManager;
 };
 
 #endif // GLOBALPRESENCECHOOSER_H
