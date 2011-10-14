@@ -32,6 +32,7 @@
 #include <TelepathyQt4/Presence>
 
 #include <QMouseEvent>
+#include <KPixmapSequence>
 #include <KPixmapSequenceOverlayPainter>
 
 //A sneaky class that adds an extra entry to the end of the presence model
