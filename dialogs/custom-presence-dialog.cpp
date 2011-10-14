@@ -35,6 +35,7 @@
 #include <KDE/KSharedConfigPtr>
 
 #include <TelepathyQt4/Presence>
+#include <QLineEdit>
 
 class FilteredModel : public QSortFilterProxyModel {
 public:
@@ -85,6 +86,9 @@ void CustomPresenceDialog::setupDialog()
     m_statusMessage->setAutoCompletion(false);
     m_statusMessage->show();
 
+    m_statusMessage->lineEdit()->setPlaceholderText(m_statusMessage->currentText());
+    m_statusMessage->lineEdit()->setText(QString());
+
     QPushButton *addStatus = new QPushButton(KIcon("list-add"), i18n("Add Presence"), mainDialogWidget);
     QPushButton *removeStatus = new QPushButton(KIcon("list-remove"), i18n("Remove Presence"), mainDialogWidget);
 
@@ -107,6 +111,7 @@ void CustomPresenceDialog::setupDialog()
     connect(addStatus, SIGNAL(clicked()), SLOT(addCustomPresence()));
     connect(removeStatus, SIGNAL(clicked()), SLOT(removeCustomPresence()));
     connect(m_statusMessage, SIGNAL(returnPressed()), SLOT(addCustomPresence()));
+    connect(m_statusMessage, SIGNAL(currentIndexChanged(QString)), SLOT(comboboxIndexChanged(QString)));
 }
 
 void CustomPresenceDialog::addCustomPresence()
@@ -126,4 +131,10 @@ void CustomPresenceDialog::removeCustomPresence()
 
     Tp::Presence presence = m_listView->currentIndex().data(PresenceModel::PresenceRole).value<Tp::Presence>();
     m_model->removePresence(presence);
+}
+
+void CustomPresenceDialog::comboboxIndexChanged(const QString& text)
+{
+    m_statusMessage->lineEdit()->setText(QString());
+    m_statusMessage->lineEdit()->setPlaceholderText(text);
 }

@@ -40,6 +40,7 @@ public:
 private Q_SLOTS:
     void addCustomPresence();
     void removeCustomPresence();
+    void comboboxIndexChanged(const QString &text);
 
 private:
     ///Setup the initial dialog
