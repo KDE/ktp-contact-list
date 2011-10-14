@@ -563,29 +563,31 @@ void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
 
     Tp::AccountPtr account = m_model->accountForContactItem(contactItem);
 
-    QString filename = KFileDialog::getOpenFileName(KUrl("kfiledialog:///FileTransferLastDirectory"),
+    QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
                                                     QString(),
                                                     this,
-                                                    i18n("Choose a file"));
+                                                    i18n("Choose one or more files"));
 
-    if (filename.isEmpty()) { // User hit cancel button
+    if (filenames.isEmpty()) { // User hit cancel button
         return;
     }
 
-    QFileInfo fileinfo(filename);
+    QDateTime now = QDateTime::currentDateTime();
+    Q_FOREACH(QString filename, filenames) {
+        QFileInfo fileinfo(filename);
 
-    kDebug() << "Filename:" << filename;
-    kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
-    // TODO Let the user set a description?
+        kDebug() << "Filename:" << filename;
+        kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
 
-    Tp::FileTransferChannelCreationProperties fileTransferProperties(filename,
-                                                                     KMimeType::findByFileContent(filename)->name());
+        Tp::FileTransferChannelCreationProperties fileTransferProperties(filename,
+                                                                         KMimeType::findByFileContent(filename)->name());
 
-    Tp::PendingChannelRequest* channelRequest = account->createFileTransfer(contact,
-                                                                            fileTransferProperties,
-                                                                            QDateTime::currentDateTime(),
-                                                                            PREFERRED_FILETRANSFER_HANDLER);
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+        Tp::PendingChannelRequest* channelRequest = account->createFileTransfer(contact,
+                                                                                fileTransferProperties,
+                                                                                now,
+                                                                                PREFERRED_FILETRANSFER_HANDLER);
+        connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+    }
 }
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
