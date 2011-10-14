@@ -176,6 +176,35 @@ MainWidget::MainWidget(QWidget *parent)
 
     settingsButtonMenu->addMenu(setDelegateTypeMenu);
 
+    KMenu *presenceChooser = new KMenu(settingsButton);
+    presenceChooser->setTitle(i18n("Control accounts presence"));
+
+    QActionGroup *presenceChooserGroup = new QActionGroup(this);
+    presenceChooserGroup->setExclusive(true);
+    presenceChooserGroup->addAction(presenceChooser->addAction(i18n("All at once"),
+                                                               this, SLOT(onUseGlobalPresenceTriggered())));
+
+    presenceChooserGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
+        presenceChooserGroup->actions().last()->setChecked(true);
+        //hide account buttons and show global presence
+        onUseGlobalPresenceTriggered();
+    }
+
+    presenceChooserGroup->addAction(presenceChooser->addAction(i18n("Separately"),
+                                                                    this, SLOT(onUsePerAccountPresenceTriggered())));
+
+    presenceChooserGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("per-account")) {
+        presenceChooserGroup->actions().last()->setChecked(true);
+        //hide global presence and use account buttons
+        onUsePerAccountPresenceTriggered();
+    }
+
+    settingsButtonMenu->addMenu(presenceChooser);
+
     settingsButtonMenu->addAction(i18n("Join chat room"), this, SLOT(onJoinChatRoomRequested()));
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
@@ -339,8 +368,6 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_avatarButton->initialize(m_model, m_accountManager);
     m_accountButtons->setAccountManager(m_accountManager);
     m_presenceChooser->setAccountManager(m_accountManager);
-
-    m_accountButtons->hide();
 
     QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
 
@@ -1474,6 +1501,32 @@ void MainWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int star
             }
         }
     }
+}
+
+void MainWidget::onUseGlobalPresenceTriggered()
+{
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup configGroup(config, "GUI");
+
+    m_presenceChooser->show();
+    m_accountButtons->hide();
+
+    configGroup.writeEntry("selected_presence_chooser", "global");
+
+    configGroup.config()->sync();
+}
+
+void MainWidget::onUsePerAccountPresenceTriggered()
+{
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup configGroup(config, "GUI");
+
+    m_presenceChooser->hide();
+    m_accountButtons->show();
+
+    configGroup.writeEntry("selected_presence_chooser", "per-account");
+
+    configGroup.config()->sync();
 }
 
 #include "main-widget.moc"

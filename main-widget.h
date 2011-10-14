@@ -103,6 +103,8 @@ private Q_SLOTS:
     void onShowInfoTriggered();
     void onDeleteContactTriggered();
     void onJoinChatRoomRequested();         /** join chat room action is triggered */
+    void onUseGlobalPresenceTriggered();
+    void onUsePerAccountPresenceTriggered();
 
     void onAccountManagerReady(Tp::PendingOperation *op);
     void onContactListClicked(const QModelIndex &index);
