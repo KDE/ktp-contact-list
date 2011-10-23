@@ -36,6 +36,7 @@ class CustomPresenceDialog : public KDialog
 
 public:
     explicit CustomPresenceDialog(PresenceModel *model, QWidget *parent = 0);
+    bool eventFilter(QObject* obj, QEvent* event);
 
 private Q_SLOTS:
     void addCustomPresence();

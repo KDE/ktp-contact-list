@@ -36,6 +36,7 @@
 
 #include <TelepathyQt4/Presence>
 #include <QLineEdit>
+#include <QKeyEvent>
 
 class FilteredModel : public QSortFilterProxyModel {
 public:
@@ -76,7 +77,6 @@ void CustomPresenceDialog::setupDialog()
     m_listView->setModel(filteredModel);
 
     m_statusMessage = new KComboBox(true, mainDialogWidget);
-    m_statusMessage->setTrapReturnKey(false);
 
     m_statusMessage->addItem(KIcon("user-online"), i18n("Set custom available message ..."),qVariantFromValue(Tp::Presence::available()));
     m_statusMessage->addItem(KIcon("user-busy"), i18n("Set custom busy message ..."), qVariantFromValue(Tp::Presence::busy()));
@@ -110,8 +110,9 @@ void CustomPresenceDialog::setupDialog()
 
     connect(addStatus, SIGNAL(clicked()), SLOT(addCustomPresence()));
     connect(removeStatus, SIGNAL(clicked()), SLOT(removeCustomPresence()));
-    connect(m_statusMessage, SIGNAL(returnPressed()), SLOT(addCustomPresence()));
     connect(m_statusMessage, SIGNAL(currentIndexChanged(QString)), SLOT(comboboxIndexChanged(QString)));
+
+    m_statusMessage->installEventFilter(this);
 }
 
 void CustomPresenceDialog::addCustomPresence()
@@ -137,4 +138,22 @@ void CustomPresenceDialog::comboboxIndexChanged(const QString& text)
 {
     m_statusMessage->lineEdit()->setText(QString());
     m_statusMessage->lineEdit()->setPlaceholderText(text);
+}
+
+bool CustomPresenceDialog::eventFilter(QObject* obj, QEvent* event)
+{
+    if (obj == m_statusMessage && event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
+        if (keyEvent->modifiers() == Qt::NoModifier && (keyEvent->key() == Qt::Key_Return || keyEvent->key() == Qt::Key_Enter)) {
+            addCustomPresence();
+            m_statusMessage->lineEdit()->clear();
+            m_listView->setFocus();
+            return true;
+        } else {
+            return false;
+        }
+    } else {
+        // standard event processing
+        return QObject::eventFilter(obj, event);
+    }
 }
