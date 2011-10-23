@@ -65,7 +65,7 @@ int PresenceModelPlusConfig::rowCount(const QModelIndex &parent) const
     if (parent.isValid()) {
         return 0;
     }
-    return m_model->rowCount(parent) + 1;
+    return m_model->rowCount(parent) + 2;
 }
 
 QVariant PresenceModelPlusConfig::data(const QModelIndex &index, int role) const
@@ -76,6 +76,13 @@ QVariant PresenceModelPlusConfig::data(const QModelIndex &index, int role) const
             return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
             return KIcon("configure");
+        }
+    } else if (index.row() == rowCount(index.parent())-2) {
+        switch(role) {
+            case Qt::DisplayRole:
+                return i18n("Now listening to...");
+            case Qt::DecorationRole:
+                return KIcon("speaker");
         }
     } else {
         return m_model->data(m_model->index(index.row()), role);
@@ -130,7 +137,16 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
         CustomPresenceDialog dialog(m_model, this);
         dialog.exec();
         onPresenceChanged(m_globalPresence->currentPresence());
+    } else if (index == count()-2) {
+        QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
+                                                          QLatin1String( "org.kde.Telepathy"),
+                                                          QLatin1String("activateNowPlaying"));
+        QDBusConnection::sessionBus().send(message);
     } else {
+        QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
+                                                          QLatin1String( "org.kde.Telepathy"),
+                                                          QLatin1String("deactivateNowPlaying"));
+        QDBusConnection::sessionBus().send(message);
         Tp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<Tp::Presence>();
         m_globalPresence->setPresence(presence);
     }
