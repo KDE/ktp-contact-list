@@ -144,6 +144,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
         QHelpEvent *helpEvent = static_cast<QHelpEvent *>(e);
 
         QString toolTipText;
+        toolTipText.append("<table>");
 
         Q_FOREACH(const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->isEnabled()) {
@@ -152,10 +153,12 @@ bool GlobalPresenceChooser::event(QEvent *e)
                 QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
                 QString accountIconPath = KIconLoader::global()->iconPath(account->iconName(), 1);
                 QString accountIconString = QString::fromLatin1("<img src=\"%1\">").arg(accountIconPath);
-                toolTipText.append(QString::fromLatin1("<p>%1 %2 %3</p>").arg(presenceIconString, account->displayName(), accountIconString));
+                QString presenceString = accountPresence.displayString();
+                toolTipText.append(QString::fromLatin1("<tr><td>%1 %2</td></tr><tr><td style=\"padding-left: 24px\">%3&nbsp;%4</td></tr>").arg(accountIconString, account->displayName(), presenceIconString, presenceString));
             }
         }
 
+        toolTipText.append("</table>");
         QToolTip::showText(helpEvent->globalPos(), toolTipText, this);
         return true;
     }

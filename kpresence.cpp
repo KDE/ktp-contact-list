@@ -19,6 +19,7 @@
  */
 
 #include "kpresence.h"
+#include <KLocalizedString>
 
 KPresence::KPresence() :
     Tp::Presence()
@@ -76,3 +77,22 @@ bool KPresence::operator <(const KPresence &other) const
     }
 }
 
+QString KPresence::displayString() const
+{
+    switch (type()) {
+        case Tp::ConnectionPresenceTypeAvailable:
+            return i18n("Available");
+        case Tp::ConnectionPresenceTypeBusy:
+            return i18n("Busy");
+        case Tp::ConnectionPresenceTypeAway:
+            return i18n("Away");
+        case Tp::ConnectionPresenceTypeExtendedAway:
+            return i18n("Not available");
+        case Tp::ConnectionPresenceTypeHidden:
+            return i18n("Invisible");
+        case Tp::ConnectionPresenceTypeOffline:
+            return i18n("Offline");
+        default:
+            return QString();
+    }
+}

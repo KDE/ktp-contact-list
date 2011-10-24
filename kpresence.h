@@ -34,6 +34,8 @@ public:
 
     /** Returns which presence is "more available" */
     bool operator <(const KPresence &other) const;
+
+    QString displayString() const;
 };
 
 #endif // KPRESENCE_H
