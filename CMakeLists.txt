@@ -47,7 +47,6 @@ set (contactlist_SRCS
      main.cpp
      main-widget.cpp
      fetch-avatar-job.cpp
-     global-presence.cpp
      global-presence-chooser.cpp
      dialogs/add-contact-dialog.cpp
      dialogs/join-chat-room-dialog.cpp
@@ -63,8 +62,9 @@ set (contactlist_SRCS
      common/models/groups-model.cpp
      common/models/proxy-tree-node.cpp
      common/service-availability-checker.cpp
+     common/global-presence.cpp
+     common/kpresence.cpp
      presence-model.cpp
-     kpresence.cpp
 )
 
 

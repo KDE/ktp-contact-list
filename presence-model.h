@@ -21,7 +21,7 @@
 #ifndef PRESENCEMODEL_H
 #define PRESENCEMODEL_H
 
-#include "kpresence.h"
+#include "common/kpresence.h"
 
 #include <QAbstractListModel>
 

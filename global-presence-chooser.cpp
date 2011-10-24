@@ -20,8 +20,9 @@
 
 #include "global-presence-chooser.h"
 
-#include "global-presence.h"
 #include "presence-model.h"
+
+#include "common/global-presence.h"
 #include "dialogs/custom-presence-dialog.h"
 
 #include <KIcon>
