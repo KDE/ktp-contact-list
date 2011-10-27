@@ -37,6 +37,7 @@
 
 #include <QMouseEvent>
 #include <QtGui/QToolTip>
+#include <KMessageBox>
 
 
 //A sneaky class that adds an extra entry to the end of the presence model
@@ -175,6 +176,29 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
         dialog.exec();
         onPresenceChanged(m_globalPresence->currentPresence());
     } else if (index == count()-2) {
+        KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
+        KConfigGroup kdedConfig = config->group("KDED");
+
+        bool pluginEnabled = kdedConfig.readEntry("nowPlayingEnabled", false);
+
+        if (!pluginEnabled) {
+            if (KMessageBox::questionYesNo(this,
+                i18n("This plugin is currently disabled. Do you want to enable it and use as your presence?"),
+                     i18n("Plugin disabled")) == KMessageBox::Yes) {
+
+                    kdedConfig.writeEntry("nowPlayingEnabled", true);
+                    kdedConfig.sync();
+
+                    QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
+                                                                      QLatin1String( "org.kde.Telepathy"),
+                                                                      QLatin1String("settingsChange"));
+                                                                      QDBusConnection::sessionBus().send(message);
+            } else {
+                onPresenceChanged(m_globalPresence->currentPresence());
+                return;
+            }
+        }
+
         QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("activateNowPlaying"));
