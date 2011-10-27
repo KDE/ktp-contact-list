@@ -36,6 +36,8 @@ public:
     explicit GlobalPresenceChooser(QWidget *parent = 0);
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
+    void repositionSpinner();
+
 protected:
     virtual bool event(QEvent *event);
 

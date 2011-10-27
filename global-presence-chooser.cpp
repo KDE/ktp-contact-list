@@ -118,9 +118,6 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
     m_busyOverlay->setWidget(this);
-    QPoint topLeft(sizeHint().width() - m_busyOverlay->sequence().frameSize().width() - 22,
-                   (sizeHint().height() - m_busyOverlay->sequence().frameSize().height())/2);
-    m_busyOverlay->setRect(QRect(topLeft, m_busyOverlay->sequence().frameSize()));
 
     connect(this, SIGNAL(activated(int)), SLOT(onCurrentIndexChanged(int)));
     connect(m_globalPresence, SIGNAL(currentPresenceChanged(Tp::Presence)), SLOT(onPresenceChanged(Tp::Presence)));
@@ -162,6 +159,10 @@ bool GlobalPresenceChooser::event(QEvent *e)
         toolTipText.append("</table>");
         QToolTip::showText(helpEvent->globalPos(), toolTipText, this);
         return true;
+    }
+
+    if (e->type() == QEvent::Resize) {
+        repositionSpinner();
     }
     return QComboBox::event(e);
 }
@@ -207,11 +208,20 @@ void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
 void GlobalPresenceChooser::onPresenceChanging(bool isChanging)
 {
     if (isChanging) {
+        repositionSpinner();
         m_busyOverlay->start();
     } else {
         m_busyOverlay->stop();
     }
 }
+
+void GlobalPresenceChooser::repositionSpinner()
+{
+    QPoint topLeft(width() - m_busyOverlay->sequence().frameSize().width() - 22,
+                   (height() - m_busyOverlay->sequence().frameSize().height())/2);
+    m_busyOverlay->setRect(QRect(topLeft, m_busyOverlay->sequence().frameSize()));
+}
+
 
 #include "global-presence-chooser.moc"
 #include "moc_global-presence-chooser.cpp" //hack because we have two QObejcts in teh same file
