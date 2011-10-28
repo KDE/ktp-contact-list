@@ -443,6 +443,7 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
             SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
             this, SLOT(onAccountConnectionStatusChanged(Tp::ConnectionStatus)));
 
+    m_avatarButton->loadAvatar(account);
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup avatarGroup(config, "Avatar");
     if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
