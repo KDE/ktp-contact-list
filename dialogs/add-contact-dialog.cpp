@@ -81,6 +81,8 @@ AddContactDialog::AddContactDialog(AccountsModel *accountModel, QWidget *parent)
         ui->accountCombo->addItem(filteredModel->data(filteredModel->index(i, 0)).toString(),
                                   filteredModel->data(filteredModel->index(i, 0), AccountsModel::ItemRole));
     }
+
+    ui->screenNameLineEdit->setFocus();
 }
 
 AddContactDialog::~AddContactDialog()
