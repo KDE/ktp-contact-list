@@ -176,34 +176,34 @@ MainWidget::MainWidget(QWidget *parent)
 
     settingsButtonMenu->addMenu(setDelegateTypeMenu);
 
-    KMenu *presenceChooser = new KMenu(settingsButton);
-    presenceChooser->setTitle(i18n("Control accounts presence"));
-
-    QActionGroup *presenceChooserGroup = new QActionGroup(this);
-    presenceChooserGroup->setExclusive(true);
-    presenceChooserGroup->addAction(presenceChooser->addAction(i18n("All at once"),
-                                                               this, SLOT(onUseGlobalPresenceTriggered())));
-
-    presenceChooserGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
-        presenceChooserGroup->actions().last()->setChecked(true);
-        //hide account buttons and show global presence
-        onUseGlobalPresenceTriggered();
-    }
-
-    presenceChooserGroup->addAction(presenceChooser->addAction(i18n("Separately"),
-                                                                    this, SLOT(onUsePerAccountPresenceTriggered())));
-
-    presenceChooserGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("per-account")) {
-        presenceChooserGroup->actions().last()->setChecked(true);
-        //hide global presence and use account buttons
-        onUsePerAccountPresenceTriggered();
-    }
-
-    settingsButtonMenu->addMenu(presenceChooser);
+//     KMenu *presenceChooser = new KMenu(settingsButton);
+//     presenceChooser->setTitle(i18n("Control accounts presence"));
+//
+//     QActionGroup *presenceChooserGroup = new QActionGroup(this);
+//     presenceChooserGroup->setExclusive(true);
+//     presenceChooserGroup->addAction(presenceChooser->addAction(i18n("All at once"),
+//                                                                this, SLOT(onUseGlobalPresenceTriggered())));
+//
+//     presenceChooserGroup->actions().last()->setCheckable(true);
+//
+//     if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
+//         presenceChooserGroup->actions().last()->setChecked(true);
+//         //hide account buttons and show global presence
+//         onUseGlobalPresenceTriggered();
+//     }
+//
+//     presenceChooserGroup->addAction(presenceChooser->addAction(i18n("Separately"),
+//                                                                     this, SLOT(onUsePerAccountPresenceTriggered())));
+//
+//     presenceChooserGroup->actions().last()->setCheckable(true);
+//
+//     if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("per-account")) {
+//         presenceChooserGroup->actions().last()->setChecked(true);
+//         //hide global presence and use account buttons
+//         onUsePerAccountPresenceTriggered();
+//     }
+//
+//     settingsButtonMenu->addMenu(presenceChooser);
 
     settingsButtonMenu->addAction(i18n("Join chat room"), this, SLOT(onJoinChatRoomRequested()));
     settingsButtonMenu->addSeparator();
