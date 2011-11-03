@@ -76,6 +76,7 @@
 #include "common/models/accounts-model.h"
 #include "common/models/accounts-filter-model.h"
 #include "common/models/proxy-tree-node.h"
+#include "common/text-parser.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
@@ -1289,55 +1290,13 @@ void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
 
 QStringList MainWidget::extractLinksFromIndex(const QModelIndex& index)
 {
-    QStringList links;
     QString presenceMsg = index.data(AccountsModel::PresenceMessageRole).toString();
-
     if (presenceMsg.isEmpty()) {
-        return links;
+        return QStringList();
     } else {
-        // link detection taken from chatHandler adium-theme-view.cpp
-        QRegExp linkRegExp("\\b(?:(\\w+)://|(www\\.))([^\\s]+)");
-        int index = 0;
-
-        while ((index = linkRegExp.indexIn(presenceMsg, index)) != -1) {
-            QString realUrl = linkRegExp.cap(0);
-            QString protocol = linkRegExp.cap(1);
-
-            //if cap(1) is empty cap(2) was matched -> starts with www.
-            const bool startsWithWWW = protocol.isEmpty();
-
-            kDebug() << "Found URL " << realUrl << "with protocol : " << (startsWithWWW ? QLatin1String("http") : protocol);
-
-            // if url has a supported protocol
-            if (startsWithWWW || KProtocolInfo::protocols().contains(protocol, Qt::CaseInsensitive)) {
-
-                // text not wanted in a link ( <,> )
-                QRegExp unwanted("(&lt;|&gt;)");
-
-                if (!realUrl.contains(unwanted)) {
-                    // check for newline and cut link when found
-                    if (realUrl.contains("<br/>")) {
-                        int findIndex = realUrl.indexOf("<br/>");
-                        realUrl.truncate(findIndex);
-                    }
-
-                    // check prefix
-                    if (startsWithWWW) {
-                        realUrl.prepend("http://");
-                    }
-
-                    // add to links list
-                    links.push_back(realUrl);
-
-                    // advance position otherwise I end up parsing the same link
-                    index += realUrl.length();
-                }
-            } else {
-                index += linkRegExp.matchedLength();
-            }
-        }
+        TextUrlData urls = TextParser::instance()->extractUrlData(presenceMsg);
+        return urls.fixedUrls;
     }
-    return links;
 }
 
 ///Was moved to telepathy-kded-module
