@@ -64,6 +64,7 @@ set (contactlist_SRCS
      common/service-availability-checker.cpp
      common/global-presence.cpp
      common/kpresence.cpp
+     common/text-parser.cpp
      presence-model.cpp
 )
 
