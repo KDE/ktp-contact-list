@@ -28,6 +28,9 @@
 
 #include <KProtocolInfo>
 
+#include "common/text-parser.h"
+#include <KDebug>
+
 ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :
     KDialog(parent),
     ui(new Ui::ContactInfo)
@@ -52,19 +55,16 @@ ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :
 
     QString presenceMessage = contact->presence().statusMessage();
 
-    //find links in presence message
-    QRegExp linkRegExp("\\b(\\w+)://[^ \t\n\r\f\v]+");
-    int index = 0;
-    while ((index = linkRegExp.indexIn(presenceMessage, index)) != -1) {
-        QString realUrl = linkRegExp.cap(0);
-        QString protocol = linkRegExp.cap(1);
-        if (KProtocolInfo::protocols().contains(protocol, Qt::CaseInsensitive)) {
-            QString link = "<a href='" + realUrl + "'>" + realUrl + "</a>";
-            presenceMessage.replace(index, realUrl.length(), link);
-            index += link.length();
-        } else {
-            index += realUrl.length();
-        }
+    TextUrlData urls = TextParser::instance()->extractUrlData(presenceMessage);
+
+    int offset = 0;
+    for (int i = 0; i < urls.fixedUrls.size(); i++) {
+        QString originalText = presenceMessage.mid(urls.urlRanges.at(i).first + offset, urls.urlRanges.at(i).second);
+        QString link = QString("<a href='%1'>%2</a>").arg(urls.fixedUrls.at(i), originalText);
+        presenceMessage.replace(urls.urlRanges.at(i).first + offset, urls.urlRanges.at(i).second, link);
+
+        //after the first replacement is made, the original position values are not valid anymore, this adjusts them
+        offset += link.length() - originalText.length();
     }
 
     ui->presenceLabel->setTextFormat(Qt::RichText);
