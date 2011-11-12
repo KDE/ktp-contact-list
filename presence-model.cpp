@@ -59,22 +59,7 @@ QVariant PresenceModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case Qt::DisplayRole:
         if (presence.statusMessage().isEmpty()) {
-            switch (presence.type()) {
-            case Tp::ConnectionPresenceTypeAvailable:
-                return i18n("Available");
-            case Tp::ConnectionPresenceTypeBusy:
-                return i18n("Busy");
-            case Tp::ConnectionPresenceTypeAway:
-                return i18n("Away");
-            case Tp::ConnectionPresenceTypeExtendedAway:
-                return i18n("Extended Away");
-            case Tp::ConnectionPresenceTypeHidden:
-                return i18n("Invisible");
-            case Tp::ConnectionPresenceTypeOffline:
-                return i18n("Offline");
-            default:
-                return i18n("Unknown");
-            }
+            return presence.displayString();
         } else {
             return presence.statusMessage();
         }
