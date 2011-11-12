@@ -811,6 +811,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
     KMenu *menu = new KMenu();
     menu->addTitle(contact->alias());
 
+    //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
     QAction* action = menu->addAction(i18n("Start Chat..."));
     action->setIcon(KIcon("mail-message-new"));
     action->setDisabled(true);
@@ -882,57 +883,59 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
         menu->addMenu(subMenu);
     }
 
-
     menu->addSeparator();
 
-    // remove contact action
-    QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
-    connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
+    if (m_groupContactsAction->isChecked()) {
+        // remove contact from group action, must be QAction because menu->addAction returns QAction
+        QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
+        connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
 
-    if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
-        QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
+        if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
+            QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
 
-        QStringList groupList;
-        QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
-        foreach (const Tp::AccountPtr &account, accounts) {
-            if (!account->connection().isNull()) {
-                groupList.append(account->connection()->contactManager()->allKnownGroups());
+            QStringList groupList;
+            QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
+            foreach (const Tp::AccountPtr &account, accounts) {
+                if (!account->connection().isNull()) {
+                    groupList.append(account->connection()->contactManager()->allKnownGroups());
+                }
             }
+
+            groupList.removeDuplicates();
+
+            QStringList currentGroups = contact->groups();
+
+            foreach (const QString &group, currentGroups) {
+                groupList.removeAll(group);
+            }
+
+            connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
+                    this, SLOT(onCreateNewGroupTriggered()));
+
+            groupAddMenu->addSeparator();
+
+            foreach (const QString &group, groupList) {
+                connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
+                        SLOT(onAddContactToGroupTriggered()));
+            }
+        } else {
+            kDebug() << "Unable to support Groups";
         }
 
-        groupList.removeDuplicates();
-
-        QStringList currentGroups = contact->groups();
-
-        foreach (const QString &group, currentGroups) {
-            groupList.removeAll(group);
-        }
-
-        connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
-                this, SLOT(onCreateNewGroupTriggered()));
-
-        groupAddMenu->addSeparator();
-
-        foreach (const QString &group, groupList) {
-            connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
-                    SLOT(onAddContactToGroupTriggered()));
-        }
-    } else {
-        kDebug() << "Unable to support Groups";
+        menu->addSeparator();
     }
 
-    //menu->addSeparator();
+    if (contact->isBlocked()) {
+        action = menu->addAction(i18n("Unblock Contact"));
+        connect(action, SIGNAL(triggered(bool)), SLOT(slotUnblockContactTriggered()));
+    } else {
+        action = menu->addAction(i18n("Block Conact"));
+        connect(action, SIGNAL(triggered(bool)), SLOT(slotBlockContactTriggered()));
+    }
 
-    // TODO: Remove when Telepathy actually supports blocking.
-    /*if (contact->isBlocked()) {
-     * action = menu->addAction(i18n("Unblock User"));
-     * connect(action, SIGNAL(triggered(bool)),
-     *         SLOT(slotUnblockContactTriggered()));
-} else {
-    action = menu->addAction(i18n("Blocked"));
-    connect(action, SIGNAL(triggered(bool)),
-    SLOT(slotBlockContactTriggered()));
-}*/
+    // remove contact action, must be QAction because that's what menu->addAction returns
+    QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
+    connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
 
     menu->addSeparator();
 
@@ -956,6 +959,7 @@ KMenu* MainWidget::groupContextMenu(const QModelIndex &index)
     KMenu *menu = new KMenu();
     menu->addTitle(groupItem->groupName());
 
+    //must be QAction, because menu->addAction returns QAction, otherwise compilation dies horribly
     QAction *action = menu->addAction(i18n("Rename Group..."));
     action->setIcon(KIcon("edit-rename"));
 
@@ -1487,6 +1491,23 @@ void MainWidget::onUsePerAccountPresenceTriggered()
     configGroup.writeEntry("selected_presence_chooser", "per-account");
 
     configGroup.config()->sync();
+}
+
+void MainWidget::onRemoveContactFromGroupTriggered()
+{
+    QModelIndex index = m_contactsListView->currentIndex();
+    QString groupName = index.parent().data(GroupsModel::GroupNameRole).toString();
+    ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact =  contactItem->contact();
+
+    Tp::PendingOperation* operation = contact->removeFromGroup(groupName);
+
+    if (operation) {
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+    }
 }
 
 #include "main-widget.moc"

@@ -97,6 +97,7 @@ private Q_SLOTS:
     void onStartFileTransferTriggered();
     void onStartDesktopSharingTriggered();
     void onUnblockContactTriggered();
+    void onRemoveContactFromGroupTriggered();
     void onCreateNewGroupTriggered();
     void onRenameGroupTriggered();
     void onDeleteGroupTriggered();
