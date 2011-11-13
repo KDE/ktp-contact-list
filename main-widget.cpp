@@ -929,7 +929,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
         action = menu->addAction(i18n("Unblock Contact"));
         connect(action, SIGNAL(triggered(bool)), SLOT(slotUnblockContactTriggered()));
     } else {
-        action = menu->addAction(i18n("Block Conact"));
+        action = menu->addAction(i18n("Block Contact"));
         connect(action, SIGNAL(triggered(bool)), SLOT(slotBlockContactTriggered()));
     }
 
