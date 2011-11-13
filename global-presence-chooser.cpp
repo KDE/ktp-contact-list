@@ -42,21 +42,26 @@
 
 //A sneaky class that adds an extra entry to the end of the presence model
 //called "Configure Presences"
-class PresenceModelPlusConfig : public QAbstractListModel
+class PresenceModelExtended : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    PresenceModelPlusConfig(PresenceModel *presenceModel, QObject *parent);
+    PresenceModelExtended(PresenceModel *presenceModel, QObject *parent);
     int rowCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
+    KPresence temporaryPresence() const;
+    /** Adds a presence to the model which is to be used when the presence has been set externally and we need to show it, but not save it to the config*/
+    QModelIndex addTemporaryPresence(const KPresence &presence);
+    void removeTemporaryPresence();
 private slots:
     void sourceRowsInserted(const QModelIndex &index, int start, int end);
     void sourceRowsRemoved(const QModelIndex &index, int start, int end);
 private:
+    KPresence m_temporaryPresence;
     PresenceModel *m_model;
 };
 
-PresenceModelPlusConfig::PresenceModelPlusConfig(PresenceModel *presenceModel, QObject *parent) :
+PresenceModelExtended::PresenceModelExtended(PresenceModel *presenceModel, QObject *parent) :
     QAbstractListModel(parent),
     m_model(presenceModel)
 {
@@ -65,15 +70,19 @@ PresenceModelPlusConfig::PresenceModelPlusConfig(PresenceModel *presenceModel, Q
 }
 
 //return number of rows + an extra item for the "configure presences" button
-int PresenceModelPlusConfig::rowCount(const QModelIndex &parent) const
+int PresenceModelExtended::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) {
         return 0;
     }
-    return m_model->rowCount(parent) + 2;
+    int rowCount = m_model->rowCount(parent) + 2;
+    if (m_temporaryPresence.isValid()) {
+        rowCount++;
+    }
+    return rowCount;
 }
 
-QVariant PresenceModelPlusConfig::data(const QModelIndex &index, int role) const
+QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
 {
     if (index.row() == rowCount(index.parent())-1) {
         switch(role) {
@@ -89,21 +98,61 @@ QVariant PresenceModelPlusConfig::data(const QModelIndex &index, int role) const
             case Qt::DecorationRole:
                 return KIcon("speaker");
         }
-    } else {
+    } else if (m_temporaryPresence.isValid() && index.row() == rowCount(index.parent()) -3) {
+        switch(role) {
+        case Qt::DisplayRole:
+            return m_temporaryPresence.statusMessage();
+        case Qt::DecorationRole:
+            return m_temporaryPresence.icon();
+        case PresenceModel::PresenceRole:
+            return QVariant::fromValue<Tp::Presence>(m_temporaryPresence);
+        }
+    }
+    else {
         return m_model->data(m_model->index(index.row()), role);
     }
     return QVariant();
 }
 
-void PresenceModelPlusConfig::sourceRowsInserted(const QModelIndex &index, int start, int end)
+KPresence PresenceModelExtended::temporaryPresence() const
+{
+    return m_temporaryPresence;
+}
+
+void PresenceModelExtended::sourceRowsInserted(const QModelIndex &index, int start, int end)
 {
     beginInsertRows(createIndex(index.row(), 0), start, end);
     endInsertRows();
 }
 
-void PresenceModelPlusConfig::sourceRowsRemoved(const QModelIndex &index, int start, int end)
+void PresenceModelExtended::sourceRowsRemoved(const QModelIndex &index, int start, int end)
 {
     beginRemoveRows(createIndex(index.row(), 0), start, end);
+    endRemoveRows();
+}
+
+QModelIndex PresenceModelExtended::addTemporaryPresence(const KPresence &presence)
+{
+    if (! presence.isValid()) {
+        removeTemporaryPresence();
+    }
+
+    int row = m_model->rowCount(QModelIndex());
+    beginInsertRows(QModelIndex(),row, row);
+    m_temporaryPresence = presence;
+    endInsertRows();
+    return this->createIndex(row, 0);
+}
+
+void PresenceModelExtended::removeTemporaryPresence()
+{
+    if (!m_temporaryPresence.isValid()) {
+        return; //if not already set, do nothing.
+    }
+
+    int row = m_model->rowCount(QModelIndex());
+    beginRemoveRows(QModelIndex(),row, row);
+    m_temporaryPresence = KPresence();
     endRemoveRows();
 }
 
@@ -112,9 +161,10 @@ void PresenceModelPlusConfig::sourceRowsRemoved(const QModelIndex &index, int st
 GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     KComboBox(parent),
     m_globalPresence(new GlobalPresence(this)),
-    m_model(new PresenceModel(this))
+    m_model(new PresenceModel(this)),
+    m_modelExtended(new PresenceModelExtended(m_model, this))
 {
-    this->setModel(new PresenceModelPlusConfig(m_model, this));
+    this->setModel(m_modelExtended);
 
     m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
@@ -203,7 +253,13 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("activateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
-    } else {
+    } else if (m_modelExtended->temporaryPresence().isValid() && index == count()-3)
+    {
+        //do nothing if the temporary presence is selected. This is only used for externally set presences.
+        //at which point reselecting it does nothing.
+    }
+    else
+    {
         QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("deactivateNowPlaying"));
@@ -215,6 +271,7 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 
 void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
 {
+    m_modelExtended->removeTemporaryPresence();
     kDebug();
     for (int i=0; i < count() ; i++) {
         Tp::Presence itemPresence = itemData(i, PresenceModel::PresenceRole).value<Tp::Presence>();
@@ -224,8 +281,7 @@ void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
         }
     }
 
-    //FIXME this needs to only be a temporary presence, which we delete afterwards
-    QModelIndex index = m_model->addPresence(presence);
+    QModelIndex index = m_modelExtended->addTemporaryPresence(presence);
     setCurrentIndex(index.row());
 }
 

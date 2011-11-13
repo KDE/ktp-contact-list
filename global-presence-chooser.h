@@ -28,6 +28,8 @@
 class KPixmapSequenceOverlayPainter;
 class GlobalPresence;
 class PresenceModel;
+class PresenceModelExtended;
+
 
 class GlobalPresenceChooser : public KComboBox
 {
@@ -49,6 +51,8 @@ private slots:
 private:
     GlobalPresence *m_globalPresence;
     PresenceModel *m_model;
+    PresenceModelExtended *m_modelExtended;
+
     KPixmapSequenceOverlayPainter *m_busyOverlay;
     Tp::AccountManagerPtr m_accountManager;
 };
