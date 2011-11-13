@@ -49,6 +49,8 @@ public:
     PresenceModelExtended(PresenceModel *presenceModel, QObject *parent);
     int rowCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
+    KPresence temporaryPresence() const;
+    /** Adds a presence to the model which is to be used when the presence has been set externally and we need to show it, but not save it to the config*/
     QModelIndex addTemporaryPresence(const KPresence &presence);
     void removeTemporaryPresence();
 private slots:
@@ -112,6 +114,11 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+KPresence PresenceModelExtended::temporaryPresence() const
+{
+    return m_temporaryPresence;
+}
+
 void PresenceModelExtended::sourceRowsInserted(const QModelIndex &index, int start, int end)
 {
     beginInsertRows(createIndex(index.row(), 0), start, end);
@@ -126,6 +133,10 @@ void PresenceModelExtended::sourceRowsRemoved(const QModelIndex &index, int star
 
 QModelIndex PresenceModelExtended::addTemporaryPresence(const KPresence &presence)
 {
+    if (! presence.isValid()) {
+        removeTemporaryPresence();
+    }
+
     int row = m_model->rowCount(QModelIndex());
     beginInsertRows(QModelIndex(),row, row);
     m_temporaryPresence = presence;
@@ -135,6 +146,10 @@ QModelIndex PresenceModelExtended::addTemporaryPresence(const KPresence &presenc
 
 void PresenceModelExtended::removeTemporaryPresence()
 {
+    if (!m_temporaryPresence.isValid()) {
+        return; //if not already set, do nothing.
+    }
+
     int row = m_model->rowCount(QModelIndex());
     beginRemoveRows(QModelIndex(),row, row);
     m_temporaryPresence = KPresence();
@@ -238,7 +253,13 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("activateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
-    } else {
+    } else if (m_modelExtended->temporaryPresence().isValid() && index == count()-3)
+    {
+        //do nothing if the temporary presence is selected. This is only used for externally set presences.
+        //at which point reselecting it does nothing.
+    }
+    else
+    {
         QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("deactivateNowPlaying"));
