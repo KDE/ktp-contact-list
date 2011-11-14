@@ -138,6 +138,9 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
 
     connect(m_account.data(), SIGNAL(currentPresenceChanged(Tp::Presence)),
             this, SLOT(presenceChanged(Tp::Presence)));
+    
+    connect(m_account.data(), SIGNAL(iconNameChanged(QString)), 
+            this, SLOT(updateIcon(QString)));
 
     updateToolTip();
 }
@@ -287,6 +290,11 @@ void AccountButton::resetMenuFormatting()
     foreach (QAction *a, menu()->actions()) {
         a->setFont(presenceFont);
     }
+}
+
+void AccountButton::updateIcon(const QString &iconPath)
+{
+    setIcon(KIcon(iconPath));
 }
 
 #include "account-button.moc"
