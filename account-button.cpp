@@ -46,10 +46,10 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     m_busyOverlay->setWidget(this);
     m_busyOverlay->setSequence(KPixmapSequence(QString("process-working")));
 
-    QString iconPath = account->iconName();
+    QString iconPath = m_account->iconName();
 
     setIcon(KIcon(iconPath));
-    if (!account->isValid()) {
+    if (!m_account->isValid()) {
         //we paint a warning symbol in the right-bottom corner
         QPixmap errorPixmap = KIconLoader::global()->loadIcon("dialog-error", KIconLoader::NoGroup, 16);
         QPixmap pixmap = icon().pixmap(32, 32);
