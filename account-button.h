@@ -64,6 +64,9 @@ public Q_SLOTS:
 
     ///Sets the custom presence message
     void setCustomPresenceMessage(const QString &message);
+    
+    ///Update account item icon when profile type changes
+    void updateIcon(const QString &iconPath);
 
 private:
 
