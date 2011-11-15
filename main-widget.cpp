@@ -927,10 +927,10 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
 
     if (contact->isBlocked()) {
         action = menu->addAction(i18n("Unblock Contact"));
-        connect(action, SIGNAL(triggered(bool)), SLOT(slotUnblockContactTriggered()));
+        connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
     } else {
         action = menu->addAction(i18n("Block Contact"));
-        connect(action, SIGNAL(triggered(bool)), SLOT(slotBlockContactTriggered()));
+        connect(action, SIGNAL(triggered(bool)), SLOT(onBlockContactTriggered()));
     }
 
     // remove contact action, must be QAction because that's what menu->addAction returns
