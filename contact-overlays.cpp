@@ -154,7 +154,7 @@ AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
 VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
     : StartChannelContactOverlay(
         parent,
-        KGuiItem(i18n("Start Video Call"), "camera-web",
+        KGuiItem(i18n("Start Video Call"), "webcamsend",
                  i18n("Start Video Call"), i18n("Start a video call")),
         AccountsModel::VideoCallCapabilityRole,
         88)

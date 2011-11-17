@@ -813,7 +813,7 @@ KMenu* MainWidget::contactContextMenu(const QModelIndex &index)
 
     //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
     QAction* action = menu->addAction(i18n("Start Chat..."));
-    action->setIcon(KIcon("mail-message-new"));
+    action->setIcon(KIcon("text-x-generic"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartTextChatTriggered()));
