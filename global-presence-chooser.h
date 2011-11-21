@@ -30,7 +30,6 @@ class GlobalPresence;
 class PresenceModel;
 class PresenceModelExtended;
 
-
 class GlobalPresenceChooser : public KComboBox
 {
     Q_OBJECT

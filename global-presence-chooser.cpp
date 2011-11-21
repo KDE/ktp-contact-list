@@ -31,14 +31,14 @@
 #include <KDebug>
 #include <KPixmapSequence>
 #include <KPixmapSequenceOverlayPainter>
+#include <KMessageBox>
 
 #include <TelepathyQt4/Presence>
 #include <TelepathyQt4/Account>
 
 #include <QMouseEvent>
 #include <QtGui/QToolTip>
-#include <KMessageBox>
-
+#include <QStyle>
 
 //A sneaky class that adds an extra entry to the end of the presence model
 //called "Configure Presences"
@@ -166,6 +166,10 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
 {
     this->setModel(m_modelExtended);
 
+    setEditable(false);
+    //needed for mousemove events
+    setMouseTracking(true);
+
     m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
     m_busyOverlay->setWidget(this);
@@ -215,6 +219,75 @@ bool GlobalPresenceChooser::event(QEvent *e)
     if (e->type() == QEvent::Resize) {
         repositionSpinner();
     }
+
+    if (e->type() == QEvent::MouseButtonPress || e->type() == QEvent::MouseButtonRelease || e->type() == QEvent::MouseButtonDblClick) {
+        QMouseEvent *me = static_cast<QMouseEvent*>(e);
+        QStyleOptionComboBox opt;
+        initStyleOption(&opt);
+
+        //get the subcontrol this event occured in
+        QStyle::SubControl sc = style()->hitTestComplexControl(QStyle::CC_ComboBox, &opt, me->pos(),
+                                                               this);
+
+        if (sc == QStyle::SC_ComboBoxArrow) {
+            //if user pressed the combo arrow, pass it to parent
+            QComboBox::mousePressEvent(me);
+        } else {
+            //set combo editable if user click to any other parts
+            setEditable(true);
+            //if current presence has no presence message, delete the text
+            if (m_globalPresence->currentPresence().statusMessage().isEmpty()) {
+                lineEdit()->clear();
+            }
+            lineEdit()->setFocus();
+        }
+
+        return true;
+    }
+
+    if (e->type() == QEvent::MouseMove) {
+        QMouseEvent *me =  static_cast<QMouseEvent*>(e);
+        QStyleOptionComboBox opt;
+        initStyleOption(&opt);
+
+        //get the subcontrol this event occured in
+        QStyle::SubControl sc = style()->hitTestComplexControl(QStyle::CC_ComboBox, &opt, me->pos(),
+                                                               this);
+
+        //set ArrowCursor for the combo arrow, "typing" cursor for all the rest
+        if (sc == QStyle::SC_ComboBoxArrow) {
+            setCursor(Qt::ArrowCursor);
+        } else {
+            setCursor(Qt::IBeamCursor);
+        }
+
+        return true;
+    }
+
+    if (e->type() == QEvent::KeyPress) {
+        QKeyEvent *ke = static_cast<QKeyEvent*>(e);
+
+        if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return) {
+            Tp::Presence presence = itemData(currentIndex(), PresenceModel::PresenceRole).value<Tp::Presence>();
+            presence.setStatus(presence.type(), presence.status(), lineEdit()->text());
+            QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
+            setEditable(false);
+            kDebug() << newPresence.row();
+            setCurrentIndex(newPresence.row());
+            //this is needed because currentIndexChanged signal is not connected and that is to not crash contact list
+            //because this signal is emitted once there is a valid model and that happens before AccountManager is ready
+            //and thus crashes contact list. Therefore it's called manually here.
+            onCurrentIndexChanged(newPresence.row());
+
+            return true;
+        }
+    }
+
+    if (e->type() == QEvent::FocusOut) {
+        //just cancel editable and let it exec parent event()
+        setEditable(false);
+    }
+
     return QComboBox::event(e);
 }
 
@@ -301,7 +374,6 @@ void GlobalPresenceChooser::repositionSpinner()
                    (height() - m_busyOverlay->sequence().frameSize().height())/2);
     m_busyOverlay->setRect(QRect(topLeft, m_busyOverlay->sequence().frameSize()));
 }
-
 
 #include "global-presence-chooser.moc"
 #include "moc_global-presence-chooser.cpp" //hack because we have two QObejcts in teh same file
