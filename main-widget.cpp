@@ -70,13 +70,14 @@
 #include "dialogs/remove-contact-dialog.h"
 #include "dialogs/contact-info.h"
 
-#include "common/models/groups-model.h"
-#include "common/models/contact-model-item.h"
-#include "common/models/groups-model-item.h"
-#include "common/models/accounts-model.h"
-#include "common/models/accounts-filter-model.h"
-#include "common/models/proxy-tree-node.h"
-#include "common/text-parser.h"
+#include <KTelepathy/Models/groups-model.h>
+#include <KTelepathy/Models/contact-model-item.h>
+#include <KTelepathy/Models/groups-model-item.h>
+#include <KTelepathy/Models/accounts-model.h>
+#include <KTelepathy/Models/accounts-model-item.h>
+#include <KTelepathy/Models/accounts-filter-model.h>
+#include <KTelepathy/Models/proxy-tree-node.h>
+#include <KTelepathy/text-parser.h>
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
@@ -1298,7 +1299,7 @@ QStringList MainWidget::extractLinksFromIndex(const QModelIndex& index)
     if (presenceMsg.isEmpty()) {
         return QStringList();
     } else {
-        TextUrlData urls = TextParser::instance()->extractUrlData(presenceMsg);
+        KTp::TextUrlData urls = KTp::TextParser::instance()->extractUrlData(presenceMsg);
         return urls.fixedUrls;
     }
 }

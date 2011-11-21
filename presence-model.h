@@ -21,7 +21,7 @@
 #ifndef PRESENCEMODEL_H
 #define PRESENCEMODEL_H
 
-#include "common/kpresence.h"
+#include <KTelepathy/presence.h>
 
 #include <QAbstractListModel>
 
@@ -62,7 +62,7 @@ private:
     /** Loads any user custom presences into the model*/
     void loadCustomPresences();
 
-    QList<KPresence> m_presences;
+    QList<KTp::Presence> m_presences;
 
     //this is wrong, KConfigGroup is a sharedptr..
     KConfigGroup m_presenceGroup;

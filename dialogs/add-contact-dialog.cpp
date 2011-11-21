@@ -21,8 +21,8 @@
 #include "add-contact-dialog.h"
 #include "ui_add-contact-dialog.h"
 
-#include "common/models/accounts-model.h"
-#include "common/models/accounts-model-item.h"
+#include <KTelepathy/Models/accounts-model.h>
+#include <KTelepathy/Models/accounts-model-item.h>
 
 #include <QObject>
 #include <QSortFilterProxyModel>

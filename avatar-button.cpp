@@ -29,7 +29,9 @@
 #include <KLocalizedString>
 #include <KSharedConfig>
 
-#include "common/models/accounts-model.h"
+#include <KTelepathy/Models/accounts-model.h>
+#include <KTelepathy/Models/accounts-model-item.h>
+
 #include "fetch-avatar-job.h"
 
 AvatarButton::AvatarButton(QWidget *parent)

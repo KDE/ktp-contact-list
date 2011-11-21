@@ -25,8 +25,8 @@
 #include <KIconLoader>
 #include <KDebug>
 
-#include "common/models/accounts-model.h"
-#include "common/models/contact-model-item.h"
+#include <KTelepathy/Models/accounts-model.h>
+#include <KTelepathy/Models/contact-model-item.h>
 
 class GuiItemContactViewHoverButton : public ContactViewHoverButton
 {

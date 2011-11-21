@@ -22,7 +22,9 @@
 
 #include "presence-model.h"
 
-#include "common/global-presence.h"
+#include <KTelepathy/global-presence.h>
+#include <KTelepathy/presence.h>
+
 #include "dialogs/custom-presence-dialog.h"
 
 #include <KIcon>
@@ -49,15 +51,15 @@ public:
     PresenceModelExtended(PresenceModel *presenceModel, QObject *parent);
     int rowCount(const QModelIndex &parent) const;
     QVariant data(const QModelIndex &index, int role) const;
-    KPresence temporaryPresence() const;
+    KTp::Presence temporaryPresence() const;
     /** Adds a presence to the model which is to be used when the presence has been set externally and we need to show it, but not save it to the config*/
-    QModelIndex addTemporaryPresence(const KPresence &presence);
+    QModelIndex addTemporaryPresence(const KTp::Presence &presence);
     void removeTemporaryPresence();
 private slots:
     void sourceRowsInserted(const QModelIndex &index, int start, int end);
     void sourceRowsRemoved(const QModelIndex &index, int start, int end);
 private:
-    KPresence m_temporaryPresence;
+    KTp::Presence m_temporaryPresence;
     PresenceModel *m_model;
 };
 
@@ -114,7 +116,7 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-KPresence PresenceModelExtended::temporaryPresence() const
+KTp::Presence PresenceModelExtended::temporaryPresence() const
 {
     return m_temporaryPresence;
 }
@@ -131,7 +133,7 @@ void PresenceModelExtended::sourceRowsRemoved(const QModelIndex &index, int star
     endRemoveRows();
 }
 
-QModelIndex PresenceModelExtended::addTemporaryPresence(const KPresence &presence)
+QModelIndex PresenceModelExtended::addTemporaryPresence(const KTp::Presence &presence)
 {
     if (! presence.isValid()) {
         removeTemporaryPresence();
@@ -152,7 +154,7 @@ void PresenceModelExtended::removeTemporaryPresence()
 
     int row = m_model->rowCount(QModelIndex());
     beginRemoveRows(QModelIndex(),row, row);
-    m_temporaryPresence = KPresence();
+    m_temporaryPresence = KTp::Presence();
     endRemoveRows();
 }
 
@@ -160,7 +162,7 @@ void PresenceModelExtended::removeTemporaryPresence()
 
 GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     KComboBox(parent),
-    m_globalPresence(new GlobalPresence(this)),
+    m_globalPresence(new KTp::GlobalPresence(this)),
     m_model(new PresenceModel(this)),
     m_modelExtended(new PresenceModelExtended(m_model, this))
 {
@@ -201,7 +203,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
 
         Q_FOREACH(const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->isEnabled()) {
-                KPresence accountPresence(account->currentPresence());
+                KTp::Presence accountPresence(account->currentPresence());
                 QString presenceIconPath = KIconLoader::global()->iconPath(accountPresence.icon().name(), 1);
                 QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
                 QString accountIconPath = KIconLoader::global()->iconPath(account->iconName(), 1);

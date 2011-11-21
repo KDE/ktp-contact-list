@@ -26,9 +26,12 @@
 #include <TelepathyQt4/AccountManager>
 
 class KPixmapSequenceOverlayPainter;
-class GlobalPresence;
 class PresenceModel;
 class PresenceModelExtended;
+
+namespace KTp {
+class GlobalPresence;
+}
 
 class GlobalPresenceChooser : public KComboBox
 {
@@ -48,7 +51,7 @@ private slots:
     void onPresenceChanging(bool isChanging);
 
 private:
-    GlobalPresence *m_globalPresence;
+    KTp::GlobalPresence *m_globalPresence;
     PresenceModel *m_model;
     PresenceModelExtended *m_modelExtended;
 

@@ -41,7 +41,7 @@ PresenceModel::PresenceModel(QObject *parent) :
 
 PresenceModel::~PresenceModel()
 {
-    Q_FOREACH(const KPresence &presence, m_presences) {
+    Q_FOREACH(const KTp::Presence &presence, m_presences) {
         if (!presence.statusMessage().isEmpty()) {
             QVariantList presenceVariant;
             presenceVariant.append(presence.type());
@@ -55,7 +55,7 @@ PresenceModel::~PresenceModel()
 
 QVariant PresenceModel::data(const QModelIndex &index, int role) const
 {
-    KPresence presence = m_presences[index.row()];
+    KTp::Presence presence = m_presences[index.row()];
     switch (role) {
     case Qt::DisplayRole:
         if (presence.statusMessage().isEmpty()) {
@@ -127,7 +127,7 @@ QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
         return createIndex(m_presences.indexOf(presence),0);
     }
 
-    QList<KPresence>::iterator i = qLowerBound(m_presences.begin(), m_presences.end(), KPresence(presence));
+    QList<KTp::Presence>::iterator i = qLowerBound(m_presences.begin(), m_presences.end(), KTp::Presence(presence));
 
     m_presences.insert(i, presence);
     int index = m_presences.indexOf(presence);

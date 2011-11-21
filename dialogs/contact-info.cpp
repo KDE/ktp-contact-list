@@ -28,7 +28,7 @@
 
 #include <KProtocolInfo>
 
-#include "common/text-parser.h"
+#include <KTelepathy/text-parser.h>
 #include <KDebug>
 
 ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :
@@ -55,7 +55,7 @@ ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :
 
     QString presenceMessage = contact->presence().statusMessage();
 
-    TextUrlData urls = TextParser::instance()->extractUrlData(presenceMessage);
+    KTp::TextUrlData urls = KTp::TextParser::instance()->extractUrlData(presenceMessage);
 
     int offset = 0;
     for (int i = 0; i < urls.fixedUrls.size(); i++) {

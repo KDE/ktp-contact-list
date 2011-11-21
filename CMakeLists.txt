@@ -5,9 +5,11 @@ set (CMAKE_MODULE_PATH
      ${CMAKE_MODULE_PATH}
 )
 
+set(IS_TELEPATHY_KDE_INTERNAL_MODULE TRUE)
 set(KDE_MIN_VERSION "4.4.75")
 find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 0.7.3 REQUIRED)
+find_package (KTelepathy REQUIRED)
 
 include (KDE4Defaults)
 include (MacroLibrary)
@@ -17,19 +19,8 @@ add_definitions (${KDE4_DEFINITIONS}
 
 include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
+                     ${KTELEPATHY_INCLUDE_DIR}
 )
-
-
-
-if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.gitmodules)
-execute_process(COMMAND git submodule init
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
-execute_process(COMMAND git submodule update
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-)
-endif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.gitmodules)
 
 
 set (contactlist_SRCS
@@ -53,18 +44,6 @@ set (contactlist_SRCS
      dialogs/remove-contact-dialog.cpp
      dialogs/contact-info.cpp
      dialogs/custom-presence-dialog.cpp
-     common/models/accounts-filter-model.cpp
-     common/models/contact-model-item.cpp
-     common/models/accounts-model-item.cpp
-     common/models/tree-node.cpp
-     common/models/accounts-model.cpp
-     common/models/groups-model-item.cpp
-     common/models/groups-model.cpp
-     common/models/proxy-tree-node.cpp
-     common/service-availability-checker.cpp
-     common/global-presence.cpp
-     common/kpresence.cpp
-     common/text-parser.cpp
      presence-model.cpp
 )
 
@@ -85,6 +64,8 @@ kde4_add_executable (telepathy-kde-contactlist
 
 target_link_libraries (telepathy-kde-contactlist
                        ${TELEPATHY_QT4_LIBRARIES}
+                       ${KTELEPATHY_LIBRARIES}
+                       ${KTELEPATHY_MODELS_LIBRARIES}
                        ${KDE4_KDEUI_LIBS}
                        ${KDE4_KIO_LIBS}
                        ${KDE4_KCMUTILS_LIBS}
