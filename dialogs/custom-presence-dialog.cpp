@@ -38,7 +38,9 @@
 #include <QLineEdit>
 #include <QKeyEvent>
 
-class FilteredModel : public QSortFilterProxyModel {
+class FilteredModel : public QSortFilterProxyModel
+{
+    Q_OBJECT
 public:
     FilteredModel(QObject *parent);
     bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const;
@@ -76,6 +78,12 @@ void CustomPresenceDialog::setupDialog()
     m_listView = new QListView(mainDialogWidget);
     m_listView->setModel(filteredModel);
 
+    connect(m_listView, SIGNAL(clicked(QModelIndex)),
+            this, SLOT(presenceViewSelectionChanged(QModelIndex)));
+
+    connect(m_listView, SIGNAL(activated(QModelIndex)),
+            this, SLOT(presenceViewSelectionChanged(QModelIndex)));
+
     m_statusMessage = new KComboBox(true, mainDialogWidget);
 
     m_statusMessage->addItem(KIcon("user-online"), i18n("Set custom available message ..."),qVariantFromValue(Tp::Presence::available()));
@@ -87,10 +95,16 @@ void CustomPresenceDialog::setupDialog()
     m_statusMessage->show();
 
     m_statusMessage->lineEdit()->setPlaceholderText(m_statusMessage->currentText());
-    m_statusMessage->lineEdit()->setText(QString());
 
-    QPushButton *addStatus = new QPushButton(KIcon("list-add"), i18n("Add Presence"), mainDialogWidget);
-    QPushButton *removeStatus = new QPushButton(KIcon("list-remove"), i18n("Remove Presence"), mainDialogWidget);
+    connect(m_statusMessage, SIGNAL(editTextChanged(QString)),
+            this, SLOT(presenceMessageTextChanged(QString)));
+
+    m_addStatus = new QPushButton(KIcon("list-add"), i18n("Add Presence"), mainDialogWidget);
+    m_removeStatus = new QPushButton(KIcon("list-remove"), i18n("Remove Presence"), mainDialogWidget);
+    m_removeStatus->setEnabled(false);
+
+    //this triggers the presenceMessageTextChanged() slot and disables the m_addStatus button
+    m_statusMessage->lineEdit()->setText(QString());
 
     QVBoxLayout *vLayout = new QVBoxLayout(mainDialogWidget);
     vLayout->addWidget(m_statusMessage);
@@ -99,8 +113,8 @@ void CustomPresenceDialog::setupDialog()
     hLayout->addWidget(m_listView);
 
     QVBoxLayout *vLayout2 = new QVBoxLayout();
-    vLayout2->addWidget(addStatus);
-    vLayout2->addWidget(removeStatus);
+    vLayout2->addWidget(m_addStatus);
+    vLayout2->addWidget(m_removeStatus);
     vLayout2->addStretch(1);
 
     hLayout->addLayout(vLayout2);
@@ -108,8 +122,8 @@ void CustomPresenceDialog::setupDialog()
 
     setMainWidget(mainDialogWidget);
 
-    connect(addStatus, SIGNAL(clicked()), SLOT(addCustomPresence()));
-    connect(removeStatus, SIGNAL(clicked()), SLOT(removeCustomPresence()));
+    connect(m_addStatus, SIGNAL(clicked()), SLOT(addCustomPresence()));
+    connect(m_removeStatus, SIGNAL(clicked()), SLOT(removeCustomPresence()));
     connect(m_statusMessage, SIGNAL(currentIndexChanged(QString)), SLOT(comboboxIndexChanged(QString)));
 
     m_statusMessage->installEventFilter(this);
@@ -121,7 +135,10 @@ void CustomPresenceDialog::addCustomPresence()
     Tp::Presence presence = m_statusMessage->itemData(presenceIndex).value<Tp::Presence>();
     presence.setStatus(presence.type(), QString(), m_statusMessage->currentText());
 
-    m_model->addPresence(presence);
+    m_listView->setCurrentIndex(qobject_cast<FilteredModel*>(m_listView->model())->mapFromSource(m_model->addPresence(presence)));
+    m_statusMessage->lineEdit()->clear();
+    m_listView->setFocus();
+    m_removeStatus->setEnabled(true);
 }
 
 void CustomPresenceDialog::removeCustomPresence()
@@ -132,6 +149,10 @@ void CustomPresenceDialog::removeCustomPresence()
 
     Tp::Presence presence = m_listView->currentIndex().data(PresenceModel::PresenceRole).value<Tp::Presence>();
     m_model->removePresence(presence);
+
+    if (m_listView->model()->rowCount(QModelIndex()) == 0) {
+        m_removeStatus->setEnabled(false);
+    }
 }
 
 void CustomPresenceDialog::comboboxIndexChanged(const QString& text)
@@ -157,3 +178,24 @@ bool CustomPresenceDialog::eventFilter(QObject* obj, QEvent* event)
         return QObject::eventFilter(obj, event);
     }
 }
+
+void CustomPresenceDialog::presenceMessageTextChanged(const QString& text)
+{
+    if (text.isEmpty()) {
+        m_addStatus->setEnabled(false);
+    } else {
+        m_addStatus->setEnabled(true);
+    }
+}
+
+void CustomPresenceDialog::presenceViewSelectionChanged(const QModelIndex& index)
+{
+    if (index.isValid()) {
+        m_removeStatus->setEnabled(true);
+    } else {
+        m_removeStatus->setEnabled(false);
+    }
+}
+
+#include "custom-presence-dialog.moc"
+#include "moc_custom-presence-dialog.cpp" //hack because we have two QObejcts in teh same file

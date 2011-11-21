@@ -25,6 +25,7 @@
 #include <KComboBox>
 #include <KDialog>
 
+class QPushButton;
 //Forward declrare classes
 class KIcon;
 class QListView;
@@ -42,6 +43,8 @@ private Q_SLOTS:
     void addCustomPresence();
     void removeCustomPresence();
     void comboboxIndexChanged(const QString &text);
+    void presenceMessageTextChanged(const QString &text);
+    void presenceViewSelectionChanged(const QModelIndex &index);
 
 private:
     ///Setup the initial dialog
@@ -57,6 +60,11 @@ private:
     KComboBox    *m_statusMessage;
 
     PresenceModel *m_model;
+
+    QPushButton *m_addStatus;
+    QPushButton *m_removeStatus;
+
+//     FilteredModel *m_filteredModel;
 };
 
 #endif // CUSTOM_PRESENCE_DIALOG_H
