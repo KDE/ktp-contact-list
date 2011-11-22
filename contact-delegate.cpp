@@ -131,7 +131,7 @@ void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewIte
 
     QRect userNameRect = optV4.rect;
     userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
-    userNameRect.setY(userNameRect.y() + 3);
+    userNameRect.setY(userNameRect.y() + 2);
     userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
 
     QFont nameFont = KGlobalSettings::smallestReadableFont();
@@ -144,14 +144,14 @@ void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewIte
     painter->drawText(userNameRect,
                       nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
 
-    QRect statusMsgRect = optV4.rect;
-    statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
-    statusMsgRect.setY(userNameRect.top() + 16);
-    statusMsgRect.setWidth(statusMsgRect.width() - PRESENCE_ICON_SIZE - SPACING);
-
     QFont statusFont = KGlobalSettings::smallestReadableFont();
 
     const QFontMetrics statusFontMetrics(statusFont);
+
+    QRect statusMsgRect = optV4.rect;
+    statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
+    statusMsgRect.setY(userNameRect.bottom() - statusFontMetrics.height() - 4);
+    statusMsgRect.setWidth(statusMsgRect.width() - PRESENCE_ICON_SIZE - SPACING);
 
     QColor fadingColor(m_palette->color(QPalette::WindowText));
 
@@ -173,7 +173,7 @@ QSize ContactDelegate::sizeHintContact(const QStyleOptionViewItem &option, const
 {
     Q_UNUSED(option);
     Q_UNUSED(index);
-    return QSize(0, 32 + 4 * SPACING);
+    return QSize(0, 32 + 2 * SPACING);
 }
 
 void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)

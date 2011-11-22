@@ -100,7 +100,7 @@ void StartChannelContactOverlay::updateButton(const QModelIndex& index)
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
 
-    const int gap = 5;
+    const int gap = 2;
     const int x   = rect.left() + m_xpos; // rect.right() - gap - 96 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
