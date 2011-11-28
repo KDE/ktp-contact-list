@@ -110,14 +110,9 @@ private Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);
     void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClicked(const QModelIndex &index);
-    void onConnectionChanged(const Tp::ConnectionPtr &connection);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
     void onCustomContextMenuRequested(const QPoint &point);
 
-    void onAccountsPresenceStatusFiltered();
-    void onPresencePublicationRequested(const Tp::Contacts &contacts);
-    void onContactManagerStateChanged(Tp::ContactListState state);
-    void onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state);
     void onSwitchToFullView();
     void onSwitchToCompactView();
     void onNewGroupModelItemsInserted(const QModelIndex &index, int start, int end);
@@ -125,7 +120,6 @@ private Q_SLOTS:
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
     void onOpenLinkTriggered(QAction *action);                          /** triggered from custom contact menu when user clicks contact link */
     void groupContacts(bool enabled);
-    void monitorPresence(const Tp::ConnectionPtr &connection);
 
 Q_SIGNALS:
     void enableOverlays(bool);

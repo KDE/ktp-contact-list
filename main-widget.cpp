@@ -433,14 +433,6 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
 {
     Q_ASSERT(account->isReady(Tp::Account::FeatureCore));
 
-    if (account->connection()) {
-        monitorPresence(account->connection());
-    }
-
-    connect(account.data(),
-            SIGNAL(connectionChanged(Tp::ConnectionPtr)),
-            this, SLOT(onConnectionChanged(Tp::ConnectionPtr)));
-
     connect(account.data(),
             SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
             this, SLOT(onAccountConnectionStatusChanged(Tp::ConnectionStatus)));
@@ -451,45 +443,6 @@ void MainWidget::onNewAccountAdded(const Tp::AccountPtr& account)
     if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
         //this also updates the avatar if it was changed somewhere else
         m_avatarButton->selectAvatarFromAccount(avatarGroup.readEntry("source", QString()));
-    }
-}
-
-void MainWidget::monitorPresence(const Tp::ConnectionPtr &connection)
-{
-    kDebug();
-    connect(connection->contactManager().data(), SIGNAL(presencePublicationRequested(Tp::Contacts)),
-            this, SLOT(onPresencePublicationRequested(Tp::Contacts)));
-
-    connect(connection->contactManager().data(),
-            SIGNAL(stateChanged(Tp::ContactListState)),
-            this, SLOT(onContactManagerStateChanged(Tp::ContactListState)));
-    onContactManagerStateChanged(connection->contactManager(),
-                                 connection->contactManager()->state());
-}
-
-void MainWidget::onContactManagerStateChanged(Tp::ContactListState state)
-{
-    onContactManagerStateChanged(Tp::ContactManagerPtr(qobject_cast< Tp::ContactManager* >(sender())), state);
-}
-
-void MainWidget::onContactManagerStateChanged(const Tp::ContactManagerPtr &contactManager, Tp::ContactListState state)
-{
-    if (state == Tp::ContactListStateSuccess) {
-        QFutureWatcher< Tp::ContactPtr > *watcher = new QFutureWatcher< Tp::ContactPtr >(this);
-        connect(watcher, SIGNAL(finished()), this, SLOT(onAccountsPresenceStatusFiltered()));
-        watcher->setFuture(QtConcurrent::filtered(contactManager->allKnownContacts(),
-                                                kde_tp_filter_contacts_by_publication_status));
-
-        kDebug() << "Watcher is on";
-    }
-}
-
-
-
-void MainWidget::onConnectionChanged(const Tp::ConnectionPtr& connection)
-{
-    if(! connection.isNull()) {
-        monitorPresence(connection);
     }
 }
 
@@ -1251,46 +1204,6 @@ void MainWidget::showSettingsKCM()
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
-}
-
-void MainWidget::onAccountsPresenceStatusFiltered()
-{
-    kDebug() << "Watcher is here";
-    QFutureWatcher< Tp::ContactPtr > *watcher = dynamic_cast< QFutureWatcher< Tp::ContactPtr > * >(sender());
-    kDebug() << "Watcher is casted";
-    Tp::Contacts contacts = watcher->future().results().toSet();
-    kDebug() << "Watcher is used";
-    if (!contacts.isEmpty()) {
-        onPresencePublicationRequested(contacts);
-    }
-    watcher->deleteLater();
-}
-
-void MainWidget::onPresencePublicationRequested(const Tp::Contacts& contacts)
-{
-    foreach (const Tp::ContactPtr &contact, contacts) {
-        Tp::ContactManagerPtr manager = contact->manager();
-        Tp::PendingOperation *op = 0;
-
-        if (contact->subscriptionState() == Tp::Contact::PresenceStateYes) {
-            op = manager->authorizePresencePublication(QList< Tp::ContactPtr >() << contact);
-        } else if (KMessageBox::questionYesNo(this, i18n("The contact %1 added you to their contact list. "
-                                                  "Do you want to allow this person to see your presence "
-                                                  "and add them to your contact list?", contact->id()),
-                                       i18n("Subscription request")) == KMessageBox::Yes) {
-
-            op = manager->authorizePresencePublication(QList< Tp::ContactPtr >() << contact);
-
-            if (manager->canRequestPresenceSubscription() && contact->subscriptionState() == Tp::Contact::PresenceStateNo) {
-                manager->requestPresenceSubscription(QList< Tp::ContactPtr >() << contact);
-            }
-        }
-
-        if (op) {
-            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                    SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
-        }
-    }
 }
 
 QStringList MainWidget::extractLinksFromIndex(const QModelIndex& index)
