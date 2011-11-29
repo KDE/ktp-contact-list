@@ -67,8 +67,8 @@ PresenceModelExtended::PresenceModelExtended(PresenceModel *presenceModel, QObje
     QAbstractListModel(parent),
     m_model(presenceModel)
 {
-    connect(m_model, SIGNAL(rowsInserted(QModelIndex, int, int)), SLOT(sourceRowsInserted(QModelIndex,int,int)));
-    connect(m_model, SIGNAL(rowsRemoved(QModelIndex, int, int)), SLOT(sourceRowsRemoved(QModelIndex,int,int)));
+    connect(m_model, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(sourceRowsInserted(QModelIndex,int,int)));
+    connect(m_model, SIGNAL(rowsRemoved(QModelIndex,int,int)), SLOT(sourceRowsRemoved(QModelIndex,int,int)));
 }
 
 //return number of rows + an extra item for the "configure presences" button

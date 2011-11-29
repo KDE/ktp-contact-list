@@ -346,7 +346,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_contactsListView->setSortingEnabled(true);
     m_contactsListView->sortByColumn(0, Qt::AscendingOrder);
 
-    connect(m_modelFilter, SIGNAL(rowsInserted(QModelIndex, int, int)),
+    connect(m_modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
 
     connect(m_showOfflineAction, SIGNAL(toggled(bool)),
