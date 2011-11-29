@@ -100,7 +100,7 @@ void PresenceModel::loadDefaultPresences()
 
 void PresenceModel::loadCustomPresences()
 {
-    Q_FOREACH(const QString key, m_presenceGroup.keyList()) {
+    Q_FOREACH(const QString &key, m_presenceGroup.keyList()) {
         QVariantList entry = m_presenceGroup.readEntry(key, QVariantList());
 
         QString statusMessage = entry.last().toString();
