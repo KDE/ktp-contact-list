@@ -58,15 +58,15 @@ void ContactDelegateOverlay::paint(QPainter*, const QStyleOptionViewItem&, const
 void ContactDelegateOverlay::setView(QAbstractItemView* view)
 {
     if (m_view) {
-        disconnect(this, SIGNAL(update(const QModelIndex&)),
-                   m_view, SLOT(update(const QModelIndex&)));
+        disconnect(this, SIGNAL(update(QModelIndex)),
+                   m_view, SLOT(update(QModelIndex)));
     }
 
     m_view = view;
 
     if (m_view) {
-        connect(this, SIGNAL(update(const QModelIndex&)),
-                m_view, SLOT(update(const QModelIndex&)));
+        connect(this, SIGNAL(update(QModelIndex)),
+                m_view, SLOT(update(QModelIndex)));
     }
 }
 
@@ -124,8 +124,8 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
         m_widget.data()->installEventFilter(this);
 
         if (view()->model()) {
-            connect(m_view->model(), SIGNAL(rowsRemoved(const QModelIndex&, int, int)),
-                    this, SLOT(slotRowsRemoved(const QModelIndex&, int, int)));
+            connect(m_view->model(), SIGNAL(rowsRemoved(QModelIndex, int, int)),
+                    this, SLOT(slotRowsRemoved(QModelIndex, int, int)));
 
             connect(m_view->model(), SIGNAL(layoutChanged()),
                     this, SLOT(slotLayoutChanged()));
@@ -134,8 +134,8 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
                     this, SLOT(slotReset()));
         }
 
-        connect(m_view, SIGNAL(entered(const QModelIndex&)),
-                this, SLOT(slotEntered(const QModelIndex&)));
+        connect(m_view, SIGNAL(entered(QModelIndex)),
+                this, SLOT(slotEntered(QModelIndex)));
 
         connect(m_view, SIGNAL(viewportEntered()),
                 this, SLOT(slotViewportEntered()));
@@ -149,8 +149,8 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
                 disconnect(m_view->model(), 0, this, 0);
             }
 
-            disconnect(m_view, SIGNAL(entered(const QModelIndex&)),
-                       this, SLOT(slotEntered(const QModelIndex&)));
+            disconnect(m_view, SIGNAL(entered(QModelIndex)),
+                       this, SLOT(slotEntered(QModelIndex)));
 
             disconnect(m_view, SIGNAL(viewportEntered()),
                        this, SLOT(slotViewportEntered()));
