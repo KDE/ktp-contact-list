@@ -38,6 +38,7 @@
 #include <KTelepathy/Models/proxy-tree-node.h>
 #include <KTelepathy/Models/groups-model-item.h>
 #include <KTelepathy/Models/groups-model.h>
+#include <KTelepathy/presence.h>
 
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
@@ -96,31 +97,9 @@ void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewIte
         painter->drawPath(roundedPath);
     }
 
-    QPixmap icon;
+    KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
 
-    switch (index.data(AccountsModel::PresenceTypeRole).toInt()) {
-    case Tp::ConnectionPresenceTypeAvailable:
-        icon = SmallIcon("user-online", KIconLoader::SizeSmallMedium);
-        break;
-    case Tp::ConnectionPresenceTypeAway:
-        icon = SmallIcon("user-away", KIconLoader::SizeSmallMedium);
-        break;
-    case Tp::ConnectionPresenceTypeExtendedAway:
-        icon = SmallIcon("user-away-extended", KIconLoader::SizeSmallMedium);
-        break;
-    case Tp::ConnectionPresenceTypeBusy:
-        icon = SmallIcon("user-busy", KIconLoader::SizeSmallMedium);
-        break;
-    case Tp::ConnectionPresenceTypeHidden:
-        icon = SmallIcon("user-invisible", KIconLoader::SizeSmallMedium);
-        break;
-    case Tp::ConnectionPresenceTypeOffline:
-        icon = SmallIcon("user-offline", KIconLoader::SizeSmallMedium);
-        break;
-    default:
-        icon = SmallIcon("task-attention", KIconLoader::SizeSmallMedium);
-        break;
-    }
+    QPixmap icon = presence.icon().pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
     statusIconRect.setSize(QSize(PRESENCE_ICON_SIZE, PRESENCE_ICON_SIZE));
@@ -162,9 +141,8 @@ void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewIte
 
     painter->setFont(statusFont);
     painter->drawText(statusMsgRect,
-                      statusFontMetrics.elidedText(index.data(AccountsModel::PresenceMessageRole).toString(),
+                      statusFontMetrics.elidedText(presence.statusMessage(),
                                                    Qt::ElideRight, statusMsgRect.width()));
-
 
     painter->restore();
 }
