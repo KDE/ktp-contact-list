@@ -79,6 +79,8 @@
 #include <KTelepathy/Models/proxy-tree-node.h>
 #include <KTelepathy/text-parser.h>
 
+#include "tooltips/tooltipmanager.h"
+
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KDE.FileTransfer"
 #define PREFERRED_AUDIO_VIDEO_HANDLER "org.freedesktop.Telepathy.Client.KDE.CallUi"
@@ -271,6 +273,8 @@ MainWidget::MainWidget(QWidget *parent)
     addOverlayButtons();
 
     emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("full"));
+
+    new ToolTipManager(m_contactsListView);
 
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));

@@ -45,6 +45,10 @@ set (contactlist_SRCS
      dialogs/contact-info.cpp
      dialogs/custom-presence-dialog.cpp
      presence-model.cpp
+     tooltips/ktooltip.cpp
+     tooltips/tooltipmanager.cpp
+     tooltips/ktooltipwindow.cpp
+     tooltips/contacttooltip.cpp
 )
 
 
@@ -54,6 +58,7 @@ kde4_add_ui_files (contactlist_SRCS
                    dialogs/join-chat-room-dialog.ui
                    dialogs/remove-contact-dialog.ui
                    dialogs/contact-info.ui
+                   tooltips/contacttooltip.ui
 )
 
 add_subdirectory (icons)
