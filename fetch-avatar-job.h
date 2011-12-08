@@ -24,7 +24,7 @@
 
 #include <KJob>
 
-#include <TelepathyQt4/Types>
+#include <TelepathyQt/Types>
 
 class KUrl;
 class FetchAvatarJob : public KJob

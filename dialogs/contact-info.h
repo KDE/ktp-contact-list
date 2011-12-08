@@ -23,7 +23,7 @@
 #define CONTACTINFO_H
 
 #include <KDialog>
-#include <TelepathyQt4/Contact>
+#include <TelepathyQt/Contact>
 
 
 namespace Ui {

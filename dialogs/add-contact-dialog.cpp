@@ -29,9 +29,9 @@
 #include <QDebug>
 
 
-#include <TelepathyQt4/Account>
-#include <TelepathyQt4/Connection>
-#include <TelepathyQt4/ContactManager>
+#include <TelepathyQt/Account>
+#include <TelepathyQt/Connection>
+#include <TelepathyQt/ContactManager>
 
 /** A filter which only lists connections which accept adding contacts*/
 class SubscribableAccountsModel : public QSortFilterProxyModel

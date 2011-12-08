@@ -20,9 +20,9 @@
 
 #include "account-buttons-panel.h"
 
-#include <TelepathyQt4/AccountManager>
-#include <TelepathyQt4/Account>
-#include <TelepathyQt4/AccountSet>
+#include <TelepathyQt/AccountManager>
+#include <TelepathyQt/Account>
+#include <TelepathyQt/AccountSet>
 
 #include <QHBoxLayout>
 

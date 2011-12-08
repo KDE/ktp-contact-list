@@ -22,7 +22,7 @@
 #define AVATAR_BUTTON_H
 
 #include <QtGui/QToolButton>
-#include <TelepathyQt4/Account>
+#include <TelepathyQt/Account>
 
 namespace Tp {
 class PendingOperation;

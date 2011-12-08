@@ -23,7 +23,7 @@
 
 #include <KDialog>
 
-#include <TelepathyQt4/Types>
+#include <TelepathyQt/Types>
 
 namespace Ui {
     class AddContactDialog;

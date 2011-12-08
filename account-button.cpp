@@ -32,8 +32,8 @@
 #include <KIconLoader>
 #include <KLineEdit>
 
-#include <TelepathyQt4/Account>
-#include <TelepathyQt4/PendingOperation>
+#include <TelepathyQt/Account>
+#include <TelepathyQt/PendingOperation>
 
 AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
   : QToolButton(parent),

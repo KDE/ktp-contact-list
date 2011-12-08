@@ -34,7 +34,7 @@
 #include <KDE/KConfig>
 #include <KDE/KSharedConfigPtr>
 
-#include <TelepathyQt4/Presence>
+#include <TelepathyQt/Presence>
 #include <QLineEdit>
 #include <QKeyEvent>
 

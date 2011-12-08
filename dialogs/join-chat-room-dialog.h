@@ -22,7 +22,7 @@
 #define JOINCHATROOMDIALOG_H
 
 #include <KDialog>
-#include <TelepathyQt4/AccountManager>
+#include <TelepathyQt/AccountManager>
 
 namespace Ui {
     class JoinChatRoomDialog;

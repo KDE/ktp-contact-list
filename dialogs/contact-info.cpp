@@ -21,8 +21,8 @@
 #include "contact-info.h"
 #include "ui_contact-info.h"
 
-#include <TelepathyQt4/AvatarData>
-#include <TelepathyQt4/Presence>
+#include <TelepathyQt/AvatarData>
+#include <TelepathyQt/Presence>
 
 #include <QtGui/QPixmap>
 
