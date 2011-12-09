@@ -158,12 +158,16 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
 QSize AbstractContactDelegate::sizeHintHeader(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    Q_UNUSED(option);
-    Q_UNUSED(index);
+    Q_UNUSED(option)
+    Q_UNUSED(index)
     return QSize(0,20);
 }
 
 bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)
 {
+    Q_UNUSED(event)
+    Q_UNUSED(view)
+    Q_UNUSED(option)
+    Q_UNUSED(index)
     return false;
 }
