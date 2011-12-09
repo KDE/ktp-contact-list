@@ -23,13 +23,9 @@
 #include "contacttooltip.h"
 
 #include <QRect>
-#include <QLabel>
 #include <QTimer>
 #include <QPainter>
-#include <QHelpEvent>
 #include <QScrollBar>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
 #include <QApplication>
 #include <QDesktopWidget>
 #include <QAbstractItemView>
