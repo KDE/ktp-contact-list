@@ -35,8 +35,8 @@
 #include <KPixmapSequenceOverlayPainter>
 #include <KMessageBox>
 
-#include <TelepathyQt4/Presence>
-#include <TelepathyQt4/Account>
+#include <TelepathyQt/Presence>
+#include <TelepathyQt/Account>
 
 #include <QMouseEvent>
 #include <QtGui/QToolTip>

@@ -26,8 +26,8 @@
 #include <KDebug>
 #include <KUniqueApplication>
 
-#include <TelepathyQt4/Types>
-#include <TelepathyQt4/Debug>
+#include <TelepathyQt/Types>
+#include <TelepathyQt/Debug>
 
 #include "contact-list-application.h"
 

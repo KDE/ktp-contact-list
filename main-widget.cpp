@@ -34,12 +34,12 @@
 #include <QWidgetAction>
 #include <QCloseEvent>
 
-#include <TelepathyQt4/PendingReady>
-#include <TelepathyQt4/PendingChannelRequest>
-#include <TelepathyQt4/PendingContacts>
-#include <TelepathyQt4/ClientRegistrar>
-#include <TelepathyQt4/Constants>
-#include <TelepathyQt4/ContactManager>
+#include <TelepathyQt/PendingReady>
+#include <TelepathyQt/PendingChannelRequest>
+#include <TelepathyQt/PendingContacts>
+#include <TelepathyQt/ClientRegistrar>
+#include <TelepathyQt/Constants>
+#include <TelepathyQt/ContactManager>
 
 #include <KDebug>
 #include <KDialog>
@@ -1043,7 +1043,7 @@ void MainWidget::onBlockContactTriggered()
     Q_ASSERT(contactItem);
     Tp::ContactPtr contact =  contactItem->contact();
 
-    Tp::PendingOperation *operation = contact->block(true);
+    Tp::PendingOperation *operation = contact->block();
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
             SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }
@@ -1187,7 +1187,7 @@ void MainWidget::onUnblockContactTriggered()
 
     Tp::ContactPtr contact = item->contact();
 
-    Tp::PendingOperation *operation = contact->block(false);
+    Tp::PendingOperation *operation = contact->unblock();
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
             SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 }

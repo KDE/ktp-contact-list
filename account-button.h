@@ -23,8 +23,8 @@
 
 #include <QToolButton>
 
-#include <TelepathyQt4/Types>
-#include <TelepathyQt4/Presence>
+#include <TelepathyQt/Types>
+#include <TelepathyQt/Presence>
 
 class QAction;
 class KPixmapSequenceOverlayPainter;

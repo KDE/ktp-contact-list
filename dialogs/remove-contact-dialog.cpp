@@ -27,7 +27,7 @@
 #include <QtGui/QCheckBox>
 #include <QtGui/QLabel>
 
-#include <TelepathyQt4/AvatarData>
+#include <TelepathyQt/AvatarData>
 
 RemoveContactDialog::RemoveContactDialog(Tp::ContactPtr contact, QWidget* parent)
     : KDialog(parent, Qt::Dialog)

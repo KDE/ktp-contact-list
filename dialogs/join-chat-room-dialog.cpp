@@ -25,7 +25,7 @@
 
 #include <KDE/KPushButton>
 
-#include <TelepathyQt4/AccountManager>
+#include <TelepathyQt/AccountManager>
 
 JoinChatRoomDialog::JoinChatRoomDialog(Tp::AccountManagerPtr accountManager, QWidget* parent)
     : KDialog(parent, Qt::Dialog)

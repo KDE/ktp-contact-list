@@ -27,7 +27,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QStyledItemDelegate>
 
-#include <TelepathyQt4/AccountManager>
+#include <TelepathyQt/AccountManager>
 
 #include <KXmlGuiWindow>
 #include <KAction>

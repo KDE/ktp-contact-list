@@ -23,7 +23,7 @@
 
 #include <QWidget>
 
-#include <TelepathyQt4/AccountSet>
+#include <TelepathyQt/AccountSet>
 
 class QHBoxLayout;
 

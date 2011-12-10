@@ -23,7 +23,7 @@
 
 #include <KComboBox>
 
-#include <TelepathyQt4/AccountManager>
+#include <TelepathyQt/AccountManager>
 
 class KPixmapSequenceOverlayPainter;
 class PresenceModel;
