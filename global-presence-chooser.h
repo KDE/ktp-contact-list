@@ -24,6 +24,7 @@
 #include <KComboBox>
 
 #include <TelepathyQt/AccountManager>
+#include <KTelepathy/presence.h>
 
 class KPixmapSequenceOverlayPainter;
 class PresenceModel;
@@ -47,7 +48,7 @@ protected:
 
 private slots:
     void onCurrentIndexChanged(int index);
-    void onPresenceChanged(const Tp::Presence &presence);
+    void onPresenceChanged(const KTp::Presence &presence);
     void onPresenceChanging(bool isChanging);
 
 private:

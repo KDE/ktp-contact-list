@@ -75,7 +75,7 @@ QVariant PresenceModel::data(const QModelIndex &index, int role) const
         }
 
     case PresenceModel::PresenceRole:
-        return QVariant::fromValue<Tp::Presence>(presence);
+        return QVariant::fromValue<KTp::Presence>(presence);
 
     }
 
@@ -122,7 +122,7 @@ void PresenceModel::loadCustomPresences()
     }
 }
 
-QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
+QModelIndex PresenceModel::addPresence(const KTp::Presence &presence)
 {
     if(m_presences.contains(presence)) {
         return createIndex(m_presences.indexOf(presence),0);
@@ -139,7 +139,7 @@ QModelIndex PresenceModel::addPresence(const Tp::Presence &presence)
     return createIndex(index, 0);
 }
 
-void PresenceModel::removePresence(const Tp::Presence &presence)
+void PresenceModel::removePresence(const KTp::Presence &presence)
 {
     int row = m_presences.indexOf(presence);
     beginRemoveRows(QModelIndex(), row, row);

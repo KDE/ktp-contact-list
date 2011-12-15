@@ -43,12 +43,12 @@ public:
     /** Adds a custom presence to the model, and write value to config file.
       @return the newly added item
     */
-    QModelIndex addPresence(const Tp::Presence &presence);
+    QModelIndex addPresence(const KTp::Presence &presence);
 
-    void removePresence(const Tp::Presence &presence);
+    void removePresence(const KTp::Presence &presence);
 
     /** Returns the index of a given presence, adding it if needed*/
-    QModelIndex indexOf(const Tp::Presence &presence);
+    QModelIndex indexOf(const KTp::Presence &presence);
 
     //protected:
     virtual QVariant data(const QModelIndex &index, int role) const;

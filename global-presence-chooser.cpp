@@ -107,7 +107,7 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         case Qt::DecorationRole:
             return m_temporaryPresence.icon();
         case PresenceModel::PresenceRole:
-            return QVariant::fromValue<Tp::Presence>(m_temporaryPresence);
+            return QVariant::fromValue<KTp::Presence>(m_temporaryPresence);
         }
     }
     else {
@@ -177,7 +177,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay->setWidget(this);
 
     connect(this, SIGNAL(activated(int)), SLOT(onCurrentIndexChanged(int)));
-    connect(m_globalPresence, SIGNAL(currentPresenceChanged(Tp::Presence)), SLOT(onPresenceChanged(Tp::Presence)));
+    connect(m_globalPresence, SIGNAL(currentPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
     connect(m_globalPresence, SIGNAL(changingPresence(bool)), SLOT(onPresenceChanging(bool)));
 
     onPresenceChanged(m_globalPresence->currentPresence());
@@ -339,17 +339,17 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("deactivateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
-        Tp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<Tp::Presence>();
+        KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
         m_globalPresence->setPresence(presence);
     }
 }
 
-void GlobalPresenceChooser::onPresenceChanged(const Tp::Presence &presence)
+void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
 {
     m_modelExtended->removeTemporaryPresence();
     kDebug();
     for (int i=0; i < count() ; i++) {
-        Tp::Presence itemPresence = itemData(i, PresenceModel::PresenceRole).value<Tp::Presence>();
+        KTp::Presence itemPresence = itemData(i, PresenceModel::PresenceRole).value<KTp::Presence>();
         if (itemPresence.type() == presence.type() && itemPresence.statusMessage() == presence.statusMessage()) {
             setCurrentIndex(i);
             return;
