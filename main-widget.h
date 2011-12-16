@@ -112,6 +112,7 @@ private Q_SLOTS:
     void onContactListDoubleClicked(const QModelIndex &index);
     void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
     void onCustomContextMenuRequested(const QPoint &point);
+    void onFilterStringChanged(const QString &str);
 
     void onSwitchToFullView();
     void onSwitchToCompactView();

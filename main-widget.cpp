@@ -357,7 +357,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
             m_modelFilter, SLOT(setShowOfflineUsers(bool)));
 
     connect(m_filterBar, SIGNAL(filterChanged(QString)),
-            m_modelFilter, SLOT(setFilterString(QString)));
+            this, SLOT(onFilterStringChanged(QString)));
 
     connect(m_filterBar, SIGNAL(closeRequest()),
             m_filterBar, SLOT(hide()));
@@ -931,6 +931,12 @@ KMenu* MainWidget::groupContextMenu(const QModelIndex &index)
             this, SLOT(onDeleteGroup()));
 
     return menu;
+}
+
+void MainWidget::onFilterStringChanged(const QString &str)
+{
+    m_modelFilter->setShowOfflineUsers(!str.isEmpty());
+    m_modelFilter->setFilterString(str);
 }
 
 void MainWidget::onAddContactToGroupTriggered()
