@@ -115,7 +115,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add new contacts.."), this);
+    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add new contacts..."), this);
 
     m_toolBar->addAction(m_addContactAction);
 
@@ -566,7 +566,7 @@ void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
     QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
                                                     QString(),
                                                     this,
-                                                    i18n("Choose files to send to %1").arg(contact->alias()));
+                                                    i18n("Choose files to send to %1", contact->alias()));
 
     if (filenames.isEmpty()) { // User hit cancel button
         return;
@@ -694,12 +694,12 @@ void MainWidget::onAddContactRequest() {
         Tp::AccountPtr account = dialog.data()->account();
         if (account.isNull()) {
             KMessageBox::error(this,
-                               i18n("Seems like you forgot to select an account. Also don't forget to connect it first."),
+                               i18n("Seems like you forgot to select an account. Also do not forget to connect it first."),
                                i18n("No Account Selected"));
         }
         else if (account->connection().isNull()) {
             KMessageBox::error(this,
-                               i18n("An error we didn't anticipate just happened and so the contact couldn't be added. Sorry."),
+                               i18n("An error we did not anticipate just happened and so the contact could not be added. Sorry."),
                                i18n("Account Error"));
         } else {
             QStringList identifiers = QStringList() << dialog.data()->screenName();
@@ -1208,7 +1208,7 @@ void MainWidget::showSettingsKCM()
 
     if (!tpAccKcm) {
         KMessageBox::error(this,
-                           i18n("It appears you don't have the IM Accounts control module installed. Please install telepathy-accounts-kcm package."),
+                           i18n("It appears you do not have the IM Accounts control module installed. Please install telepathy-accounts-kcm package."),
                            i18n("IM Accounts KCM Plugin Is Not Installed"));
     }
 
