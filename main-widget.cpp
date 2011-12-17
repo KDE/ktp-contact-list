@@ -566,7 +566,7 @@ void MainWidget::startFileTransferChannel(ContactModelItem *contactItem)
     QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
                                                     QString(),
                                                     this,
-                                                    i18n("Choose one or more files"));
+                                                    i18n("Choose files to send to %1").arg(contact->alias()));
 
     if (filenames.isEmpty()) { // User hit cancel button
         return;
