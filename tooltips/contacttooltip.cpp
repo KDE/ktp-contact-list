@@ -46,7 +46,8 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     if (avatar.isEmpty()) {
         ui->avatarLabel->setPixmap(KIconLoader::global()->loadIcon("im-user", KIconLoader::NoGroup, 96));
     } else {
-        ui->avatarLabel->setPixmap(QPixmap(avatar));
+        QPixmap avatarPixmap(avatar);
+        ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
     }
 
     KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
