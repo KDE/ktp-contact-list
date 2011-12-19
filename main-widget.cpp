@@ -190,11 +190,11 @@ MainWidget::MainWidget(QWidget *parent)
 //
 //     presenceChooserGroup->actions().last()->setCheckable(true);
 //
-//     if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
+    if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
 //         presenceChooserGroup->actions().last()->setChecked(true);
 //         //hide account buttons and show global presence
-//         onUseGlobalPresenceTriggered();
-//     }
+         onUseGlobalPresenceTriggered();
+    }
 //
 //     presenceChooserGroup->addAction(presenceChooser->addAction(i18n("Separately"),
 //                                                                     this, SLOT(onUsePerAccountPresenceTriggered())));
