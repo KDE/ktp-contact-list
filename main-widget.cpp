@@ -1340,7 +1340,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
 
 bool MainWidget::isPresencePlasmoidPresent() const
 {
-    QDBusInterface plasmoidOnDbus("org.kde.Telepathy.PresenceEngineActive", "/PresenceEngineActive");
+    QDBusInterface plasmoidOnDbus("org.kde.Telepathy.PresenceAppletActive", "/PresenceAppletActive");
 
     if (plasmoidOnDbus.isValid()) {
         return true;
