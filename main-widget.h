@@ -34,6 +34,7 @@
 #include <KDualAction>
 #include "ui_main-widget.h"
 
+class ContextMenu;
 class ContactDelegateCompact;
 class GroupsModel;
 class KMenu;
@@ -79,7 +80,6 @@ public Q_SLOTS:
     void toggleSearchWidget(bool show);
     void showSettingsKCM();
     void showMessageToUser(const QString &text, const SystemMessageType type);
-    void showInfo(ContactModelItem *contactItem);
     void startTextChannel(ContactModelItem *contactItem);
     void startFileTransferChannel(ContactModelItem *contactItem);
     void startAudioChannel(ContactModelItem *contactItem);
@@ -89,24 +89,9 @@ public Q_SLOTS:
     void goOffline();
 
 private Q_SLOTS:
-    void onAddContactToGroupTriggered();
-    void onBlockContactTriggered();
-    void onStartTextChatTriggered();
-    void onStartAudioChatTriggered();
-    void onStartVideoChatTriggered();
-    void onStartFileTransferTriggered();
-    void onStartDesktopSharingTriggered();
-    void onUnblockContactTriggered();
-    void onRemoveContactFromGroupTriggered();
-    void onCreateNewGroupTriggered();
-    void onRenameGroupTriggered();
-    void onDeleteGroupTriggered();
-    void onShowInfoTriggered();
-    void onDeleteContactTriggered();
-    void onJoinChatRoomRequested();         /** join chat room action is triggered */
     void onUseGlobalPresenceTriggered();
     void onUsePerAccountPresenceTriggered();
-
+    void onJoinChatRoomRequested();                 /** join chat room action is triggered */
     void onAccountManagerReady(Tp::PendingOperation *op);
     void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClicked(const QModelIndex &index);
@@ -119,7 +104,6 @@ private Q_SLOTS:
     void onNewGroupModelItemsInserted(const QModelIndex &index, int start, int end);
 
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
-    void onOpenLinkTriggered(QAction *action);                          /** triggered from custom contact menu when user clicks contact link */
     void groupContacts(bool enabled);
 
 Q_SIGNALS:
@@ -130,9 +114,6 @@ private:
     ///Was moved to telepathy-kded-module
     //void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
-
-    KMenu* contactContextMenu(const QModelIndex &index);
-    KMenu* groupContextMenu(const QModelIndex &index);
 
     AccountsModel          *m_model;
     GroupsModel            *m_groupsModel;
@@ -146,7 +127,10 @@ private:
     KAction                *m_groupContactsAction;
     KAction                *m_showOfflineAction;
     KAction                *m_searchContactAction;
-    KDualAction                *m_sortByPresenceAction;
+    KDualAction            *m_sortByPresenceAction;
+
+    friend class ContextMenu;
+    ContextMenu            *m_contextMenu;
 };
 
 
