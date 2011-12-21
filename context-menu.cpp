@@ -40,7 +40,10 @@
 #include "dialogs/remove-contact-dialog.h"
 #include "dialogs/contact-info.h"
 
-ContextMenu::ContextMenu(MainWidget *mainWidget)
+#include "contact-list-widget_p.h"
+#include <KTelepathy/Models/accounts-filter-model.h>
+
+ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
 {
     m_mainWidget = mainWidget;
@@ -67,7 +70,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         return 0;
     }
 
-    Tp::AccountPtr account = m_mainWidget->m_model->accountForContactItem(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
+    Tp::AccountPtr account = m_mainWidget->d_ptr->model->accountForContactItem(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
 
     if (account.isNull()) {
         kDebug() << "Account is nulled";
@@ -158,7 +161,8 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-    if (m_mainWidget->m_groupContactsAction->isChecked()) {
+    //FIXME add method to modelFilter bool isUsingGroupModel();
+    if (m_mainWidget->d_ptr->modelFilter->sourceModel() == m_mainWidget->d_ptr->groupsModel) {
         // remove contact from group action, must be QAction because menu->addAction returns QAction
         QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
@@ -167,7 +171,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
             QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
 
             QStringList groupList;
-            QList<Tp::AccountPtr> accounts = m_mainWidget->m_accountManager->allAccounts();
+            QList<Tp::AccountPtr> accounts = m_mainWidget->d_ptr->accountManager->allAccounts();
             foreach (const Tp::AccountPtr &account, accounts) {
                 if (!account->connection().isNull()) {
                     groupList.append(account->connection()->contactManager()->allKnownGroups());
@@ -446,7 +450,7 @@ void ContextMenu::onDeleteGroupTriggered()
                     m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
 
-        foreach (const Tp::AccountPtr &account, m_mainWidget->m_accountManager->allAccounts()) {
+        foreach (const Tp::AccountPtr &account, m_mainWidget->d_ptr->accountManager->allAccounts()) {
             if (account->connection()) {
                 Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupItem->groupName());
                 connect(operation, SIGNAL(finished(Tp::PendingOperation*)),

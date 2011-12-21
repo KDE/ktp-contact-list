@@ -55,7 +55,6 @@ public:
 
     bool isPresencePlasmoidPresent() const;
     bool isAnyAccountOnline() const;
-    void addOverlayButtons();
 
     enum SystemMessageType {
         /*
@@ -74,40 +73,19 @@ public:
     };
 
 public Q_SLOTS:
-    void onAddContactRequest();
-    void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
-    void onNewAccountAdded(const Tp::AccountPtr &account);
-    void toggleSearchWidget(bool show);
-    void showSettingsKCM();
     void showMessageToUser(const QString &text, const SystemMessageType type);
-    void startTextChannel(ContactModelItem *contactItem);
-    void startFileTransferChannel(ContactModelItem *contactItem);
-    void startAudioChannel(ContactModelItem *contactItem);
-    void startVideoChannel(ContactModelItem *contactItem);
-    void startDesktopSharing(ContactModelItem *contactItem);
-
     void goOffline();
 
 private Q_SLOTS:
+    void toggleSearchWidget(bool show);
+    void onAccountManagerReady(Tp::PendingOperation* op);
+    void onAddContactRequest();
+    void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
     void onUseGlobalPresenceTriggered();
     void onUsePerAccountPresenceTriggered();
     void onJoinChatRoomRequested();                 /** join chat room action is triggered */
-    void onAccountManagerReady(Tp::PendingOperation *op);
-    void onContactListClicked(const QModelIndex &index);
-    void onContactListDoubleClicked(const QModelIndex &index);
-    void onAccountConnectionStatusChanged(Tp::ConnectionStatus status);
     void onCustomContextMenuRequested(const QPoint &point);
-    void onFilterStringChanged(const QString &str);
-
-    void onSwitchToFullView();
-    void onSwitchToCompactView();
-    void onNewGroupModelItemsInserted(const QModelIndex &index, int start, int end);
-
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
-    void groupContacts(bool enabled);
-
-Q_SIGNALS:
-    void enableOverlays(bool);
 
 private:
     QStringList extractLinksFromIndex(const QModelIndex &index);    /** extract links from a QModelIndex pointing to a contact */
@@ -115,21 +93,15 @@ private:
     //void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
 
-    AccountsModel          *m_model;
-    GroupsModel            *m_groupsModel;
-    AccountsFilterModel    *m_modelFilter;
-    Tp::AccountManagerPtr   m_accountManager;
     KMenu                  *m_accountMenu;
     KSelectAction          *m_setStatusAction;
-    ContactDelegate        *m_delegate;
-    ContactDelegateCompact *m_compactDelegate;
+
     KAction                *m_addContactAction;
     KAction                *m_groupContactsAction;
     KAction                *m_showOfflineAction;
     KAction                *m_searchContactAction;
     KDualAction            *m_sortByPresenceAction;
 
-    friend class ContextMenu;
     ContextMenu            *m_contextMenu;
 };
 

@@ -91,7 +91,7 @@
      </widget>
     </item>
     <item>
-     <widget class="QTreeView" name="m_contactsListView">
+     <widget class="ContactListWidget" name="m_contactsListView">
       <property name="animated">
        <bool>true</bool>
       </property>
@@ -125,6 +125,11 @@
    <class>GlobalPresenceChooser</class>
    <extends>QComboBox</extends>
    <header>global-presence-chooser.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ContactListWidget</class>
+   <extends>QTreeView</extends>
+   <header>contact-list-widget.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

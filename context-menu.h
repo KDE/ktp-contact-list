@@ -24,7 +24,7 @@
 #include <QModelIndex>
 #include <QStringList>
 
-#include "main-widget.h"
+#include "contact-list-widget.h"
 
 class AccountsModel;
 class ContactModelItem;
@@ -35,7 +35,7 @@ class ContextMenu : public QObject
 {
     Q_OBJECT
 public:
-    explicit ContextMenu(MainWidget *mainWidget);
+    explicit ContextMenu(ContactListWidget *mainWidget);
     virtual ~ContextMenu();
 
     KMenu* groupContextMenu(const QModelIndex &index);
@@ -59,7 +59,7 @@ private Q_SLOTS:
     void onOpenLinkTriggered(QAction *action);      /** triggered from custom contact menu when user clicks contact link */
 
 private:
-    MainWidget         *m_mainWidget;
+    ContactListWidget  *m_mainWidget;
     QModelIndex         m_currentIndex;
 };
 

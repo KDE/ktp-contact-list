@@ -24,6 +24,7 @@ include_directories (${KDE4_INCLUDES}
 
 
 set (contactlist_SRCS
+     contact-list-widget.cpp
      context-menu.cpp
      avatar-button.cpp
      abstract-contact-delegate.cpp
