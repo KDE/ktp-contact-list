@@ -21,7 +21,7 @@
 #include "join-chat-room-dialog.h"
 #include "ui_join-chat-room-dialog.h"
 
-#include <KTelepathy/Models/accounts-model.h>
+#include <KTp/Models/accounts-model.h>
 
 #include <KDE/KPushButton>
 

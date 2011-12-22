@@ -24,9 +24,9 @@
 #include "ui_contacttooltip.h"
 #include "ktooltip.h"
 
-#include <KTelepathy/Models/accounts-model.h>
-#include <KTelepathy/text-parser.h>
-#include <KTelepathy/presence.h>
+#include <KTp/Models/accounts-model.h>
+#include <KTp/text-parser.h>
+#include <KTp/presence.h>
 
 #include <QDesktopServices>
 #include <QTextDocument>

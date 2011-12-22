@@ -33,8 +33,8 @@
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("telepathy-kde-contactlist", 0, ki18n("Telepathy KDE Contact List"), "0.2.60",
-                         ki18n("Telepathy KDE Contact List"), KAboutData::License_GPL,
+    KAboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), "0.2.60",
+                         ki18n("KDE Telepathy Contact List"), KAboutData::License_GPL,
                          ki18n("(C) 2011, Martin Klapetek"));
 
     aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), ki18n("Developer"),

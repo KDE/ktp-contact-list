@@ -22,8 +22,8 @@
 
 #include "presence-model.h"
 
-#include <KTelepathy/global-presence.h>
-#include <KTelepathy/presence.h>
+#include <KTp/global-presence.h>
+#include <KTp/presence.h>
 
 #include "dialogs/custom-presence-dialog.h"
 

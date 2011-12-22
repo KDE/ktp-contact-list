@@ -24,7 +24,7 @@
 #include <KComboBox>
 
 #include <TelepathyQt/AccountManager>
-#include <KTelepathy/presence.h>
+#include <KTp/presence.h>
 
 class KPixmapSequenceOverlayPainter;
 class PresenceModel;

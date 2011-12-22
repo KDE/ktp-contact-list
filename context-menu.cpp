@@ -28,12 +28,12 @@
 #include <KInputDialog>
 #include <KMessageBox>
 
-#include <KTelepathy/Models/accounts-model.h>
-#include <KTelepathy/Models/contact-model-item.h>
-#include <KTelepathy/Models/proxy-tree-node.h>
-#include <KTelepathy/Models/groups-model-item.h>
-#include <KTelepathy/Models/groups-model.h>
-#include <KTelepathy/text-parser.h>
+#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contact-model-item.h>
+#include <KTp/Models/proxy-tree-node.h>
+#include <KTp/Models/groups-model-item.h>
+#include <KTp/Models/groups-model.h>
+#include <KTp/text-parser.h>
 
 #include <TelepathyQt/ContactManager>
 
@@ -41,7 +41,7 @@
 #include "dialogs/contact-info.h"
 
 #include "contact-list-widget_p.h"
-#include <KTelepathy/Models/accounts-filter-model.h>
+#include <KTp/Models/accounts-filter-model.h>
 
 ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)

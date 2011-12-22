@@ -28,7 +28,7 @@
 
 #include <KProtocolInfo>
 
-#include <KTelepathy/text-parser.h>
+#include <KTp/text-parser.h>
 #include <KDebug>
 
 ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :

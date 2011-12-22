@@ -35,9 +35,9 @@
 #include <TelepathyQt/PendingContacts>
 #include <TelepathyQt/ContactManager>
 
-#include <KTelepathy/Models/accounts-model.h>
-#include <KTelepathy/Models/contact-model-item.h>
-#include <KTelepathy/Models/groups-model-item.h>
+#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contact-model-item.h>
+#include <KTp/Models/groups-model-item.h>
 
 #include <KDebug>
 #include <KDialog>
