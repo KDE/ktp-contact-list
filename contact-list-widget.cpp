@@ -206,7 +206,7 @@ void ContactListWidget::showSettingsKCM()
 {
     KSettings::Dialog *dialog = new KSettings::Dialog(this);
 
-    KService::Ptr tpAccKcm = KService::serviceByDesktopName("kcm_telepathy_accounts");
+    KService::Ptr tpAccKcm = KService::serviceByDesktopName("kcm_ktp_accounts");
 
     if (!tpAccKcm) {
         KMessageBox::error(this,
@@ -214,7 +214,7 @@ void ContactListWidget::showSettingsKCM()
                            i18n("IM Accounts KCM Plugin Is Not Installed"));
     }
 
-    dialog->addModule("kcm_telepathy_accounts");
+    dialog->addModule("kcm_ktp_accounts");
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
