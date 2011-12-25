@@ -44,6 +44,13 @@
 
 #include <QHeaderView>
 #include <QLabel>
+#include <QApplication>
+#include <QDropEvent>
+#include <QDragMoveEvent>
+#include <QDragEnterEvent>
+#include <QDragLeaveEvent>
+#include <QPainter>
+#include <QPixmap>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
@@ -489,9 +496,16 @@ void ContactListWidget::startFileTransferChannel(ContactModelItem *contactItem)
     }
 
     QDateTime now = QDateTime::currentDateTime();
-    Q_FOREACH (const QString &filename, filenames) {
-        QFileInfo fileinfo(filename);
 
+    requestFileTransferChannels(account, contact, filenames, now);
+}
+
+void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr& account,
+                                                    const Tp::ContactPtr& contact,
+                                                    const QStringList& filenames,
+                                                    const QDateTime& userActionTime)
+{
+    Q_FOREACH (const QString &filename, filenames) {
         kDebug() << "Filename:" << filename;
         kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
 
@@ -500,12 +514,13 @@ void ContactListWidget::startFileTransferChannel(ContactModelItem *contactItem)
 
         Tp::PendingChannelRequest* channelRequest = account->createFileTransfer(contact,
                                                                                 fileTransferProperties,
-                                                                                now,
+                                                                                userActionTime,
                                                                                 PREFERRED_FILETRANSFER_HANDLER);
 
         connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
                 SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
     }
+
 }
 
 void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int start, int end)
@@ -567,4 +582,217 @@ void ContactListWidget::setFilterString(const QString& string)
 
     d->modelFilter->setShowOfflineUsers(!string.isEmpty());
     d->modelFilter->setFilterString(string);
+}
+
+void ContactListWidget::setDropIndicatorRect(const QRect &rect)
+{
+    Q_D(ContactListWidget);
+
+    if (d->dropIndicatorRect != rect) {
+        d->dropIndicatorRect = rect;
+        viewport()->update();
+    }
+}
+
+void ContactListWidget::mousePressEvent(QMouseEvent *event)
+{
+    Q_D(ContactListWidget);
+
+    QTreeView::mousePressEvent(event);
+
+    QModelIndex index = indexAt(event->pos());
+    d->shouldDrag = false;
+
+    // if no contact, no drag
+    if (!index.data(AccountsModel::ItemRole).canConvert<ContactModelItem*>()) {
+        return;
+    }
+
+    if (event->button() == Qt::LeftButton) {
+        d->shouldDrag = true;
+        d->dragStartPosition = event->pos();
+    }
+}
+
+void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
+{
+    Q_D(ContactListWidget);
+
+    QTreeView::mouseMoveEvent(event);
+
+    QModelIndex index = indexAt(event->pos());
+
+    if (!(event->buttons() & Qt::LeftButton)) {
+        return;
+    }
+
+    if (!d->shouldDrag) {
+        return;
+    }
+
+    if ((event->pos() - d->dragStartPosition).manhattanLength() < QApplication::startDragDistance()) {
+        return;
+    }
+
+    QMimeData *mimeData = new QMimeData;
+    QByteArray encodedData;
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
+
+    if (index.isValid()) {
+        ContactModelItem *contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        //We put a contact ID and its account ID to the stream, so we can later recreate the contact using AccountsModel
+        stream << contactItem->contact().data()->id() << d->model->accountForContactItem(contactItem).data()->objectPath();
+    }
+
+    mimeData->setData("application/vnd.telepathy.contact", encodedData);
+    QPixmap dragIndicator = QPixmap::grabWidget(this, visualRect(index).adjusted(3,3,3,3));
+
+    QDrag *drag = new QDrag(this);
+    drag->setMimeData(mimeData);
+    drag->setPixmap(dragIndicator);
+
+    drag->exec(Qt::CopyAction);
+}
+
+void ContactListWidget::dropEvent(QDropEvent *event)
+{
+    Q_D(ContactListWidget);
+
+    QModelIndex index = indexAt(event->pos());
+
+    if (event->mimeData()->hasUrls()) {
+        kDebug() << "It's a file!";
+
+        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        Q_ASSERT(contactItem);
+
+        Tp::ContactPtr contact = contactItem->contact();
+
+        kDebug() << "Requesting file transfer for contact" << contact->alias();
+
+        Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
+
+        QStringList filenames;
+        Q_FOREACH (const QUrl &url, event->mimeData()->urls()) {
+            filenames << url.toLocalFile();
+        }
+
+        if (filenames.isEmpty()) {
+            return;
+        }
+
+        QDateTime now = QDateTime::currentDateTime();
+        requestFileTransferChannels(account, contact, filenames, now);
+
+        event->acceptProposedAction();
+    } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
+        kDebug() << "It's a contact!";
+
+        QByteArray encodedData = event->mimeData()->data("application/vnd.telepathy.contact");
+        QDataStream stream(&encodedData, QIODevice::ReadOnly);
+        QList<ContactModelItem*> contacts;
+
+        while (!stream.atEnd()) {
+            QString contact;
+            QString account;
+
+            //get contact and account out of the stream
+            stream >> contact >> account;
+
+            Tp::AccountPtr accountPtr = d->model->accountPtrForPath(account);
+
+            //casted pointer is checked below, before first use
+            contacts.append(qobject_cast<ContactModelItem*>(d->model->contactItemForId(accountPtr->uniqueIdentifier(), contact)));
+        }
+
+        Q_FOREACH (ContactModelItem *contact, contacts) {
+            Q_ASSERT(contact);
+            QString group;
+            if (index.data(AccountsModel::ItemRole).canConvert<GroupsModelItem*>()) {
+                // contact is dropped on a group, so take it's name
+                group = index.data(GroupsModel::GroupNameRole).toString();
+            } else {
+                // contact is dropped on another contact, so take it's parents (group) name
+                group = index.parent().data(GroupsModel::GroupNameRole).toString();
+            }
+
+            kDebug() << contact->contact().data()->alias() << "added to group" << group;
+
+            Tp::PendingOperation *op = contact->contact().data()->addToGroup(group);
+
+            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                    this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+        }
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
+    }
+
+    setDropIndicatorRect(QRect());
+}
+
+void ContactListWidget::dragEnterEvent(QDragEnterEvent *event)
+{
+    if (event->mimeData()->hasUrls()) {
+        bool accepted = true;
+        // check if one of the urls isn't a local file and abort if so
+        Q_FOREACH (const QUrl& url, event->mimeData()->urls()) {
+            if (!QFileInfo(url.toLocalFile()).isFile()) {
+                    accepted = false;
+            }
+        }
+
+        if (accepted) {
+            event->acceptProposedAction();
+        } else {
+            event->ignore();
+        }
+    } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
+        event->acceptProposedAction();
+    } else {
+        event->ignore();
+    }
+}
+
+void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
+{
+    Q_D(ContactListWidget);
+
+    QModelIndex index = indexAt(event->pos());
+    setDropIndicatorRect(QRect());
+
+    // urls can be dropped on a contact with file transfer capability,
+    // contacts can be dropped either on a group or on another contact if GroupsModel is used
+    if (event->mimeData()->hasUrls() && index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
+        event->acceptProposedAction();
+        setDropIndicatorRect(visualRect(index));
+    } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
+               d->modelFilter->sourceModel() == d->groupsModel &&
+               (index.data(AccountsModel::ItemRole).canConvert<GroupsModelItem*>() ||
+                index.data(AccountsModel::ItemRole).canConvert<ContactModelItem*>())) {
+        event->acceptProposedAction();
+        setDropIndicatorRect(visualRect(index));
+    } else {
+        event->ignore();
+    }
+}
+
+void ContactListWidget::dragLeaveEvent(QDragLeaveEvent *event)
+{
+    Q_UNUSED(event);
+    setDropIndicatorRect(QRect());
+}
+
+void ContactListWidget::paintEvent(QPaintEvent *event)
+{
+    Q_D(ContactListWidget);
+
+    QTreeView::paintEvent(event);
+    if (!d->dropIndicatorRect.isNull()) {
+        QStyleOption option;
+        option.init(this);
+        option.rect = d->dropIndicatorRect.adjusted(0,0,-1,-1);
+        QPainter painter(viewport());
+        style()->drawPrimitive(QStyle::PE_IndicatorItemViewItemDrop, &option, &painter, this);
+    }
 }

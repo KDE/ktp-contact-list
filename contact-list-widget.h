@@ -77,9 +77,23 @@ Q_SIGNALS:
     void accountManagerReady(Tp::PendingOperation* op);
     void genericOperationFinished(Tp::PendingOperation* op);
 
-private:
-    friend class ContextMenu;
+protected:
+    void setDropIndicatorRect(const QRect &rect);
+    virtual void mousePressEvent(QMouseEvent *event);
+    virtual void mouseMoveEvent(QMouseEvent *event);
+    virtual void paintEvent(QPaintEvent *event);
+    virtual void dropEvent(QDropEvent *event);
+    virtual void dragEnterEvent(QDragEnterEvent *event);
+    virtual void dragMoveEvent(QDragMoveEvent *event);
+    virtual void dragLeaveEvent(QDragLeaveEvent *event);
 
+private:
+    void requestFileTransferChannels(const Tp::AccountPtr& account,
+                                     const Tp::ContactPtr& contact,
+                                     const QStringList& filenames,
+                                     const QDateTime& userActionTime);
+
+    friend class ContextMenu;
     ContactListWidgetPrivate * const d_ptr;
 };
 

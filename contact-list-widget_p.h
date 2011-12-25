@@ -35,7 +35,8 @@ public:
       groupsModel(0),
       modelFilter(0),
       delegate(0),
-      compactDelegate(0) {}
+      compactDelegate(0),
+      shouldDrag(false) {}
 
     AccountsModel          *model;
     GroupsModel            *groupsModel;
@@ -43,6 +44,9 @@ public:
     Tp::AccountManagerPtr   accountManager;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
+    QRect                   dropIndicatorRect;
+    QPoint                  dragStartPosition;
+    bool                    shouldDrag;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H
