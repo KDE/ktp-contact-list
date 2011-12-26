@@ -124,8 +124,8 @@ void AbstractWidgetDelegateOverlay::setActive(bool active)
         m_widget.data()->installEventFilter(this);
 
         if (view()->model()) {
-            connect(m_view->model(), SIGNAL(rowsRemoved(QModelIndex, int, int)),
-                    this, SLOT(slotRowsRemoved(QModelIndex, int, int)));
+            connect(m_view->model(), SIGNAL(rowsRemoved(QModelIndex,int,int)),
+                    this, SLOT(slotRowsRemoved(QModelIndex,int,int)));
 
             connect(m_view->model(), SIGNAL(layoutChanged()),
                     this, SLOT(slotLayoutChanged()));
