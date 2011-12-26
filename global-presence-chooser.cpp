@@ -227,13 +227,13 @@ bool GlobalPresenceChooser::event(QEvent *e)
         QStyleOptionComboBox opt;
         initStyleOption(&opt);
 
-        //get the subcontrol this event occured in
+        //get the subcontrol this event occurred in
         QStyle::SubControl sc = style()->hitTestComplexControl(QStyle::CC_ComboBox, &opt, me->pos(),
                                                                this);
 
         if (sc == QStyle::SC_ComboBoxArrow) {
             //if user pressed the combo arrow, pass it to parent
-            QComboBox::mousePressEvent(me);
+            QComboBox::mousePressEvent(me); // krazy:exclude=qclasses
         } else {
             //set combo editable if user click to any other parts
             setEditable(true);
@@ -252,7 +252,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
         QStyleOptionComboBox opt;
         initStyleOption(&opt);
 
-        //get the subcontrol this event occured in
+        //get the subcontrol this event occurred in
         QStyle::SubControl sc = style()->hitTestComplexControl(QStyle::CC_ComboBox, &opt, me->pos(),
                                                                this);
 
@@ -290,15 +290,16 @@ bool GlobalPresenceChooser::event(QEvent *e)
         setEditable(false);
     }
 
-    return QComboBox::event(e);
+    return QComboBox::event(e); // krazy:exclude=qclasses
 }
 
 void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 {
     //if they select the "configure item"
     if (index == count()-1) {
-        CustomPresenceDialog dialog(m_model, this);
-        dialog.exec();
+        QWeakPointer<CustomPresenceDialog> dialog = new CustomPresenceDialog(m_model, this);
+        dialog.data()->exec();
+        delete dialog.data();
         onPresenceChanged(m_globalPresence->currentPresence());
     } else if (index == count()-2) {
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
