@@ -54,7 +54,7 @@ FilteredModel::FilteredModel(QObject *parent)
 bool FilteredModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    Tp::Presence presence = index.data(PresenceModel::PresenceRole).value<Tp::Presence>();
+    KTp::Presence presence = index.data(PresenceModel::PresenceRole).value<KTp::Presence>();
     return ! presence.statusMessage().isEmpty();
 }
 
@@ -132,7 +132,7 @@ void CustomPresenceDialog::setupDialog()
 void CustomPresenceDialog::addCustomPresence()
 {
     int presenceIndex = m_statusMessage->currentIndex();
-    Tp::Presence presence = m_statusMessage->itemData(presenceIndex).value<Tp::Presence>();
+    KTp::Presence presence = m_statusMessage->itemData(presenceIndex).value<KTp::Presence>();
     presence.setStatus(presence.type(), QString(), m_statusMessage->currentText());
 
     m_listView->setCurrentIndex(qobject_cast<FilteredModel*>(m_listView->model())->mapFromSource(m_model->addPresence(presence)));
@@ -147,7 +147,7 @@ void CustomPresenceDialog::removeCustomPresence()
         return;
     }
 
-    Tp::Presence presence = m_listView->currentIndex().data(PresenceModel::PresenceRole).value<Tp::Presence>();
+    KTp::Presence presence = m_listView->currentIndex().data(PresenceModel::PresenceRole).value<KTp::Presence>();
     m_model->removePresence(presence);
 
     if (m_listView->model()->rowCount(QModelIndex()) == 0) {
