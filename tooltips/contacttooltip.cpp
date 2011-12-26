@@ -70,7 +70,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
         *   so let's print it out and unset it so it won't be displayed to user
         */
         kDebug() << presenceMessage;
-        presenceMessage = QString();
+        presenceMessage.clear();
     }
 
     ui->presenceIcon->setPixmap(QPixmap(presenceIconPath));

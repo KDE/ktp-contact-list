@@ -79,7 +79,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
 
     m_presenceMessageWidget = new KLineEdit(this);
     m_presenceMessageWidget->setClearButtonShown(true);
-    m_presenceMessageWidget->setClickMessage(i18n("Set message..."));
+    m_presenceMessageWidget->setClickMessage(i18nc("@action:inmenu This is the IM presence message" ,"Set message..."));
     m_presenceMessageWidget->setTrapReturnKey(true);
 
     connect(m_presenceMessageWidget, SIGNAL(returnPressed(QString)),
