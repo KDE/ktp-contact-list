@@ -26,7 +26,6 @@ include_directories (${KDE4_INCLUDES}
 set (ktp_contactlist_SRCS
      contact-list-widget.cpp
      context-menu.cpp
-     avatar-button.cpp
      abstract-contact-delegate.cpp
      contact-list-application.cpp
      contact-view-hover-button.cpp
@@ -39,7 +38,6 @@ set (ktp_contactlist_SRCS
      filter-bar.cpp
      main.cpp
      main-widget.cpp
-     fetch-avatar-job.cpp
      global-presence-chooser.cpp
      dialogs/add-contact-dialog.cpp
      dialogs/join-chat-room-dialog.cpp

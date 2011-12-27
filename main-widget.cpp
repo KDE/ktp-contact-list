@@ -53,7 +53,6 @@
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
-#include "fetch-avatar-job.h"
 #include "contact-list-application.h"
 #include "dialogs/add-contact-dialog.h"
 #include "dialogs/join-chat-room-dialog.h"
@@ -84,8 +83,6 @@ MainWidget::MainWidget(QWidget *parent)
     m_userAccountNameLabel->setText(user.property(KUser::FullName).isNull() ?
         user.loginName() : user.property(KUser::FullName).toString()
     );
-
-    m_avatarButton->setPopupMode(QToolButton::InstantPopup);
 
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
@@ -183,9 +180,6 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_searchContactAction, SIGNAL(triggered(bool)),
             this, SLOT(toggleSearchWidget(bool)));
 
-    connect(m_avatarButton, SIGNAL(operationFinished(Tp::PendingOperation*)),
-            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
-
     connect(m_contactsListView, SIGNAL(accountManagerReady(Tp::PendingOperation*)),
             this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
 
@@ -229,7 +223,6 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
-    m_avatarButton->initialize(m_contactsListView->accountsModel(), m_contactsListView->accountManager());
     m_accountButtons->setAccountManager(m_contactsListView->accountManager());
     m_presenceChooser->setAccountManager(m_contactsListView->accountManager());
 
