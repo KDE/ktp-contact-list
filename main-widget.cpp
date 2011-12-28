@@ -213,6 +213,37 @@ MainWidget::MainWidget(QWidget *parent)
         toggleSearchWidget(true);
         m_searchContactAction->setChecked(true);
     }
+
+    connect(m_showOfflineAction, SIGNAL(toggled(bool)),
+            m_contactsListView, SLOT(toggleOfflineContacts(bool)));
+
+    connect(m_filterBar, SIGNAL(filterChanged(QString)),
+            m_contactsListView, SLOT(setFilterString(QString)));
+
+    connect(m_filterBar, SIGNAL(closeRequest()),
+            m_filterBar, SLOT(hide()));
+
+    connect(m_filterBar, SIGNAL(closeRequest()),
+            m_searchContactAction, SLOT(trigger()));
+
+    connect(m_sortByPresenceAction, SIGNAL(activeChanged(bool)),
+            m_contactsListView, SLOT(toggleSortByPresence(bool)));
+
+    connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
+            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+
+    bool useGroups = guiConfigGroup.readEntry("use_groups", true);
+    m_groupContactsAction->setChecked(useGroups);
+
+    bool showOffline = guiConfigGroup.readEntry("show_offline", false);
+    m_showOfflineAction->setChecked(showOffline);
+
+    bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
+    m_sortByPresenceAction->setActive(sortByPresence);
+
+    m_contactsListView->toggleGroups(useGroups);
+    m_contactsListView->toggleOfflineContacts(showOffline);
+    m_contactsListView->toggleSortByPresence(sortByPresence);
 }
 
 MainWidget::~MainWidget()
@@ -241,44 +272,9 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
                            return;
     }
 
-    connect(m_showOfflineAction, SIGNAL(toggled(bool)),
-            m_contactsListView, SLOT(toggleOfflineContacts(bool)));
-
-    connect(m_filterBar, SIGNAL(filterChanged(QString)),
-            m_contactsListView, SLOT(setFilterString(QString)));
-
-    connect(m_filterBar, SIGNAL(closeRequest()),
-            m_filterBar, SLOT(hide()));
-
-    connect(m_filterBar, SIGNAL(closeRequest()),
-            m_searchContactAction, SLOT(trigger()));
-
-    connect(m_sortByPresenceAction, SIGNAL(activeChanged(bool)),
-            m_contactsListView, SLOT(toggleSortByPresence(bool)));
-
-    connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
-            this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
-
     m_accountButtons->setAccountManager(m_accountManager);
     m_presenceChooser->setAccountManager(m_accountManager);
-
-    KSharedConfigPtr config = KGlobal::config();
-    KConfigGroup guiConfigGroup(config, "GUI");
-
-    bool useGroups = guiConfigGroup.readEntry("use_groups", true);
-    m_groupContactsAction->setChecked(useGroups);
-
-    bool showOffline = guiConfigGroup.readEntry("show_offline", false);
-    m_showOfflineAction->setChecked(showOffline);
-
-    bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
-    m_sortByPresenceAction->setActive(sortByPresence);
-
-
     m_contactsListView->setAccountManager(m_accountManager);
-    m_contactsListView->toggleGroups(useGroups);
-    m_contactsListView->toggleOfflineContacts(showOffline);
-    m_contactsListView->toggleSortByPresence(sortByPresence);
 }
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)

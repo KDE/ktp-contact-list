@@ -73,6 +73,24 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(this);
 
+    d->model = new AccountsModel(this);
+    d->groupsModel = new GroupsModel(d->model, this);
+    d->modelFilter = new AccountsFilterModel(this);
+    d->modelFilter->setDynamicSortFilter(true);
+    d->modelFilter->clearFilterString();
+    d->modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
+    d->modelFilter->setSortRole(Qt::DisplayRole);
+
+    setModel(d->modelFilter);
+    setSortingEnabled(true);
+    sortByColumn(0, Qt::AscendingOrder);
+
+    connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
+
+    connect(d->groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
+            this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+
     header()->hide();
     setRootIsDecorated(false);
     setSortingEnabled(true);
@@ -112,29 +130,12 @@ ContactListWidget::~ContactListWidget()
 void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     Q_D(ContactListWidget);
-
+    d->model->setAccountManager(accountManager);
 
     connect(accountManager.data(), SIGNAL(newAccount(Tp::AccountPtr)),
                 this, SLOT(onNewAccountAdded(Tp::AccountPtr)));
 
 
-    d->model = new AccountsModel(accountManager, this);
-    d->groupsModel = new GroupsModel(d->model, this);
-    d->modelFilter = new AccountsFilterModel(this);
-    d->modelFilter->setDynamicSortFilter(true);
-    d->modelFilter->clearFilterString();
-    d->modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
-    d->modelFilter->setSortRole(Qt::DisplayRole);
-
-    setModel(d->modelFilter);
-    setSortingEnabled(true);
-    sortByColumn(0, Qt::AscendingOrder);
-
-    connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
-
-    connect(d->groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
-            this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
 
