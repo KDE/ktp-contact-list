@@ -42,7 +42,6 @@
 #include <KDebug>
 #include <KDialog>
 #include <KIO/Job>
-#include <KUser>
 #include <KMenu>
 #include <KMessageBox>
 #include <KProtocolInfo>
@@ -70,7 +69,6 @@ MainWidget::MainWidget(QWidget *parent)
     : KMainWindow(parent)
 {
     Tp::registerTypes();
-    KUser user;
 
     setupUi(this);
     m_filterBar->hide();
@@ -79,10 +77,6 @@ MainWidget::MainWidget(QWidget *parent)
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
-
-    m_userAccountNameLabel->setText(user.property(KUser::FullName).isNull() ?
-        user.loginName() : user.property(KUser::FullName).toString()
-    );
 
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
