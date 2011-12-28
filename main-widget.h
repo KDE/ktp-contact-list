@@ -27,7 +27,7 @@
 #include <QtGui/QWidget>
 #include <QtGui/QStyledItemDelegate>
 
-#include <TelepathyQt/AccountManager>
+#include <TelepathyQt/Types>
 
 #include <KXmlGuiWindow>
 #include <KAction>
@@ -96,11 +96,14 @@ private:
     KMenu                  *m_accountMenu;
     KSelectAction          *m_setStatusAction;
 
+
     KAction                *m_addContactAction;
     KAction                *m_groupContactsAction;
     KAction                *m_showOfflineAction;
     KAction                *m_searchContactAction;
     KDualAction            *m_sortByPresenceAction;
+
+    Tp::AccountManagerPtr  m_accountManager;
 
     ContextMenu            *m_contextMenu;
 };

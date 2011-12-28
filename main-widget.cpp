@@ -34,6 +34,7 @@
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingContacts>
 #include <TelepathyQt/ContactManager>
+#include <TelepathyQt/PendingReady>
 
 #include <KTp/Models/accounts-model.h>
 #include <KTp/Models/contact-model-item.h>
@@ -75,6 +76,7 @@ MainWidget::MainWidget(QWidget *parent)
     setWindowIcon(KIcon("telepathy-kde"));
     setAutoSaveSettings();
 
+
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
 
@@ -90,6 +92,37 @@ MainWidget::MainWidget(QWidget *parent)
     //TODO: Toggle the tooltip with the button? eg. once its Show, after click its Hide .. ?
 
     m_toolBar->addAction(m_groupContactsAction);
+
+    Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
+                                                                       Tp::Features() << Tp::Account::FeatureCore
+                                                                       << Tp::Account::FeatureAvatar
+                                                                       << Tp::Account::FeatureCapabilities
+                                                                       << Tp::Account::FeatureProtocolInfo
+                                                                       << Tp::Account::FeatureProfile);
+
+    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus(),
+                                                                               Tp::Features() << Tp::Connection::FeatureCore
+                                                                               << Tp::Connection::FeatureRosterGroups
+                                                                               << Tp::Connection::FeatureRoster
+                                                                               << Tp::Connection::FeatureSelfContact);
+
+    Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
+                                                                      << Tp::Contact::FeatureAvatarData
+                                                                      << Tp::Contact::FeatureSimplePresence
+                                                                      << Tp::Contact::FeatureCapabilities);
+
+    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
+
+    m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(),
+                                                  accountFactory,
+                                                  connectionFactory,
+                                                  channelFactory,
+                                                  contactFactory);
+
+    connect(m_accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
+
+
 
     m_showOfflineAction = new KAction(KIcon("meeting-attending-tentative"), i18n("Hide/Show offline users"), this);
     m_showOfflineAction->setCheckable(true);
@@ -174,9 +207,6 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_searchContactAction, SIGNAL(triggered(bool)),
             this, SLOT(toggleSearchWidget(bool)));
 
-    connect(m_contactsListView, SIGNAL(accountManagerReady(Tp::PendingOperation*)),
-            this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
-
     if (guiConfigGroup.readEntry("pin_filterbar", true)) {
         toggleSearchWidget(true);
         m_searchContactAction->setChecked(true);
@@ -197,7 +227,17 @@ MainWidget::~MainWidget()
 
 void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 {
-    Q_UNUSED(op)
+    if (op->isError()) {
+        kDebug() << op->errorName();
+        kDebug() << op->errorMessage();
+
+        KMessageBox::error(this,
+                           i18n("Something unexpected happened to the core part of your Instant Messaging system "
+                           "and it couldn't be initialized. Try restarting the Contact List."),
+                           i18n("IM system failed to initialize"));
+
+                           return;
+    }
 
     connect(m_showOfflineAction, SIGNAL(toggled(bool)),
             m_contactsListView, SLOT(toggleOfflineContacts(bool)));
@@ -217,8 +257,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
-    m_accountButtons->setAccountManager(m_contactsListView->accountManager());
-    m_presenceChooser->setAccountManager(m_contactsListView->accountManager());
+    m_accountButtons->setAccountManager(m_accountManager);
+    m_presenceChooser->setAccountManager(m_accountManager);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -232,6 +272,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
     m_sortByPresenceAction->setActive(sortByPresence);
 
+
+    m_contactsListView->setAccountManager(m_accountManager);
     m_contactsListView->toggleGroups(useGroups);
     m_contactsListView->toggleOfflineContacts(showOffline);
     m_contactsListView->toggleSortByPresence(sortByPresence);
@@ -324,7 +366,7 @@ void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
 
 void MainWidget::onJoinChatRoomRequested()
 {
-    QWeakPointer<JoinChatRoomDialog> dialog = new JoinChatRoomDialog(m_contactsListView->accountManager());
+    QWeakPointer<JoinChatRoomDialog> dialog = new JoinChatRoomDialog(m_accountManager);
 
     if (dialog.data()->exec() == QDialog::Accepted) {
         Tp::AccountPtr account = dialog.data()->selectedAccount();
@@ -406,7 +448,7 @@ void MainWidget::goOffline()
 {
     //FIXME use global presence
     kDebug() << "Setting all accounts offline...";
-    foreach (const Tp::AccountPtr &account, m_contactsListView->accountManager()->allAccounts()) {
+    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
         if (account->isEnabled() && account->isValid()) {
             account->setRequestedPresence(Tp::Presence::offline());
         }
@@ -415,7 +457,7 @@ void MainWidget::goOffline()
 
 bool MainWidget::isAnyAccountOnline() const
 {
-    foreach (const Tp::AccountPtr &account, m_contactsListView->accountManager()->allAccounts()) {
+    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
         if (account->isEnabled() && account->isValid() && account->isOnline()) {
             return true;
         }

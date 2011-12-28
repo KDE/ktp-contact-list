@@ -43,7 +43,7 @@ public:
     virtual ~ContactListWidget();
 
     AccountsModel *accountsModel();
-    const Tp::AccountManagerPtr accountManager() const;
+    void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
 public Q_SLOTS:
     void toggleOfflineContacts(bool show);
@@ -57,7 +57,6 @@ public Q_SLOTS:
     void onSwitchToCompactView();
 
 private Q_SLOTS:
-    void onAccountManagerReady(Tp::PendingOperation* op);
     void onNewAccountAdded(const Tp::AccountPtr &account);
     void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClicked(const QModelIndex &index);

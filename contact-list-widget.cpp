@@ -70,38 +70,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
 
-    Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
-                                                                       Tp::Features() << Tp::Account::FeatureCore
-                                                                       << Tp::Account::FeatureAvatar
-                                                                       << Tp::Account::FeatureCapabilities
-                                                                       << Tp::Account::FeatureProtocolInfo
-                                                                       << Tp::Account::FeatureProfile);
-
-    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus(),
-                                                                               Tp::Features() << Tp::Connection::FeatureCore
-                                                                               << Tp::Connection::FeatureRosterGroups
-                                                                               << Tp::Connection::FeatureRoster
-                                                                               << Tp::Connection::FeatureSelfContact);
-
-    Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
-                                                                      << Tp::Contact::FeatureAvatarData
-                                                                      << Tp::Contact::FeatureSimplePresence
-                                                                      << Tp::Contact::FeatureCapabilities);
-
-    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
-
-    d->accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(),
-                                                  accountFactory,
-                                                  connectionFactory,
-                                                  channelFactory,
-                                                  contactFactory);
-
-    connect(d->accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
-
-    connect(d->accountManager.data(), SIGNAL(newAccount(Tp::AccountPtr)),
-            this, SLOT(onNewAccountAdded(Tp::AccountPtr)));
-
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(this);
 
@@ -141,23 +109,16 @@ ContactListWidget::~ContactListWidget()
 
 }
 
-void ContactListWidget::onAccountManagerReady(Tp::PendingOperation* op)
+void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     Q_D(ContactListWidget);
 
-    if (op->isError()) {
-        kDebug() << op->errorName();
-        kDebug() << op->errorMessage();
 
-        KMessageBox::error(this,
-                           i18n("Something unexpected happened to the core part of your Instant Messaging system "
-                           "and it couldn't be initialized. Try restarting the Contact List."),
-                           i18n("IM system failed to initialize"));
+    connect(accountManager.data(), SIGNAL(newAccount(Tp::AccountPtr)),
+                this, SLOT(onNewAccountAdded(Tp::AccountPtr)));
 
-                           return;
-    }
 
-    d->model = new AccountsModel(d->accountManager, this);
+    d->model = new AccountsModel(accountManager, this);
     d->groupsModel = new GroupsModel(d->model, this);
     d->modelFilter = new AccountsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
@@ -175,7 +136,7 @@ void ContactListWidget::onAccountManagerReady(Tp::PendingOperation* op)
     connect(d->groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
             this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
-    QList<Tp::AccountPtr> accounts = d->accountManager->allAccounts();
+    QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
 
     if(accounts.count() == 0) {
         if (KMessageBox::questionYesNo(this,
@@ -192,14 +153,6 @@ void ContactListWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     expandAll();
 
-    emit accountManagerReady(op);
-}
-
-const Tp::AccountManagerPtr ContactListWidget::accountManager() const
-{
-    Q_D(const ContactListWidget);
-
-    return d->accountManager;
 }
 
 AccountsModel* ContactListWidget::accountsModel()
