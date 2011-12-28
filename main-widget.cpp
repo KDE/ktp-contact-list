@@ -130,9 +130,11 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_showOfflineAction);
 
-    m_sortByPresenceAction = new KDualAction(i18n("Sort by presence"), i18n("Sort by name"), this);
-    m_sortByPresenceAction->setActiveIcon(KIcon("user-online"));
-    m_sortByPresenceAction->setInactiveIcon(KIcon("view-sort-ascending"));
+    m_sortByPresenceAction = new KDualAction(i18n("List is sorted by name. Click to sort by presence."),
+                                             i18n("List is sorted by presence. Click to sort by name."), 
+                                             this);
+    m_sortByPresenceAction->setActiveIcon(KIcon("sort-presence"));
+    m_sortByPresenceAction->setInactiveIcon(KIcon("sort-name"));
 
     m_toolBar->addAction(m_sortByPresenceAction);
 
