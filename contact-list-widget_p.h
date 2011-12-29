@@ -41,7 +41,6 @@ public:
     AccountsModel          *model;
     GroupsModel            *groupsModel;
     AccountsFilterModel    *modelFilter;
-    Tp::AccountManagerPtr   accountManager;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     QRect                   dropIndicatorRect;

@@ -55,9 +55,18 @@ ContextMenu::~ContextMenu()
 
 }
 
+void ContextMenu::setAccountManager(const Tp::AccountManagerPtr &accountManager)
+{
+    m_accountManager = accountManager;
+}
+
 KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 {
     if (!index.isValid()) {
+        return 0;
+    }
+
+    if (m_accountManager.isNull()) {
         return 0;
     }
 
@@ -171,7 +180,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
             QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
 
             QStringList groupList;
-            QList<Tp::AccountPtr> accounts = m_mainWidget->d_ptr->accountManager->allAccounts();
+            QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
             foreach (const Tp::AccountPtr &account, accounts) {
                 if (!account->connection().isNull()) {
                     groupList.append(account->connection()->contactManager()->allKnownGroups());
@@ -448,6 +457,10 @@ void ContextMenu::onRenameGroupTriggered()
 
 void ContextMenu::onDeleteGroupTriggered()
 {
+    if (m_accountManager.isNull()) {
+        return;
+    }
+
     GroupsModelItem *groupItem = m_currentIndex.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
 
     if (KMessageBox::warningContinueCancel(m_mainWidget,
@@ -465,7 +478,7 @@ void ContextMenu::onDeleteGroupTriggered()
                     m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
 
-        foreach (const Tp::AccountPtr &account, m_mainWidget->d_ptr->accountManager->allAccounts()) {
+        foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->connection()) {
                 Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupItem->groupName());
                 connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
