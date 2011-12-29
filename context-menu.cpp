@@ -55,9 +55,18 @@ ContextMenu::~ContextMenu()
 
 }
 
+void ContextMenu::setAccountManager(const Tp::AccountManagerPtr &accountManager)
+{
+    m_accountManager = accountManager;
+}
+
 KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 {
     if (!index.isValid()) {
+        return 0;
+    }
+
+    if (m_accountManager.isNull()) {
         return 0;
     }
 
@@ -171,7 +180,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
             QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
 
             QStringList groupList;
-            QList<Tp::AccountPtr> accounts = m_mainWidget->d_ptr->accountManager->allAccounts();
+            QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
             foreach (const Tp::AccountPtr &account, accounts) {
                 if (!account->connection().isNull()) {
                     groupList.append(account->connection()->contactManager()->allKnownGroups());
@@ -243,13 +252,13 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
     action->setIcon(KIcon("edit-rename"));
 
     connect(action, SIGNAL(triggered(bool)),
-            this, SLOT(onRenameGroup()));
+            this, SLOT(onRenameGroupTriggered()));
 
     action = menu->addAction(i18n("Delete Group"));
     action->setIcon(KIcon("edit-delete"));
 
     connect(action, SIGNAL(triggered(bool)),
-            this, SLOT(onDeleteGroup()));
+            this, SLOT(onDeleteGroupTriggered()));
 
     return menu;
 }
@@ -398,16 +407,23 @@ void ContextMenu::onAddContactToGroupTriggered()
 
 void ContextMenu::onCreateNewGroupTriggered()
 {
-    QString newGroupName = KInputDialog::getText(i18n("New Group Name"), i18n("Please enter the new group name"));
+    bool ok = false;
 
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
+                                                 i18n("Please enter the new group name"),
+                                                 QString(),
+                                                 &ok);
 
-    Q_ASSERT(contactItem);
-    Tp::ContactPtr contact =  contactItem->contact();
-    Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
+    if (ok) {
+        ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
 
-    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+        Q_ASSERT(contactItem);
+        Tp::ContactPtr contact =  contactItem->contact();
+        Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
+
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+    }
 }
 
 void ContextMenu::onRenameGroupTriggered()
@@ -416,24 +432,35 @@ void ContextMenu::onRenameGroupTriggered()
 
     Q_ASSERT(groupItem);
 
-    QString newGroupName = KInputDialog::getText(i18n("New Group Name"), i18n("Please enter the new group name"), groupItem->groupName());
+    bool ok = false;
 
-    for(int i = 0; i < groupItem->size(); i++) {
-        Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
-        Q_ASSERT(contact);
+    QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
+                                                 i18n("Please enter the new group name"),
+                                                 groupItem->groupName(),
+                                                 &ok);
 
-        Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
-        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+    if (ok) {
+        for(int i = 0; i < groupItem->size(); i++) {
+            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+            Q_ASSERT(contact);
 
-        operation = contact->removeFromGroup(groupItem->groupName());
-        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+            Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+
+            operation = contact->removeFromGroup(groupItem->groupName());
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+        }
     }
 }
 
 void ContextMenu::onDeleteGroupTriggered()
 {
+    if (m_accountManager.isNull()) {
+        return;
+    }
+
     GroupsModelItem *groupItem = m_currentIndex.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
 
     if (KMessageBox::warningContinueCancel(m_mainWidget,
@@ -451,7 +478,7 @@ void ContextMenu::onDeleteGroupTriggered()
                     m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
 
-        foreach (const Tp::AccountPtr &account, m_mainWidget->d_ptr->accountManager->allAccounts()) {
+        foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->connection()) {
                 Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupItem->groupName());
                 connect(operation, SIGNAL(finished(Tp::PendingOperation*)),

@@ -275,6 +275,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
     m_accountButtons->setAccountManager(m_accountManager);
     m_presenceChooser->setAccountManager(m_accountManager);
     m_contactsListView->setAccountManager(m_accountManager);
+    m_contextMenu->setAccountManager(m_accountManager);
 }
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
