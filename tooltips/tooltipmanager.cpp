@@ -37,6 +37,10 @@
 #include <KIcon>
 #include <KColorScheme>
 
+#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contact-model-item.h>
+
+
 class ToolTipManager::Private
 {
 public:
@@ -143,6 +147,10 @@ void ToolTipManager::prepareToolTip()
 void ToolTipManager::showToolTip(const  QModelIndex &menuItem)
 {
     if (QApplication::mouseButtons() & Qt::LeftButton || !menuItem.isValid()) {
+        return;
+    }
+
+    if (!menuItem.data(AccountsModel::ItemRole).canConvert<ContactModelItem*>()) {
         return;
     }
 
