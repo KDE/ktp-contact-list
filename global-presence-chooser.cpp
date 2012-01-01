@@ -270,7 +270,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
         QKeyEvent *ke = static_cast<QKeyEvent*>(e);
 
         if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return) {
-            Tp::Presence presence = itemData(currentIndex(), PresenceModel::PresenceRole).value<Tp::Presence>();
+            KTp::Presence presence = itemData(currentIndex(), PresenceModel::PresenceRole).value<KTp::Presence>();
             presence.setStatus(presence.type(), presence.status(), lineEdit()->text());
             QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
             setEditable(false);

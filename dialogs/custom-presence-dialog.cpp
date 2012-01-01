@@ -86,10 +86,10 @@ void CustomPresenceDialog::setupDialog()
 
     m_statusMessage = new KComboBox(true, mainDialogWidget);
 
-    m_statusMessage->addItem(KIcon("user-online"), i18n("Set custom available message..."),qVariantFromValue(Tp::Presence::available()));
-    m_statusMessage->addItem(KIcon("user-busy"), i18n("Set custom busy message..."), qVariantFromValue(Tp::Presence::busy()));
-    m_statusMessage->addItem(KIcon("user-away"), i18n("Set custom away message..."), qVariantFromValue(Tp::Presence::away()));
-    m_statusMessage->addItem(KIcon("user-away-extended"), i18n("Set custom extended away message..."), qVariantFromValue(Tp::Presence::xa()));
+    m_statusMessage->addItem(KIcon("user-online"), i18n("Set custom available message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::available()));
+    m_statusMessage->addItem(KIcon("user-busy"), i18n("Set custom busy message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::busy()));
+    m_statusMessage->addItem(KIcon("user-away"), i18n("Set custom away message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::away()));
+    m_statusMessage->addItem(KIcon("user-away-extended"), i18n("Set custom extended away message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::xa()));
 
     m_statusMessage->setAutoCompletion(false);
     m_statusMessage->show();
