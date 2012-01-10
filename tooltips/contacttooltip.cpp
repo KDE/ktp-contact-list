@@ -41,6 +41,8 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->setupUi(this);
     ui->nameLabel->setText(index.data(Qt::DisplayRole).toString());
     ui->idLabel->setText(index.data(AccountsModel::IdRole).toString());
+    ui->avatarLabel->setScaledContents(false);
+    ui->avatarLabel->setAlignment(Qt::AlignCenter);
 
     QString avatar = index.data(AccountsModel::AvatarRole).toString();
     if (avatar.isEmpty()) {

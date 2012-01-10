@@ -81,7 +81,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
         avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
     }
 
-    painter->drawPixmap(iconRect, avatar);
+    style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio));
 
     KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
 
