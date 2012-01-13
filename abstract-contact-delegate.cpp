@@ -38,7 +38,7 @@
 #include <KTp/Models/contact-model-item.h>
 
 const int SPACING = 2;
-const int ACCOUNT_ICON_SIZE = 13;
+const int ACCOUNT_ICON_SIZE = 16;
 
 AbstractContactDelegate::AbstractContactDelegate(QObject* parent)
         : QStyledItemDelegate(parent), m_palette(0)
@@ -108,7 +108,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
         painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
-                            .pixmap(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
+                            .pixmap(32));
     } else {
         painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),
                             KIconLoader::Desktop));
