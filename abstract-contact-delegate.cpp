@@ -36,6 +36,7 @@
 #include <KTp/Models/accounts-model-item.h>
 #include <KTp/Models/groups-model.h>
 #include <KTp/Models/contact-model-item.h>
+#include <KDebug>
 
 const int SPACING = 2;
 const int ACCOUNT_ICON_SIZE = 16;
@@ -118,7 +119,12 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*4),0,0,0);
     QString groupHeaderString =  index.data(GroupsModel::GroupNameRole).toString().append(counts);
 
-    painter->setPen(m_palette->color(QPalette::WindowText));
+    if (option.state & QStyle::State_HasFocus) {
+        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+    } else {
+        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+    }
+
     painter->setFont(groupFont);
     painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignRight,
                       optV4.fontMetrics.elidedText(groupHeaderString, Qt::ElideRight, textRect.width()));
