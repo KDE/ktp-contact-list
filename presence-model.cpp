@@ -28,6 +28,8 @@
 #include <KDE/KConfig>
 #include <KDE/KConfigGroup>
 #include <KDE/KGlobalSettings>
+#include <KDE/KDebug>
+
 
 PresenceModel::PresenceModel(QObject *parent) :
     QAbstractListModel(parent)
@@ -55,6 +57,11 @@ PresenceModel::~PresenceModel()
 
 QVariant PresenceModel::data(const QModelIndex &index, int role) const
 {
+    if (!index.isValid()) {
+        kDebug() << "invalid index data requested" << index;
+        return QVariant();
+    }
+    
     KTp::Presence presence = m_presences[index.row()];
     switch (role) {
     case Qt::DisplayRole:
