@@ -178,7 +178,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
 
     connect(this, SIGNAL(activated(int)), SLOT(onCurrentIndexChanged(int)));
     connect(m_globalPresence, SIGNAL(currentPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
-    connect(m_globalPresence, SIGNAL(changingPresence(bool)), SLOT(onPresenceChanging(bool)));
+    connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
 
     onPresenceChanged(m_globalPresence->currentPresence());
 }
@@ -361,9 +361,9 @@ void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
     setCurrentIndex(index.row());
 }
 
-void GlobalPresenceChooser::onPresenceChanging(bool isChanging)
+void GlobalPresenceChooser::onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus)
 {
-    if (isChanging) {
+    if (connectionStatus == Tp::ConnectionStatusConnecting) {
         repositionSpinner();
         m_busyOverlay->start();
     } else {

@@ -49,7 +49,7 @@ protected:
 private slots:
     void onCurrentIndexChanged(int index);
     void onPresenceChanged(const KTp::Presence &presence);
-    void onPresenceChanging(bool isChanging);
+    void onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus);
 
 private:
     KTp::GlobalPresence *m_globalPresence;
