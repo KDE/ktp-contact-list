@@ -52,7 +52,7 @@ public:
     QAbstractItemView *view;
     QTimer            *timer;
     QTimer            *hideTimer;
-    QModelIndex        item;
+    QPersistentModelIndex        item;
     QRect              itemRect;
 };
 
