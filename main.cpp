@@ -33,7 +33,7 @@
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), "0.2.60",
+    KAboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), "0.3",
                          ki18n("KDE Telepathy Contact List"), KAboutData::License_GPL,
                          ki18n("(C) 2011, Martin Klapetek"));
 
