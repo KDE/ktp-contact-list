@@ -294,8 +294,8 @@ void ContextMenu::onShowInfoTriggered()
     ContactModelItem* item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         QWeakPointer<ContactInfo> contactInfoDialog = new ContactInfo(item->contact(), m_mainWidget);
-        contactInfoDialog.data()->exec();
-        delete contactInfoDialog.data();
+        contactInfoDialog.data()->setAttribute(Qt::WA_DeleteOnClose);
+        contactInfoDialog.data()->show();
     }
 }
 
