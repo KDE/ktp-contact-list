@@ -24,6 +24,7 @@ include_directories (${KDE4_INCLUDES}
 
 
 set (ktp_contactlist_SRCS
+     rooms-model.cpp
      contact-list-widget.cpp
      context-menu.cpp
      abstract-contact-delegate.cpp

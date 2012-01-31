@@ -28,6 +28,8 @@ namespace Ui {
     class JoinChatRoomDialog;
 }
 
+class RoomsModel;
+
 class JoinChatRoomDialog : public KDialog
 {
     Q_OBJECT
@@ -41,10 +43,24 @@ public:
 
 private slots:
     void onTextChanged(QString newText);
+    void getRoomList();
+    void stopListing();
+    void onRoomListChannelReadyForHandling(Tp::PendingOperation *operation);
+    void onRoomListChannelReady(Tp::PendingOperation *operation);
+    void onRoomListChannelClosed(Tp::PendingOperation *operation);
+    void onListing(bool isListing);
+    void onGotRooms(Tp::RoomInfoList roomInfoList);
+    void onRoomClicked(const QModelIndex &index);
 
 private:
+    void sendNotificationToUser(const QString& errorMsg);
+
     QList<Tp::AccountPtr> m_accounts;
     Ui::JoinChatRoomDialog *ui;
+    Tp::PendingChannel *m_pendingRoomListChannel;
+    Tp::ChannelPtr m_roomListChannel;
+    Tp::Client::ChannelTypeRoomListInterface *m_iface;
+    RoomsModel *m_model;
 };
 
 
