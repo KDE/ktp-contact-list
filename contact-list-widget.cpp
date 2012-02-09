@@ -361,7 +361,7 @@ void ContactListWidget::startTextChannel(ContactModelItem *contactItem)
     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
 
     Tp::ChannelRequestHints hints;
-    hints.setHint("org.kde.telepathy","forceRaiseWindow", QVariant(true));
+    hints.setHint("org.freedesktop.Telepathy.ChannelRequest","DelegateToPreferredHandler", QVariant(true));
 
     Tp::PendingChannelRequest *channelRequest = account->ensureTextChat(contact,
                                                                         QDateTime::currentDateTime(),
