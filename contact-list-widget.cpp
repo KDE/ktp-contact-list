@@ -77,8 +77,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->groupsModel = new GroupsModel(d->model, this);
     d->modelFilter = new AccountsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
-    d->modelFilter->clearFilterString();
-    d->modelFilter->setFilterCaseSensitivity(Qt::CaseInsensitive);
     d->modelFilter->setSortRole(Qt::DisplayRole);
 
     setModel(d->modelFilter);
@@ -341,14 +339,14 @@ void ContactListWidget::toggleOfflineContacts(bool show)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setShowOfflineUsers(show);
+    d->modelFilter->setPresenceTypeFilterFlags(show ? AccountsFilterModel::DoNotFilterByPresence : AccountsFilterModel::ShowOnlyConnected);
 }
 
 void ContactListWidget::toggleSortByPresence(bool sort)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSortByPresence(sort);
+    d->modelFilter->setSortMode(sort ? AccountsFilterModel::SortByPresence : AccountsFilterModel::DoNotSort);
 }
 
 void ContactListWidget::startTextChannel(ContactModelItem *contactItem)
@@ -534,8 +532,8 @@ void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setShowOfflineUsers(!string.isEmpty());
-    d->modelFilter->setFilterString(string);
+    d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() ? AccountsFilterModel::ShowOnlyConnected : AccountsFilterModel::DoNotFilterByPresence);
+    d->modelFilter->setDisplayNameFilterString(string);
 }
 
 void ContactListWidget::setDropIndicatorRect(const QRect &rect)
