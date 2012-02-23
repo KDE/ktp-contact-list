@@ -339,6 +339,7 @@ void ContactListWidget::toggleOfflineContacts(bool show)
 {
     Q_D(ContactListWidget);
 
+    d->showOffline = show;
     d->modelFilter->setPresenceTypeFilterFlags(show ? AccountsFilterModel::DoNotFilterByPresence : AccountsFilterModel::ShowOnlyConnected);
 }
 
@@ -532,7 +533,7 @@ void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() ? AccountsFilterModel::ShowOnlyConnected : AccountsFilterModel::DoNotFilterByPresence);
+    d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? AccountsFilterModel::ShowOnlyConnected : AccountsFilterModel::DoNotFilterByPresence);
     d->modelFilter->setDisplayNameFilterString(string);
 }
 
