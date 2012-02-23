@@ -36,7 +36,8 @@ public:
       modelFilter(0),
       delegate(0),
       compactDelegate(0),
-      shouldDrag(false) {}
+      shouldDrag(false),
+      showOffline(false) {}
 
     AccountsModel          *model;
     GroupsModel            *groupsModel;
@@ -46,6 +47,7 @@ public:
     QRect                   dropIndicatorRect;
     QPoint                  dragStartPosition;
     bool                    shouldDrag;
+    bool                    showOffline;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H

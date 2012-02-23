@@ -341,6 +341,7 @@ void ContactListWidget::toggleOfflineContacts(bool show)
 {
     Q_D(ContactListWidget);
 
+    d->showOffline = show;
     d->modelFilter->setShowOfflineUsers(show);
 }
 
@@ -534,7 +535,7 @@ void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setShowOfflineUsers(!string.isEmpty());
+    d->modelFilter->setShowOfflineUsers(!string.isEmpty() || d->showOffline);
     d->modelFilter->setFilterString(string);
 }
 
