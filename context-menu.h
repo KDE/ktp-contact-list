@@ -60,6 +60,8 @@ private Q_SLOTS:
     void onShowInfoTriggered();
     void onDeleteContactTriggered();
     void onOpenLinkTriggered(QAction *action);      /** triggered from custom contact menu when user clicks contact link */
+    void onRerequestAuthorization();
+    void onResendAuthorization();
 
 private:
     ContactListWidget     *m_mainWidget;

@@ -211,6 +211,13 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         menu->addSeparator();
     }
 
+    action = menu->addAction(i18n("Re-request Contact Authorization"));
+    connect(action, SIGNAL(triggered(bool)), SLOT(onRerequestAuthorization()));
+    action = menu->addAction(i18n("Resend Contact Authorization"));
+    connect(action, SIGNAL(triggered(bool)), SLOT(onResendAuthorization()));
+
+    menu->addSeparator();
+
     if (contact->isBlocked()) {
         action = menu->addAction(i18n("Unblock Contact"));
         connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
@@ -275,7 +282,7 @@ void ContextMenu::onRemoveContactFromGroupTriggered()
 
     if (operation) {
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
     }
 }
 
@@ -373,7 +380,7 @@ void ContextMenu::onUnblockContactTriggered()
 
     Tp::PendingOperation *operation = contact->unblock(); //FIXME
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContextMenu::onAddContactToGroupTriggered()
@@ -395,12 +402,12 @@ void ContextMenu::onAddContactToGroupTriggered()
 
     if (operation) {
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
         foreach (const QString &group, currentGroups) {
             Tp::PendingOperation* operation = contact->removeFromGroup(group);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                    m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
         }
     }
 }
@@ -422,7 +429,7 @@ void ContextMenu::onCreateNewGroupTriggered()
         Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
 
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
     }
 }
 
@@ -446,11 +453,11 @@ void ContextMenu::onRenameGroupTriggered()
 
             Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                    m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
             operation = contact->removeFromGroup(groupItem->groupName());
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                    m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
         }
     }
 }
@@ -475,14 +482,14 @@ void ContextMenu::onDeleteGroupTriggered()
 
             Tp::PendingOperation *operation = contact->removeFromGroup(groupItem->groupName());
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                    m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
         }
 
         foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->connection()) {
                 Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupItem->groupName());
                 connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-                        m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                        m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
             }
         }
     }
@@ -497,7 +504,7 @@ void ContextMenu::onBlockContactTriggered()
 
     Tp::PendingOperation *operation = contact->block();
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-            m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContextMenu::onDeleteContactTriggered()
@@ -518,16 +525,32 @@ void ContextMenu::onDeleteContactTriggered()
             // remove from contact list
             Tp::PendingOperation *deleteOp = contact->manager()->removeContacts(contactList);
             connect(deleteOp, SIGNAL(finished(Tp::PendingOperation*)),
-                    m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
             if (removeDialog.data()->blockContact()) {
                 // block contact
                 Tp::PendingOperation *blockOp = contact->manager()->blockContacts(contactList);
                 connect(blockOp, SIGNAL(finished(Tp::PendingOperation*)),
-                        m_mainWidget, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                        m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
             }
         }
     }
 
     delete removeDialog.data();
+}
+
+void ContextMenu::onRerequestAuthorization()
+{
+    ContactModelItem* contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    Tp::PendingOperation *op = contactItem->contact()->manager()->requestPresenceSubscription(QList<Tp::ContactPtr>() << contactItem->contact());
+    connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+}
+
+void ContextMenu::onResendAuthorization()
+{
+    ContactModelItem* contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    Tp::PendingOperation *op = contactItem->contact()->manager()->authorizePresencePublication(QList<Tp::ContactPtr>() << contactItem->contact());
+    connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
