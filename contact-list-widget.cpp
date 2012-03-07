@@ -174,6 +174,7 @@ void ContactListWidget::showSettingsKCM()
     }
 
     dialog->addModule("kcm_ktp_accounts");
+    dialog->addModule("kcm_ktp_integration_module");
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();

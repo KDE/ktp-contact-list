@@ -82,11 +82,11 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add new contacts..."), this);
+    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add New Contacts..."), this);
 
     m_toolBar->addAction(m_addContactAction);
 
-    m_groupContactsAction = new KAction(KIcon("user-group-properties"), i18n("Show/Hide groups"), this);
+    m_groupContactsAction = new KAction(KIcon("user-group-properties"), i18n("Show/Hide Groups"), this);
     m_groupContactsAction->setCheckable(true);
     m_groupContactsAction->setChecked(true);
     //TODO: Toggle the tooltip with the button? eg. once its Show, after click its Hide .. ?
@@ -124,21 +124,21 @@ MainWidget::MainWidget(QWidget *parent)
 
 
 
-    m_showOfflineAction = new KAction(KIcon("meeting-attending-tentative"), i18n("Hide/Show offline users"), this);
+    m_showOfflineAction = new KAction(KIcon("meeting-attending-tentative"), i18n("Hide/Show Offline Users"), this);
     m_showOfflineAction->setCheckable(true);
     m_showOfflineAction->setChecked(false);
 
     m_toolBar->addAction(m_showOfflineAction);
 
     m_sortByPresenceAction = new KDualAction(i18n("List is sorted by name. Click to sort by presence."),
-                                             i18n("List is sorted by presence. Click to sort by name."), 
+                                             i18n("List is sorted by presence. Click to sort by name."),
                                              this);
     m_sortByPresenceAction->setActiveIcon(KIcon("sort-presence"));
     m_sortByPresenceAction->setInactiveIcon(KIcon("sort-name"));
 
     m_toolBar->addAction(m_sortByPresenceAction);
 
-    m_searchContactAction = new KAction(KIcon("edit-find-user"), i18n("Find contact"), this );
+    m_searchContactAction = new KAction(KIcon("edit-find-user"), i18n("Find Contact"), this );
     m_searchContactAction->setShortcut(KStandardShortcut::find());
     m_searchContactAction->setCheckable(true);
     m_searchContactAction->setChecked(false);
@@ -155,14 +155,14 @@ MainWidget::MainWidget(QWidget *parent)
     settingsButton->setPopupMode(QToolButton::InstantPopup);
 
     KMenu *settingsButtonMenu = new KMenu(settingsButton);
-    settingsButtonMenu->addAction(i18n("Configure accounts..."), m_contactsListView, SLOT(showSettingsKCM()));
+    settingsButtonMenu->addAction(i18n("Instant Messaging Settings..."), m_contactsListView, SLOT(showSettingsKCM()));
 
     QActionGroup *delegateTypeGroup = new QActionGroup(this);
     delegateTypeGroup->setExclusive(true);
 
     KMenu *setDelegateTypeMenu = new KMenu(settingsButtonMenu);
-    setDelegateTypeMenu->setTitle(i18n("Contact list type"));
-    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use full list"),
+    setDelegateTypeMenu->setTitle(i18n("Contact List Type"));
+    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Full List"),
                                                                 m_contactsListView, SLOT(onSwitchToFullView())));
     delegateTypeGroup->actions().last()->setCheckable(true);
 
@@ -170,7 +170,7 @@ MainWidget::MainWidget(QWidget *parent)
         delegateTypeGroup->actions().last()->setChecked(true);
     }
 
-    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use compact list"),
+    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Compact List"),
                                                                 m_contactsListView, SLOT(onSwitchToCompactView())));
     delegateTypeGroup->actions().last()->setCheckable(true);
 
@@ -185,7 +185,7 @@ MainWidget::MainWidget(QWidget *parent)
          onUseGlobalPresenceTriggered();
     }
 
-    settingsButtonMenu->addAction(i18n("Join chat room"), this, SLOT(onJoinChatRoomRequested()));
+    settingsButtonMenu->addAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
 
