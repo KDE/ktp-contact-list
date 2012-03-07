@@ -41,6 +41,7 @@
 #include <QMouseEvent>
 #include <QtGui/QToolTip>
 #include <QStyle>
+#include <QtGui/QPushButton>
 
 //A sneaky class that adds an extra entry to the end of the presence model
 //called "Configure Presences"
@@ -176,9 +177,15 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
     m_busyOverlay->setWidget(this);
 
+    m_changePresenceMessageButton = new QPushButton(this);
+    m_changePresenceMessageButton->setIcon(KIcon("im-status-message-edit"));
+    m_changePresenceMessageButton->setFlat(true);
+    m_changePresenceMessageButton->setToolTip(i18n("Click to change the presence message"));
+
     connect(this, SIGNAL(activated(int)), SLOT(onCurrentIndexChanged(int)));
     connect(m_globalPresence, SIGNAL(currentPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
     connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
+    connect(m_changePresenceMessageButton, SIGNAL(clicked(bool)), this, SLOT(onChangePresenceMessageClicked()));
 
     onPresenceChanged(m_globalPresence->currentPresence());
 }
@@ -208,7 +215,12 @@ bool GlobalPresenceChooser::event(QEvent *e)
                 QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
                 QString accountIconPath = KIconLoader::global()->iconPath(account->iconName(), 1);
                 QString accountIconString = QString::fromLatin1("<img src=\"%1\">").arg(accountIconPath);
-                QString presenceString = accountPresence.displayString();
+                QString presenceString;
+                if (account->connectionStatus() == Tp::ConnectionStatusConnecting) {
+                    presenceString = i18nc("Presence string when the account is connecting", "Connecting...");
+                } else {
+                    presenceString = accountPresence.displayString();
+                }
                 toolTipText.append(QString::fromLatin1("<tr><td>%1 %2</td></tr><tr><td style=\"padding-left: 24px\">%3&nbsp;%4</td></tr>").arg(accountIconString, account->displayName(), presenceIconString, presenceString));
             }
         }
@@ -222,65 +234,11 @@ bool GlobalPresenceChooser::event(QEvent *e)
         repositionSpinner();
     }
 
-    if (e->type() == QEvent::MouseButtonPress || e->type() == QEvent::MouseButtonRelease || e->type() == QEvent::MouseButtonDblClick) {
-        QMouseEvent *me = static_cast<QMouseEvent*>(e);
-        QStyleOptionComboBox opt;
-        initStyleOption(&opt);
-
-        //get the subcontrol this event occurred in
-        QStyle::SubControl sc = style()->hitTestComplexControl(QStyle::CC_ComboBox, &opt, me->pos(),
-                                                               this);
-
-        if (sc == QStyle::SC_ComboBoxArrow) {
-            //if user pressed the combo arrow, pass it to parent
-            QComboBox::mousePressEvent(me); // krazy:exclude=qclasses
-        } else {
-            //set combo editable if user click to any other parts
-            setEditable(true);
-            //if current presence has no presence message, delete the text
-            if (m_globalPresence->currentPresence().statusMessage().isEmpty()) {
-                lineEdit()->clear();
-            }
-            lineEdit()->setFocus();
-        }
-
-        return true;
-    }
-
-    if (e->type() == QEvent::MouseMove) {
-        QMouseEvent *me =  static_cast<QMouseEvent*>(e);
-        QStyleOptionComboBox opt;
-        initStyleOption(&opt);
-
-        //get the subcontrol this event occurred in
-        QStyle::SubControl sc = style()->hitTestComplexControl(QStyle::CC_ComboBox, &opt, me->pos(),
-                                                               this);
-
-        //set ArrowCursor for the combo arrow, "typing" cursor for all the rest
-        if (sc == QStyle::SC_ComboBoxArrow) {
-            setCursor(Qt::ArrowCursor);
-        } else {
-            setCursor(Qt::IBeamCursor);
-        }
-
-        return true;
-    }
-
     if (e->type() == QEvent::KeyPress) {
         QKeyEvent *ke = static_cast<QKeyEvent*>(e);
 
         if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return) {
-            KTp::Presence presence = itemData(currentIndex(), PresenceModel::PresenceRole).value<KTp::Presence>();
-            presence.setStatus(presence.type(), presence.status(), lineEdit()->text());
-            QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
-            setEditable(false);
-            kDebug() << newPresence.row();
-            setCurrentIndex(newPresence.row());
-            //this is needed because currentIndexChanged signal is not connected and that is to not crash contact list
-            //because this signal is emitted once there is a valid model and that happens before AccountManager is ready
-            //and thus crashes contact list. Therefore it's called manually here.
-            onCurrentIndexChanged(newPresence.row());
-
+            onConfirmPresenceMessageClicked();
             return true;
         }
     }
@@ -288,6 +246,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
     if (e->type() == QEvent::FocusOut) {
         //just cancel editable and let it exec parent event()
         setEditable(false);
+        m_changePresenceMessageButton->show();
     }
 
     return QComboBox::event(e); // krazy:exclude=qclasses
@@ -373,10 +332,47 @@ void GlobalPresenceChooser::onConnectionStatusChanged(Tp::ConnectionStatus conne
 
 void GlobalPresenceChooser::repositionSpinner()
 {
-    QPoint topLeft(width() - m_busyOverlay->sequence().frameSize().width() - 22,
+    //set 2px margins so that the button is not bigger than the combo
+    m_changePresenceMessageButton->setMaximumHeight(height() - 2);
+    m_changePresenceMessageButton->setMaximumWidth(height() - 2);
+    //move the button 22px from the right edge
+    m_changePresenceMessageButton->move(width() - m_changePresenceMessageButton->width() - 22, 0);
+
+    //place the spinner 2px left from the button
+    QPoint topLeft(m_changePresenceMessageButton->pos().x() - m_busyOverlay->sequence().frameSize().width() - 2,
                    (height() - m_busyOverlay->sequence().frameSize().height())/2);
     m_busyOverlay->setRect(QRect(topLeft, m_busyOverlay->sequence().frameSize()));
 }
+
+void GlobalPresenceChooser::onChangePresenceMessageClicked()
+{
+    m_changePresenceMessageButton->hide();
+
+    setEditable(true);
+
+    //if current presence has no presence message, delete the text
+    if (m_globalPresence->currentPresence().statusMessage().isEmpty()) {
+        lineEdit()->clear();
+    }
+    lineEdit()->setFocus();
+}
+
+void GlobalPresenceChooser::onConfirmPresenceMessageClicked()
+{
+    m_changePresenceMessageButton->show();
+
+    KTp::Presence presence = itemData(currentIndex(), PresenceModel::PresenceRole).value<KTp::Presence>();
+    presence.setStatus(presence.type(), presence.status(), lineEdit()->text());
+    QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
+    setEditable(false);
+    kDebug() << newPresence.row();
+    setCurrentIndex(newPresence.row());
+    //this is needed because currentIndexChanged signal is not connected and that is to not crash contact list
+    //because this signal is emitted once there is a valid model and that happens before AccountManager is ready
+    //and thus crashes contact list. Therefore it's called manually here.
+    onCurrentIndexChanged(newPresence.row());
+}
+
 
 #include "global-presence-chooser.moc"
 #include "moc_global-presence-chooser.cpp" //hack because we have two QObejcts in teh same file
