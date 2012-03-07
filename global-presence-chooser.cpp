@@ -231,7 +231,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
     }
 
     if (e->type() == QEvent::Resize) {
-        repositionSpinner();
+        repositionOverlays();
     }
 
     if (e->type() == QEvent::KeyPress) {
@@ -323,14 +323,14 @@ void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
 void GlobalPresenceChooser::onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus)
 {
     if (connectionStatus == Tp::ConnectionStatusConnecting) {
-        repositionSpinner();
+        repositionOverlays();
         m_busyOverlay->start();
     } else {
         m_busyOverlay->stop();
     }
 }
 
-void GlobalPresenceChooser::repositionSpinner()
+void GlobalPresenceChooser::repositionOverlays()
 {
     //set 2px margins so that the button is not bigger than the combo
     m_changePresenceMessageButton->setMaximumHeight(height() - 2);

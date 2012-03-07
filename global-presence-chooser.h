@@ -26,6 +26,7 @@
 #include <TelepathyQt/AccountManager>
 #include <KTp/presence.h>
 
+class QPushButton;
 class KPixmapSequenceOverlayPainter;
 class PresenceModel;
 class PresenceModelExtended;
@@ -41,15 +42,17 @@ public:
     explicit GlobalPresenceChooser(QWidget *parent = 0);
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
-    void repositionSpinner();
+    void repositionOverlays();
 
 protected:
     virtual bool event(QEvent *event);
 
-private slots:
+private Q_SLOTS:
     void onCurrentIndexChanged(int index);
     void onPresenceChanged(const KTp::Presence &presence);
     void onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus);
+    void onChangePresenceMessageClicked();
+    void onConfirmPresenceMessageClicked();
 
 private:
     KTp::GlobalPresence *m_globalPresence;
@@ -58,6 +61,7 @@ private:
 
     KPixmapSequenceOverlayPainter *m_busyOverlay;
     Tp::AccountManagerPtr m_accountManager;
+    QPushButton *m_changePresenceMessageButton;
 };
 
 #endif // GLOBALPRESENCECHOOSER_H
