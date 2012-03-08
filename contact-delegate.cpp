@@ -141,7 +141,7 @@ void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewIte
 
     painter->setFont(statusFont);
     painter->drawText(statusMsgRect,
-                      statusFontMetrics.elidedText(presence.statusMessage(),
+                      statusFontMetrics.elidedText(presence.statusMessage().simplified(),
                                                    Qt::ElideRight, statusMsgRect.width()));
 
     painter->restore();

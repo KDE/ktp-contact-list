@@ -120,7 +120,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     painter->setPen(presenceMessagePen);
 
     painter->drawText(presenceMessageRect,
-                      nameFontMetrics.elidedText(presence.statusMessage(),
+                      nameFontMetrics.elidedText(presence.statusMessage().simplified(),
                                                  Qt::ElideRight, presenceMessageRect.width()));
 
     painter->restore();
