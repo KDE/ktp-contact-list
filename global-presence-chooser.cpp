@@ -238,8 +238,10 @@ bool GlobalPresenceChooser::event(QEvent *e)
         QKeyEvent *ke = static_cast<QKeyEvent*>(e);
 
         if (ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return) {
-            onConfirmPresenceMessageClicked();
-            return true;
+            if (isEditable()) {
+                onConfirmPresenceMessageClicked();
+                return true;
+            }
         }
         if (ke->key() == Qt::Key_Escape) {
             setEditable(false);
