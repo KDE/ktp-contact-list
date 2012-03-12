@@ -241,6 +241,10 @@ bool GlobalPresenceChooser::event(QEvent *e)
             onConfirmPresenceMessageClicked();
             return true;
         }
+        if (ke->key() == Qt::Key_Escape) {
+            setEditable(false);
+            m_changePresenceMessageButton->show();
+        }
     }
 
     if (e->type() == QEvent::FocusOut) {
