@@ -180,7 +180,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_changePresenceMessageButton = new QPushButton(this);
     m_changePresenceMessageButton->setIcon(KIcon("im-status-message-edit"));
     m_changePresenceMessageButton->setFlat(true);
-    m_changePresenceMessageButton->setToolTip(i18n("Click to change the presence message"));
+    m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
 
     connect(this, SIGNAL(activated(int)), SLOT(onCurrentIndexChanged(int)));
     connect(m_globalPresence, SIGNAL(currentPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
