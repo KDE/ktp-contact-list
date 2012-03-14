@@ -548,6 +548,17 @@ void ContactListWidget::setDropIndicatorRect(const QRect &rect)
     }
 }
 
+bool ContactListWidget::event(QEvent *event)
+{
+    Q_D(ContactListWidget);
+    if (event->type() == QEvent::Leave && d->delegate) {
+        d->delegate->reshowStatusMessageSlot();
+        return true;
+    }
+
+    return QTreeView::event(event);
+}
+
 void ContactListWidget::mousePressEvent(QMouseEvent *event)
 {
     Q_D(ContactListWidget);
