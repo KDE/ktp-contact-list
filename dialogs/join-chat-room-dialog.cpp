@@ -24,14 +24,17 @@
 
 #include <KTp/Models/accounts-model.h>
 
-#include <KDE/KPushButton>
+#include <KConfig>
+#include <KInputDialog>
+#include <KMessageBox>
 #include <KNotification>
+#include <KPushButton>
 
 #include <TelepathyQt/AccountManager>
-#include <TelepathyQt/RoomListChannel>
 #include <TelepathyQt/ChannelTypeRoomListInterface>
 #include <TelepathyQt/PendingChannel>
 #include <TelepathyQt/PendingReady>
+#include <TelepathyQt/RoomListChannel>
 
 #include <QSortFilterProxyModel>
 
@@ -42,7 +45,9 @@
 JoinChatRoomDialog::JoinChatRoomDialog(Tp::AccountManagerPtr accountManager, QWidget* parent)
     : KDialog(parent, Qt::Dialog)
     , ui(new Ui::JoinChatRoomDialog)
-    , m_model(new RoomsModel(this)
+    , m_model(new RoomsModel(this))
+    , m_favoritesModel(new FavoriteRoomsModel(this))
+    , m_favoritesProxyModel(new QSortFilterProxyModel(this)
     )
 {
     QWidget *joinChatRoomDialog = new QWidget(this);
@@ -50,6 +55,12 @@ JoinChatRoomDialog::JoinChatRoomDialog(Tp::AccountManagerPtr accountManager, QWi
     ui->setupUi(joinChatRoomDialog);
     setMainWidget(joinChatRoomDialog);
     setWindowIcon(KIcon("telepathy-kde"));
+
+    // config
+    KSharedConfigPtr config = KSharedConfig::openConfig("ktelepathyrc");
+    m_favoriteRoomsGroup = config->group("FavoriteRooms");
+
+    loadFavoriteRooms();
 
     // disable OK button on start
     button(Ok)->setEnabled(false);
@@ -64,6 +75,18 @@ JoinChatRoomDialog::JoinChatRoomDialog(Tp::AccountManagerPtr accountManager, QWi
         }
     }
 
+    // Apply the filter after populating
+    onAccountSelectionChanged(ui->comboBox->currentIndex());
+
+    // FavoritesTab
+    m_favoritesProxyModel->setSourceModel(m_favoritesModel);
+    m_favoritesProxyModel->setFilterKeyColumn(FavoriteRoomsModel::AccountIdentifierColumn);
+    m_favoritesProxyModel->setDynamicSortFilter(true);
+
+    ui->listView->setModel(m_favoritesProxyModel);
+    ui->listView->setModelColumn(FavoriteRoomsModel::NameColumn);
+
+    // QueryTab
     if (ui->comboBox->count() > 0) {
         ui->queryPushButton->setEnabled(true);
     }
@@ -81,10 +104,14 @@ JoinChatRoomDialog::JoinChatRoomDialog(Tp::AccountManagerPtr accountManager, QWi
 
     // connects
     connect(ui->lineEdit, SIGNAL(textChanged(QString)), this, SLOT(onTextChanged(QString)));
+    connect(ui->listView, SIGNAL(clicked(QModelIndex)), this, SLOT(onFavoriteRoomClicked(QModelIndex)));
+    connect(ui->addFavoritePushButton, SIGNAL(clicked(bool)), this, SLOT(addFavorite()));
+    connect(ui->removeFavoritePushButton, SIGNAL(clicked(bool)), this, SLOT(removeFavorite()));
     connect(ui->queryPushButton, SIGNAL(clicked(bool)), this, SLOT(getRoomList()));
     connect(ui->stopPushButton, SIGNAL(clicked(bool)), this, SLOT(stopListing()));
     connect(ui->treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(onRoomClicked(QModelIndex)));
     connect(ui->filterBar, SIGNAL(textChanged(QString)), proxyModel, SLOT(setFilterFixedString(QString)));
+    connect(ui->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(onAccountSelectionChanged(int)));
 }
 
 JoinChatRoomDialog::~JoinChatRoomDialog()
@@ -106,6 +133,61 @@ Tp::AccountPtr JoinChatRoomDialog::selectedAccount() const
 
     // account should never be empty
     return account;
+}
+
+void JoinChatRoomDialog::onAccountSelectionChanged(int newIndex)
+{
+    QString accountIdentifier = ui->comboBox->itemData(newIndex).toString();
+    m_favoritesProxyModel->setFilterFixedString(accountIdentifier);
+}
+
+void JoinChatRoomDialog::addFavorite()
+{
+    bool ok = false;
+    QString favoriteHandle = ui->lineEdit->text();
+    QString favoriteAccount = ui->comboBox->itemData(ui->comboBox->currentIndex()).toString();
+
+    if (m_favoritesModel->containsRoom(favoriteHandle, favoriteAccount)) {
+        KMessageBox::sorry(this, i18n("This room is already in your favorites."));
+    } else {
+        QString favoriteName = KInputDialog::getText(i18n("Add room"), i18n("Name"), QString(), &ok);
+
+        if (ok) {
+            QString key = favoriteHandle + favoriteAccount;
+
+            // Write it to the config file
+            QVariantList favorite;
+            favorite.append(favoriteName);
+            favorite.append(favoriteHandle);
+            favorite.append(favoriteAccount);
+            m_favoriteRoomsGroup.writeEntry(key, favorite);
+            m_favoriteRoomsGroup.sync();
+
+            // Insert it into the model
+            QVariantMap room;
+            room.insert("name", favoriteName);
+            room.insert("handle-name", favoriteHandle);
+            room.insert("account-identifier", favoriteAccount);
+            m_favoritesModel->addRoom(room);
+        }
+    }
+}
+
+void JoinChatRoomDialog::removeFavorite()
+{
+    QString favoriteHandle = ui->listView->currentIndex().data(FavoriteRoomsModel::HandleNameRole).toString();
+    QVariantMap room = ui->listView->currentIndex().data(FavoriteRoomsModel::FavoriteRoomRole).value<QVariantMap>();
+
+    if(m_favoriteRoomsGroup.keyList().contains(favoriteHandle)) {
+        m_favoriteRoomsGroup.deleteEntry(favoriteHandle);
+        m_favoriteRoomsGroup.sync();
+
+        m_favoritesModel->removeRoom(room);
+
+        if (m_favoritesModel->rowCount() == 0) {
+            ui->removeFavoritePushButton->setEnabled(false);
+        }
+    }
 }
 
 void JoinChatRoomDialog::getRoomList()
@@ -205,6 +287,16 @@ void JoinChatRoomDialog::onGotRooms(Tp::RoomInfoList roomInfoList)
     m_model->addRooms(roomInfoList);
 }
 
+void JoinChatRoomDialog::onFavoriteRoomClicked(const QModelIndex &index)
+{
+    if (index.isValid()) {
+        ui->removeFavoritePushButton->setEnabled(true);
+        ui->lineEdit->setText(index.data(FavoriteRoomsModel::HandleNameRole).toString());
+    } else {
+        ui->removeFavoritePushButton->setEnabled(false);
+    }
+}
+
 void JoinChatRoomDialog::onRoomClicked(const QModelIndex& index)
 {
     ui->lineEdit->setText(index.data(RoomsModel::HandleNameRole).toString());
@@ -217,8 +309,12 @@ QString JoinChatRoomDialog::selectedChatRoom() const
 
 void JoinChatRoomDialog::onTextChanged(QString newText)
 {
-    if (button(Ok)->isEnabled() == newText.isEmpty()) {
-        button(Ok)->setEnabled(!newText.isEmpty());
+    if (newText.isEmpty()) {
+        button(Ok)->setEnabled(false);
+        ui->addFavoritePushButton->setEnabled(false);
+    } else {
+        button(Ok)->setEnabled(true);
+        ui->addFavoritePushButton->setEnabled(true);
     }
 }
 
@@ -230,4 +326,24 @@ void JoinChatRoomDialog::sendNotificationToUser(const QString& errorMsg)
 
     notification->setText(errorMsg);
     notification->sendEvent();
+}
+
+void JoinChatRoomDialog::loadFavoriteRooms()
+{
+    QList<QVariantMap> roomList;
+
+    Q_FOREACH(const QString &key, m_favoriteRoomsGroup.keyList()) {
+        QVariantList favorite = m_favoriteRoomsGroup.readEntry(key, QVariantList());
+        QString favoriteName = favorite.at(0).toString();
+        QString favoriteHandle = favorite.at(1).toString();
+        QString favoriteAccount = favorite.at(2).toString();
+
+        QVariantMap room;
+        room.insert("name", favoriteName);
+        room.insert("handle-name", favoriteHandle);
+        room.insert("account-identifier", favoriteAccount);
+        roomList.append(room);
+    }
+
+    m_favoritesModel->addRooms(roomList);
 }

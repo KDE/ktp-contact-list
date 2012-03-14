@@ -62,4 +62,59 @@ private:
     Tp::RoomInfoList m_roomInfoList;
 };
 
+class FavoriteRoomsModel : public QAbstractListModel
+{
+    Q_OBJECT
+
+public:
+    enum Column {
+        NameColumn = 0,
+        HandleNameColumn,
+        AccountIdentifierColumn
+    };
+
+    enum Roles {
+        HandleNameRole = Qt::UserRole,
+        FavoriteRoomRole
+    };
+
+    explicit FavoriteRoomsModel(QObject *parent = 0);
+    virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+    virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+
+    /**
+     * \brief Add new rooms to the list.
+     *
+     * \param newRoomList The list with the new rooms to add.
+     */
+    void addRooms(const QList<QVariantMap> newRoomList);
+
+    /**
+     * \brief Add a new room to the list.
+     *
+     * \param room The room to add.
+     */
+    void addRoom(const QVariantMap &room);
+
+    /**
+     * \brief Remove a room from the list.
+     *
+     * \param room The room to remove.
+     */
+    void removeRoom(const QVariantMap &room);
+
+    /**
+     * \brief Checks if it contains a room (identified by his handle-name).
+     *
+     * \param handle The handle to look for.
+     *
+     * \return True if it contains the room else false.
+     */
+    bool containsRoom(const QString &handle, const QString &account);
+
+private:
+    QList<QVariantMap> m_favoriteRoomsList;
+};
+
 #endif // ROOMSMODEL_H

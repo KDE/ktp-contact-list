@@ -21,6 +21,7 @@
 #include <KIcon>
 #include <KLocale>
 
+// RoomsModel
 RoomsModel::RoomsModel(QObject *parent): QAbstractListModel(parent)
 {
 }
@@ -143,4 +144,98 @@ void RoomsModel::clearRoomInfoList()
         m_roomInfoList.clear();
         endRemoveRows();
     }
+}
+
+// FavoriteRoomsModel
+FavoriteRoomsModel::FavoriteRoomsModel(QObject *parent): QAbstractListModel(parent)
+{
+}
+
+int FavoriteRoomsModel::rowCount(const QModelIndex &parent) const
+{
+    if (parent.isValid()) {
+        return 0;
+    } else {
+        return m_favoriteRoomsList.size();
+    }
+}
+
+int FavoriteRoomsModel::columnCount(const QModelIndex &parent) const
+{
+    if (parent.isValid()) {
+        return 0;
+    } else {
+        return 3;
+    }
+}
+
+QVariant FavoriteRoomsModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid()) {
+        return QVariant();
+    }
+
+    if (index.row() >= m_favoriteRoomsList.size()) {
+        return QVariant();
+    }
+
+    const int row = index.row();
+    const QVariantMap &room = m_favoriteRoomsList.at(row);
+
+    switch(role) {
+    case Qt::DisplayRole:
+        switch (index.column()) {
+        case NameColumn:
+            return room.value("name");
+        case HandleNameColumn:
+            return room.value("handle-name");
+        case AccountIdentifierColumn:
+            return room.value("account-identifier");
+        }
+    case Qt::ToolTipRole:
+        return room.value("handle-name");
+    case FavoriteRoomsModel::HandleNameRole:
+        return room.value("handle-name");
+    case FavoriteRoomsModel::FavoriteRoomRole:
+        return QVariant::fromValue<QVariantMap>(room);
+    }
+
+    return QVariant();
+}
+
+void FavoriteRoomsModel::addRooms(const QList<QVariantMap> newRoomList)
+{
+    if (newRoomList.size() > 0) {
+        beginInsertRows(QModelIndex(), m_favoriteRoomsList.size(), m_favoriteRoomsList.size() + newRoomList.size() - 1);
+        m_favoriteRoomsList.append(newRoomList);
+        endInsertRows();
+    }
+}
+
+void FavoriteRoomsModel::addRoom(const QVariantMap &room)
+{
+    beginInsertRows(QModelIndex(), m_favoriteRoomsList.size(), m_favoriteRoomsList.size());
+    m_favoriteRoomsList.append(room);
+    endInsertRows();
+}
+
+void FavoriteRoomsModel::removeRoom(const QVariantMap &room)
+{
+    int row = m_favoriteRoomsList.indexOf(room);
+    beginRemoveRows(QModelIndex(), row, row);
+    m_favoriteRoomsList.removeOne(room);
+    endRemoveRows();
+}
+
+bool FavoriteRoomsModel::containsRoom(const QString &handle, const QString &account)
+{
+    bool contains = false;
+
+    Q_FOREACH(const QVariantMap &room, m_favoriteRoomsList) {
+        if ((room.value("handle-name") == handle) && (room.value("account-identifier") == account)) {
+            contains = true;
+        }
+    }
+
+    return contains;
 }
