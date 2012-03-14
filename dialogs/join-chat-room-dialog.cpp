@@ -176,15 +176,17 @@ void JoinChatRoomDialog::addFavorite()
 void JoinChatRoomDialog::removeFavorite()
 {
     QString favoriteHandle = ui->listView->currentIndex().data(FavoriteRoomsModel::HandleNameRole).toString();
+    QString favoriteAccount = ui->comboBox->itemData(ui->comboBox->currentIndex()).toString();
     QVariantMap room = ui->listView->currentIndex().data(FavoriteRoomsModel::FavoriteRoomRole).value<QVariantMap>();
 
-    if(m_favoriteRoomsGroup.keyList().contains(favoriteHandle)) {
-        m_favoriteRoomsGroup.deleteEntry(favoriteHandle);
-        m_favoriteRoomsGroup.sync();
+    QString key = favoriteHandle + favoriteAccount;
 
+    if(m_favoriteRoomsGroup.keyList().contains(key)) {
+        m_favoriteRoomsGroup.deleteEntry(key);
+        m_favoriteRoomsGroup.sync();
         m_favoritesModel->removeRoom(room);
 
-        if (m_favoritesModel->rowCount() == 0) {
+        if (m_favoritesModel->countForAccount(favoriteAccount) == 0) {
             ui->removeFavoritePushButton->setEnabled(false);
         }
     }

@@ -111,7 +111,16 @@ public:
      *
      * \return True if it contains the room else false.
      */
-    bool containsRoom(const QString &handle, const QString &account);
+    bool containsRoom(const QString &handle, const QString &account) const;
+
+    /**
+     * \brief Returns the count of rooms for the specified account.
+     *
+     * \param account The account to return the count for.
+     *
+     * \return The count of rooms.
+     */
+    int countForAccount(const QString &account) const;
 
 private:
     QList<QVariantMap> m_favoriteRoomsList;

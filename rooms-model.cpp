@@ -227,7 +227,7 @@ void FavoriteRoomsModel::removeRoom(const QVariantMap &room)
     endRemoveRows();
 }
 
-bool FavoriteRoomsModel::containsRoom(const QString &handle, const QString &account)
+bool FavoriteRoomsModel::containsRoom(const QString &handle, const QString &account) const
 {
     bool contains = false;
 
@@ -238,4 +238,17 @@ bool FavoriteRoomsModel::containsRoom(const QString &handle, const QString &acco
     }
 
     return contains;
+}
+
+int FavoriteRoomsModel::countForAccount(const QString &account) const
+{
+    int count = 0;
+
+    Q_FOREACH (const QVariantMap &room, m_favoriteRoomsList) {
+        if (room.value("account-identifier") == account) {
+            count++;
+        }
+    }
+
+    return count;
 }
