@@ -78,7 +78,8 @@ AddContactDialog::AddContactDialog(AccountsModel *accountModel, QWidget *parent)
     SubscribableAccountsModel *filteredModel = new SubscribableAccountsModel(this);
     filteredModel->setSourceModel(accountModel);
     for (int i = 0; i < filteredModel->rowCount(); ++i) {
-        ui->accountCombo->addItem(filteredModel->data(filteredModel->index(i, 0)).toString(),
+        ui->accountCombo->addItem(KIcon(filteredModel->data(filteredModel->index(i, 0), AccountsModel::IconRole).toString()),
+                                  filteredModel->data(filteredModel->index(i, 0)).toString(),
                                   filteredModel->data(filteredModel->index(i, 0), AccountsModel::ItemRole));
     }
 
