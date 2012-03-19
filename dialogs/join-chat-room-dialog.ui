@@ -62,11 +62,6 @@
              <property name="text">
               <string>Add Room</string>
              </property>
-             <property name="icon">
-              <iconset theme="list-add">
-               <normaloff/>
-              </iconset>
-             </property>
             </widget>
            </item>
            <item>
@@ -76,11 +71,6 @@
              </property>
              <property name="text">
               <string>Remove Room</string>
-             </property>
-             <property name="icon">
-              <iconset theme="list-remove">
-               <normaloff/>
-              </iconset>
              </property>
             </widget>
            </item>

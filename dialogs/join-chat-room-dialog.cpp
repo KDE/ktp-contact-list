@@ -64,6 +64,11 @@ JoinChatRoomDialog::JoinChatRoomDialog(Tp::AccountManagerPtr accountManager, QWi
 
     // disable OK button on start
     button(Ok)->setEnabled(false);
+    
+    //set icons
+    ui->addFavoritePushButton->setIcon(KIcon(QLatin1String("list-add")));
+    ui->removeFavoritePushButton->setIcon(KIcon(QLatin1String("list-remove")));
+    
 
     // populate combobox with accounts that support chat rooms
     for (int i = 0; i < m_accounts.count(); ++i) {
