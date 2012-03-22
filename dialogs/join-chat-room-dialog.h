@@ -31,6 +31,7 @@ namespace Ui {
 class RoomsModel;
 class FavoriteRoomsModel;
 class QSortFilterProxyModel;
+class KCompletion;
 
 class JoinChatRoomDialog : public KDialog
 {
@@ -48,6 +49,9 @@ private slots:
     void onAccountSelectionChanged(int newIndex);
     void addFavorite();
     void removeFavorite();
+    void addRecentRoom();
+    void removeRecentRoom();
+    void clearRecentRooms();
     void getRoomList();
     void stopListing();
     void onRoomListChannelReadyForHandling(Tp::PendingOperation *operation);
@@ -56,6 +60,7 @@ private slots:
     void onListing(bool isListing);
     void onGotRooms(Tp::RoomInfoList roomInfoList);
     void onFavoriteRoomClicked(const QModelIndex &index);
+    void onRecentRoomClicked();
     void onRoomClicked(const QModelIndex &index);
 
 private:
@@ -71,6 +76,9 @@ private:
     FavoriteRoomsModel *m_favoritesModel;
     QSortFilterProxyModel *m_favoritesProxyModel;
     KConfigGroup m_favoriteRoomsGroup;
+    KConfigGroup m_recentRoomsGroup;
+    QHash <QString, QStringList> m_recentRooms;
+    KCompletion *m_recentComp;
 };
 
 
