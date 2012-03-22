@@ -384,9 +384,9 @@ void ContactListWidget::startAudioChannel(ContactModelItem *contactItem)
 
     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
 
-    Tp::PendingChannelRequest *channelRequest = account->ensureStreamedMediaAudioCall(contact,
-                                                                                      QDateTime::currentDateTime(),
-                                                                                      PREFERRED_AUDIO_VIDEO_HANDLER);
+    Tp::PendingChannelRequest *channelRequest = account->ensureAudioCall(contact,
+            QLatin1String("audio"), QDateTime::currentDateTime(), PREFERRED_AUDIO_VIDEO_HANDLER);
+
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
@@ -402,9 +402,10 @@ void ContactListWidget::startVideoChannel(ContactModelItem *contactItem)
 
     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
 
-    Tp::PendingChannelRequest* channelRequest = account->ensureStreamedMediaVideoCall(contact, true,
-                                                                                      QDateTime::currentDateTime(),
-                                                                                      PREFERRED_AUDIO_VIDEO_HANDLER);
+    Tp::PendingChannelRequest* channelRequest = account->ensureAudioVideoCall(contact,
+            QLatin1String("audio"), QLatin1String("video"),
+            QDateTime::currentDateTime(), PREFERRED_AUDIO_VIDEO_HANDLER);
+
     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
