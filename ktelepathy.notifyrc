@@ -874,6 +874,14 @@ Sound=KDE-Im-Message-In.ogg
 Action=Popup|Sound
 Flags=Persistent
 
+[Event/incoming_call]
+IconName=internet-telephony
+Name=Incoming call
+Comment=An incoming audio/video call request has been received
+Sound=KDE-Im-Phone-Ring.ogg
+Action=Popup|Sound
+Flags=Persistent
+
 #Adium extra protocol handler notifications
 #
 [Event/chatstyleRequest]
