@@ -185,6 +185,9 @@ MainWidget::MainWidget(QWidget *parent)
          onUseGlobalPresenceTriggered();
     }
 
+    // Restore window geometry
+    restoreGeometry(guiConfigGroup.readEntry("window_geometry", QByteArray()));
+
     settingsButtonMenu->addAction(i18n("Join chat room"), this, SLOT(onJoinChatRoomRequested()));
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
@@ -393,6 +396,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup generalConfigGroup(config, "General");
     KConfigGroup notifyConigGroup(config, "Notification Messages");
+    KConfigGroup guiConfigGroup(config, "GUI");
 
     ContactListApplication *app = qobject_cast<ContactListApplication*>(kapp);
     if (!app->isShuttingDown()) {
@@ -428,6 +432,10 @@ void MainWidget::closeEvent(QCloseEvent* e)
 
         generalConfigGroup.config()->sync();
     }
+
+    // Save window geometry
+    guiConfigGroup.writeEntry("window_geometry", saveGeometry());
+    guiConfigGroup.config()->sync();
 
     KMainWindow::closeEvent(e);
 }
