@@ -40,7 +40,6 @@ set (ktp_contactlist_SRCS
      main.cpp
      main-widget.cpp
      global-presence-chooser.cpp
-     dialogs/add-contact-dialog.cpp
      dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp
      dialogs/contact-info.cpp
@@ -55,7 +54,6 @@ set (ktp_contactlist_SRCS
 
 kde4_add_ui_files (ktp_contactlist_SRCS
                    main-widget.ui
-                   dialogs/add-contact-dialog.ui
                    dialogs/join-chat-room-dialog.ui
                    dialogs/remove-contact-dialog.ui
                    dialogs/contact-info.ui
