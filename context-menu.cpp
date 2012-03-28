@@ -107,7 +107,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     }
 
     action = menu->addAction(i18n("Start Audio Call..."));
-    action->setIcon(KIcon("voicecall"));
+    action->setIcon(KIcon("audio-headset"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartAudioChatTriggered()));
@@ -117,7 +117,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     }
 
     action = menu->addAction(i18n("Start Video Call..."));
-    action->setIcon(KIcon("webcamsend"));
+    action->setIcon(KIcon("camera-web"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartVideoChatTriggered()));

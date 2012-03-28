@@ -178,7 +178,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay->setWidget(this);
 
     m_changePresenceMessageButton = new QPushButton(this);
-    m_changePresenceMessageButton->setIcon(KIcon("im-status-message-edit"));
+    m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
 
