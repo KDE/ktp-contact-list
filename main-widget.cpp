@@ -39,6 +39,7 @@
 #include <KTp/Models/accounts-model.h>
 #include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/groups-model-item.h>
+#include <KTp/Widgets/add-contact-dialog.h>
 
 #include <KDebug>
 #include <KDialog>
@@ -54,7 +55,6 @@
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
 #include "contact-list-application.h"
-#include "dialogs/add-contact-dialog.h"
 #include "dialogs/join-chat-room-dialog.h"
 #include "tooltips/tooltipmanager.h"
 #include "context-menu.h"
@@ -299,7 +299,7 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
 }
 
 void MainWidget::onAddContactRequest() {
-    QWeakPointer<AddContactDialog> dialog = new AddContactDialog(m_contactsListView->accountsModel(), this);
+    QWeakPointer<KTp::AddContactDialog> dialog = new KTp::AddContactDialog(m_contactsListView->accountsModel(), this);
     if (dialog.data()->exec() == QDialog::Accepted) {
         Tp::AccountPtr account = dialog.data()->account();
         if (account.isNull()) {

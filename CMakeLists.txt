@@ -72,6 +72,7 @@ target_link_libraries (ktp-contactlist
                        ${TELEPATHY_QT4_LIBRARIES}
                        ${KTP_LIBRARIES}
                        ${KTP_MODELS_LIBRARIES}
+                       ${KTP_WIDGETS_LIBRARIES}
                        ${KDE4_KDEUI_LIBS}
                        ${KDE4_KIO_LIBS}
                        ${KDE4_KCMUTILS_LIBS}
