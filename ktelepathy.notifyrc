@@ -877,7 +877,15 @@ Flags=Persistent
 [Event/incoming_call]
 IconName=internet-telephony
 Name=Incoming call
+Name[it]=Chiamata in arrivo
+Name[sv]=Inkommande samtal
+Name[uk]=Вхідний дзвінок
+Name[x-test]=xxIncoming callxx
 Comment=An incoming audio/video call request has been received
+Comment[it]=Una richiesta di chiamata audio/video è stata ricevuta
+Comment[sv]=En inkommande begäran om ljud- eller videosamtal har anlänt
+Comment[uk]=Отримано запит щодо вхідного звукового або відеодзвінка
+Comment[x-test]=xxAn incoming audio/video call request has been receivedxx
 Sound=KDE-Im-Phone-Ring.ogg
 Action=Popup|Sound
 Flags=Persistent
