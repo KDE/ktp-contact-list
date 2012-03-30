@@ -877,13 +877,17 @@ Flags=Persistent
 [Event/incoming_call]
 IconName=internet-telephony
 Name=Incoming call
+Name[el]=Εισερχόμενη κλήση
 Name[it]=Chiamata in arrivo
+Name[nl]=Inkomend gesprek
 Name[pt]=Mensagem recebida
 Name[sv]=Inkommande samtal
 Name[uk]=Вхідний дзвінок
 Name[x-test]=xxIncoming callxx
 Comment=An incoming audio/video call request has been received
+Comment[el]=Ένα αίτημα εισερχόμενης ηχητικής/βίντεο κλήσης έχει ληφθεί
 Comment[it]=Una richiesta di chiamata audio/video è stata ricevuta
+Comment[nl]=Er is een verzoek binnengekomen over een geluids/video-verbinding
 Comment[pt]=Foi recebido um pedido de chamada de áudio/vídeo
 Comment[sv]=En inkommande begäran om ljud- eller videosamtal har anlänt
 Comment[uk]=Отримано запит щодо вхідного звукового або відеодзвінка
