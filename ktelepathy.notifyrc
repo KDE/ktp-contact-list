@@ -877,6 +877,7 @@ Flags=Persistent
 [Event/incoming_call]
 IconName=internet-telephony
 Name=Incoming call
+Name[cs]=Příchozí hovor
 Name[da]=Indkommende opkald
 Name[el]=Εισερχόμενη κλήση
 Name[it]=Chiamata in arrivo
@@ -887,6 +888,7 @@ Name[sv]=Inkommande samtal
 Name[uk]=Вхідний дзвінок
 Name[x-test]=xxIncoming callxx
 Comment=An incoming audio/video call request has been received
+Comment[cs]=Byla přijata žádost o přenos audio-video hovoru
 Comment[da]=Der er blevet modtaget en anmodning om et indkommende lyd-/video-opkald
 Comment[el]=Ένα αίτημα εισερχόμενης ηχητικής/βίντεο κλήσης έχει ληφθεί
 Comment[it]=Una richiesta di chiamata audio/video è stata ricevuta
