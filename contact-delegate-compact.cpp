@@ -94,8 +94,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     painter->drawPixmap(statusIconRect, icon);
 
-    QFont nameFont = KGlobalSettings::smallestReadableFont();
-    nameFont.setPointSize(nameFont.pointSize() + 1);
+    QFont nameFont = KGlobalSettings::generalFont();
 
     const QFontMetrics nameFontMetrics(nameFont);
 

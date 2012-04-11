@@ -113,8 +113,7 @@ void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewIte
     userNameRect.setY(userNameRect.y() + 2);
     userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
 
-    QFont nameFont = KGlobalSettings::smallestReadableFont();
-    nameFont.setPointSize(nameFont.pointSize() + 1);
+    QFont nameFont = KGlobalSettings::generalFont();
     nameFont.setWeight(QFont::Bold);
 
     const QFontMetrics nameFontMetrics(nameFont);
