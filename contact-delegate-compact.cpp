@@ -129,7 +129,7 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
 {
     Q_UNUSED(option);
     Q_UNUSED(index);
-    return QSize(0, 28);
+    return QSize(0, AVATAR_SIZE + 2 * SPACING);
 }
 
 #include "contact-delegate-compact.moc"

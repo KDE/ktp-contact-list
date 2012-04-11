@@ -150,7 +150,7 @@ QSize ContactDelegate::sizeHintContact(const QStyleOptionViewItem &option, const
 {
     Q_UNUSED(option);
     Q_UNUSED(index);
-    return QSize(0, 32 + 2 * SPACING);
+    return QSize(0, AVATAR_SIZE + 2 * SPACING);
 }
 
 void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
