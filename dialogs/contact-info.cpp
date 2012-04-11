@@ -48,7 +48,7 @@ ContactInfo::ContactInfo(const Tp::ContactPtr &contact, QWidget *parent) :
         avatar = KIconLoader::global()->loadIcon("im-user", KIconLoader::Desktop, 128);
     }
 
-    ui->avatarLabel->setPixmap(avatar.scaled(ui->avatarLabel->maximumSize(), Qt::KeepAspectRatio));
+    ui->avatarLabel->setPixmap(avatar.scaled(ui->avatarLabel->maximumSize(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     ui->idLabel->setText(contact->id());
     ui->nameLabel->setText(contact->alias());

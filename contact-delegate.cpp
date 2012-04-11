@@ -90,7 +90,7 @@ void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewIte
         painter->setClipPath(roundedPath);
     }
 
-    style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio));
+    style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     if (!noContactAvatar) {
         painter->restore();
