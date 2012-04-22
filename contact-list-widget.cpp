@@ -122,7 +122,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
 ContactListWidget::~ContactListWidget()
 {
-
+    delete d_ptr;
 }
 
 void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
