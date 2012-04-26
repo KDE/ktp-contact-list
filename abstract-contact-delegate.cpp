@@ -122,7 +122,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     if (option.state & QStyle::State_HasFocus) {
         painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+        painter->setPen(m_palette->color(QPalette::Inactive, QPalette::WindowText));
     }
 
     painter->setFont(groupFont);
@@ -132,7 +132,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QPen thinLinePen;
     thinLinePen.setWidth(0);
-    thinLinePen.setColor(m_palette->color(QPalette::Disabled, QPalette::Button));
+    thinLinePen.setColor(m_palette->color(QPalette::Inactive, QPalette::Button));
 
     painter->setPen(thinLinePen);
     painter->setRenderHint(QPainter::Antialiasing, false);
