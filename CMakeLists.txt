@@ -80,7 +80,6 @@ target_link_libraries (ktp-contactlist
 install (TARGETS ktp-contactlist
          DESTINATION ${BIN_INSTALL_DIR}
 )
-install(FILES ktelepathy.notifyrc DESTINATION ${DATA_INSTALL_DIR}/ktelepathy)
 
 install (PROGRAMS ktp-contactlist.desktop
          DESTINATION ${XDG_APPS_INSTALL_DIR}
