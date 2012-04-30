@@ -60,8 +60,6 @@ kde4_add_ui_files (ktp_contactlist_SRCS
                    tooltips/contacttooltip.ui
 )
 
-add_subdirectory (icons)
-
 kde4_add_executable (ktp-contactlist
                      ${ktp_contactlist_SRCS}
 )
