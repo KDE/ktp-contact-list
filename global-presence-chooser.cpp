@@ -244,15 +244,19 @@ bool GlobalPresenceChooser::event(QEvent *e)
             }
         }
         if (ke->key() == Qt::Key_Escape) {
-            setEditable(false);
-            m_changePresenceMessageButton->show();
+            if (isEditable()) {
+                setEditable(false);
+                m_changePresenceMessageButton->show();
+            }
         }
     }
 
     if (e->type() == QEvent::FocusOut) {
         //just cancel editable and let it exec parent event()
-        setEditable(false);
-        m_changePresenceMessageButton->show();
+        if (isEditable()) {
+            setEditable(false);
+            m_changePresenceMessageButton->show();
+        }
     }
 
     return QComboBox::event(e); // krazy:exclude=qclasses
@@ -307,6 +311,12 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
         QDBusConnection::sessionBus().send(message);
         KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
         m_globalPresence->setPresence(presence);
+        if ((presence.type() == Tp::ConnectionPresenceTypeOffline) ||
+           (presence.type() == Tp::ConnectionPresenceTypeHidden)) {
+            m_changePresenceMessageButton->hide();
+        } else {
+            m_changePresenceMessageButton->show();
+        }
     }
 }
 
