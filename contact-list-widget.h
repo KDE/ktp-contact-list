@@ -56,6 +56,10 @@ public Q_SLOTS:
     void onSwitchToFullView();
     void onSwitchToCompactView();
 
+    void onShowAllContacts();
+    void onShowUnblockedContacts();
+    void onShowBlockedContacts();
+
 private Q_SLOTS:
     void onNewAccountAdded(const Tp::AccountPtr &account);
     void onContactListClicked(const QModelIndex &index);

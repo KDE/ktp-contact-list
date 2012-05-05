@@ -180,6 +180,37 @@ MainWidget::MainWidget(QWidget *parent)
 
     settingsButtonMenu->addMenu(setDelegateTypeMenu);
 
+    KMenu *setBlockedFilterMenu = new KMenu(settingsButtonMenu);
+    setBlockedFilterMenu->setTitle(i18n("Shown Contacts"));
+
+    QActionGroup *blockedFilterGroup = new QActionGroup(this);
+    blockedFilterGroup->setExclusive(true);
+
+    QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
+
+    blockedFilterGroup->addAction(setBlockedFilterMenu->addAction(i18n("Show all contacts"),
+                                                                  m_contactsListView, SLOT(onShowAllContacts())));
+    blockedFilterGroup->actions().last()->setCheckable(true);
+    if (shownContacts == QLatin1String("all")) {
+        blockedFilterGroup->actions().last()->setChecked(true);
+    }
+
+    blockedFilterGroup->addAction(setBlockedFilterMenu->addAction(i18n("Show unblocked contacts"),
+                                                                  m_contactsListView, SLOT(onShowUnblockedContacts())));
+    blockedFilterGroup->actions().last()->setCheckable(true);
+    if (shownContacts == QLatin1String("unblocked")) {
+        blockedFilterGroup->actions().last()->setChecked(true);
+    }
+
+    blockedFilterGroup->addAction(setBlockedFilterMenu->addAction(i18n("Show blocked contacts"),
+                                                                  m_contactsListView, SLOT(onShowBlockedContacts())));
+    blockedFilterGroup->actions().last()->setCheckable(true);
+    if (shownContacts == QLatin1String("blocked")) {
+        blockedFilterGroup->actions().last()->setChecked(true);
+    }
+
+    settingsButtonMenu->addMenu(setBlockedFilterMenu);
+
     if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
 //         //hide account buttons and show global presence
          onUseGlobalPresenceTriggered();

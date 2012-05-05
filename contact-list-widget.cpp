@@ -531,6 +531,42 @@ void ContactListWidget::onSwitchToCompactView()
     guiConfigGroup.config()->sync();
 }
 
+void ContactListWidget::onShowAllContacts()
+{
+    Q_D(ContactListWidget);
+
+    d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::DoNotFilterBySubscription);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("shown_contacts", "all");
+    guiConfigGroup.config()->sync();
+}
+
+void ContactListWidget::onShowUnblockedContacts()
+{
+    Q_D(ContactListWidget);
+
+    d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::HideBlocked);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("shown_contacts", "unblocked");
+    guiConfigGroup.config()->sync();
+}
+
+void ContactListWidget::onShowBlockedContacts()
+{
+    Q_D(ContactListWidget);
+
+    d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::ShowOnlyBlocked);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("shown_contacts", "blocked");
+    guiConfigGroup.config()->sync();
+}
+
 void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
