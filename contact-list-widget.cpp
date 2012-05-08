@@ -258,11 +258,11 @@ void ContactListWidget::addOverlayButtons()
 {
     Q_D(ContactListWidget);
 
-    TextChannelContactOverlay*  textOverlay  = new TextChannelContactOverlay(this);
-    AudioChannelContactOverlay* audioOverlay = new AudioChannelContactOverlay(this);
-    VideoChannelContactOverlay* videoOverlay = new VideoChannelContactOverlay(this);
+    TextChannelContactOverlay *textOverlay  = new TextChannelContactOverlay(this);
+    AudioChannelContactOverlay *audioOverlay = new AudioChannelContactOverlay(this);
+    VideoChannelContactOverlay *videoOverlay = new VideoChannelContactOverlay(this);
 
-    FileTransferContactOverlay* fileOverlay  = new FileTransferContactOverlay(this);
+    FileTransferContactOverlay *fileOverlay  = new FileTransferContactOverlay(this);
     DesktopSharingContactOverlay *desktopOverlay = new DesktopSharingContactOverlay(this);
 
     d->delegate->installOverlay(textOverlay);
