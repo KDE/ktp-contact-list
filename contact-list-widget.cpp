@@ -271,20 +271,8 @@ void ContactListWidget::addOverlayButtons()
     d->delegate->installOverlay(fileOverlay);
     d->delegate->installOverlay(desktopOverlay);
 
-    textOverlay->setView(this);
-    textOverlay->setActive(true);
-
-    audioOverlay->setView(this);
-    audioOverlay->setActive(true);
-
-    videoOverlay->setView(this);
-    videoOverlay->setActive(true);
-
-    fileOverlay->setView(this);
-    fileOverlay->setActive(true);
-
-    desktopOverlay->setView(this);
-    desktopOverlay->setActive(true);
+    d->delegate->setViewOnAllOverlays(this);
+    d->delegate->setAllOverlaysActive(true);
 
     connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
             d->delegate, SLOT(hideStatusMessageSlot(QModelIndex)));

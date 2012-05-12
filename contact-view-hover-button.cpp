@@ -39,7 +39,7 @@
 #include <klocale.h>
 #include <KDebug>
 
-ContactViewHoverButton::ContactViewHoverButton(QAbstractItemView* view)
+ContactViewHoverButton::ContactViewHoverButton(QAbstractItemView *view)
     : QAbstractButton(view->viewport()),
       m_isHovered(false),
       m_fadingValue(0),
@@ -47,7 +47,7 @@ ContactViewHoverButton::ContactViewHoverButton(QAbstractItemView* view)
       m_fadingTimeLine(0)
 {
     const bool animate = KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects;
-    const int duration = animate ? 600 : 1;
+    const int duration = animate ? 300 : 1;
     m_fadingTimeLine   = new QTimeLine(duration, this);
     m_fadingTimeLine->setFrameRange(0, 255);
 
@@ -78,7 +78,7 @@ void ContactViewHoverButton::updateToolTip()
 void ContactViewHoverButton::reset()
 {
     m_index = QModelIndex();
-    hide();
+//     hide();
 }
 
 void ContactViewHoverButton::setIndex(const QModelIndex& index)

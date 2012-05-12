@@ -56,7 +56,7 @@ ContactDelegate::~ContactDelegate()
 
 }
 
-void ContactDelegate::paintContact(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
+void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     QStyleOptionViewItemV4 optV4 = option;
     initStyleOption(&optV4, index);
@@ -178,6 +178,9 @@ void ContactDelegate::fadeOutStatusMessageSlot()
 
     connect(a, SIGNAL(valueChanged(QVariant)),
             this, SLOT(triggerRepaint()));
+
+    connect(a, SIGNAL(finished()),
+            a, SLOT(deleteLater()));
 }
 
 int ContactDelegate::fadingValue() const

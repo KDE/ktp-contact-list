@@ -29,13 +29,12 @@
 
 class ContactModelItem;
 
-class StartChannelContactOverlay : public HoverButtonDelegateOverlay
+class StartChannelContactOverlay : public ContactDelegateOverlay
 {
     Q_OBJECT
 
 public:
-
-    StartChannelContactOverlay(QObject* parent, const KGuiItem & gui,
+    StartChannelContactOverlay(QObject *parent, const KGuiItem &gui,
                                int capabilityRole, int xpos);
 
 public Q_SLOTS:
@@ -68,7 +67,7 @@ class TextChannelContactOverlay : public StartChannelContactOverlay
     Q_OBJECT
 
 public:
-    TextChannelContactOverlay(QObject* parent);
+    TextChannelContactOverlay(QObject *parent);
 };
 
 // ---------------------------------------------------------------------
@@ -78,7 +77,7 @@ class AudioChannelContactOverlay : public StartChannelContactOverlay
     Q_OBJECT
 
 public:
-    AudioChannelContactOverlay(QObject* parent);
+    AudioChannelContactOverlay(QObject *parent);
 };
 
 // ---------------------------------------------------------------------
@@ -88,7 +87,7 @@ class VideoChannelContactOverlay : public StartChannelContactOverlay
     Q_OBJECT
 
 public:
-    VideoChannelContactOverlay(QObject* parent);
+    VideoChannelContactOverlay(QObject *parent);
 };
 
 // ---------------------------------------------------------------------
@@ -98,7 +97,7 @@ class FileTransferContactOverlay : public StartChannelContactOverlay
     Q_OBJECT
 
 public:
-    FileTransferContactOverlay(QObject* parent);
+    FileTransferContactOverlay(QObject *parent);
 };
 
 // ---------------------------------------------------------------------
@@ -108,7 +107,7 @@ class DesktopSharingContactOverlay : public StartChannelContactOverlay
     Q_OBJECT
 
 public:
-    DesktopSharingContactOverlay(QObject* parent);
+    DesktopSharingContactOverlay(QObject *parent);
 };
 
 #endif // VERSIONSOVERLAYS_H

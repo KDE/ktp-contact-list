@@ -32,7 +32,7 @@ class GuiItemContactViewHoverButton : public ContactViewHoverButton
 {
 public:
 
-    GuiItemContactViewHoverButton(QAbstractItemView* parentView, const KGuiItem& gui);
+    GuiItemContactViewHoverButton(QAbstractItemView *parentView, const KGuiItem &gui);
     virtual QSize sizeHint() const;
 
 protected:
@@ -45,7 +45,7 @@ private:
     KGuiItem m_guiItem;
 };
 
-GuiItemContactViewHoverButton::GuiItemContactViewHoverButton(QAbstractItemView* parentView, const KGuiItem& gui)
+GuiItemContactViewHoverButton::GuiItemContactViewHoverButton(QAbstractItemView *parentView, const KGuiItem &gui)
     : ContactViewHoverButton(parentView), m_guiItem(gui)
 {
 }
@@ -69,9 +69,9 @@ void GuiItemContactViewHoverButton::updateToolTip()
 
 // -------------------------------------------------------------------------
 
-StartChannelContactOverlay::StartChannelContactOverlay(QObject* parent, const KGuiItem & gui,
+StartChannelContactOverlay::StartChannelContactOverlay(QObject *parent, const KGuiItem &gui,
                                                        int capabilityRole, int xpos)
-    : HoverButtonDelegateOverlay(parent),
+    : ContactDelegateOverlay(parent),
       m_gui(gui),
       m_capabilityRole(capabilityRole),
       m_xpos(xpos)
@@ -80,7 +80,7 @@ StartChannelContactOverlay::StartChannelContactOverlay(QObject* parent, const KG
 
 void StartChannelContactOverlay::setActive(bool active)
 {
-    HoverButtonDelegateOverlay::setActive(active);
+    ContactDelegateOverlay::setActive(active);
 
     if (active) {
         connect(button(), SIGNAL(clicked(bool)),
@@ -95,7 +95,7 @@ ContactViewHoverButton* StartChannelContactOverlay::createButton()
     return new GuiItemContactViewHoverButton(view(), m_gui);
 }
 
-void StartChannelContactOverlay::updateButton(const QModelIndex& index)
+void StartChannelContactOverlay::updateButton(const QModelIndex &index)
 {
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
@@ -126,7 +126,7 @@ bool StartChannelContactOverlay::checkIndex(const QModelIndex& index) const
 
 // ------------------------------------------------------------------------
 
-TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
+TextChannelContactOverlay::TextChannelContactOverlay(QObject *parent)
     : StartChannelContactOverlay(
         parent,
         KGuiItem(i18n("Start Chat"), "text-x-generic",
@@ -138,7 +138,7 @@ TextChannelContactOverlay::TextChannelContactOverlay(QObject* parent)
 
 // ------------------------------------------------------------------------
 
-AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
+AudioChannelContactOverlay::AudioChannelContactOverlay(QObject *parent)
     : StartChannelContactOverlay(
         parent,
         KGuiItem(i18n("Start Audio Call"), "audio-headset",
@@ -151,7 +151,7 @@ AudioChannelContactOverlay::AudioChannelContactOverlay(QObject* parent)
 
 // -------------------------------------------------------------------------
 
-VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
+VideoChannelContactOverlay::VideoChannelContactOverlay(QObject *parent)
     : StartChannelContactOverlay(
         parent,
         KGuiItem(i18n("Start Video Call"), "camera-web",
@@ -163,7 +163,7 @@ VideoChannelContactOverlay::VideoChannelContactOverlay(QObject* parent)
 
 // -------------------------------------------------------------------------
 
-FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
+FileTransferContactOverlay::FileTransferContactOverlay(QObject *parent)
     : StartChannelContactOverlay(
         parent,
         KGuiItem(i18n("Send File..."), "mail-attachment",
@@ -175,7 +175,7 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject* parent)
 
 // -------------------------------------------------------------------------
 
-DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject* parent)
+DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject *parent)
     : StartChannelContactOverlay(
         parent,
         KGuiItem(i18n("Share my desktop"), "krfb",

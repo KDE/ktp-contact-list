@@ -36,11 +36,10 @@ class ContactViewHoverButton : public QAbstractButton
     Q_OBJECT
 
 public:
-
-    ContactViewHoverButton(QAbstractItemView* parentView);
+    ContactViewHoverButton(QAbstractItemView *parentView);
     void initIcon();
     void reset();
-    void setIndex(const QModelIndex& index);
+    void setIndex(const QModelIndex &index);
     QModelIndex index() const;
     void setVisible(bool visible);
 
@@ -48,10 +47,9 @@ public:
     virtual QSize sizeHint() const = 0;
 
 protected:
-
-    void enterEvent(QEvent* event);
-    void leaveEvent(QEvent* event);
-    void paintEvent(QPaintEvent* event);
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
+    void paintEvent(QPaintEvent *event);
 
     /// Return your icon here. Will be queried again on toggle.
     virtual QPixmap icon() = 0;
@@ -59,16 +57,12 @@ protected:
     virtual void updateToolTip();
 
 protected Q_SLOTS:
-
     void setFadingValue(int value);
     void refreshIcon();
     void startFading();
     void stopFading();
 
-Q_SIGNALS:
-
 protected:
-
     QPersistentModelIndex m_index;
     bool                  m_isHovered;
     int                   m_fadingValue;
