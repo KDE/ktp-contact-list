@@ -100,14 +100,14 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     viewport()->setAcceptDrops(true);
     setDropIndicatorShown(true);
 
-    if (guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("compact")) {
+    if (guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("compact")) {
         setItemDelegate(d->compactDelegate);
     } else {
         setItemDelegate(d->delegate);
     }
 
     addOverlayButtons();
-    emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("full"));
+    emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("full"));
 
     connect(this, SIGNAL(clicked(QModelIndex)),
             this, SLOT(onContactListClicked(QModelIndex)));
