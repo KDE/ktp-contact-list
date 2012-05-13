@@ -80,6 +80,9 @@ QVariant PresenceModel::data(const QModelIndex &index, int role) const
             font.setBold(true);
             return font;
         }
+        else {
+            return QVariant();
+        }
 
     case PresenceModel::PresenceRole:
         return QVariant::fromValue<KTp::Presence>(presence);
