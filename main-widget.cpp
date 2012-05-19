@@ -166,7 +166,7 @@ MainWidget::MainWidget(QWidget *parent)
                                                                 m_contactsListView, SLOT(onSwitchToFullView())));
     delegateTypeGroup->actions().last()->setCheckable(true);
 
-    if (guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("full")) {
+    if (guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("full")) {
         delegateTypeGroup->actions().last()->setChecked(true);
     }
 
@@ -174,7 +174,7 @@ MainWidget::MainWidget(QWidget *parent)
                                                                 m_contactsListView, SLOT(onSwitchToCompactView())));
     delegateTypeGroup->actions().last()->setCheckable(true);
 
-    if (guiConfigGroup.readEntry("selected_delegate", "full") == QLatin1String("compact")) {
+    if (guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("compact")) {
         delegateTypeGroup->actions().last()->setChecked(true);
     }
 
