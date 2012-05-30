@@ -708,10 +708,12 @@ void ContactListWidget::dropEvent(QDropEvent *event)
 
             kDebug() << contact->contact().data()->alias() << "added to group" << group;
 
-            Tp::PendingOperation *op = contact->contact().data()->addToGroup(group);
+            if (!group.isEmpty()) {
+                Tp::PendingOperation *op = contact->contact().data()->addToGroup(group);
 
-            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                    this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+                connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                        this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+            }
         }
         event->acceptProposedAction();
     } else {

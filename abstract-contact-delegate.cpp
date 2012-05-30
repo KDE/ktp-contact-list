@@ -117,7 +117,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     //create an area for text which does not overlap with the icons.
     QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*4),0,0,0);
-    QString groupHeaderString =  index.data(GroupsModel::GroupNameRole).toString().append(counts);
+    QString groupHeaderString =  index.data(Qt::DisplayRole).toString().append(counts);
 
     if (option.state & QStyle::State_HasFocus) {
         painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
