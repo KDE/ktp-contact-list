@@ -50,7 +50,7 @@ KToolTipManager::KToolTipManager()
 KToolTipManager::~KToolTipManager()
 {
     if (!m_window.isNull()) {
-        delete m_window.data();
+        m_window.data()->deleteLater();
     }
 }
 
