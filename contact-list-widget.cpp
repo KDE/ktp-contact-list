@@ -149,9 +149,6 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
     foreach (const Tp::AccountPtr &account, accounts) {
         onNewAccountAdded(account);
     }
-
-    expandAll();
-
 }
 
 AccountsModel* ContactListWidget::accountsModel()
@@ -178,26 +175,6 @@ void ContactListWidget::showSettingsKCM()
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
-}
-
-void ContactListWidget::onAccountConnectionStatusChanged(Tp::ConnectionStatus status)
-{
-    Q_D(ContactListWidget);
-
-    kDebug() << "Connection status is" << status;
-
-    Tp::AccountPtr account(qobject_cast< Tp::Account* >(sender()));
-    QModelIndex index = d->model->index(qobject_cast<AccountsModelItem*>(d->model->accountItemForId(account->uniqueIdentifier())));
-
-    switch (status) {
-        case Tp::ConnectionStatusConnected:
-            setExpanded(index, true);
-            break;
-        case Tp::ConnectionStatusConnecting:
-            setExpanded(index, false);
-        default:
-            break;
-    }
 }
 
 void ContactListWidget::onNewAccountAdded(const Tp::AccountPtr& account)
