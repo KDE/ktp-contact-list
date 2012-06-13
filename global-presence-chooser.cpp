@@ -42,6 +42,7 @@
 #include <QtGui/QToolTip>
 #include <QStyle>
 #include <QtGui/QPushButton>
+#include <QMenu>
 
 //A sneaky class that adds an extra entry to the end of the presence model
 //called "Configure Presences"
@@ -234,6 +235,16 @@ bool GlobalPresenceChooser::event(QEvent *e)
         repositionOverlays();
     }
 
+    if (e->type() == QEvent::ContextMenu) {
+        QMouseEvent *me = static_cast<QMouseEvent*>(e);
+        if (isEditable()) {
+            //we need to correctly position the menu, otherwise it just appears at (0;0)
+            m_lineEditContextMenu.data()->exec(me->globalPos());
+
+            return true;
+        }
+    }
+
     if (e->type() == QEvent::KeyPress) {
         QKeyEvent *ke = static_cast<QKeyEvent*>(e);
 
@@ -253,13 +264,21 @@ bool GlobalPresenceChooser::event(QEvent *e)
 
     if (e->type() == QEvent::FocusOut) {
         //just cancel editable and let it exec parent event()
+        if (!m_lineEditContextMenu.isNull()) {
+            if (!m_lineEditContextMenu.data()->isHidden()) {
+                //if we're showing the context menu, do not process this event further
+                return true;
+            }
+            //...otherwise delete the menu and hide the lineedit
+            m_lineEditContextMenu.data()->deleteLater();
+        }
         if (isEditable()) {
             setEditable(false);
             m_changePresenceMessageButton->show();
         }
     }
 
-    return QComboBox::event(e); // krazy:exclude=qclasses
+    return KComboBox::event(e); // krazy:exclude=qclasses
 }
 
 void GlobalPresenceChooser::onCurrentIndexChanged(int index)
@@ -370,6 +389,9 @@ void GlobalPresenceChooser::onChangePresenceMessageClicked()
     if (m_globalPresence->currentPresence().statusMessage().isEmpty()) {
         lineEdit()->clear();
     }
+
+    m_lineEditContextMenu = lineEdit()->createStandardContextMenu();
+
     lineEdit()->setFocus();
 }
 
@@ -381,7 +403,6 @@ void GlobalPresenceChooser::onConfirmPresenceMessageClicked()
     presence.setStatus(presence.type(), presence.status(), lineEdit()->text());
     QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
     setEditable(false);
-    kDebug() << newPresence.row();
     setCurrentIndex(newPresence.row());
     //this is needed because currentIndexChanged signal is not connected and that is to not crash contact list
     //because this signal is emitted once there is a valid model and that happens before AccountManager is ready
