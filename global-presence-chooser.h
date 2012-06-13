@@ -26,6 +26,7 @@
 #include <TelepathyQt/AccountManager>
 #include <KTp/presence.h>
 
+class QMenu;
 class QPushButton;
 class KPixmapSequenceOverlayPainter;
 class PresenceModel;
@@ -62,6 +63,7 @@ private:
     KPixmapSequenceOverlayPainter *m_busyOverlay;
     Tp::AccountManagerPtr m_accountManager;
     QPushButton *m_changePresenceMessageButton;
+    QWeakPointer<QMenu> m_lineEditContextMenu;
 };
 
 #endif // GLOBALPRESENCECHOOSER_H
