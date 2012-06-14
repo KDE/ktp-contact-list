@@ -1,5 +1,12 @@
 [Desktop Entry]
 Name=KDE IM Contacts
+Name[cs]=Kontakty KDE IM
+Name[nl]=KDE IM-contactpersonen
+Name[pt_BR]=Contatos de mensagens instantâneas do KDE
+Name[sk]=KDE IM kontakty
+Name[sv]=KDE direktmeddelandekontakter
+Name[uk]=Список контактів у KDE
+Name[x-test]=xxKDE IM Contactsxx
 GenericName=Instant Messenger Contacts
 GenericName[ca]=Contactes de missatgeria instantània
 GenericName[cs]=Kontakty IM
