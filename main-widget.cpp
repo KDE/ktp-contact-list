@@ -212,8 +212,8 @@ MainWidget::MainWidget(QWidget *parent)
     settingsButtonMenu->addMenu(setBlockedFilterMenu);
 
     if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
-//         //hide account buttons and show global presence
-         onUseGlobalPresenceTriggered();
+        //hide account buttons and show global presence
+        onUseGlobalPresenceTriggered();
     }
 
     // Restore window geometry
