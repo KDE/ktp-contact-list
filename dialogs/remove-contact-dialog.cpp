@@ -28,6 +28,10 @@
 #include <QtGui/QLabel>
 
 #include <TelepathyQt/AvatarData>
+#include <TelepathyQt/Contact>
+#include <TelepathyQt/ContactManager>
+
+
 
 RemoveContactDialog::RemoveContactDialog(Tp::ContactPtr contact, QWidget* parent)
     : KDialog(parent, Qt::Dialog)
@@ -40,6 +44,8 @@ RemoveContactDialog::RemoveContactDialog(Tp::ContactPtr contact, QWidget* parent
 
     ui->textLabel->setText(i18n("Remove the selected contact?"));
     ui->contactAliasLabel->setText(contact->alias());
+
+    ui->blockCheckbox->setEnabled(contact->manager()->canBlockContacts());
 
     // load contact avatar
     if (contact->avatarData().fileName.isEmpty()) {

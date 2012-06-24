@@ -207,26 +207,39 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         } else {
             kDebug() << "Unable to support Groups";
         }
-
-        menu->addSeparator();
     }
-
-    action = menu->addAction(i18n("Re-request Contact Authorization"));
-    connect(action, SIGNAL(triggered(bool)), SLOT(onRerequestAuthorization()));
-    action = menu->addAction(i18n("Resend Contact Authorization"));
-    connect(action, SIGNAL(triggered(bool)), SLOT(onResendAuthorization()));
 
     menu->addSeparator();
 
+    
+    if (contact->manager()->canRequestPresenceSubscription()) {
+        if (contact->subscriptionState() != Tp::Contact::PresenceStateYes) {
+            action = menu->addAction(i18n("Re-request Contact Authorization"));
+            connect(action, SIGNAL(triggered(bool)), SLOT(onRerequestAuthorization()));
+        }
+    }
+    if (contact->manager()->canAuthorizePresencePublication()) {
+        if (contact->publishState() != Tp::Contact::PresenceStateYes) {
+            action = menu->addAction(i18n("Resend Contact Authorization"));
+            connect(action, SIGNAL(triggered(bool)), SLOT(onResendAuthorization()));
+        }
+    }
+
+    action = menu->addSeparator(); //prevent two seperators in a row
+        
     if (contact->isBlocked()) {
         action = menu->addAction(i18n("Unblock Contact"));
         connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
+        action->setEnabled(contact->manager()->canBlockContacts());
     } else {
         action = menu->addAction(i18n("Block Contact"));
         connect(action, SIGNAL(triggered(bool)), SLOT(onBlockContactTriggered()));
+        action->setEnabled(contact->manager()->canBlockContacts());
     }
 
     // remove contact action, must be QAction because that's what menu->addAction returns
+
+    //TODO find an "if canRemove"
     QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
     connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
 
