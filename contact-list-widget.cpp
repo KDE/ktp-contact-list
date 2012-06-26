@@ -765,3 +765,16 @@ void ContactListWidget::paintEvent(QPaintEvent *event)
         style()->drawPrimitive(QStyle::PE_IndicatorItemViewItemDrop, &option, &painter, this);
     }
 }
+
+void ContactListWidget::drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const
+{
+    Q_UNUSED(painter);
+    Q_UNUSED(rect);
+    Q_UNUSED(index);
+
+    // There is a 0px identation set in the constructor, with setIndentation(0).
+    // Because of that, no branches are shown, so they should be disabled completely (overriding drawBranches).
+    // Leaving branches enabled with 0px identation results in a 1px branch line on the left of all items,
+    // which looks like an artifact.
+    //See https://bugreports.qt-project.org/browse/QTBUG-26305
+}
