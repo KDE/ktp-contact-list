@@ -88,6 +88,10 @@ int PresenceModelExtended::rowCount(const QModelIndex &parent) const
 
 QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
 {
+    if (role == Qt::SizeHintRole) {
+        const QFontMetrics fontMetrics(KGlobalSettings::generalFont());
+        return QSize(0, qMax(fontMetrics.height(), (int)(KIconLoader::SizeSmall)) + 8);
+    }
     if (index.row() == rowCount(index.parent())-1) {
         switch(role) {
         case Qt::DisplayRole:
