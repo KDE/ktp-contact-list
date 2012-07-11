@@ -264,6 +264,12 @@ bool GlobalPresenceChooser::event(QEvent *e)
                 m_changePresenceMessageButton->show();
             }
         }
+        if (ke->key() == Qt::Key_Down || ke->key() == Qt::Key_Up) {
+            if (!isEditable()) {
+                showPopup();
+                return true;
+            }
+        }
     }
 
     if (e->type() == QEvent::FocusOut) {
