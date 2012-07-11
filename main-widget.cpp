@@ -329,39 +329,11 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
     notification->sendEvent();
 }
 
-void MainWidget::onAddContactRequest() {
-    QWeakPointer<KTp::AddContactDialog> dialog = new KTp::AddContactDialog(m_contactsListView->accountsModel(), this);
-    if (dialog.data()->exec() == QDialog::Accepted) {
-        Tp::AccountPtr account = dialog.data()->account();
-        if (account.isNull()) {
-            KMessageBox::error(this,
-                               i18n("Seems like you forgot to select an account. Also do not forget to connect it first."),
-                               i18n("No Account Selected"));
-        }
-        else if (account->connection().isNull()) {
-            KMessageBox::error(this,
-                               i18n("An error we did not anticipate just happened and so the contact could not be added. Sorry."),
-                               i18n("Account Error"));
-        } else {
-            QStringList identifiers = QStringList() << dialog.data()->screenName();
-            Tp::PendingContacts* pendingContacts = account->connection()->contactManager()->contactsForIdentifiers(identifiers);
-            connect(pendingContacts, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAddContactRequestFoundContacts(Tp::PendingOperation*)));
-        }
-    }
-    delete dialog.data();
-}
-
-void MainWidget::onAddContactRequestFoundContacts(Tp::PendingOperation *operation) {
-    Tp::PendingContacts *pendingContacts = qobject_cast<Tp::PendingContacts*>(operation);
-
-    if (! pendingContacts->isError()) {
-        //request subscription
-        pendingContacts->manager()->requestPresenceSubscription(pendingContacts->contacts());
-    }
-    else {
-        kDebug() << pendingContacts->errorName();
-        kDebug() << pendingContacts->errorMessage();
-    }
+void MainWidget::onAddContactRequest()
+{
+    KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_contactsListView->accountsModel(), this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
 
 void MainWidget::onCustomContextMenuRequested(const QPoint &pos)

@@ -80,7 +80,6 @@ private Q_SLOTS:
     void toggleSearchWidget(bool show);
     void onAccountManagerReady(Tp::PendingOperation* op);
     void onAddContactRequest();
-    void onAddContactRequestFoundContacts(Tp::PendingOperation *operation);
     void onUseGlobalPresenceTriggered();
     void onUsePerAccountPresenceTriggered();
     void onJoinChatRoomRequested();                 /** join chat room action is triggered */
