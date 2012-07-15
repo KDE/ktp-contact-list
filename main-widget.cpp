@@ -78,23 +78,6 @@ MainWidget::MainWidget(QWidget *parent)
     setWindowIcon(KIcon("telepathy-kde"));
     setAutoSaveSettings();
 
-
-    KSharedConfigPtr config = KGlobal::config();
-    KConfigGroup guiConfigGroup(config, "GUI");
-
-    m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
-
-    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add New Contacts..."), this);
-
-    m_toolBar->addAction(m_addContactAction);
-
-    m_groupContactsAction = new KAction(KIcon("user-group-properties"), i18n("Show/Hide Groups"), this);
-    m_groupContactsAction->setCheckable(true);
-    m_groupContactsAction->setChecked(true);
-    //TODO: Toggle the tooltip with the button? eg. once its Show, after click its Hide .. ?
-
-    m_toolBar->addAction(m_groupContactsAction);
-
     Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
                                                                        Tp::Features() << Tp::Account::FeatureCore
                                                                        << Tp::Account::FeatureAvatar
@@ -125,9 +108,30 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
             this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
 
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
 
+    m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
-    m_showOfflineAction = new KAction(KIcon("meeting-attending-tentative"), i18n("Hide/Show Offline Users"), this);
+    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add New Contacts..."), this);
+
+    m_toolBar->addAction(m_addContactAction);
+
+    m_groupContactsAction = new KDualAction(i18n("Contacts are shown by accounts. Click to show them in groups."),
+                                            i18n("Contacts are shown in groups. Click to show them in accounts."),
+                                            this);
+    m_groupContactsAction->setActiveIcon(KIcon("user-group-properties"));
+    m_groupContactsAction->setInactiveIcon(KIcon("user-group-properties"));
+    m_groupContactsAction->setCheckable(true);
+    m_groupContactsAction->setChecked(true);
+
+    m_toolBar->addAction(m_groupContactsAction);
+
+    m_showOfflineAction = new KDualAction(i18n("Offline contacts are hidden. Click to show them."),
+                                          i18n("Offline contacts are shown. Click to hide them."),
+                                          this);
+    m_showOfflineAction->setActiveIcon(KIcon("meeting-attending-tentative"));
+    m_showOfflineAction->setInactiveIcon(KIcon("meeting-attending-tentative"));
     m_showOfflineAction->setCheckable(true);
     m_showOfflineAction->setChecked(false);
 
@@ -285,9 +289,11 @@ MainWidget::MainWidget(QWidget *parent)
 
     bool useGroups = guiConfigGroup.readEntry("use_groups", true);
     m_groupContactsAction->setChecked(useGroups);
+    m_groupContactsAction->setActive(useGroups);
 
     bool showOffline = guiConfigGroup.readEntry("show_offline", false);
     m_showOfflineAction->setChecked(showOffline);
+    m_showOfflineAction->setActive(showOffline);
 
     bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
     m_sortByPresenceAction->setActive(sortByPresence);

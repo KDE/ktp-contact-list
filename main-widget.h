@@ -98,8 +98,8 @@ private:
 
 
     KAction                *m_addContactAction;
-    KAction                *m_groupContactsAction;
-    KAction                *m_showOfflineAction;
+    KDualAction            *m_groupContactsAction;
+    KDualAction            *m_showOfflineAction;
     KAction                *m_searchContactAction;
     KDualAction            *m_sortByPresenceAction;
 
