@@ -4,6 +4,7 @@
  * Copyright (C) 2010-2011 Collabora Ltd. <info@collabora.co.uk>
  *   @Author Dario Freddi <dario.freddi@collabora.co.uk>
  * Copyright (C) 2011 Martin Klapetek <martin.klapetek@gmail.com>
+ * Copyright (C) 2012 Dominik Cermak <d.cermak@arcor.de>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -43,6 +44,7 @@
 const int SPACING = 4;
 const int AVATAR_SIZE = 32;
 const int PRESENCE_ICON_SIZE = 22;
+const int CLIENT_TYPE_ICON_SIZE = 22;
 const int ACCOUNT_ICON_SIZE = 13;
 
 ContactDelegate::ContactDelegate(QObject * parent)
@@ -99,19 +101,35 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
 
     KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
 
+    // This value is used to set the correct width for the username and the presence message.
+    int rightIconsWidth = PRESENCE_ICON_SIZE + SPACING;
+
     QPixmap icon = presence.icon().pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
     statusIconRect.setSize(QSize(PRESENCE_ICON_SIZE, PRESENCE_ICON_SIZE));
-    statusIconRect.moveTo(QPoint(optV4.rect.right() - PRESENCE_ICON_SIZE - SPACING,
+    statusIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
                                  optV4.rect.top() + (optV4.rect.height() - PRESENCE_ICON_SIZE) / 2));
 
     painter->drawPixmap(statusIconRect, icon);
 
+    // Right now we only check for 'phone', as that's the most interesting type.
+    if (index.data(AccountsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
+        // Additional space is needed for the icons, don't add too much spacing between the two icons
+        rightIconsWidth += CLIENT_TYPE_ICON_SIZE + (SPACING / 2);
+
+        QPixmap phone = QIcon::fromTheme("phone").pixmap(CLIENT_TYPE_ICON_SIZE);
+        QRect phoneIconRect = optV4.rect;
+        phoneIconRect.setSize(QSize(CLIENT_TYPE_ICON_SIZE, CLIENT_TYPE_ICON_SIZE));
+        phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
+                                    optV4.rect.top() + (optV4.rect.height() - CLIENT_TYPE_ICON_SIZE) / 2));
+        painter->drawPixmap(phoneIconRect, phone);
+    }
+
     QRect userNameRect = optV4.rect;
     userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
     userNameRect.setY(userNameRect.y() + 2);
-    userNameRect.setWidth(userNameRect.width() - PRESENCE_ICON_SIZE - SPACING);
+    userNameRect.setWidth(userNameRect.width() - rightIconsWidth);
 
     const QFontMetrics nameFontMetrics(KGlobalSettings::generalFont());
 
@@ -123,7 +141,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     QRect statusMsgRect = optV4.rect;
     statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
     statusMsgRect.setY(userNameRect.bottom() - statusFontMetrics.height() - 4);
-    statusMsgRect.setWidth(statusMsgRect.width() - PRESENCE_ICON_SIZE - SPACING);
+    statusMsgRect.setWidth(statusMsgRect.width() - rightIconsWidth);
 
     QColor fadingColor(m_palette->color(QPalette::Disabled, QPalette::Text));
 

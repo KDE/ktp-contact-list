@@ -111,7 +111,8 @@ MainWidget::MainWidget(QWidget *parent)
     Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
                                                                       << Tp::Contact::FeatureAvatarData
                                                                       << Tp::Contact::FeatureSimplePresence
-                                                                      << Tp::Contact::FeatureCapabilities);
+                                                                      << Tp::Contact::FeatureCapabilities
+                                                                      << Tp::Contact::FeatureClientTypes);
 
     Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
 
