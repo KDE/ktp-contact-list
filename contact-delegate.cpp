@@ -133,6 +133,12 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
 
     const QFontMetrics nameFontMetrics(KGlobalSettings::generalFont());
 
+    if (option.state & QStyle::State_HasFocus) {
+        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+    } else {
+        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
+    }
+    
     painter->drawText(userNameRect,
                       nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
 
@@ -150,8 +156,12 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
         fadingColor.setAlpha(m_fadingValue);
     }
 
-    painter->setPen(fadingColor);
-
+    if (option.state & QStyle::State_HasFocus) {
+        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::HighlightedText));
+    } else {
+        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+    }
+    
     painter->setFont(KGlobalSettings::smallestReadableFont());
     painter->drawText(statusMsgRect,
                       statusFontMetrics.elidedText(presence.statusMessage().simplified(),

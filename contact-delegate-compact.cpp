@@ -116,6 +116,12 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     const QFontMetrics nameFontMetrics(nameFont);
 
+    if (option.state & QStyle::State_HasFocus) {
+        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+    } else {
+        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
+    }
+
     painter->setFont(nameFont);
 
     QRect userNameRect = optV4.rect;
@@ -131,10 +137,11 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     presenceMessageRect.setWidth(optV4.rect.width() - presenceMessageRect.x() - rightIconsWidth);
     presenceMessageRect.setY(presenceMessageRect.y() + (presenceMessageRect.height()/2 - nameFontMetrics.height()/2));
 
-    QPen presenceMessagePen = painter->pen();
-    presenceMessagePen.setColor(m_palette->color(QPalette::Disabled, QPalette::Text));
-
-    painter->setPen(presenceMessagePen);
+    if (option.state & QStyle::State_HasFocus) {
+        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::HighlightedText));
+    } else {
+        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+    }
 
     painter->drawText(presenceMessageRect,
                       nameFontMetrics.elidedText(presence.statusMessage().simplified(),

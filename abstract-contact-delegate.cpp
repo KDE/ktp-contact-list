@@ -122,7 +122,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     if (option.state & QStyle::State_HasFocus) {
         painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Inactive, QPalette::WindowText));
+        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
     }
 
     painter->setFont(groupFont);
