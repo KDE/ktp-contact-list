@@ -83,6 +83,7 @@ private Q_SLOTS:
     void onUseGlobalPresenceTriggered();
     void onUsePerAccountPresenceTriggered();
     void onJoinChatRoomRequested();                 /** join chat room action is triggered */
+    void onMakeCallRequested();
     void onCustomContextMenuRequested(const QPoint &point);
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
 

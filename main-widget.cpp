@@ -49,8 +49,10 @@
 #include <KProtocolInfo>
 #include <KSettings/Dialog>
 #include <KSharedConfig>
+#include <KStandardDirs>
 #include <KStandardShortcut>
 #include <KNotification>
+#include <KToolInvocation>
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
@@ -220,6 +222,11 @@ MainWidget::MainWidget(QWidget *parent)
     restoreGeometry(guiConfigGroup.readEntry("window_geometry", QByteArray()));
 
     settingsButtonMenu->addAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
+
+    if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
+        settingsButtonMenu->addAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
+    }
+
     settingsButtonMenu->addSeparator();
     settingsButtonMenu->addMenu(helpMenu());
 
@@ -392,6 +399,11 @@ void MainWidget::onJoinChatRoomRequested()
     }
 
     delete dialog.data();
+}
+
+void MainWidget::onMakeCallRequested()
+{
+    KToolInvocation::kdeinitExec(QLatin1String("ktp-dialout-ui"));
 }
 
 void MainWidget::closeEvent(QCloseEvent* e)
