@@ -169,15 +169,24 @@ MainWidget::MainWidget(QWidget *parent)
                                                                 m_contactsListView, SLOT(onSwitchToFullView())));
     delegateTypeGroup->actions().last()->setCheckable(true);
 
-    if (guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("full")) {
+    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full")) {
         delegateTypeGroup->actions().last()->setChecked(true);
     }
 
-    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Compact List"),
+    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Normal List"),
                                                                 m_contactsListView, SLOT(onSwitchToCompactView())));
     delegateTypeGroup->actions().last()->setCheckable(true);
 
-    if (guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("compact")) {
+    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("normal")
+        || guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("compact")) { //needed for backwards compatibility
+        delegateTypeGroup->actions().last()->setChecked(true);
+    }
+
+    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Minimalistic List"),
+                                                                     m_contactsListView, SLOT(onSwitchToMiniView())));
+    delegateTypeGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("mini")) {
         delegateTypeGroup->actions().last()->setChecked(true);
     }
 

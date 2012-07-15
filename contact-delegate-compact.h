@@ -26,14 +26,27 @@
 class ContactDelegateCompact : public AbstractContactDelegate
 {
     Q_OBJECT
-//     Q_PROPERTY(int m_fadingValue READ fadingValue WRITE setFadingValue);
 
 public:
-    ContactDelegateCompact(QObject *parent = 0);
+    enum ListSize {
+        Normal,
+        Mini
+    };
+    ContactDelegateCompact(ContactDelegateCompact::ListSize size = Normal, QObject *parent = 0);
     ~ContactDelegateCompact();
 
     void paintContact(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
     QSize sizeHintContact(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+
+    void setListMode(ContactDelegateCompact::ListSize size);
+
+private:
+    int m_spacing;
+    int m_avatarSize;
+    int m_presenceIconSize;
+    int m_accountIconSize;
+    int m_clientTypeIconSize;
+    ContactDelegateCompact::ListSize m_listSize;
 };
 
 #endif // CONTACTDELEGATECOMPACT_H

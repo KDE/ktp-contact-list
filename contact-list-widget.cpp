@@ -71,7 +71,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     KConfigGroup guiConfigGroup(config, "GUI");
 
     d->delegate = new ContactDelegate(this);
-    d->compactDelegate = new ContactDelegateCompact(this);
+    d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
     d->model = new AccountsModel(this);
     d->groupsModel = new GroupsModel(d->model, this);
@@ -100,14 +100,20 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     viewport()->setAcceptDrops(true);
     setDropIndicatorShown(true);
 
-    if (guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("compact")) {
-        setItemDelegate(d->compactDelegate);
-    } else {
+    QString delegateMode = guiConfigGroup.readEntry("selected_delegate", "normal");
+
+    if (delegateMode == QLatin1String("full")) {
         setItemDelegate(d->delegate);
+    } else if (delegateMode == QLatin1String("mini")) {
+        setItemDelegate(d->compactDelegate);
+        d->compactDelegate->setListMode(ContactDelegateCompact::Mini);
+    } else {
+        setItemDelegate(d->compactDelegate);
+        d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
     }
 
     addOverlayButtons();
-    emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "compact") == QLatin1String("full"));
+    emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full"));
 
     connect(this, SIGNAL(clicked(QModelIndex)),
             this, SLOT(onContactListClicked(QModelIndex)));
@@ -486,13 +492,30 @@ void ContactListWidget::onSwitchToCompactView()
     Q_D(ContactListWidget);
 
     setItemDelegate(d->compactDelegate);
+    d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
     doItemsLayout();
 
     emit enableOverlays(false);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
-    guiConfigGroup.writeEntry("selected_delegate", "compact");
+    guiConfigGroup.writeEntry("selected_delegate", "normal");
+    guiConfigGroup.config()->sync();
+}
+
+void ContactListWidget::onSwitchToMiniView()
+{
+    Q_D(ContactListWidget);
+
+    setItemDelegate(d->compactDelegate);
+    d->compactDelegate->setListMode(ContactDelegateCompact::Mini);;
+    doItemsLayout();
+
+    emit enableOverlays(false);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("selected_delegate", "mini");
     guiConfigGroup.config()->sync();
 }
 

@@ -55,6 +55,7 @@ public Q_SLOTS:
 
     void onSwitchToFullView();
     void onSwitchToCompactView();
+    void onSwitchToMiniView();
 
     void onShowAllContacts();
     void onShowUnblockedContacts();
