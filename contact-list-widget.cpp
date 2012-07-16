@@ -136,11 +136,6 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
     Q_D(ContactListWidget);
     d->model->setAccountManager(accountManager);
 
-    connect(accountManager.data(), SIGNAL(newAccount(Tp::AccountPtr)),
-                this, SLOT(onNewAccountAdded(Tp::AccountPtr)));
-
-
-
     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
 
     if(accounts.count() == 0) {
@@ -150,10 +145,6 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
 
             showSettingsKCM();
         }
-    }
-
-    foreach (const Tp::AccountPtr &account, accounts) {
-        onNewAccountAdded(account);
     }
 }
 
@@ -181,24 +172,6 @@ void ContactListWidget::showSettingsKCM()
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
-}
-
-void ContactListWidget::onNewAccountAdded(const Tp::AccountPtr& account)
-{
-    Q_ASSERT(account->isReady(Tp::Account::FeatureCore));
-
-    connect(account.data(),
-            SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)),
-            this, SLOT(onAccountConnectionStatusChanged(Tp::ConnectionStatus)));
-
-    //FIXME get rid of that thing already
-//     m_avatarButton->loadAvatar(account);
-//     KSharedConfigPtr config = KGlobal::config();
-//     KConfigGroup avatarGroup(config, "Avatar");
-//     if (avatarGroup.readEntry("method", QString()) == QLatin1String("account")) {
-//         //this also updates the avatar if it was changed somewhere else
-//         m_avatarButton->selectAvatarFromAccount(avatarGroup.readEntry("source", QString()));
-//     }
 }
 
 void ContactListWidget::onContactListClicked(const QModelIndex& index)

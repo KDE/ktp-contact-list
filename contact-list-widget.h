@@ -62,7 +62,6 @@ public Q_SLOTS:
     void onShowBlockedContacts();
 
 private Q_SLOTS:
-    void onNewAccountAdded(const Tp::AccountPtr &account);
     void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClicked(const QModelIndex &index);
 
