@@ -138,7 +138,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     } else {
         painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
     }
-    
+
     painter->drawText(userNameRect,
                       nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
 
@@ -149,19 +149,20 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     statusMsgRect.setY(userNameRect.bottom() - statusFontMetrics.height() - 4);
     statusMsgRect.setWidth(statusMsgRect.width() - rightIconsWidth);
 
-    QColor fadingColor(m_palette->color(QPalette::Disabled, QPalette::Text));
+    QColor fadingColor;
+    if (option.state & QStyle::State_HasFocus) {
+        fadingColor = QColor(m_palette->color(QPalette::Disabled, QPalette::HighlightedText));
+    } else {
+        fadingColor = QColor(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+    }
 
     // if the index is hovered, set animated alpha to the color
     if (index == m_indexForHiding) {
         fadingColor.setAlpha(m_fadingValue);
     }
 
-    if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::HighlightedText));
-    } else {
-        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::WindowText));
-    }
-    
+    painter->setPen(fadingColor);
+
     painter->setFont(KGlobalSettings::smallestReadableFont());
     painter->drawText(statusMsgRect,
                       statusFontMetrics.elidedText(presence.statusMessage().simplified(),
