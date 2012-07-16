@@ -120,17 +120,7 @@ QAbstractItemView* ContactDelegateOverlay::view() const
 
 void ContactDelegateOverlay::setDelegate(QAbstractItemDelegate *delegate)
 {
-//     if (m_delegate) {
-//         disconnect(m_delegate, SIGNAL(visualChange()),
-//                    this, SLOT(visualChange()));
-//     }
-
     m_delegate = delegate;
-
-//     if (m_delegate) {
-//         connect(m_delegate, SIGNAL(visualChange()),
-//                 this, SLOT(visualChange()));
-//     }
 }
 
 QAbstractItemDelegate* ContactDelegateOverlay::delegate() const
@@ -159,7 +149,6 @@ void ContactDelegateOverlay::slotEntered(const QModelIndex& index)
         m_button.data()->setIndex(index);
         updateButton(index);
         QTimer::singleShot(0, m_button.data(), SLOT(show()));
-//        m_button.data()->show();
         emit overlayActivated(index);
     }
 }
@@ -190,7 +179,6 @@ bool ContactDelegateOverlay::eventFilter(QObject *obj, QEvent *event)
             case QEvent::Leave:
                 slotHideButton();
                 emit overlayHidden();
-                //viewportLeaveEvent(obj, event);
                 break;
             case QEvent::MouseMove:
                 if (m_mouseButtonPressedOnWidget) {
@@ -232,10 +220,6 @@ void ContactDelegateOverlayContainer::installOverlay(ContactDelegateOverlay *ove
 
     overlay->setDelegate(asDelegate());
     m_overlays << overlay;
-    // let the view call setActive
-
-//     QObject::connect(overlay, SIGNAL(destroyed(QObject*)),
-//                      asDelegate(), SLOT(overlayDestroyed(QObject*)));
 }
 
 void ContactDelegateOverlayContainer::removeOverlay(ContactDelegateOverlay *overlay)
