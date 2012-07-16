@@ -121,7 +121,7 @@ void StartChannelContactOverlay::slotClicked(bool checked)
 
 bool StartChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    return index.data(m_capabilityRole).toBool();
+    return index.data(m_capabilityRole).toBool() && index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 }
 
 // ------------------------------------------------------------------------
