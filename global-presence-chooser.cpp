@@ -351,12 +351,13 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 
 void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
 {
-    m_modelExtended->removeTemporaryPresence();
-    kDebug();
     for (int i=0; i < count() ; i++) {
         KTp::Presence itemPresence = itemData(i, PresenceModel::PresenceRole).value<KTp::Presence>();
         if (itemPresence.type() == presence.type() && itemPresence.statusMessage() == presence.statusMessage()) {
             setCurrentIndex(i);
+            if (itemPresence != m_modelExtended->temporaryPresence()) {
+                m_modelExtended->removeTemporaryPresence();
+            }
             return;
         }
     }
