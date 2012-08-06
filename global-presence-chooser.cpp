@@ -141,14 +141,20 @@ void PresenceModelExtended::sourceRowsRemoved(const QModelIndex &index, int star
 
 QModelIndex PresenceModelExtended::addTemporaryPresence(const KTp::Presence &presence)
 {
-    if (! presence.isValid()) {
-        removeTemporaryPresence();
+    int row = m_model->rowCount(QModelIndex());
+
+    //if the temp presence already exists, don't remove and readd it
+    //but simply replace it
+    if (m_temporaryPresence.isValid()) {
+        m_temporaryPresence = presence;
+        emit dataChanged(this->createIndex(row, 0), this->createIndex(row, 0));
+    } else {
+        kDebug() << "adding temp presence to the model";
+        beginInsertRows(QModelIndex(),row, row);
+        m_temporaryPresence = presence;
+        endInsertRows();
     }
 
-    int row = m_model->rowCount(QModelIndex());
-    beginInsertRows(QModelIndex(),row, row);
-    m_temporaryPresence = presence;
-    endInsertRows();
     return this->createIndex(row, 0);
 }
 
