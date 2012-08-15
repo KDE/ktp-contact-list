@@ -97,6 +97,8 @@ private:
                                      const QStringList& filenames,
                                      const QDateTime& userActionTime);
 
+    void loadGroupStatesFromConfig();
+
     friend class ContextMenu;
     ContactListWidgetPrivate * const d_ptr;
 };

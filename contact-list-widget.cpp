@@ -82,6 +82,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setModel(d->modelFilter);
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
+    loadGroupStatesFromConfig();
 
     connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
@@ -176,6 +177,8 @@ void ContactListWidget::showSettingsKCM()
 
 void ContactListWidget::onContactListClicked(const QModelIndex& index)
 {
+    Q_D(ContactListWidget);
+
     if (!index.isValid()) {
         return;
     }
@@ -186,15 +189,20 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
         KConfigGroup groupsConfig = config->group("GroupsState");
 
+        QString groupId = index.data(AccountsModel::IdRole).toString();
+
         if (isExpanded(index)) {
             collapse(index);
-            groupsConfig.writeEntry(index.data(AccountsModel::IdRole).toString(), false);
+            groupsConfig.writeEntry(groupId, false);
         } else {
             expand(index);
-            groupsConfig.writeEntry(index.data(AccountsModel::IdRole).toString(), true);
+            groupsConfig.writeEntry(groupId, true);
         }
 
         groupsConfig.config()->sync();
+
+        //replace the old value or insert new value if it isn't there yet
+        d->groupStates.insert(groupId, isExpanded(index));
     }
 }
 
@@ -277,6 +285,10 @@ void ContactListWidget::toggleGroups(bool show)
         d->modelFilter->setSourceModel(d->groupsModel);
     } else {
         d->modelFilter->setSourceModel(d->model);
+    }
+
+    for (int i = 0; i < d->modelFilter->rowCount(); i++) {
+        onNewGroupModelItemsInserted(d->modelFilter->index(i, 0, QModelIndex()), 0, 0);
     }
 }
 
@@ -426,19 +438,20 @@ void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, i
 {
     Q_UNUSED(start);
     Q_UNUSED(end);
+    Q_D(ContactListWidget);
+
     if (!index.isValid()) {
         return;
     }
 
     //if there is no parent, we deal with top-level item that we want to expand/collapse, ie. group or account
     if (!index.parent().isValid()) {
-        KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
-        KConfigGroup groupsConfig = config->group("GroupsState");
 
         //we're probably dealing with group item, so let's check if it is expanded first
         if (!isExpanded(index)) {
             //if it's not expanded, check the config if we should expand it or not
-            if (groupsConfig.readEntry(index.data(AccountsModel::IdRole).toString(), false)) {
+            QString groupId = index.data(AccountsModel::IdRole).toString();
+            if (d->groupStates.value(groupId)) {
                 expand(index);
             }
         }
@@ -773,4 +786,18 @@ void ContactListWidget::drawBranches(QPainter *painter, const QRect &rect, const
     // Leaving branches enabled with 0px identation results in a 1px branch line on the left of all items,
     // which looks like an artifact.
     //See https://bugreports.qt-project.org/browse/QTBUG-26305
+}
+
+void ContactListWidget::loadGroupStatesFromConfig()
+{
+    Q_D(ContactListWidget);
+    d->groupStates.clear();
+
+    KConfig config(QLatin1String("ktelepathyrc"));
+    KConfigGroup groupsConfig = config.group("GroupsState");
+
+    Q_FOREACH(const QString &key, groupsConfig.keyList()) {
+        bool expanded = groupsConfig.readEntry(key, false);
+        d->groupStates.insert(key, expanded);
+    }
 }

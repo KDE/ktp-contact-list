@@ -48,6 +48,7 @@ public:
     QPoint                  dragStartPosition;
     bool                    shouldDrag;
     bool                    showOffline;
+    QHash<QString, bool>    groupStates;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H
