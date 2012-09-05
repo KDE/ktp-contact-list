@@ -27,6 +27,9 @@
 #include <KToolInvocation>
 #include <KInputDialog>
 #include <KMessageBox>
+#include <KStandardAction>
+#include <KActionCollection>
+#include <KNotifyConfigWidget>
 
 #include <KTp/Models/accounts-model.h>
 #include <KTp/Models/contact-model-item.h>
@@ -145,6 +148,12 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     if (index.data(AccountsModel::DesktopSharingCapabilityRole).toBool()) {
         action->setEnabled(true);
     }
+
+    menu->addSeparator();
+    action = menu->addAction(i18n("Configure notifications"));
+    action->setEnabled(true);
+    connect(action, SIGNAL(triggered()),
+                           SLOT(onNotificationConfigured()));
 
     // add "goto" submenu for navigating to links the contact has in presence message
     // first check to see if there are any links in the contact's presence message
@@ -566,4 +575,9 @@ void ContextMenu::onResendAuthorization()
     Tp::PendingOperation *op = contactItem->contact()->manager()->authorizePresencePublication(QList<Tp::ContactPtr>() << contactItem->contact());
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+}
+
+void ContextMenu::onNotificationConfigured()
+{
+    KNotifyConfigWidget::configure(m_mainWidget, QLatin1String("ktelepathy"));
 }

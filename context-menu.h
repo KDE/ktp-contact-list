@@ -62,6 +62,7 @@ private Q_SLOTS:
     void onOpenLinkTriggered(QAction *action);      /** triggered from custom contact menu when user clicks contact link */
     void onRerequestAuthorization();
     void onResendAuthorization();
+    void onNotificationConfigured();
 
 private:
     ContactListWidget     *m_mainWidget;
