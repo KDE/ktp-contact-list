@@ -24,7 +24,6 @@ include_directories (${KDE4_INCLUDES}
 
 
 set (ktp_contactlist_SRCS
-     rooms-model.cpp
      contact-list-widget.cpp
      context-menu.cpp
      abstract-contact-delegate.cpp
@@ -40,7 +39,6 @@ set (ktp_contactlist_SRCS
      main.cpp
      main-widget.cpp
      global-presence-chooser.cpp
-     dialogs/join-chat-room-dialog.cpp
      dialogs/remove-contact-dialog.cpp
      dialogs/contact-info.cpp
      dialogs/custom-presence-dialog.cpp
@@ -54,7 +52,6 @@ set (ktp_contactlist_SRCS
 
 kde4_add_ui_files (ktp_contactlist_SRCS
                    main-widget.ui
-                   dialogs/join-chat-room-dialog.ui
                    dialogs/remove-contact-dialog.ui
                    dialogs/contact-info.ui
                    tooltips/contacttooltip.ui

@@ -40,6 +40,7 @@
 #include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/groups-model-item.h>
 #include <KTp/Widgets/add-contact-dialog.h>
+#include <KTp/Widgets/join-chat-room-dialog.h>
 
 #include <KDebug>
 #include <KDialog>
@@ -57,7 +58,6 @@
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
 #include "contact-list-application.h"
-#include "dialogs/join-chat-room-dialog.h"
 #include "tooltips/tooltipmanager.h"
 #include "context-menu.h"
 
@@ -394,7 +394,7 @@ void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
 
 void MainWidget::onJoinChatRoomRequested()
 {
-    QWeakPointer<JoinChatRoomDialog> dialog = new JoinChatRoomDialog(m_accountManager);
+    QWeakPointer<KTp::JoinChatRoomDialog> dialog = new KTp::JoinChatRoomDialog(m_accountManager);
 
     if (dialog.data()->exec() == QDialog::Accepted) {
         Tp::AccountPtr account = dialog.data()->selectedAccount();
