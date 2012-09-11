@@ -51,7 +51,6 @@ public:
 
     QAbstractItemView *view;
     QTimer            *timer;
-    QTimer            *hideTimer;
     QPersistentModelIndex        item;
     QRect              itemRect;
 };
@@ -68,9 +67,6 @@ ToolTipManager::ToolTipManager(QAbstractItemView *parent)
     d->timer = new QTimer(this);
     d->timer->setSingleShot(true);
     connect(d->timer, SIGNAL(timeout()), this, SLOT(prepareToolTip()));
-    d->hideTimer = new QTimer(this);
-    d->hideTimer->setSingleShot(true);
-    connect(d->hideTimer, SIGNAL(timeout()), this, SLOT(hideToolTip()));
 
     // When the mousewheel is used, the items don't get a hovered indication
     // (Qt-issue #200665). To assure that the tooltip still gets hidden,
@@ -91,7 +87,7 @@ bool ToolTipManager::eventFilter(QObject *watched, QEvent *event)
     if (watched == d->view->viewport()) {
         switch (event->type()) {
             case QEvent::Leave:
-                d->hideTimer->start(80);
+                hideToolTip();
                 break;
             case QEvent::MouseButtonPress:
                 hideToolTip();
@@ -103,7 +99,7 @@ bool ToolTipManager::eventFilter(QObject *watched, QEvent *event)
         }
     } else if (watched == KToolTip::currentTip()) {
         if (event->type() == QEvent::Leave) {
-            d->hideTimer->start(80);
+            hideToolTip();
         }
         return false;
     }
@@ -123,7 +119,6 @@ void ToolTipManager::requestToolTip(const QModelIndex &index)
                             d->view->viewport()->mapToGlobal(rect.bottomRight()));
         d->item = index;
         d->timer->start(300);
-        d->hideTimer->stop();
     } else {
         hideToolTip();
     }
@@ -133,7 +128,6 @@ void ToolTipManager::hideToolTip()
 {
     if ( KToolTip::currentTip() && KToolTip::currentTip()->geometry().contains(QCursor::pos()) ) return;
     d->timer->stop();
-    d->hideTimer->stop();
     KToolTip::hideTip();
 }
 
