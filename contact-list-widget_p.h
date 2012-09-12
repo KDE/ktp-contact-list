@@ -22,7 +22,7 @@
 
 #include <TelepathyQt/Types>
 
-class AccountsModel;
+class ContactsModel;
 class GroupsModel;
 class AccountsFilterModel;
 class ContactDelegate;
@@ -39,7 +39,7 @@ public:
       shouldDrag(false),
       showOffline(false) {}
 
-    AccountsModel          *model;
+    ContactsModel          *model;
     GroupsModel            *groupsModel;
     AccountsFilterModel    *modelFilter;
     ContactDelegate        *delegate;

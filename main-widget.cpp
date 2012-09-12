@@ -36,7 +36,7 @@
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/PendingReady>
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/groups-model-item.h>
 #include <KTp/Widgets/add-contact-dialog.h>
@@ -368,7 +368,7 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
     }
 
     Tp::ContactPtr contact;
-    QVariant item = index.data(AccountsModel::ItemRole);
+    QVariant item = index.data(ContactsModel::ItemRole);
 
     KMenu *menu = 0;
 

@@ -28,7 +28,7 @@
 #include <KInputDialog>
 #include <KMessageBox>
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/proxy-tree-node.h>
 #include <KTp/Models/groups-model-item.h>
@@ -81,14 +81,14 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
-    Tp::ContactPtr contact = index.data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+    Tp::ContactPtr contact = index.data(ContactsModel::ItemRole).value<ContactModelItem*>()->contact();
 
     if (contact.isNull()) {
         kDebug() << "Contact is nulled";
         return 0;
     }
 
-    Tp::AccountPtr account = m_mainWidget->d_ptr->model->accountForContactItem(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
+    Tp::AccountPtr account = m_mainWidget->d_ptr->model->accountForContactItem(index.data(ContactsModel::ItemRole).value<ContactModelItem*>());
 
     if (account.isNull()) {
         kDebug() << "Account is nulled";
@@ -105,7 +105,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartTextChatTriggered()));
 
-    if (index.data(AccountsModel::TextChatCapabilityRole).toBool()) {
+    if (index.data(ContactsModel::TextChatCapabilityRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -121,7 +121,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartAudioChatTriggered()));
 
-    if (index.data(AccountsModel::AudioCallCapabilityRole).toBool()) {
+    if (index.data(ContactsModel::AudioCallCapabilityRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -131,7 +131,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartVideoChatTriggered()));
 
-    if (index.data(AccountsModel::VideoCallCapabilityRole).toBool()) {
+    if (index.data(ContactsModel::VideoCallCapabilityRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -141,7 +141,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartFileTransferTriggered()));
 
-    if (index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
+    if (index.data(ContactsModel::FileTransferCapabilityRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -151,7 +151,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartDesktopSharingTriggered()));
 
-    if (index.data(AccountsModel::DesktopSharingCapabilityRole).toBool()) {
+    if (index.data(ContactsModel::DesktopSharingCapabilityRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -175,7 +175,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     // add "goto" submenu for navigating to links the contact has in presence message
     // first check to see if there are any links in the contact's presence message
     QStringList contactLinks;
-    QString presenceMsg = index.data(AccountsModel::PresenceMessageRole).toString();
+    QString presenceMsg = index.data(ContactsModel::PresenceMessageRole).toString();
     if (presenceMsg.isEmpty()) {
         contactLinks = QStringList();
     } else {
@@ -286,7 +286,7 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
-    GroupsModelItem *groupItem = index.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
+    GroupsModelItem *groupItem = index.data(ContactsModel::ItemRole).value<GroupsModelItem*>();
 
     Q_ASSERT(groupItem);
 
@@ -312,7 +312,7 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 void ContextMenu::onRemoveContactFromGroupTriggered()
 {
     QString groupName = m_currentIndex.parent().data(GroupsModel::GroupNameRole).toString();
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
 
     Q_ASSERT(contactItem);
     Tp::ContactPtr contact =  contactItem->contact();
@@ -337,7 +337,7 @@ void ContextMenu::onShowInfoTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         QWeakPointer<ContactInfo> contactInfoDialog = new ContactInfo(item->contact(), m_mainWidget);
         contactInfoDialog.data()->setAttribute(Qt::WA_DeleteOnClose);
@@ -352,7 +352,7 @@ void ContextMenu::onStartTextChatTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         m_mainWidget->startTextChannel(item);
     }
@@ -365,7 +365,7 @@ void ContextMenu::onStartAudioChatTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         m_mainWidget->startAudioChannel(item);
     }
@@ -378,7 +378,7 @@ void ContextMenu::onStartVideoChatTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         m_mainWidget->startVideoChannel(item);
     }
@@ -391,7 +391,7 @@ void ContextMenu::onStartFileTransferTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         m_mainWidget->startFileTransferChannel(item);
     }
@@ -404,7 +404,7 @@ void ContextMenu::onStartDesktopSharingTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     if (item) {
         m_mainWidget->startDesktopSharing(item);
     }
@@ -417,7 +417,7 @@ void ContextMenu::onOpenLogViewerTriggered()
       return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     Q_ASSERT(item);
 
     Tp::ContactPtr contact = item->contact();
@@ -430,7 +430,7 @@ void ContextMenu::onOpenLogViewerTriggered()
 
 void ContextMenu::onUnblockContactTriggered()
 {
-    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     Q_ASSERT(item);
 
     Tp::ContactPtr contact = item->contact();
@@ -442,7 +442,7 @@ void ContextMenu::onUnblockContactTriggered()
 
 void ContextMenu::onAddContactToGroupTriggered()
 {
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
 
     Q_ASSERT(contactItem);
     Tp::ContactPtr contact =  contactItem->contact();
@@ -479,7 +479,7 @@ void ContextMenu::onCreateNewGroupTriggered()
                                                  &ok);
 
     if (ok) {
-        ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
 
         Q_ASSERT(contactItem);
         Tp::ContactPtr contact =  contactItem->contact();
@@ -492,7 +492,7 @@ void ContextMenu::onCreateNewGroupTriggered()
 
 void ContextMenu::onRenameGroupTriggered()
 {
-    GroupsModelItem *groupItem = m_currentIndex.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
+    GroupsModelItem *groupItem = m_currentIndex.data(ContactsModel::ItemRole).value<GroupsModelItem*>();
 
     Q_ASSERT(groupItem);
 
@@ -505,7 +505,7 @@ void ContextMenu::onRenameGroupTriggered()
 
     if (ok) {
         for(int i = 0; i < groupItem->size(); i++) {
-            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(ContactsModel::ItemRole).value<ContactModelItem*>()->contact();
             Q_ASSERT(contact);
 
             Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
@@ -525,7 +525,7 @@ void ContextMenu::onDeleteGroupTriggered()
         return;
     }
 
-    GroupsModelItem *groupItem = m_currentIndex.data(AccountsModel::ItemRole).value<GroupsModelItem*>();
+    GroupsModelItem *groupItem = m_currentIndex.data(ContactsModel::ItemRole).value<GroupsModelItem*>();
 
     if (KMessageBox::warningContinueCancel(m_mainWidget,
                                            i18n("Do you really want to remove group %1?\n\n"
@@ -533,7 +533,7 @@ void ContextMenu::onDeleteGroupTriggered()
                                            i18n("Remove Group")) == KMessageBox::Continue) {
 
         for(int i = 0; i < groupItem->size(); i++) {
-            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(AccountsModel::ItemRole).value<ContactModelItem*>()->contact();
+            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(ContactsModel::ItemRole).value<ContactModelItem*>()->contact();
 
             Q_ASSERT(contact);
 
@@ -554,7 +554,7 @@ void ContextMenu::onDeleteGroupTriggered()
 
 void ContextMenu::onBlockContactTriggered()
 {
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
 
     Q_ASSERT(contactItem);
     Tp::ContactPtr contact =  contactItem->contact();
@@ -566,7 +566,7 @@ void ContextMenu::onBlockContactTriggered()
 
 void ContextMenu::onDeleteContactTriggered()
 {
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
 
     Q_ASSERT(contactItem);
     Tp::ContactPtr contact =  contactItem->contact();
@@ -598,7 +598,7 @@ void ContextMenu::onDeleteContactTriggered()
 
 void ContextMenu::onRerequestAuthorization()
 {
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     Tp::PendingOperation *op = contactItem->contact()->manager()->requestPresenceSubscription(QList<Tp::ContactPtr>() << contactItem->contact());
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
@@ -606,7 +606,7 @@ void ContextMenu::onRerequestAuthorization()
 
 void ContextMenu::onResendAuthorization()
 {
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
     Tp::PendingOperation *op = contactItem->contact()->manager()->authorizePresencePublication(QList<Tp::ContactPtr>() << contactItem->contact());
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
@@ -614,7 +614,7 @@ void ContextMenu::onResendAuthorization()
 
 void ContextMenu::onNotificationConfigureTriggered()
 {
-    ContactModelItem *contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
 
     Q_ASSERT(contactItem);
     Tp::ContactPtr contact = contactItem->contact();

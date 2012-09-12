@@ -25,7 +25,7 @@
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingReady>
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Models/groups-model.h>
 #include <KTp/Models/accounts-filter-model.h>
 #include <KTp/Models/contact-model-item.h>
@@ -73,7 +73,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
-    d->model = new AccountsModel(this);
+    d->model = new ContactsModel(this);
     d->groupsModel = new GroupsModel(d->model, this);
     d->modelFilter = new AccountsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
@@ -149,7 +149,7 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
     }
 }
 
-AccountsModel* ContactListWidget::accountsModel()
+ContactsModel* ContactListWidget::accountsModel()
 {
     Q_D(ContactListWidget);
 
@@ -183,13 +183,13 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
         return;
     }
 
-    if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()
-        || index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<GroupsModelItem*>()) {
+    if (index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()
+        || index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<GroupsModelItem*>()) {
 
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
         KConfigGroup groupsConfig = config->group("GroupsState");
 
-        QString groupId = index.data(AccountsModel::IdRole).toString();
+        QString groupId = index.data(ContactsModel::IdRole).toString();
 
         if (isExpanded(index)) {
             collapse(index);
@@ -212,9 +212,9 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
         return;
     }
 
-    if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>()) {
+    if (index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>()) {
         kDebug() << "Text chat requested for index" << index;
-        startTextChannel(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
+        startTextChannel(index.data(ContactsModel::ItemRole).value<ContactModelItem*>());
     }
 }
 
@@ -450,7 +450,7 @@ void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, i
         //we're probably dealing with group item, so let's check if it is expanded first
         if (!isExpanded(index)) {
             //if it's not expanded, check the config if we should expand it or not
-            QString groupId = index.data(AccountsModel::IdRole).toString();
+            QString groupId = index.data(ContactsModel::IdRole).toString();
             if (d->groupStates.value(groupId)) {
                 expand(index);
             }
@@ -580,7 +580,7 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
     d->shouldDrag = false;
 
     // if no contact, no drag
-    if (!index.data(AccountsModel::ItemRole).canConvert<ContactModelItem*>()) {
+    if (!index.data(ContactsModel::ItemRole).canConvert<ContactModelItem*>()) {
         return;
     }
 
@@ -615,7 +615,7 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
     if (index.isValid()) {
-        ContactModelItem *contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        ContactModelItem *contactItem = index.data(ContactsModel::ItemRole).value<ContactModelItem*>();
         //We put a contact ID and its account ID to the stream, so we can later recreate the contact using AccountsModel
         stream << contactItem->contact().data()->id() << d->model->accountForContactItem(contactItem).data()->objectPath();
     }
@@ -639,7 +639,7 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasUrls()) {
         kDebug() << "It's a file!";
 
-        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+        ContactModelItem* contactItem = index.data(ContactsModel::ItemRole).value<ContactModelItem*>();
         Q_ASSERT(contactItem);
 
         Tp::ContactPtr contact = contactItem->contact();
@@ -684,7 +684,7 @@ void ContactListWidget::dropEvent(QDropEvent *event)
         Q_FOREACH (ContactModelItem *contact, contacts) {
             Q_ASSERT(contact);
             QString group;
-            if (index.data(AccountsModel::ItemRole).canConvert<GroupsModelItem*>()) {
+            if (index.data(ContactsModel::ItemRole).canConvert<GroupsModelItem*>()) {
                 // contact is dropped on a group, so take it's name
                 group = index.data(GroupsModel::GroupNameRole).toString();
             } else {
@@ -741,13 +741,13 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
 
     // urls can be dropped on a contact with file transfer capability,
     // contacts can be dropped either on a group or on another contact if GroupsModel is used
-    if (event->mimeData()->hasUrls() && index.data(AccountsModel::FileTransferCapabilityRole).toBool()) {
+    if (event->mimeData()->hasUrls() && index.data(ContactsModel::FileTransferCapabilityRole).toBool()) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
                d->modelFilter->sourceModel() == d->groupsModel &&
-               (index.data(AccountsModel::ItemRole).canConvert<GroupsModelItem*>() ||
-                index.data(AccountsModel::ItemRole).canConvert<ContactModelItem*>())) {
+               (index.data(ContactsModel::ItemRole).canConvert<GroupsModelItem*>() ||
+                index.data(ContactsModel::ItemRole).canConvert<ContactModelItem*>())) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else {

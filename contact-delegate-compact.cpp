@@ -34,7 +34,7 @@
 #include <KGlobalSettings>
 #include <KDE/KLocale>
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/proxy-tree-node.h>
 #include <KTp/Models/groups-model-item.h>
@@ -70,7 +70,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
     QPixmap avatar;
-    avatar.load(index.data(AccountsModel::AvatarRole).toString());
+    avatar.load(index.data(ContactsModel::AvatarRole).toString());
 
     bool noContactAvatar = avatar.isNull();
 
@@ -80,7 +80,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
+    KTp::Presence presence = index.data(ContactsModel::PresenceRole).value<KTp::Presence>();
 
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
@@ -96,7 +96,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     painter->drawPixmap(statusIconRect, icon);
 
     // Right now we only check for 'phone', as that's the most interesting type.
-    if (index.data(AccountsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
+    if (index.data(ContactsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
         // Additional space is needed for the icons, don't add too much spacing between the two icons
         rightIconsWidth += m_clientTypeIconSize + (m_spacing / 2);
 

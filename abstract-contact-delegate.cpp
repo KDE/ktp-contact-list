@@ -32,7 +32,7 @@
 #include <KDE/KIconLoader>
 #include <KDE/KIcon>
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Models/accounts-model-item.h>
 #include <KTp/Models/groups-model.h>
 #include <KTp/Models/contact-model-item.h>
@@ -52,7 +52,7 @@ AbstractContactDelegate::~AbstractContactDelegate()
 
 void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+    bool isContact = index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
     if (isContact) {
         paintContact(painter, option, index);
@@ -64,7 +64,7 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(option);
-    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+    bool isContact = index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
     if (isContact) {
         return sizeHintContact(option, index);
@@ -102,11 +102,11 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QFont groupFont = KGlobalSettings::smallestReadableFont();
 
-    QString counts = QString(" (%1/%2)").arg(index.data(AccountsModel::OnlineUsersCountRole).toString(),
-                     index.data(AccountsModel::TotalUsersCountRole).toString());
+    QString counts = QString(" (%1/%2)").arg(index.data(ContactsModel::OnlineUsersCountRole).toString(),
+                     index.data(ContactsModel::TotalUsersCountRole).toString());
 
-    if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
+    if (index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
+        painter->drawPixmap(accountGroupRect, KIcon(index.data(ContactsModel::IconRole).toString())
                             .pixmap(32));
     } else {
         painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),

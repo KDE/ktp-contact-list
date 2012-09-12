@@ -24,7 +24,7 @@
 #include <TelepathyQt/Types>
 #include <TelepathyQt/Connection>
 
-class AccountsModel;
+class ContactsModel;
 class ContactModelItem;
 class ContactListWidgetPrivate;
 
@@ -42,7 +42,7 @@ public:
     explicit ContactListWidget(QWidget* parent);
     virtual ~ContactListWidget();
 
-    AccountsModel *accountsModel();
+    ContactsModel *accountsModel();
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
 public Q_SLOTS:
