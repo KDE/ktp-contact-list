@@ -37,6 +37,7 @@
 #include <KTp/Models/groups-model-item.h>
 #include <KTp/Models/groups-model.h>
 #include <KTp/text-parser.h>
+#include <KTp/Widgets/notificationconfigdialog.h>
 
 #include <TelepathyQt/ContactManager>
 
@@ -579,5 +580,11 @@ void ContextMenu::onResendAuthorization()
 
 void ContextMenu::onNotificationConfigured()
 {
-    KNotifyConfigWidget::configure(m_mainWidget, QLatin1String("ktelepathy"));
+    ContactModelItem* contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact = contactItem->contact();
+
+    KTp::NotificationConfigDialog *notificationDialog = new KTp::NotificationConfigDialog(contact, m_mainWidget);
+    notificationDialog->show();
 }
