@@ -54,19 +54,19 @@ AbstractContactDelegate::~AbstractContactDelegate()
 
 void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+//     bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
-    if (isContact) {
+//     if (isContact) {
         paintContact(painter, option, index);
-    } else {
-        paintHeader(painter, option, index);
-    }
+//     } else {
+//         paintHeader(painter, option, index);
+//     }
 }
 
 QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(option);
-    bool isContact = index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+    bool isContact = true;//index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
     if (isContact) {
         return sizeHintContact(option, index);
