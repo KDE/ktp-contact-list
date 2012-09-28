@@ -41,6 +41,8 @@
 #include <KTp/Models/groups-model.h>
 #include <KTp/presence.h>
 
+#include <kpeople/persons-model.h>
+
 ContactDelegateCompact::ContactDelegateCompact(ContactDelegateCompact::ListSize size, QObject * parent)
     : AbstractContactDelegate(parent)
 {
@@ -54,8 +56,7 @@ ContactDelegateCompact::~ContactDelegateCompact()
 
 void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-    QStyleOptionViewItemV4 optV4 = option;
-    initStyleOption(&optV4, index);
+    QStyleOptionViewItemV4 optV4 = option; initStyleOption(&optV4, index);
 
     painter->save();
 
@@ -70,7 +71,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
     QPixmap avatar;
-    avatar.load(index.data(AccountsModel::AvatarRole).toString());
+    avatar.load(index.data(PersonsModel::PhotoRole).toString());
 
     bool noContactAvatar = avatar.isNull();
 
@@ -80,7 +81,12 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
+    KTp::Presence presence;
+    if (index.data(PersonsModel::StatusRole).toString() == "available") {
+        presence = KTp::Presence(Tp::Presence::available());
+    } else if (index.data(PersonsModel::StatusRole).toString() == "away") {
+        presence = KTp::Presence(Tp::Presence::away());
+    }
 
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
@@ -96,17 +102,17 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     painter->drawPixmap(statusIconRect, icon);
 
     // Right now we only check for 'phone', as that's the most interesting type.
-    if (index.data(AccountsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
-        // Additional space is needed for the icons, don't add too much spacing between the two icons
-        rightIconsWidth += m_clientTypeIconSize + (m_spacing / 2);
-
-        QPixmap phone = QIcon::fromTheme("phone").pixmap(m_clientTypeIconSize);
-        QRect phoneIconRect = optV4.rect;
-        phoneIconRect.setSize(QSize(m_clientTypeIconSize, m_clientTypeIconSize));
-        phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
-                                    optV4.rect.top() + (optV4.rect.height() - m_clientTypeIconSize) / 2));
-        painter->drawPixmap(phoneIconRect, phone);
-    }
+//     if (index.data(AccountsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
+//         // Additional space is needed for the icons, don't add too much spacing between the two icons
+//         rightIconsWidth += m_clientTypeIconSize + (m_spacing / 2);
+//
+//         QPixmap phone = QIcon::fromTheme("phone").pixmap(m_clientTypeIconSize);
+//         QRect phoneIconRect = optV4.rect;
+//         phoneIconRect.setSize(QSize(m_clientTypeIconSize, m_clientTypeIconSize));
+//         phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
+//                                     optV4.rect.top() + (optV4.rect.height() - m_clientTypeIconSize) / 2));
+//         painter->drawPixmap(phoneIconRect, phone);
+//     }
 
     QFont nameFont;
 
@@ -131,8 +137,10 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     userNameRect.setY(userNameRect.y() + (userNameRect.height()/2 - nameFontMetrics.height()/2));
     userNameRect.setWidth(userNameRect.width() - rightIconsWidth);
 
+    QString nameText = index.data(Qt::DisplayRole).toString();
+
     painter->drawText(userNameRect,
-                      nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
+                      nameFontMetrics.elidedText(nameText, Qt::ElideRight, userNameRect.width()));
 
     QRect presenceMessageRect = optV4.rect;
     presenceMessageRect.setX(userNameRect.x() + nameFontMetrics.boundingRect(optV4.text).width() + m_spacing * 2);
@@ -156,6 +164,7 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
 {
     Q_UNUSED(option);
     Q_UNUSED(index);
+
     return QSize(0, qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
 }
 
