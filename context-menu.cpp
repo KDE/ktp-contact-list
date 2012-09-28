@@ -27,9 +27,6 @@
 #include <KToolInvocation>
 #include <KInputDialog>
 #include <KMessageBox>
-#include <KStandardAction>
-#include <KActionCollection>
-#include <KNotifyConfigWidget>
 
 #include <KTp/Models/accounts-model.h>
 #include <KTp/Models/contact-model-item.h>
@@ -154,7 +151,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications ..."));
     action->setEnabled(true);
     connect(action, SIGNAL(triggered()),
-                           SLOT(onNotificationConfigured()));
+                           SLOT(onNotificationConfigureTriggered()));
 
     // add "goto" submenu for navigating to links the contact has in presence message
     // first check to see if there are any links in the contact's presence message
@@ -578,7 +575,7 @@ void ContextMenu::onResendAuthorization()
             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
-void ContextMenu::onNotificationConfigured()
+void ContextMenu::onNotificationConfigureTriggered()
 {
     ContactModelItem* contactItem = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
 
