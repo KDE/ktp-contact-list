@@ -52,6 +52,8 @@
 #include <QPainter>
 #include <QPixmap>
 
+#include <kpeople/persons-model.h>
+
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
