@@ -25,7 +25,7 @@ include_directories (${KDE4_INCLUDES}
 
 set (ktp_contactlist_SRCS
      contact-list-widget.cpp
-     context-menu.cpp
+#      context-menu.cpp
      abstract-contact-delegate.cpp
      contact-list-application.cpp
      contact-view-hover-button.cpp
@@ -69,6 +69,7 @@ target_link_libraries (ktp-contactlist
                        ${KDE4_KDEUI_LIBS}
                        ${KDE4_KIO_LIBS}
                        ${KDE4_KCMUTILS_LIBS}
+                       kpeople
 )
 
 # Install:
