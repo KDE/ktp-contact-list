@@ -813,14 +813,61 @@ void ContactListWidget::loadGroupStatesFromConfig()
 //         d->groupStates.insert(key, expanded);
 //     }
 }
-    Q_D(ContactListWidget);
-    d->groupStates.clear();
 
-    KConfig config(QLatin1String("ktelepathyrc"));
-    KConfigGroup groupsConfig = config.group("GroupsState");
-
-    Q_FOREACH(const QString &key, groupsConfig.keyList()) {
-        bool expanded = groupsConfig.readEntry(key, false);
-        d->groupStates.insert(key, expanded);
+void ContactListWidget::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
+{
+    if (selectedIndexes().size() > 1) {
+        bool contactsSelected = false;
+        bool personsSelected = false;
+        Q_FOREACH (const QModelIndex &index, selectedIndexes()) {
+            if (index.data(PersonsModel::ResourceTypeRole).toUInt() == PersonsModel::Person) {
+                personsSelected = true;
+            } else {
+                contactsSelected = true;
+            }
+        }
+        //if only contacts have been selected and not persons
+        if (contactsSelected && !personsSelected) {
+            Q_EMIT contactsSelectedForGrouping();
+        } else if (!contactsSelected && personsSelected) { //only persons selected
+            Q_EMIT personSelected();
+        }
+    } else if (selectedIndexes().size() == 1) {
+        //if there's no valid parent, we're dealing with person
+        if (selectedIndexes().at(0).data(PersonsModel::ResourceTypeRole).toUInt() == PersonsModel::Person) {
+            Q_EMIT contactsDeselected();
+            Q_EMIT personSelected();
+        }
+    } else {
+        Q_EMIT contactsDeselected();
     }
+
+    QTreeView::selectionChanged(selected, deselected);
+}
+
+void ContactListWidget::onGroupSelectedContacts()
+{
+    Q_D(ContactListWidget);
+
+    QList<QUrl> selectedContacts;
+    foreach(const QModelIndex &index, selectedIndexes()) {
+        selectedContacts << index.data(PersonsModel::UriRole).toUrl();
+    }
+
+    d->model->createPersonFromContacts(selectedContacts);
+
+    clearSelection();
+    sortByColumn(0);
+}
+
+void ContactListWidget::onUngroupSelectedContacts()
+{
+    Q_D(ContactListWidget);
+
+    foreach(const QModelIndex &index, selectedIndexes()) {
+        d->model->removePerson(index.data(PersonsModel::UriRole).toUrl());
+    }
+
+    clearSelection();
+    sortByColumn(0);
 }

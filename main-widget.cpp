@@ -117,6 +117,11 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_addContactAction);
 
+    m_metacontactToggleAction = new KAction(KIcon("list-add"), i18n("Group selected contacts into one metacontact"), this);
+    m_metacontactToggleAction->setDisabled(true);
+
+    m_toolBar->addAction(m_metacontactToggleAction);
+
     m_groupContactsAction = new KDualAction(i18n("Contacts are shown by accounts. Click to show them in groups."),
                                             i18n("Contacts are shown in groups. Click to show them in accounts."),
                                             this);
@@ -248,9 +253,9 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addWidget(settingsButton);
 
-    m_contextMenu = new ContextMenu(m_contactsListView);
+//     m_contextMenu = new ContextMenu(m_contactsListView);
 
-    new ToolTipManager(m_contactsListView);
+//     new ToolTipManager(m_contactsListView);
 
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
@@ -287,9 +292,21 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
-    bool useGroups = guiConfigGroup.readEntry("use_groups", true);
-    m_groupContactsAction->setChecked(useGroups);
-    m_groupContactsAction->setActive(useGroups);
+    connect(m_contactsListView, SIGNAL(contactsSelectedForGrouping()),
+            this, SLOT(onContactsSelectedForGouping()));
+
+    connect(m_contactsListView, SIGNAL(contactsDeselected()),
+            this, SLOT(onContactsDeselected()));
+
+    connect(m_contactsListView, SIGNAL(personSelected()),
+            this, SLOT(onPersonSelected()));
+
+    connect(m_metacontactToggleAction, SIGNAL(triggered()),
+            this, SLOT(onMetacontactsActionTriggered()));
+
+//     bool useGroups = guiConfigGroup.readEntry("use_groups", true);
+//     m_groupContactsAction->setChecked(useGroups);
+//     m_groupContactsAction->setActive(useGroups);
 
     bool showOffline = guiConfigGroup.readEntry("show_offline", false);
     m_showOfflineAction->setChecked(showOffline);
@@ -298,7 +315,7 @@ MainWidget::MainWidget(QWidget *parent)
     bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
     m_sortByPresenceAction->setActive(sortByPresence);
 
-    m_contactsListView->toggleGroups(useGroups);
+//     m_contactsListView->toggleGroups(useGroups);
     m_contactsListView->toggleOfflineContacts(showOffline);
     m_contactsListView->toggleSortByPresence(sortByPresence);
 }
@@ -331,8 +348,8 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 
     m_accountButtons->setAccountManager(m_accountManager);
     m_presenceChooser->setAccountManager(m_accountManager);
-    m_contactsListView->setAccountManager(m_accountManager);
-    m_contextMenu->setAccountManager(m_accountManager);
+//     m_contactsListView->setAccountManager(m_accountManager);
+//     m_contextMenu->setAccountManager(m_accountManager);
 }
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)
@@ -361,27 +378,27 @@ void MainWidget::onAddContactRequest()
 
 void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 {
-    QModelIndex index = m_contactsListView->indexAt(pos);
-
-    if (!index.isValid()) {
-        return;
-    }
-
-    Tp::ContactPtr contact;
-    QVariant item = index.data(AccountsModel::ItemRole);
-
-    KMenu *menu = 0;
-
-    if (item.userType() == qMetaTypeId<ContactModelItem*>()) {
-        menu = m_contextMenu->contactContextMenu(index);
-    } else if (item.userType() == qMetaTypeId<GroupsModelItem*>()) {
-        menu = m_contextMenu->groupContextMenu(index);
-    }
-
-    if (menu) {
-        menu->exec(QCursor::pos());
-        menu->deleteLater();
-    }
+//     QModelIndex index = m_contactsListView->indexAt(pos);
+//
+//     if (!index.isValid()) {
+//         return;
+//     }
+//
+//     Tp::ContactPtr contact;
+//     QVariant item = index.data(AccountsModel::ItemRole);
+//
+//     KMenu *menu = 0;
+//
+//     if (item.userType() == qMetaTypeId<ContactModelItem*>()) {
+//         menu = m_contextMenu->contactContextMenu(index);
+//     } else if (item.userType() == qMetaTypeId<GroupsModelItem*>()) {
+//         menu = m_contextMenu->groupContextMenu(index);
+//     }
+//
+//     if (menu) {
+//         menu->exec(QCursor::pos());
+//         menu->deleteLater();
+//     }
 }
 
 void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
@@ -394,27 +411,27 @@ void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
 
 void MainWidget::onJoinChatRoomRequested()
 {
-    QWeakPointer<KTp::JoinChatRoomDialog> dialog = new KTp::JoinChatRoomDialog(m_accountManager);
-
-    if (dialog.data()->exec() == QDialog::Accepted) {
-        Tp::AccountPtr account = dialog.data()->selectedAccount();
-
-        // check account validity. Should NEVER be invalid
-        if (!account.isNull()) {
-            // ensure chat room
-            Tp::ChannelRequestHints hints;
-            hints.setHint("org.kde.telepathy","forceRaiseWindow", QVariant(true));
-
-            Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom(),
-                                                                                    QDateTime::currentDateTime(),
-                                                                                    PREFERRED_TEXTCHAT_HANDLER,
-                                                                                    hints);
-
-            connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
-        }
-    }
-
-    delete dialog.data();
+//     QWeakPointer<KTp::JoinChatRoomDialog> dialog = new KTp::JoinChatRoomDialog(m_accountManager);
+//
+//     if (dialog.data()->exec() == QDialog::Accepted) {
+//         Tp::AccountPtr account = dialog.data()->selectedAccount();
+//
+//         // check account validity. Should NEVER be invalid
+//         if (!account.isNull()) {
+//             // ensure chat room
+//             Tp::ChannelRequestHints hints;
+//             hints.setHint("org.kde.telepathy","forceRaiseWindow", QVariant(true));
+//
+//             Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom(),
+//                                                                                     QDateTime::currentDateTime(),
+//                                                                                     PREFERRED_TEXTCHAT_HANDLER,
+//                                                                                     hints);
+//
+//             connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+//         }
+//     }
+//
+//     delete dialog.data();
 }
 
 void MainWidget::onMakeCallRequested()
@@ -539,6 +556,34 @@ void MainWidget::toggleSearchWidget(bool show)
             m_filterBar->clear();
             m_filterBar->hide();
         }
+}
+
+void MainWidget::onContactsSelectedForGouping()
+{
+    m_metacontactToggleAction->setEnabled(true);
+    m_metacontactToggleAction->setIcon(KIcon("list-add"));
+}
+
+void MainWidget::onContactsDeselected()
+{
+    m_metacontactToggleAction->setEnabled(false);
+    m_metacontactToggleAction->setIcon(KIcon("list-add"));
+}
+
+void MainWidget::onPersonSelected()
+{
+    m_metacontactToggleAction->setEnabled(true);
+    m_metacontactToggleAction->setIcon(KIcon("list-remove"));
+}
+
+void MainWidget::onMetacontactsActionTriggered()
+{
+    kDebug() << m_metacontactToggleAction->icon().name();
+    if (m_metacontactToggleAction->icon().name() == QLatin1String("list-add")) {
+        m_contactsListView->onGroupSelectedContacts();
+    } else {
+        m_contactsListView->onUngroupSelectedContacts();
+    }
 }
 
 #include "main-widget.moc"

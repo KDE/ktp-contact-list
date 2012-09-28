@@ -87,6 +87,11 @@ private Q_SLOTS:
     void onCustomContextMenuRequested(const QPoint &point);
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
 
+    void onContactsSelectedForGouping();
+    void onContactsDeselected();
+    void onPersonSelected();
+    void onMetacontactsActionTriggered();
+
 private:
     QStringList extractLinksFromIndex(const QModelIndex &index);    /** extract links from a QModelIndex pointing to a contact */
     ///Was moved to telepathy-kded-module
@@ -102,6 +107,7 @@ private:
     KDualAction            *m_showOfflineAction;
     KAction                *m_searchContactAction;
     KDualAction            *m_sortByPresenceAction;
+    KAction                *m_metacontactToggleAction;
 
     Tp::AccountManagerPtr  m_accountManager;
 
