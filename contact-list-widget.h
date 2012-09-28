@@ -61,6 +61,12 @@ public Q_SLOTS:
     void onShowUnblockedContacts();
     void onShowBlockedContacts();
 
+    void onGroupSelectedContacts();
+    void onUngroupSelectedContacts();
+
+protected Q_SLOTS:
+    void selectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
+
 private Q_SLOTS:
     void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClicked(const QModelIndex &index);
@@ -79,17 +85,22 @@ Q_SIGNALS:
     void accountManagerReady(Tp::PendingOperation* op);
     void genericOperationFinished(Tp::PendingOperation* op);
 
+    //These signals control the merging button on the toolbar
+    void contactsSelectedForGrouping();
+    void contactsDeselected();
+    void personSelected();
+
 protected:
     void setDropIndicatorRect(const QRect &rect);
-    virtual bool event(QEvent *event);
-    virtual void mousePressEvent(QMouseEvent *event);
-    virtual void mouseMoveEvent(QMouseEvent *event);
-    virtual void paintEvent(QPaintEvent *event);
-    virtual void dropEvent(QDropEvent *event);
-    virtual void dragEnterEvent(QDragEnterEvent *event);
-    virtual void dragMoveEvent(QDragMoveEvent *event);
-    virtual void dragLeaveEvent(QDragLeaveEvent *event);
-    virtual void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const;
+//     virtual bool event(QEvent *event);
+//     virtual void mousePressEvent(QMouseEvent *event);
+//     virtual void mouseMoveEvent(QMouseEvent *event);
+//     virtual void paintEvent(QPaintEvent *event);
+//     virtual void dropEvent(QDropEvent *event);
+//     virtual void dragEnterEvent(QDragEnterEvent *event);
+//     virtual void dragMoveEvent(QDragMoveEvent *event);
+//     virtual void dragLeaveEvent(QDragLeaveEvent *event);
+//     virtual void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const;
 
 private:
     void requestFileTransferChannels(const Tp::AccountPtr& account,
