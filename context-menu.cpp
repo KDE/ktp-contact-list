@@ -38,6 +38,10 @@
 
 #include <TelepathyQt/ContactManager>
 
+#include <TelepathyLoggerQt4/Entity>
+#include <TelepathyLoggerQt4/LogManager>
+#include <TelepathyLoggerQt4/Init>
+
 #include "dialogs/remove-contact-dialog.h"
 #include "dialogs/contact-info.h"
 
@@ -48,6 +52,9 @@ ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
 {
     m_mainWidget = mainWidget;
+
+    Tpl::init();
+    m_logManager = Tpl::LogManager::instance();
 }
 
 
@@ -59,6 +66,7 @@ ContextMenu::~ContextMenu()
 void ContextMenu::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     m_accountManager = accountManager;
+    m_logManager->setAccountManagerPtr(accountManager);
 }
 
 KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
@@ -147,6 +155,17 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         action->setEnabled(true);
     }
 
+    action = menu->addAction(i18n("Open Log Viewer..."));
+    action->setIcon(KIcon("documentation"));
+    action->setDisabled(true);
+    connect(action, SIGNAL(triggered(bool)),
+            SLOT(onOpenLogViewerTriggered()));
+
+    Tpl::EntityPtr entity = Tpl::Entity::create(contact, Tpl::EntityTypeContact);
+    if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
+	action->setEnabled(true);
+    }
+    
     menu->addSeparator();
     action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications ..."));
     action->setEnabled(true);
@@ -218,7 +237,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-    
+
     if (contact->manager()->canRequestPresenceSubscription()) {
         if (contact->subscriptionState() != Tp::Contact::PresenceStateYes) {
             action = menu->addAction(i18n("Re-request Contact Authorization"));
@@ -233,7 +252,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     }
 
     action = menu->addSeparator(); //prevent two seperators in a row
-        
+
     if (contact->isBlocked()) {
         action = menu->addAction(i18n("Unblock Contact"));
         connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
@@ -389,6 +408,24 @@ void ContextMenu::onStartDesktopSharingTriggered()
     if (item) {
         m_mainWidget->startDesktopSharing(item);
     }
+}
+
+void ContextMenu::onOpenLogViewerTriggered()
+{
+    if (!m_currentIndex.isValid()) {
+      kDebug() << "Invalid index provided.";
+      return;
+    }
+
+    ContactModelItem *item = m_currentIndex.data(AccountsModel::ItemRole).value<ContactModelItem*>();
+    Q_ASSERT(item);
+
+    Tp::ContactPtr contact = item->contact();
+    Tp::AccountPtr account = m_mainWidget->d_ptr->model->accountForContactItem(item);
+
+    /* Use "--" so that KCmdLineArgs does not parse UIDs starting with "-" as arguments */
+    KToolInvocation::kdeinitExec(QLatin1String("ktp-log-viewer"),
+	  QStringList() << QLatin1String("--") << account->uniqueIdentifier() << contact->id());
 }
 
 void ContextMenu::onUnblockContactTriggered()

@@ -26,6 +26,8 @@
 
 #include <TelepathyQt/Types>
 
+#include <TelepathyLoggerQt4/LogManager>
+
 #include "contact-list-widget.h"
 
 class AccountsModel;
@@ -52,6 +54,7 @@ private Q_SLOTS:
     void onStartVideoChatTriggered();
     void onStartFileTransferTriggered();
     void onStartDesktopSharingTriggered();
+    void onOpenLogViewerTriggered();
     void onUnblockContactTriggered();
     void onRemoveContactFromGroupTriggered();
     void onCreateNewGroupTriggered();
@@ -68,6 +71,7 @@ private:
     ContactListWidget     *m_mainWidget;
     QModelIndex            m_currentIndex;
     Tp::AccountManagerPtr  m_accountManager;
+    Tpl::LogManagerPtr	   m_logManager;
 };
 
 #endif // CONTEXT_MENU_H
