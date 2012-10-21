@@ -28,6 +28,8 @@
 #include <KTp/Models/accounts-model.h>
 #include <KTp/Models/contact-model-item.h>
 
+const int spacing = IconSize(KIconLoader::Dialog) / 8;
+
 class GuiItemContactViewHoverButton : public ContactViewHoverButton
 {
 public:
@@ -52,14 +54,14 @@ GuiItemContactViewHoverButton::GuiItemContactViewHoverButton(QAbstractItemView *
 
 QSize GuiItemContactViewHoverButton::sizeHint() const
 {
-    return QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
+    return QSize(IconSize(KIconLoader::Small), IconSize(KIconLoader::Small));
 }
 
 QPixmap GuiItemContactViewHoverButton::icon()
 {
     return KIconLoader::global()->loadIcon(m_guiItem.iconName(),
                                            KIconLoader::NoGroup,
-                                           KIconLoader::SizeSmall);
+                                           IconSize(KIconLoader::Small));
 }
 
 void GuiItemContactViewHoverButton::updateToolTip()
@@ -100,7 +102,7 @@ void StartChannelContactOverlay::updateButton(const QModelIndex &index)
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
 
-    const int gap = 2;
+    const int gap = spacing / 2;
     const int x   = rect.left() + m_xpos; // rect.right() - gap - 96 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
@@ -132,7 +134,7 @@ TextChannelContactOverlay::TextChannelContactOverlay(QObject *parent)
         KGuiItem(i18n("Start Chat"), "text-x-generic",
                  i18n("Start Chat"), i18n("Start a text chat")),
         AccountsModel::TextChatCapabilityRole,
-        40)
+        IconSize(KIconLoader::Dialog) + spacing * 2)
 {
 }
 
@@ -144,7 +146,7 @@ AudioChannelContactOverlay::AudioChannelContactOverlay(QObject *parent)
         KGuiItem(i18n("Start Audio Call"), "audio-headset",
                  i18n("Start Audio Call"), i18n("Start an audio call")),
         AccountsModel::AudioCallCapabilityRole,
-        64)
+        IconSize(KIconLoader::Dialog) + spacing * 3 + IconSize(KIconLoader::Small))
 
 {
 }
@@ -157,7 +159,7 @@ VideoChannelContactOverlay::VideoChannelContactOverlay(QObject *parent)
         KGuiItem(i18n("Start Video Call"), "camera-web",
                  i18n("Start Video Call"), i18n("Start a video call")),
         AccountsModel::VideoCallCapabilityRole,
-        88)
+        IconSize(KIconLoader::Dialog) + spacing * 4 + IconSize(KIconLoader::Small) * 2)
 {
 }
 
@@ -169,7 +171,7 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject *parent)
         KGuiItem(i18n("Send File..."), "mail-attachment",
                  i18n("Send File..."), i18n("Send a file")),
         AccountsModel::FileTransferCapabilityRole,
-        128)
+        IconSize(KIconLoader::Dialog) + spacing * 5 + IconSize(KIconLoader::Small) * 3)
 {
 }
 
@@ -181,7 +183,7 @@ DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject *parent)
         KGuiItem(i18n("Share my desktop"), "krfb",
                  i18n("Share my desktop"), i18n("Share desktop using RFB")),
         AccountsModel::DesktopSharingCapabilityRole,
-        152)
+        IconSize(KIconLoader::Dialog) + spacing * 6 + IconSize(KIconLoader::Small) * 4)
 {
 }
 

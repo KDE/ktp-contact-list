@@ -163,14 +163,14 @@ void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
 {
     if (size == ContactDelegateCompact::Mini) {
         m_spacing = 2;
-        m_avatarSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
+        m_avatarSize = IconSize(KIconLoader::Toolbar);
         m_presenceIconSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
         m_clientTypeIconSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
     } else if (size == ContactDelegateCompact::Normal) {
         m_spacing = 4;
-        m_avatarSize = 22;
-        m_presenceIconSize = 16;
-        m_clientTypeIconSize = 16;
+        m_avatarSize = IconSize(KIconLoader::Toolbar);
+        m_presenceIconSize = IconSize(KIconLoader::Small);
+        m_clientTypeIconSize = IconSize(KIconLoader::Small);
     }
 
     m_listSize = size;
