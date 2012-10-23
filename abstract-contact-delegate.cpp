@@ -42,14 +42,12 @@ const int SPACING = 2;
 const int ACCOUNT_ICON_SIZE = 16;
 
 AbstractContactDelegate::AbstractContactDelegate(QObject* parent)
-        : QStyledItemDelegate(parent), m_palette(0)
+        : QStyledItemDelegate(parent)
 {
-    m_palette = new QPalette(QApplication::palette());
 }
 
 AbstractContactDelegate::~AbstractContactDelegate()
 {
-    delete m_palette;
 }
 
 void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -120,9 +118,9 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QString groupHeaderString =  index.data(Qt::DisplayRole).toString().append(counts);
 
     if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::WindowText));
     }
 
     painter->setFont(groupFont);
@@ -132,7 +130,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QPen thinLinePen;
     thinLinePen.setWidth(0);
-    thinLinePen.setColor(m_palette->color(QPalette::Inactive, QPalette::Button));
+    thinLinePen.setColor(option.palette.color(QPalette::Inactive, QPalette::Button));
 
     painter->setPen(thinLinePen);
     painter->setRenderHint(QPainter::Antialiasing, false);

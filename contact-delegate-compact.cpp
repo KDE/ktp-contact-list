@@ -119,9 +119,9 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     const QFontMetrics nameFontMetrics(nameFont);
 
     if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::WindowText));
     }
 
     painter->setFont(nameFont);
@@ -140,9 +140,9 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     presenceMessageRect.setY(presenceMessageRect.y() + (presenceMessageRect.height()/2 - nameFontMetrics.height()/2));
 
     if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::HighlightedText));
+        painter->setPen(option.palette.color(QPalette::Disabled, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Disabled, QPalette::WindowText));
     }
 
     painter->drawText(presenceMessageRect,
