@@ -136,7 +136,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     if (option.state & QStyle::State_HasFocus) {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(option.palette.color(QPalette::Active, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
     }
 
     painter->drawText(userNameRect,
@@ -153,7 +153,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     if (option.state & QStyle::State_HasFocus) {
         fadingColor = QColor(option.palette.color(QPalette::Disabled, QPalette::HighlightedText));
     } else {
-        fadingColor = QColor(option.palette.color(QPalette::Disabled, QPalette::WindowText));
+        fadingColor = QColor(option.palette.color(QPalette::Disabled, QPalette::Text));
     }
 
     // if the index is hovered, set animated alpha to the color
