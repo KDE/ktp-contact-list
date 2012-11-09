@@ -10,13 +10,13 @@ set(KDE_MIN_VERSION "4.4.75")
 find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
-find_package (TelepathyLoggerQt4 REQUIRED)
+find_package (TelepathyLoggerQt4 0.5.60 REQUIRED)
 
 include (KDE4Defaults)
 include (MacroLibrary)
 
 add_definitions (${KDE4_DEFINITIONS}
-		 ${TELEPATHY_LOGGER_QT4_DEFINITIONS}
+                 ${TELEPATHY_LOGGER_QT4_DEFINITIONS}
 )
 
 include_directories (${KDE4_INCLUDES}
