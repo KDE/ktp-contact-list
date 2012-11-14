@@ -149,13 +149,6 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
     }
 }
 
-ContactsModel* ContactListWidget::accountsModel()
-{
-    Q_D(ContactListWidget);
-
-    return d->model;
-}
-
 void ContactListWidget::showSettingsKCM()
 {
     KSettings::Dialog *dialog = new KSettings::Dialog(this);
@@ -616,7 +609,7 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
 
     if (index.isValid()) {
         ContactModelItem *contactItem = index.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-        //We put a contact ID and its account ID to the stream, so we can later recreate the contact using AccountsModel
+        //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
         stream << contactItem->contact().data()->id() << d->model->accountForContactItem(contactItem).data()->objectPath();
     }
 

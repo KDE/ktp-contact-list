@@ -42,7 +42,6 @@ public:
     explicit ContactListWidget(QWidget* parent);
     virtual ~ContactListWidget();
 
-    ContactsModel *accountsModel();
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
 public Q_SLOTS:

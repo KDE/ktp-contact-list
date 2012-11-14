@@ -354,7 +354,7 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
 
 void MainWidget::onAddContactRequest()
 {
-    KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_contactsListView->accountsModel(), this);
+    KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_accountManager, this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
 }
