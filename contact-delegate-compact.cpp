@@ -81,25 +81,40 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
+    int rightIconsWidth;
     KTp::Presence presence;
-    if (index.data(PersonsModel::StatusRole).toString() == "available") {
-        presence = KTp::Presence(Tp::Presence::available());
-    } else if (index.data(PersonsModel::StatusRole).toString() == "away") {
-        presence = KTp::Presence(Tp::Presence::away());
+
+    for (int i = 0; i < index.data(PersonsModel::ContactsCountRole).toInt(); i++) {
+        if (index.data(PersonsModel::StatusRole).toStringList().isEmpty()) {
+            continue;
+        }
+
+        if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "available") {
+            presence = KTp::Presence(Tp::Presence::available());
+        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "away") {
+            presence = KTp::Presence(Tp::Presence::away());
+        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "busy"
+            || index.data(PersonsModel::StatusRole).toStringList().at(i) == "dnd") {
+            presence = KTp::Presence(Tp::Presence::busy());
+        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "xa") {
+            presence = KTp::Presence(Tp::Presence::xa());
+        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "offline") {
+            presence = KTp::Presence(Tp::Presence::offline());
+        }
+
+        // This value is used to set the correct width for the username and the presence message.
+        rightIconsWidth = m_presenceIconSize + m_spacing;
+
+        QPixmap icon = presence.icon().pixmap(KIconLoader::SizeSmallMedium);
+
+        QRect statusIconRect = optV4.rect;
+
+        statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
+        statusIconRect.moveTo(QPoint(optV4.rect.right() - (rightIconsWidth * (i + 1)),
+                                    optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
+
+        painter->drawPixmap(statusIconRect, icon);
     }
-
-    // This value is used to set the correct width for the username and the presence message.
-    int rightIconsWidth = m_presenceIconSize + m_spacing;
-
-    QPixmap icon = presence.icon().pixmap(KIconLoader::SizeSmallMedium);
-
-    QRect statusIconRect = optV4.rect;
-
-    statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
-    statusIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
-                                 optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
-
-    painter->drawPixmap(statusIconRect, icon);
 
     // Right now we only check for 'phone', as that's the most interesting type.
 //     if (index.data(AccountsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
