@@ -27,6 +27,7 @@ class GroupsModel;
 class AccountsFilterModel;
 class ContactDelegate;
 class ContactDelegateCompact;
+class KPeopleProxy;
 
 class ContactListWidgetPrivate {
 public:
@@ -44,6 +45,7 @@ public:
     AccountsFilterModel    *modelFilter;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
+    KPeopleProxy           *proxy;
     QRect                   dropIndicatorRect;
     QPoint                  dragStartPosition;
     bool                    shouldDrag;

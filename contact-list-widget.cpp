@@ -57,6 +57,7 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
+#include "kpeople-proxy.h"
 
 #define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KTp.TextUi"
 #define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KTp.FileTransfer"
@@ -81,15 +82,20 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     connect(d->model, SIGNAL(peopleAdded()),
             this, SLOT(onShowAllContacts()));
     kDebug() << d->model->rowCount();
+    d->proxy = new KPeopleProxy(this);
+    d->proxy->setSourceModel(d->model);
+    d->proxy->setDynamicSortFilter(true);
+    d->proxy->sort(0);
+    d->proxy->setSortCaseSensitivity(Qt::CaseInsensitive);
 //     d->groupsModel = new GroupsModel(d->model, this);
 //     d->modelFilter = new AccountsFilterModel(this);
 //     d->modelFilter->setDynamicSortFilter(true);
 //     d->modelFilter->setSortRole(Qt::DisplayRole);
     setItemDelegate(d->compactDelegate);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
-    setModel(d->model);
-    setSortingEnabled(true);
-    sortByColumn(0);
+    setModel(d->proxy);
+//    setSortingEnabled(true);
+//    sortByColumn(0);
 //     sortByColumn(0, Qt::AscendingOrder);
 //     loadGroupStatesFromConfig();
 
@@ -99,8 +105,9 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 //     connect(d->groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
 //             this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
-//     header()->hide();
-//     setRootIsDecorated(false);
+    header()->hide();
+    setRootIsDecorated(false);
+    setEditTriggers(QAbstractItemView::NoEditTriggers);
 //     setSortingEnabled(true);
 //     setContextMenuPolicy(Qt::CustomContextMenu);
     setIndentation(10);
@@ -857,7 +864,6 @@ void ContactListWidget::onGroupSelectedContacts()
     d->model->createPersonFromContacts(selectedContacts);
 
     clearSelection();
-    sortByColumn(0);
 }
 
 void ContactListWidget::onUngroupSelectedContacts()
@@ -869,5 +875,4 @@ void ContactListWidget::onUngroupSelectedContacts()
     }
 
     clearSelection();
-    sortByColumn(0);
 }
