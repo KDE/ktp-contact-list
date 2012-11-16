@@ -51,8 +51,10 @@
 #include <QDragLeaveEvent>
 #include <QPainter>
 #include <QPixmap>
+#include <QAction>
 
 #include <kpeople/persons-model.h>
+#include <kpeople/personactions.h>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
@@ -196,7 +198,10 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
 {
     Q_D(ContactListWidget);
 
-    kDebug() << d->model->itemFromIndex(index)->data(PersonsModel::UriRole).toString();
+    kDebug() << d->model->itemFromIndex(d->proxy->mapToSource(index))->data(PersonsModel::UriRole).toString();
+    kDebug() << d->model->itemFromIndex(d->proxy->mapToSource(index))->data(PersonsModel::StatusRole).toString();
+    QList<QAction *> actions;
+    actions = index.data(PersonsModel::ContactActionsRole).value<QList<QAction *> >();
 //
 //     if (!index.isValid()) {
 //         return;
@@ -227,6 +232,15 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
 
 void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
 {
+    QList<QAction *> actions;
+    actions = index.data(PersonsModel::ContactActionsRole).value<QList<QAction *> >();
+    //kDebug() << actions;//.size();
+    Q_FOREACH (QAction *a, actions) {
+        if (a->property("capability").toString() == QLatin1String("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#imCapabilityText")) {
+            a->trigger();
+        }
+    }
+
 //     if (!index.isValid()) {
 //         return;
 //     }

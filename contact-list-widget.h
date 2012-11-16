@@ -114,4 +114,6 @@ private:
     ContactListWidgetPrivate * const d_ptr;
 };
 
+Q_DECLARE_METATYPE(QList<QAction *>)
+
 #endif // CONTACT_LIST_WIDGET_H
