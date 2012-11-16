@@ -111,7 +111,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setRootIsDecorated(false);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
 //     setSortingEnabled(true);
-//     setContextMenuPolicy(Qt::CustomContextMenu);
+    setContextMenuPolicy(Qt::CustomContextMenu);
     setIndentation(10);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 //     setMouseTracking(true);

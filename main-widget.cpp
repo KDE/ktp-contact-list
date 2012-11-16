@@ -253,7 +253,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addWidget(settingsButton);
 
-//     m_contextMenu = new ContextMenu(m_contactsListView);
+    m_contextMenu = new ContextMenu(m_contactsListView);
 
 //     new ToolTipManager(m_contactsListView);
 
@@ -378,27 +378,20 @@ void MainWidget::onAddContactRequest()
 
 void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 {
-//     QModelIndex index = m_contactsListView->indexAt(pos);
-//
-//     if (!index.isValid()) {
-//         return;
-//     }
-//
-//     Tp::ContactPtr contact;
-//     QVariant item = index.data(AccountsModel::ItemRole);
-//
-//     KMenu *menu = 0;
-//
-//     if (item.userType() == qMetaTypeId<ContactModelItem*>()) {
-//         menu = m_contextMenu->contactContextMenu(index);
-//     } else if (item.userType() == qMetaTypeId<GroupsModelItem*>()) {
-//         menu = m_contextMenu->groupContextMenu(index);
-//     }
-//
-//     if (menu) {
-//         menu->exec(QCursor::pos());
-//         menu->deleteLater();
-//     }
+    QModelIndex index = m_contactsListView->indexAt(pos);
+
+    if (!index.isValid()) {
+        return;
+    }
+
+    KMenu *menu = 0;
+
+    menu = m_contextMenu->contactContextMenu(index);
+
+    if (menu) {
+        menu->exec(QCursor::pos());
+        menu->deleteLater();
+    }
 }
 
 void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
