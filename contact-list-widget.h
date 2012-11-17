@@ -67,12 +67,6 @@ private Q_SLOTS:
     void onNewGroupModelItemsInserted(const QModelIndex &index, int start, int end);
     void addOverlayButtons();
 
-    void startTextChannel(ContactModelItem *contactItem);
-    void startFileTransferChannel(ContactModelItem *contactItem);
-    void startAudioChannel(ContactModelItem *contactItem);
-    void startVideoChannel(ContactModelItem *contactItem);
-    void startDesktopSharing(ContactModelItem *contactItem);
-
 Q_SIGNALS:
     void enableOverlays(bool);
     void accountManagerReady(Tp::PendingOperation* op);
@@ -91,11 +85,6 @@ protected:
     virtual void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const;
 
 private:
-    void requestFileTransferChannels(const Tp::AccountPtr& account,
-                                     const Tp::ContactPtr& contact,
-                                     const QStringList& filenames,
-                                     const QDateTime& userActionTime);
-
     void loadGroupStatesFromConfig();
 
     friend class ContextMenu;

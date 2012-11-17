@@ -31,6 +31,7 @@
 #include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/accounts-model-item.h>
 #include <KTp/Models/groups-model-item.h>
+#include <KTp/actions.h>
 
 #include <KGlobal>
 #include <KSharedConfig>
@@ -55,11 +56,6 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
-
-#define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KTp.TextUi"
-#define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KTp.FileTransfer"
-#define PREFERRED_AUDIO_VIDEO_HANDLER "org.freedesktop.Telepathy.Client.KTp.CallUi"
-#define PREFERRED_RFB_HANDLER "org.freedesktop.Telepathy.Client.krfb_rfb_handler"
 
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
@@ -205,9 +201,15 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
         return;
     }
 
-    if (index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>()) {
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
         kDebug() << "Text chat requested for index" << index;
-        startTextChannel(index.data(ContactsModel::ItemRole).value<ContactModelItem*>());
+        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+
+        if (contact && account) {
+            Tp::PendingOperation *op = KTp::Actions::startChat(account, contact, true);
+            connect(op, SIGNAL(finished(Tp::PendingOperation*)), SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+        }
     }
 }
 
@@ -298,133 +300,6 @@ void ContactListWidget::toggleSortByPresence(bool sort)
     Q_D(ContactListWidget);
 
     d->modelFilter->setSortMode(sort ? AccountsFilterModel::SortByPresence : AccountsFilterModel::DoNotSort);
-}
-
-void ContactListWidget::startTextChannel(ContactModelItem *contactItem)
-{
-    Q_D(ContactListWidget);
-
-    Q_ASSERT(contactItem);
-    Tp::ContactPtr contact = contactItem->contact();
-
-    kDebug() << "Requesting chat for contact" << contact->alias();
-
-    Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-
-    Tp::ChannelRequestHints hints;
-    hints.setHint("org.freedesktop.Telepathy.ChannelRequest","DelegateToPreferredHandler", QVariant(true));
-
-    Tp::PendingChannelRequest *channelRequest = account->ensureTextChat(contact,
-                                                                        QDateTime::currentDateTime(),
-                                                                        PREFERRED_TEXTCHAT_HANDLER,
-                                                                        hints);
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-            SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-}
-
-void ContactListWidget::startAudioChannel(ContactModelItem *contactItem)
-{
-    Q_D(ContactListWidget);
-
-    Q_ASSERT(contactItem);
-    Tp::ContactPtr contact = contactItem->contact();
-
-    kDebug() << "Requesting audio for contact" << contact->alias();
-
-    Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-
-    Tp::PendingChannelRequest *channelRequest = account->ensureAudioCall(contact,
-            QLatin1String("audio"), QDateTime::currentDateTime(), PREFERRED_AUDIO_VIDEO_HANDLER);
-
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-            SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-}
-
-void ContactListWidget::startVideoChannel(ContactModelItem *contactItem)
-{
-    Q_D(ContactListWidget);
-
-    Q_ASSERT(contactItem);
-    Tp::ContactPtr contact = contactItem->contact();
-
-    kDebug() << "Requesting video for contact" << contact->alias();
-
-    Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-
-    Tp::PendingChannelRequest* channelRequest = account->ensureAudioVideoCall(contact,
-            QLatin1String("audio"), QLatin1String("video"),
-            QDateTime::currentDateTime(), PREFERRED_AUDIO_VIDEO_HANDLER);
-
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-            SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-}
-
-void ContactListWidget::startDesktopSharing(ContactModelItem* contactItem)
-{
-    Q_D(ContactListWidget);
-
-    Q_ASSERT(contactItem);
-    Tp::ContactPtr contact = contactItem->contact();
-
-    kDebug() << "Requesting desktop sharing for contact" << contact->alias();
-
-    Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-
-    Tp::PendingChannelRequest* channelRequest = account->createStreamTube(contact,
-                                                                          QLatin1String("rfb"),
-                                                                          QDateTime::currentDateTime(),
-                                                                          PREFERRED_RFB_HANDLER);
-
-    connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-            SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-}
-
-void ContactListWidget::startFileTransferChannel(ContactModelItem *contactItem)
-{
-    Q_D(ContactListWidget);
-
-    Q_ASSERT(contactItem);
-    Tp::ContactPtr contact = contactItem->contact();
-
-    kDebug() << "Requesting file transfer for contact" << contact->alias();
-
-    Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-
-    QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
-                                                          QString(),
-                                                          this,
-                                                          i18n("Choose files to send to %1", contact->alias()));
-
-    if (filenames.isEmpty()) { // User hit cancel button
-        return;
-    }
-
-    QDateTime now = QDateTime::currentDateTime();
-
-    requestFileTransferChannels(account, contact, filenames, now);
-}
-
-void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr& account,
-                                                    const Tp::ContactPtr& contact,
-                                                    const QStringList& filenames,
-                                                    const QDateTime& userActionTime)
-{
-    Q_FOREACH (const QString &filename, filenames) {
-        kDebug() << "Filename:" << filename;
-        kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
-
-        Tp::FileTransferChannelCreationProperties fileTransferProperties(filename,
-                                                                        KMimeType::findByFileContent(filename)->name());
-
-        Tp::PendingChannelRequest* channelRequest = account->createFileTransfer(contact,
-                                                                                fileTransferProperties,
-                                                                                userActionTime,
-                                                                                PREFERRED_FILETRANSFER_HANDLER);
-
-        connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
-                SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-    }
-
 }
 
 void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int start, int end)
@@ -632,27 +507,15 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasUrls()) {
         kDebug() << "It's a file!";
 
-        ContactModelItem* contactItem = index.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-        Q_ASSERT(contactItem);
+        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
 
-        Tp::ContactPtr contact = contactItem->contact();
-
-        kDebug() << "Requesting file transfer for contact" << contact->alias();
-
-        Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-
-        QStringList filenames;
-        Q_FOREACH (const QUrl &url, event->mimeData()->urls()) {
-            filenames << url.toLocalFile();
+        if (contact && account) {
+            Q_FOREACH (const QUrl &url, event->mimeData()->urls()) {
+                Tp::PendingOperation *op = KTp::Actions::startFileTransfer(account, contact, url.toLocalFile());
+                connect(op, SIGNAL(finished(Tp::PendingOperation*)), SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+            }
         }
-
-        if (filenames.isEmpty()) {
-            return;
-        }
-
-        QDateTime now = QDateTime::currentDateTime();
-        requestFileTransferChannels(account, contact, filenames, now);
-
         event->acceptProposedAction();
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
         kDebug() << "It's a contact!";
