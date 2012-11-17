@@ -37,8 +37,6 @@
 #include <TelepathyQt/PendingReady>
 
 #include <KTp/Models/contacts-model.h>
-#include <KTp/Models/contact-model-item.h>
-#include <KTp/Models/groups-model-item.h>
 #include <KTp/Widgets/add-contact-dialog.h>
 #include <KTp/Widgets/join-chat-room-dialog.h>
 
@@ -367,14 +365,13 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
         return;
     }
 
-    Tp::ContactPtr contact;
-    QVariant item = index.data(ContactsModel::ItemRole);
+    ContactsModel::RowType type = (ContactsModel::RowType)index.data(ContactsModel::TypeRole).toInt();
 
     KMenu *menu = 0;
 
-    if (item.userType() == qMetaTypeId<ContactModelItem*>()) {
+    if (type == ContactsModel::ContactRowType) {
         menu = m_contextMenu->contactContextMenu(index);
-    } else if (item.userType() == qMetaTypeId<GroupsModelItem*>()) {
+    } else if (type == ContactsModel::GroupRowType) {
         menu = m_contextMenu->groupContextMenu(index);
     }
 
