@@ -44,7 +44,6 @@ class AccountsFilterModel;
 class ContactDelegate;
 class FilterBar;
 class KJob;
-class ContactModelItem;
 
 class MainWidget : public KMainWindow, Ui::MainWindow
 {
