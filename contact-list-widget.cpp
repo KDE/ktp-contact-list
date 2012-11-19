@@ -29,8 +29,7 @@
 #include <KTp/Models/groups-model.h>
 #include <KTp/Models/accounts-filter-model.h>
 #include <KTp/Models/contact-model-item.h>
-#include <KTp/Models/accounts-model-item.h>
-#include <KTp/Models/groups-model-item.h>
+
 #include <KTp/actions.h>
 
 #include <KGlobal>
@@ -172,8 +171,8 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
         return;
     }
 
-    if (index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()
-        || index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<GroupsModelItem*>()) {
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::AccountRowType
+        || index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
 
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
         KConfigGroup groupsConfig = config->group("GroupsState");
@@ -333,8 +332,6 @@ void ContactListWidget::startLogViewer(const Tp::AccountPtr &account, const Tp::
 
 void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-    Q_D(ContactListWidget);
-
     kDebug() << "Requesting file transfer for contact" << contact->alias();
 
     QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
@@ -506,7 +503,7 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
     d->shouldDrag = false;
 
     // if no contact, no drag
-    if (!index.data(ContactsModel::ItemRole).canConvert<ContactModelItem*>()) {
+    if (!index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
         return;
     }
 
@@ -541,9 +538,11 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
     if (index.isValid()) {
-        ContactModelItem *contactItem = index.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+
         //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
-        stream << contactItem->contact().data()->id() << d->model->accountForContactItem(contactItem).data()->objectPath();
+        stream << contact->id() << account->objectPath();
     }
 
     mimeData->setData("application/vnd.telepathy.contact", encodedData);
@@ -565,14 +564,11 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasUrls()) {
         kDebug() << "It's a file!";
 
-        ContactModelItem* contactItem = index.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-        Q_ASSERT(contactItem);
-
-        Tp::ContactPtr contact = contactItem->contact();
+        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
 
         kDebug() << "Requesting file transfer for contact" << contact->alias();
 
-        Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
+        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
 
         QStringList filenames;
         Q_FOREACH (const QUrl &url, event->mimeData()->urls()) {
@@ -583,7 +579,6 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             return;
         }
 
-        QDateTime now = QDateTime::currentDateTime();
         requestFileTransferChannels(account, contact, filenames);
 
         event->acceptProposedAction();
@@ -610,7 +605,7 @@ void ContactListWidget::dropEvent(QDropEvent *event)
         Q_FOREACH (ContactModelItem *contact, contacts) {
             Q_ASSERT(contact);
             QString group;
-            if (index.data(ContactsModel::ItemRole).canConvert<GroupsModelItem*>()) {
+            if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
                 // contact is dropped on a group, so take it's name
                 group = index.data(GroupsModel::GroupNameRole).toString();
             } else {
@@ -672,8 +667,8 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
         setDropIndicatorRect(visualRect(index));
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
                d->modelFilter->sourceModel() == d->groupsModel &&
-               (index.data(ContactsModel::ItemRole).canConvert<GroupsModelItem*>() ||
-                index.data(ContactsModel::ItemRole).canConvert<ContactModelItem*>())) {
+               (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType ||
+                index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType)) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else {
