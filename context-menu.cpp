@@ -27,7 +27,6 @@
 #include <KToolInvocation>
 #include <KInputDialog>
 #include <KMessageBox>
-#include <KFileDialog>
 
 #include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contact-model-item.h>
@@ -36,11 +35,8 @@
 #include <KTp/Models/groups-model.h>
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notificationconfigdialog.h>
-#include <KTp/Models/accounts-filter-model.h>
-#include <KTp/actions.h>
 
 #include <TelepathyQt/ContactManager>
-#include <TelepathyQt/PendingChannelRequest>
 
 #include <TelepathyLoggerQt4/Entity>
 #include <TelepathyLoggerQt4/LogManager>
@@ -50,6 +46,7 @@
 #include "dialogs/contact-info.h"
 
 #include "contact-list-widget_p.h"
+#include <KTp/Models/accounts-filter-model.h>
 
 ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
@@ -84,14 +81,14 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
-    Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = index.data(ContactsModel::ItemRole).value<ContactModelItem*>()->contact();
 
     if (contact.isNull()) {
         kDebug() << "Contact is nulled";
         return 0;
     }
 
-    Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();;
+    Tp::AccountPtr account = m_mainWidget->d_ptr->model->accountForContactItem(index.data(ContactsModel::ItemRole).value<ContactModelItem*>());
 
     if (account.isNull()) {
         kDebug() << "Account is nulled";
@@ -315,7 +312,10 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 void ContextMenu::onRemoveContactFromGroupTriggered()
 {
     QString groupName = m_currentIndex.parent().data(GroupsModel::GroupNameRole).toString();
-    Tp::ContactPtr contact =  m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+
+    Q_ASSERT(contactItem);
+    Tp::ContactPtr contact =  contactItem->contact();
 
     Tp::PendingOperation* operation = contact->removeFromGroup(groupName);
 
@@ -337,9 +337,9 @@ void ContextMenu::onShowInfoTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    if (contact) {
-        QWeakPointer<ContactInfo> contactInfoDialog = new ContactInfo(contact, m_mainWidget);
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        QWeakPointer<ContactInfo> contactInfoDialog = new ContactInfo(item->contact(), m_mainWidget);
         contactInfoDialog.data()->setAttribute(Qt::WA_DeleteOnClose);
         contactInfoDialog.data()->show();
     }
@@ -352,12 +352,9 @@ void ContextMenu::onStartTextChatTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
-
-    if (contact && account) {
-        Tp::PendingOperation *op = KTp::Actions::startChat(account, contact, true);
-        connect(op, SIGNAL(finished(Tp::PendingOperation*)), m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        m_mainWidget->startTextChannel(item);
     }
 }
 
@@ -368,12 +365,9 @@ void ContextMenu::onStartAudioChatTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
-
-    if (contact && account) {
-        Tp::PendingOperation *op = KTp::Actions::startAudioCall(account, contact);
-        connect(op, SIGNAL(finished(Tp::PendingOperation*)), m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        m_mainWidget->startAudioChannel(item);
     }
 }
 
@@ -384,12 +378,9 @@ void ContextMenu::onStartVideoChatTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
-
-    if (contact && account) {
-        Tp::PendingOperation *op = KTp::Actions::startAudioVideoCall(account, contact);
-        connect(op, SIGNAL(finished(Tp::PendingOperation*)), m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        m_mainWidget->startVideoChannel(item);
     }
 }
 
@@ -400,21 +391,9 @@ void ContextMenu::onStartFileTransferTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
-
-    if (contact && account) {
-        QStringList fileNames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
-                                                              QString(),
-                                                              m_mainWidget,
-                                                              i18n("Choose files to send to %1", contact->alias()));
-
-        //if user hit cancel fileNames is empty
-
-        Q_FOREACH (const QString &fileName, fileNames) {
-            Tp::PendingOperation *op = KTp::Actions::startFileTransfer(account, contact, fileName);
-            connect(op, SIGNAL(finished(Tp::PendingOperation*)), m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-        }
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        m_mainWidget->startFileTransferChannel(item);
     }
 }
 
@@ -425,12 +404,9 @@ void ContextMenu::onStartDesktopSharingTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
-
-    if (contact && account) {
-        Tp::PendingOperation *op = KTp::Actions::startDesktopSharing(account, contact);
-        connect(op, SIGNAL(finished(Tp::PendingOperation*)), m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+    if (item) {
+        m_mainWidget->startDesktopSharing(item);
     }
 }
 
@@ -441,12 +417,15 @@ void ContextMenu::onOpenLogViewerTriggered()
       return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+    Q_ASSERT(item);
 
-    if (contact && account) {
-        KTp::Actions::openLogViewer(account, contact);
-    }
+    Tp::ContactPtr contact = item->contact();
+    Tp::AccountPtr account = m_mainWidget->d_ptr->model->accountForContactItem(item);
+
+    /* Use "--" so that KCmdLineArgs does not parse UIDs starting with "-" as arguments */
+    KToolInvocation::kdeinitExec(QLatin1String("ktp-log-viewer"),
+	  QStringList() << QLatin1String("--") << account->uniqueIdentifier() << contact->id());
 }
 
 void ContextMenu::onUnblockContactTriggered()
