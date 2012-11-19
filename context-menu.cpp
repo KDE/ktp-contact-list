@@ -27,6 +27,7 @@
 #include <KToolInvocation>
 #include <KInputDialog>
 #include <KMessageBox>
+#include <KAction>
 
 #include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contact-model-item.h>
@@ -352,22 +353,21 @@ void ContextMenu::onStartTextChatTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-    if (item) {
-        m_mainWidget->startTextChannel(item);
+    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startTextChannel(account, contact);
     }
 }
 
 void ContextMenu::onStartAudioChatTriggered()
 {
-    if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
-        return;
-    }
+    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
 
-    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-    if (item) {
-        m_mainWidget->startAudioChannel(item);
+    if (contact && account) {
+        m_mainWidget->startAudioChannel(account, contact);
     }
 }
 
@@ -378,9 +378,11 @@ void ContextMenu::onStartVideoChatTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-    if (item) {
-        m_mainWidget->startVideoChannel(item);
+    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startVideoChannel(account, contact);
     }
 }
 
@@ -391,9 +393,11 @@ void ContextMenu::onStartFileTransferTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-    if (item) {
-        m_mainWidget->startFileTransferChannel(item);
+    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startFileTransferChannel(account, contact);
     }
 }
 
@@ -404,9 +408,11 @@ void ContextMenu::onStartDesktopSharingTriggered()
         return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-    if (item) {
-        m_mainWidget->startDesktopSharing(item);
+    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startDesktopSharing(account, contact);
     }
 }
 
@@ -417,15 +423,12 @@ void ContextMenu::onOpenLogViewerTriggered()
       return;
     }
 
-    ContactModelItem *item = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
-    Q_ASSERT(item);
+    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
 
-    Tp::ContactPtr contact = item->contact();
-    Tp::AccountPtr account = m_mainWidget->d_ptr->model->accountForContactItem(item);
-
-    /* Use "--" so that KCmdLineArgs does not parse UIDs starting with "-" as arguments */
-    KToolInvocation::kdeinitExec(QLatin1String("ktp-log-viewer"),
-	  QStringList() << QLatin1String("--") << account->uniqueIdentifier() << contact->id());
+    if (contact && account) {
+        m_mainWidget->startLogViewer(account, contact);
+    }
 }
 
 void ContextMenu::onUnblockContactTriggered()

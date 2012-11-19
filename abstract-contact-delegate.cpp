@@ -35,7 +35,6 @@
 #include <KTp/Models/contacts-model.h>
 #include <KTp/Models/accounts-model-item.h>
 #include <KTp/Models/groups-model.h>
-#include <KTp/Models/contact-model-item.h>
 #include <KDebug>
 
 const int SPACING = 2;
@@ -52,9 +51,7 @@ AbstractContactDelegate::~AbstractContactDelegate()
 
 void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    bool isContact = index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
-
-    if (isContact) {
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
         paintContact(painter, option, index);
     } else {
         paintHeader(painter, option, index);
@@ -64,9 +61,8 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(option);
-    bool isContact = index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
-    if (isContact) {
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
         return sizeHintContact(option, index);
     } else {
         return sizeHintHeader(option, index);
@@ -105,7 +101,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QString counts = QString(" (%1/%2)").arg(index.data(ContactsModel::OnlineUsersCountRole).toString(),
                      index.data(ContactsModel::TotalUsersCountRole).toString());
 
-    if (index.data(ContactsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::AccountRowType) {
         painter->drawPixmap(accountGroupRect, KIcon(index.data(ContactsModel::IconRole).toString())
                             .pixmap(32));
     } else {
