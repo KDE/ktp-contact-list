@@ -217,12 +217,14 @@ void ContactListWidget::addOverlayButtons()
 
     FileTransferContactOverlay *fileOverlay  = new FileTransferContactOverlay(this);
     DesktopSharingContactOverlay *desktopOverlay = new DesktopSharingContactOverlay(this);
+    LogViewerOverlay *logViewerOverlay = new LogViewerOverlay(this);
 
     d->delegate->installOverlay(textOverlay);
     d->delegate->installOverlay(audioOverlay);
     d->delegate->installOverlay(videoOverlay);
     d->delegate->installOverlay(fileOverlay);
     d->delegate->installOverlay(desktopOverlay);
+    d->delegate->installOverlay(logViewerOverlay);
 
     d->delegate->setViewOnAllOverlays(this);
     d->delegate->setAllOverlaysActive(true);
@@ -249,6 +251,8 @@ void ContactListWidget::addOverlayButtons()
     connect(desktopOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
             this, SLOT(startDesktopSharing(Tp::AccountPtr, Tp::ContactPtr)));
 
+    connect(logViewerOverlay, SIGNAL(activated(Tp::AccountPtr,Tp::ContactPtr)),
+	    this, SLOT(startLogViewer(Tp::AccountPtr, Tp::ContactPtr)));
 
     connect(this, SIGNAL(enableOverlays(bool)),
             textOverlay, SLOT(setActive(bool)));
@@ -264,6 +268,9 @@ void ContactListWidget::addOverlayButtons()
 
     connect(this, SIGNAL(enableOverlays(bool)),
             desktopOverlay, SLOT(setActive(bool)));
+
+    connect(this, SIGNAL(enableOverlays(bool)),
+	    logViewerOverlay, SLOT(setActive(bool)));
 }
 
 void ContactListWidget::toggleGroups(bool show)

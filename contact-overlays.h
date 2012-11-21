@@ -112,4 +112,14 @@ public:
     DesktopSharingContactOverlay(QObject *parent);
 };
 
+// ---------------------------------------------------------------------
+
+class LogViewerOverlay: public StartChannelContactOverlay
+{
+    Q_OBJECT
+
+public:
+    LogViewerOverlay(QObject *parent);
+};
+
 #endif // VERSIONSOVERLAYS_H
