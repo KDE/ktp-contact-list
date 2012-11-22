@@ -117,7 +117,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*4),0,0,0);
     QString groupHeaderString =  index.data(Qt::DisplayRole).toString().append(counts);
 
-    if (option.state & QStyle::State_HasFocus) {
+    if (option.state & QStyle::State_Selected) {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
