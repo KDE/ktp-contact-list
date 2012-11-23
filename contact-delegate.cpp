@@ -130,7 +130,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
 
     const QFontMetrics nameFontMetrics(KGlobalSettings::generalFont());
 
-    if (option.state & QStyle::State_HasFocus) {
+    if (option.state & QStyle::State_Selected) {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
@@ -147,7 +147,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     statusMsgRect.setWidth(statusMsgRect.width() - rightIconsWidth);
 
     QColor fadingColor;
-    if (option.state & QStyle::State_HasFocus) {
+    if (option.state & QStyle::State_Selected) {
         fadingColor = QColor(option.palette.color(QPalette::Disabled, QPalette::HighlightedText));
     } else {
         fadingColor = QColor(option.palette.color(QPalette::Disabled, QPalette::Text));
