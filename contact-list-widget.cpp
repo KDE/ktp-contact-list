@@ -476,7 +476,7 @@ void ContactListWidget::setFilterString(const QString& string)
     Q_D(ContactListWidget);
 
     d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? AccountsFilterModel::ShowOnlyConnected : AccountsFilterModel::DoNotFilterByPresence);
-    d->modelFilter->setDisplayNameFilterString(string);
+    d->modelFilter->setGlobalFilterString(string);
 }
 
 void ContactListWidget::setDropIndicatorRect(const QRect &rect)
