@@ -152,7 +152,7 @@ void ContactListWidget::showSettingsKCM()
 
     if (!tpAccKcm) {
         KMessageBox::error(this,
-                           i18n("It appears you do not have the IM Accounts control module installed. Please install telepathy-accounts-kcm package."),
+                           i18n("It appears you do not have the IM Accounts control module installed. Please install ktp-accounts-kcm package."),
                            i18n("IM Accounts KCM Plugin Is Not Installed"));
     }
 
