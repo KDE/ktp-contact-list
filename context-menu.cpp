@@ -30,7 +30,6 @@
 #include <KAction>
 
 #include <KTp/Models/contacts-model.h>
-#include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/proxy-tree-node.h>
 #include <KTp/Models/groups-model-item.h>
 #include <KTp/Models/groups-model.h>
@@ -166,7 +165,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
 	action->setEnabled(true);
     }
-    
+
     menu->addSeparator();
     action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications ..."));
     action->setEnabled(true);

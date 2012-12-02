@@ -35,7 +35,6 @@
 #include <KDE/KLocale>
 
 #include <KTp/Models/contacts-model.h>
-#include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/proxy-tree-node.h>
 #include <KTp/Models/groups-model-item.h>
 #include <KTp/Models/groups-model.h>

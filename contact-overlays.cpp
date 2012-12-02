@@ -26,7 +26,6 @@
 #include <KDebug>
 
 #include <KTp/Models/contacts-model.h>
-#include <KTp/Models/contact-model-item.h>
 
 const int spacing = IconSize(KIconLoader::Dialog) / 8;
 
