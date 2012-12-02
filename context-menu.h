@@ -31,7 +31,6 @@
 #include "contact-list-widget.h"
 
 class AccountsModel;
-class ContactModelItem;
 class KMenu;
 class QAction;
 

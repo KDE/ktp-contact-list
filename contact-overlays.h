@@ -29,8 +29,6 @@
 
 #include <TelepathyQt/Types>
 
-class ContactModelItem;
-
 class StartChannelContactOverlay : public ContactDelegateOverlay
 {
     Q_OBJECT

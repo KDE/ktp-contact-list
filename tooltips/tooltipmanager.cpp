@@ -144,7 +144,7 @@ void ToolTipManager::showToolTip(const  QModelIndex &menuItem)
         return;
     }
 
-    if (!menuItem.data(ContactsModel::ItemRole).canConvert<ContactModelItem*>()) {
+    if (!menuItem.data(ContactsModel::ContactRole).canConvert<Tp::ContactPtr>()) {
         return;
     }
 
