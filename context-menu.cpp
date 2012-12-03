@@ -313,7 +313,6 @@ void ContextMenu::onRemoveContactFromGroupTriggered()
 {
     QString groupName = m_currentIndex.parent().data(GroupsModel::GroupNameRole).toString();
 
-    Q_ASSERT(contactItem);
     Tp::ContactPtr contact =  m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
 
     Tp::PendingOperation* operation = contact->removeFromGroup(groupName);
