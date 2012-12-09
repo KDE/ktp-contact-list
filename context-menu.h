@@ -21,7 +21,7 @@
 #define CONTEXT_MENU_H
 
 #include <QObject>
-#include <QModelIndex>
+#include <QPersistentModelIndex>
 #include <QStringList>
 
 #include <TelepathyQt/Types>
@@ -68,7 +68,7 @@ private Q_SLOTS:
 
 private:
     ContactListWidget     *m_mainWidget;
-    QModelIndex            m_currentIndex;
+    QPersistentModelIndex  m_currentIndex;
     Tp::AccountManagerPtr  m_accountManager;
     Tpl::LogManagerPtr	   m_logManager;
 };
