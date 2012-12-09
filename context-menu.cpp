@@ -286,12 +286,10 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
-    GroupsModelItem *groupItem = index.data(ContactsModel::ItemRole).value<GroupsModelItem*>();
-
-    Q_ASSERT(groupItem);
+    const QString groupName = index.data(GroupsModel::GroupNameRole).toString();
 
     KMenu *menu = new KMenu();
-    menu->addTitle(groupItem->groupName());
+    menu->addTitle(groupName);
 
     //must be QAction, because menu->addAction returns QAction, otherwise compilation dies horribly
     QAction *action = menu->addAction(i18n("Rename Group..."));
@@ -311,7 +309,7 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
 void ContextMenu::onRemoveContactFromGroupTriggered()
 {
-    QString groupName = m_currentIndex.parent().data(GroupsModel::GroupNameRole).toString();
+    const QString groupName = m_currentIndex.parent().data(GroupsModel::GroupNameRole).toString();
 
     Tp::ContactPtr contact =  m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
 
@@ -483,7 +481,8 @@ void ContextMenu::onCreateNewGroupTriggered()
 
 void ContextMenu::onRenameGroupTriggered()
 {
-    GroupsModelItem *groupItem = m_currentIndex.data(ContactsModel::ItemRole).value<GroupsModelItem*>();
+    const QString groupName = m_currentIndex.data(GroupsModel::GroupNameRole).toString();
+    const QAbstractItemModel *model = m_currentIndex.model();
 
     Q_ASSERT(groupItem);
 
@@ -491,19 +490,20 @@ void ContextMenu::onRenameGroupTriggered()
 
     QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
                                                  i18n("Please enter the new group name"),
-                                                 groupItem->groupName(),
+                                                 groupName,
                                                  &ok);
 
-    if (ok) {
-        for(int i = 0; i < groupItem->size(); i++) {
-            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    if (ok && groupName != newGroupName) {
+        //loop through all child indexes of m_currentIndex
+        for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
+            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
             Q_ASSERT(contact);
 
             Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
                     m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
-            operation = contact->removeFromGroup(groupItem->groupName());
+            operation = contact->removeFromGroup(groupName);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
                     m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
         }
@@ -516,26 +516,28 @@ void ContextMenu::onDeleteGroupTriggered()
         return;
     }
 
-    GroupsModelItem *groupItem = m_currentIndex.data(ContactsModel::ItemRole).value<GroupsModelItem*>();
+    const QString groupName = m_currentIndex.data(GroupsModel::GroupNameRole).toString();
+    const QAbstractItemModel *model = m_currentIndex.model();
+
 
     if (KMessageBox::warningContinueCancel(m_mainWidget,
                                            i18n("Do you really want to remove group %1?\n\n"
-                                                "Note that all contacts will be moved to group 'Ungrouped'", groupItem->groupName()),
+                                                "Note that all contacts will be moved to group 'Ungrouped'", groupName),
                                            i18n("Remove Group")) == KMessageBox::Continue) {
 
-        for(int i = 0; i < groupItem->size(); i++) {
-            Tp::ContactPtr contact = qobject_cast<ProxyTreeNode*>(groupItem->childAt(i))->data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+        for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
+            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
 
             Q_ASSERT(contact);
 
-            Tp::PendingOperation *operation = contact->removeFromGroup(groupItem->groupName());
+            Tp::PendingOperation *operation = contact->removeFromGroup(groupName);
             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
                     m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
         }
 
         foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->connection()) {
-                Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupItem->groupName());
+                Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupName);
                 connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
                         m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
             }
