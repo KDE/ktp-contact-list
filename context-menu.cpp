@@ -484,8 +484,6 @@ void ContextMenu::onRenameGroupTriggered()
     const QString groupName = m_currentIndex.data(GroupsModel::GroupNameRole).toString();
     const QAbstractItemModel *model = m_currentIndex.model();
 
-    Q_ASSERT(groupItem);
-
     bool ok = false;
 
     QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
