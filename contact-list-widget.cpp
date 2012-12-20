@@ -25,6 +25,7 @@
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingReady>
 
+#include <KTp/Models/contacts-list-model.h>
 #include <KTp/Models/contacts-model.h>
 #include <KTp/Models/groups-model.h>
 #include <KTp/Models/accounts-filter-model.h>
@@ -68,13 +69,14 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
-    d->model = new ContactsModel(this);
-    d->groupsModel = new GroupsModel(d->model, this);
+    d->model = new KTp::ContactsListModel(this);
+
+//    d->groupsModel = new GroupsModel(d->model, this);
     d->modelFilter = new AccountsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
 
-    setModel(d->modelFilter);
+    setModel(d->model);
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
     loadGroupStatesFromConfig();
@@ -278,9 +280,9 @@ void ContactListWidget::toggleGroups(bool show)
     Q_D(ContactListWidget);
 
     if (show) {
-        d->modelFilter->setSourceModel(d->groupsModel);
+//        d->modelFilter->setSourceModel(d->groupsModel);
     } else {
-        d->modelFilter->setSourceModel(d->model);
+//        d->modelFilter->setSourceModel(d->model);
     }
 
     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
@@ -603,10 +605,10 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             //get contact and account out of the stream
             stream >> contact >> account;
 
-            Tp::AccountPtr accountPtr = d->model->accountPtrForPath(account);
+//            Tp::AccountPtr accountPtr = d->model->accountPtrForPath(account);
 
             //casted pointer is checked below, before first use
-            contacts.append(qobject_cast<ContactModelItem*>(d->model->contactItemForId(accountPtr->uniqueIdentifier(), contact)));
+//            contacts.append(qobject_cast<ContactModelItem*>(d->model->contactItemForId(accountPtr->uniqueIdentifier(), contact)));
         }
 
         Q_FOREACH (ContactModelItem *contact, contacts) {

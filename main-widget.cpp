@@ -36,6 +36,7 @@
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/PendingReady>
 
+#include <KTp/contact-factory.h>
 #include <KTp/Models/contacts-model.h>
 #include <KTp/Widgets/add-contact-dialog.h>
 #include <KTp/Widgets/join-chat-room-dialog.h>
@@ -89,7 +90,7 @@ MainWidget::MainWidget(QWidget *parent)
                                                                                << Tp::Connection::FeatureRoster
                                                                                << Tp::Connection::FeatureSelfContact);
 
-    Tp::ContactFactoryPtr contactFactory = Tp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
+    Tp::ContactFactoryPtr contactFactory = KTp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
                                                                       << Tp::Contact::FeatureAvatarData
                                                                       << Tp::Contact::FeatureSimplePresence
                                                                       << Tp::Contact::FeatureCapabilities
