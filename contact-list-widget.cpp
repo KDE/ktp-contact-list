@@ -76,7 +76,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
 
-    setModel(d->model);
+    setModel(d->modelFilter);
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
     loadGroupStatesFromConfig();
@@ -280,9 +280,9 @@ void ContactListWidget::toggleGroups(bool show)
     Q_D(ContactListWidget);
 
     if (show) {
-//        d->modelFilter->setSourceModel(d->groupsModel);
+        d->modelFilter->setSourceModel(d->model); //FIXME gropus model
     } else {
-//        d->modelFilter->setSourceModel(d->model);
+        d->modelFilter->setSourceModel(d->model);
     }
 
     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
