@@ -91,6 +91,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     header()->hide();
     setRootIsDecorated(false);
     setSortingEnabled(true);
+    setEditTriggers(NoEditTriggers);
     setContextMenuPolicy(Qt::CustomContextMenu);
     setIndentation(0);
     setMouseTracking(true);
