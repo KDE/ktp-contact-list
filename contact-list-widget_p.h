@@ -26,7 +26,7 @@ namespace KTp {
     class ContactsListModel;
 }
 
-class GroupsModel;
+class ContactsModel2;
 class AccountsFilterModel;
 class ContactDelegate;
 class ContactDelegateCompact;
@@ -34,17 +34,13 @@ class ContactDelegateCompact;
 class ContactListWidgetPrivate {
 public:
     ContactListWidgetPrivate()
-    : model(0),
-      groupsModel(0),
-      modelFilter(0),
+    : modelFilter(0),
       delegate(0),
       compactDelegate(0),
       shouldDrag(false),
       showOffline(false) {}
 
-    KTp::ContactsListModel          *model;
-    GroupsModel            *groupsModel;
-    AccountsFilterModel    *modelFilter;
+    ContactsModel2          *modelFilter;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     QRect                   dropIndicatorRect;

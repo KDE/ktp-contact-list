@@ -33,6 +33,7 @@
 #include <KTp/Models/proxy-tree-node.h>
 #include <KTp/Models/groups-model-item.h>
 #include <KTp/Models/groups-model.h>
+#include <KTp/Models/accounts-filter-model.h>
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notificationconfigdialog.h>
 
@@ -46,7 +47,7 @@
 #include "dialogs/contact-info.h"
 
 #include "contact-list-widget_p.h"
-#include <KTp/Models/accounts-filter-model.h>
+#include "contacts-model.h"
 
 ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
@@ -196,8 +197,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-    //FIXME add method to modelFilter bool isUsingGroupModel();
-    if (m_mainWidget->d_ptr->modelFilter->sourceModel() == m_mainWidget->d_ptr->groupsModel) {
+    if (m_mainWidget->d_ptr->modelFilter->groupMode() == ContactsModel2::GroupGrouping) {
         // remove contact from group action, must be QAction because menu->addAction returns QAction
         QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));

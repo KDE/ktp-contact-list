@@ -25,13 +25,17 @@
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingReady>
 
-#include <KTp/Models/contacts-list-model.h>
 #include <KTp/Models/contacts-model.h>
+#include <KTp/Models/contacts-list-model.h>
+
+#include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/groups-model.h>
 #include <KTp/Models/accounts-filter-model.h>
-#include <KTp/Models/contact-model-item.h>
+#include <KTp/Models/accounts-tree-proxy-model.h>
+#include <KTp/Models/groups-tree-proxy-model.h>
 
 #include <KTp/actions.h>
+#include <KTp/contact.h>
 
 #include <KGlobal>
 #include <KSharedConfig>
@@ -56,6 +60,7 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
+#include "contacts-model.h"
 
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
@@ -69,23 +74,19 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
-    d->model = new KTp::ContactsListModel(this);
-
-//    d->groupsModel = new GroupsModel(d->model, this);
-    d->modelFilter = new AccountsFilterModel(this);
+    d->modelFilter = new ContactsModel2(this);
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
 
+
     setModel(d->modelFilter);
+
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
     loadGroupStatesFromConfig();
 
     connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
-
-    connect(d->groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
-            this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 
     header()->hide();
     setRootIsDecorated(false);
@@ -132,7 +133,7 @@ ContactListWidget::~ContactListWidget()
 void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     Q_D(ContactListWidget);
-    d->model->setAccountManager(accountManager);
+    d->modelFilter->setAccountManager(accountManager);
 
     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
 
@@ -279,10 +280,11 @@ void ContactListWidget::toggleGroups(bool show)
 {
     Q_D(ContactListWidget);
 
+
     if (show) {
-        d->modelFilter->setSourceModel(d->model); //FIXME gropus model
+        d->modelFilter->setGroupMode(ContactsModel2::GroupGrouping);
     } else {
-        d->modelFilter->setSourceModel(d->model);
+        d->modelFilter->setGroupMode(ContactsModel2::AccountGrouping);
     }
 
     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
@@ -675,7 +677,6 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
-               d->modelFilter->sourceModel() == d->groupsModel &&
                (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType ||
                 index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType)) {
         event->acceptProposedAction();

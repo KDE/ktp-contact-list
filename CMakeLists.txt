@@ -36,6 +36,7 @@ set (ktp_contactlist_SRCS
      contact-delegate-overlay.cpp
      contact-delegate.cpp
      contact-delegate-compact.cpp
+     contacts-model.cpp
      account-button.cpp
      account-buttons-panel.cpp
      filter-bar.cpp
