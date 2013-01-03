@@ -37,11 +37,11 @@ void ContactsModel2::setGroupMode(ContactsModel2::GroupMode mode)
         setSourceModel(m_source);
         break;
     case AccountGrouping:
-        m_proxy = new AccountsTreeProxyModel(m_source, m_accountManager);
+        m_proxy = new KTp::AccountsTreeProxyModel(m_source, m_accountManager);
         setSourceModel(m_proxy.data());
         break;
     case GroupGrouping:
-        m_proxy = new GroupsTreeProxyModel(m_source);
+        m_proxy = new KTp::GroupsTreeProxyModel(m_source);
         setSourceModel(m_proxy.data());
         break;
     }

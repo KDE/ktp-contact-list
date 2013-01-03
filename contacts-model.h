@@ -40,7 +40,7 @@ public:
 
 private:
     GroupMode m_groupMode;
-    QWeakPointer<AbstractGroupingProxyModel> m_proxy;
+    QWeakPointer<KTp::AbstractGroupingProxyModel> m_proxy;
     KTp::ContactsListModel *m_source;
     Tp::AccountManagerPtr m_accountManager;
 };
