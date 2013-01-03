@@ -5,8 +5,8 @@
 
 ContactsModel2::ContactsModel2(QObject *parent)
     : ContactsFilterModel(parent),
-      m_source(new KTp::ContactsListModel(this)),
       m_groupMode(NoGrouping)
+      m_source(new KTp::ContactsListModel(this)),
 {
 
 }
