@@ -132,6 +132,7 @@ MainWidget::MainWidget(QWidget *parent)
     m_showOfflineAction->setInactiveIcon(KIcon("meeting-attending-tentative"));
     m_showOfflineAction->setCheckable(true);
     m_showOfflineAction->setChecked(false);
+    m_showOfflineAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 
     m_toolBar->addAction(m_showOfflineAction);
 
