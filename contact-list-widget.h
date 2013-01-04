@@ -82,6 +82,7 @@ Q_SIGNALS:
 protected:
     void setDropIndicatorRect(const QRect &rect);
     virtual bool event(QEvent *event);
+    virtual void keyPressEvent(QKeyEvent *event);
     virtual void mousePressEvent(QMouseEvent *event);
     virtual void mouseMoveEvent(QMouseEvent *event);
     virtual void paintEvent(QPaintEvent *event);

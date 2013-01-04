@@ -570,6 +570,21 @@ bool ContactListWidget::event(QEvent *event)
     return QTreeView::event(event);
 }
 
+void ContactListWidget::keyPressEvent(QKeyEvent *event)
+{
+    //this would be normally handled by activated() signal but since we decided
+    //we don't want people starting chats using single click, we can't use activated()
+    //and have to do it ourselves, therefore this. Change only after discussing with the team!
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        //start the chat only if the index is valid and has a parent (ie. is not a group/account)
+        if (currentIndex().isValid() && currentIndex().parent().isValid()) {
+            onContactListDoubleClicked(currentIndex());
+        }
+    }
+
+    QTreeView::keyPressEvent(event);
+}
+
 void ContactListWidget::mousePressEvent(QMouseEvent *event)
 {
     Q_D(ContactListWidget);
