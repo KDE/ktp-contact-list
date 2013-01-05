@@ -28,7 +28,6 @@
 #include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contacts-list-model.h>
 
-#include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/groups-model.h>
 #include <KTp/Models/accounts-filter-model.h>
 #include <KTp/Models/accounts-tree-proxy-model.h>
