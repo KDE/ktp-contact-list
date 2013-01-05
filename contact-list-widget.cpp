@@ -134,6 +134,8 @@ ContactListWidget::~ContactListWidget()
 void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     Q_D(ContactListWidget);
+
+    d->accountManager = accountManager;
     d->modelFilter->setAccountManager(accountManager);
 
     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
@@ -573,13 +575,15 @@ void ContactListWidget::dropEvent(QDropEvent *event)
 
     QModelIndex index = indexAt(event->pos());
 
+    if (!index.isValid()) {
+        return;
+    }
+
+
     if (event->mimeData()->hasUrls()) {
-        kDebug() << "It's a file!";
+        kDebug() << "Filed dropped";
 
         Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-
-        kDebug() << "Requesting file transfer for contact" << contact->alias();
-
         Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
 
         QStringList filenames;
@@ -587,34 +591,40 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             filenames << url.toLocalFile();
         }
 
-        if (filenames.isEmpty()) {
-            return;
+        if (account && contact && !filenames.isEmpty()) {
+            kDebug() << "Requesting file transfer for contact" << contact->alias();
+            requestFileTransferChannels(account, contact, filenames);
+            event->acceptProposedAction();
         }
 
-        requestFileTransferChannels(account, contact, filenames);
-
-        event->acceptProposedAction();
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
-        kDebug() << "It's a contact!";
+        kDebug() << "Contact dropped";
 
         QByteArray encodedData = event->mimeData()->data("application/vnd.telepathy.contact");
         QDataStream stream(&encodedData, QIODevice::ReadOnly);
-        QList<ContactModelItem*> contacts;
+        QList<Tp::ContactPtr> contacts;
 
         while (!stream.atEnd()) {
-            QString contact;
-            QString account;
+            QString contactId;
+            QString accountId;
 
             //get contact and account out of the stream
-            stream >> contact >> account;
+            stream >> contactId >> accountId;
 
-//            Tp::AccountPtr accountPtr = d->model->accountPtrForPath(account);
+            Tp::AccountPtr account = d->accountManager->accountForObjectPath(accountId);
 
-            //casted pointer is checked below, before first use
-//            contacts.append(qobject_cast<ContactModelItem*>(d->model->contactItemForId(accountPtr->uniqueIdentifier(), contact)));
+            if (!account->connection()) {
+                continue;
+            }
+
+            Q_FOREACH(const Tp::ContactPtr &contact, account->connection()->contactManager()->allKnownContacts()) {
+                if (contact->id() == contactId) {
+                    contacts.append(contact);
+                }
+            }
         }
 
-        Q_FOREACH (ContactModelItem *contact, contacts) {
+        Q_FOREACH (const Tp::ContactPtr &contact, contacts) {
             Q_ASSERT(contact);
             QString group;
             if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
@@ -625,10 +635,10 @@ void ContactListWidget::dropEvent(QDropEvent *event)
                 group = index.parent().data(GroupsModel::GroupNameRole).toString();
             }
 
-            kDebug() << contact->contact().data()->alias() << "added to group" << group;
+            kDebug() << contact->alias() << "added to group" << group;
 
             if (!group.isEmpty()) {
-                Tp::PendingOperation *op = contact->contact().data()->addToGroup(group);
+                Tp::PendingOperation *op = contact->addToGroup(group);
 
                 connect(op, SIGNAL(finished(Tp::PendingOperation*)),
                         this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
@@ -667,8 +677,6 @@ void ContactListWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-    Q_D(ContactListWidget);
-
     QModelIndex index = indexAt(event->pos());
     setDropIndicatorRect(QRect());
 

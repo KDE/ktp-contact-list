@@ -48,6 +48,7 @@ public:
     bool                    shouldDrag;
     bool                    showOffline;
     QHash<QString, bool>    groupStates;
+    Tp::AccountManagerPtr   accountManager;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H
