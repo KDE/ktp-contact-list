@@ -30,13 +30,11 @@
 #include <KAction>
 
 #include <KTp/Models/contacts-model.h>
-#include <KTp/Models/proxy-tree-node.h>
-#include <KTp/Models/groups-model-item.h>
-#include <KTp/Models/groups-model.h>
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notificationconfigdialog.h>
 
 #include <TelepathyQt/ContactManager>
+#include <TelepathyQt/Account>
 
 #include <TelepathyLoggerQt4/Entity>
 #include <TelepathyLoggerQt4/LogManager>
@@ -46,7 +44,7 @@
 #include "dialogs/contact-info.h"
 
 #include "contact-list-widget_p.h"
-#include <KTp/Models/accounts-filter-model.h>
+#include "contacts-model.h"
 
 ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
@@ -196,8 +194,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-    //FIXME add method to modelFilter bool isUsingGroupModel();
-    if (m_mainWidget->d_ptr->modelFilter->sourceModel() == m_mainWidget->d_ptr->groupsModel) {
+    if (m_mainWidget->d_ptr->modelFilter->groupMode() == ContactsModel2::GroupGrouping) {
         // remove contact from group action, must be QAction because menu->addAction returns QAction
         QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
@@ -286,7 +283,7 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
-    const QString groupName = index.data(GroupsModel::GroupNameRole).toString();
+    const QString groupName = index.data(Qt::DisplayRole).toString();
 
     KMenu *menu = new KMenu();
     menu->addTitle(groupName);
@@ -309,8 +306,11 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
 void ContextMenu::onRemoveContactFromGroupTriggered()
 {
-    const QString groupName = m_currentIndex.parent().data(GroupsModel::GroupNameRole).toString();
+    if (m_currentIndex.parent().data(ContactsModel::TypeRole).toUInt() != ContactsModel::GroupRowType) {
+        return;
+    }
 
+    const QString groupName = m_currentIndex.parent().data(Qt::DisplayRole).toString();
     Tp::ContactPtr contact =  m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
 
     Tp::PendingOperation* operation = contact->removeFromGroup(groupName);
@@ -481,7 +481,11 @@ void ContextMenu::onCreateNewGroupTriggered()
 
 void ContextMenu::onRenameGroupTriggered()
 {
-    const QString groupName = m_currentIndex.data(GroupsModel::GroupNameRole).toString();
+    if (m_currentIndex.data(ContactsModel::TypeRole).toUInt() != ContactsModel::GroupRowType) {
+        return;
+    }
+
+    const QString groupName = m_currentIndex.data(Qt::DisplayRole).toString();
     const QAbstractItemModel *model = m_currentIndex.model();
 
     bool ok = false;
@@ -510,11 +514,12 @@ void ContextMenu::onRenameGroupTriggered()
 
 void ContextMenu::onDeleteGroupTriggered()
 {
-    if (m_accountManager.isNull()) {
+    if (m_accountManager.isNull() ||
+        (m_currentIndex.data(ContactsModel::TypeRole).toUInt() != ContactsModel::GroupRowType)) {
         return;
     }
 
-    const QString groupName = m_currentIndex.data(GroupsModel::GroupNameRole).toString();
+    const QString groupName = m_currentIndex.data(Qt::DisplayRole).toString();
     const QAbstractItemModel *model = m_currentIndex.model();
 
 

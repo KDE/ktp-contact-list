@@ -33,8 +33,6 @@
 #include <KDE/KIcon>
 
 #include <KTp/Models/contacts-model.h>
-#include <KTp/Models/accounts-model-item.h>
-#include <KTp/Models/groups-model.h>
 #include <KDebug>
 
 const int SPACING = 2;

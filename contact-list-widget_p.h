@@ -22,8 +22,11 @@
 
 #include <TelepathyQt/Types>
 
-class ContactsModel;
-class GroupsModel;
+namespace KTp {
+    class ContactsListModel;
+}
+
+class ContactsModel2;
 class AccountsFilterModel;
 class ContactDelegate;
 class ContactDelegateCompact;
@@ -31,17 +34,13 @@ class ContactDelegateCompact;
 class ContactListWidgetPrivate {
 public:
     ContactListWidgetPrivate()
-    : model(0),
-      groupsModel(0),
-      modelFilter(0),
+    : modelFilter(0),
       delegate(0),
       compactDelegate(0),
       shouldDrag(false),
       showOffline(false) {}
 
-    ContactsModel          *model;
-    GroupsModel            *groupsModel;
-    AccountsFilterModel    *modelFilter;
+    ContactsModel2          *modelFilter;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     QRect                   dropIndicatorRect;
@@ -49,6 +48,7 @@ public:
     bool                    shouldDrag;
     bool                    showOffline;
     QHash<QString, bool>    groupStates;
+    Tp::AccountManagerPtr   accountManager;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H
