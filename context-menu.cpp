@@ -306,7 +306,7 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
 void ContextMenu::onRemoveContactFromGroupTriggered()
 {
-    if (m_currentIndex.parent().data().toUInt() != ContactsModel::GroupRowType) {
+    if (m_currentIndex.parent().data(ContactsModel::TypeRole).toUInt() != ContactsModel::GroupRowType) {
         return;
     }
 
