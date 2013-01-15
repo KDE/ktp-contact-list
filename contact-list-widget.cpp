@@ -635,21 +635,25 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
                 // contact is dropped on a group, so take it's name
                 group = index.data(GroupsModel::GroupNameRole).toString();
-            } else {
+            } else if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
                 // contact is dropped on another contact, so take it's parents (group) name
                 group = index.parent().data(GroupsModel::GroupNameRole).toString();
             }
 
+            if (group.isEmpty() || (group == QLatin1String("_unsorted")) ||
+                contact->groups().contains(group)) {
+                continue;
+            }
+
             kDebug() << contact->alias() << "added to group" << group;
 
-            if (!group.isEmpty()) {
-                Tp::PendingOperation *op = contact->addToGroup(group);
+            Tp::PendingOperation *op = contact->addToGroup(group);
 
-                connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-                        this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-            }
+            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                    this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
         }
         event->acceptProposedAction();
+
     } else {
         event->ignore();
     }
