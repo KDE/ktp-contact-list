@@ -180,8 +180,8 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject *parent)
 DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject *parent)
     : StartChannelContactOverlay(
         parent,
-        KGuiItem(i18n("Share my desktop"), "krfb",
-                 i18n("Share my desktop"), i18n("Share desktop using RFB")),
+        KGuiItem(i18n("Share My Desktop"), "krfb",
+                 i18n("Share My Desktop"), i18n("Share desktop using RFB")),
         ContactsModel::DesktopSharingCapabilityRole,
         IconSize(KIconLoader::Dialog) + spacing * 6 + IconSize(KIconLoader::Small) * 4)
 {
