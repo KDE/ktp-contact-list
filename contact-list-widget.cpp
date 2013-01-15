@@ -95,7 +95,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setIndentation(0);
     setMouseTracking(true);
     setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
-    setDragEnabled(true);
+    setDragEnabled(false); // we handle drag&drop ourselves
     viewport()->setAcceptDrops(true);
     setDropIndicatorShown(true);
 
@@ -294,10 +294,8 @@ void ContactListWidget::toggleGroups(bool show)
 
     if (show) {
         d->modelFilter->setGroupMode(ContactsModel2::GroupGrouping);
-        setDragEnabled(true);
     } else {
         d->modelFilter->setGroupMode(ContactsModel2::AccountGrouping);
-        setDragEnabled(false);
     }
 
     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
@@ -523,12 +521,13 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
 
     QTreeView::mousePressEvent(event);
 
-    if (!dragEnabled()) {
-        return;
-    }
-
     QModelIndex index = indexAt(event->pos());
     d->shouldDrag = false;
+
+    // no drag when grouping by accounts
+    if (d->modelFilter->groupMode() == ContactsModel2::AccountGrouping) {
+        return;
+    }
 
     // if no contact, no drag
     if (index.data(ContactsModel::TypeRole).toInt() != ContactsModel::ContactRowType) {
@@ -592,7 +591,6 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     if (!index.isValid()) {
         return;
     }
-
 
     if (event->mimeData()->hasUrls()) {
         kDebug() << "Filed dropped";
