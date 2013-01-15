@@ -191,13 +191,12 @@ DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject *parent)
 
 LogViewerOverlay::LogViewerOverlay(QObject* parent)
     : StartChannelContactOverlay(
-	parent,
-	KGuiItem(i18n("Open Log Viewer"), "documentation",
-		 i18n("Open Log Viewer"), i18n("Show conversation logs")),
-	Qt::DisplayRole,	/* Always display the logviewer action */
-	IconSize(KIconLoader::Dialog) + spacing * 7 + IconSize(KIconLoader::Small) * 5)
+        parent,
+        KGuiItem(i18n("Open Log Viewer"), "documentation",
+                 i18n("Open Log Viewer"), i18n("Show conversation logs")),
+        Qt::DisplayRole,	/* Always display the logviewer action */
+        IconSize(KIconLoader::Dialog) + spacing * 7 + IconSize(KIconLoader::Small) * 5)
 {
 }
-
 
 #include "contact-overlays.moc"
