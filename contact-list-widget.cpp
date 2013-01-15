@@ -285,8 +285,10 @@ void ContactListWidget::toggleGroups(bool show)
 
     if (show) {
         d->modelFilter->setGroupMode(ContactsModel2::GroupGrouping);
+        setDragEnabled(true);
     } else {
         d->modelFilter->setGroupMode(ContactsModel2::AccountGrouping);
+        setDragEnabled(false);
     }
 
     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
@@ -512,11 +514,15 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
 
     QTreeView::mousePressEvent(event);
 
+    if (!dragEnabled()) {
+        return;
+    }
+
     QModelIndex index = indexAt(event->pos());
     d->shouldDrag = false;
 
     // if no contact, no drag
-    if (!index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+    if (index.data(ContactsModel::TypeRole).toInt() != ContactsModel::ContactRowType) {
         return;
     }
 
