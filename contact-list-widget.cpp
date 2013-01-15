@@ -114,6 +114,15 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     addOverlayButtons();
     emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full"));
 
+    QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
+    if (shownContacts == "unblocked") {
+        d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::HideBlocked);
+    } else if (shownContacts == "blocked") {
+        d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::ShowOnlyBlocked);
+    } else {
+        d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::DoNotFilterBySubscription);
+    }
+
     connect(this, SIGNAL(clicked(QModelIndex)),
             this, SLOT(onContactListClicked(QModelIndex)));
 
