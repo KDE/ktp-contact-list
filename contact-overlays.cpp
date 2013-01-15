@@ -194,7 +194,7 @@ LogViewerOverlay::LogViewerOverlay(QObject* parent)
         parent,
         KGuiItem(i18n("Open Log Viewer"), "documentation",
                  i18n("Open Log Viewer"), i18n("Show conversation logs")),
-        Qt::DisplayRole,	/* Always display the logviewer action */
+        Qt::DisplayRole, /* Always display the logviewer action */
         IconSize(KIconLoader::Dialog) + spacing * 7 + IconSize(KIconLoader::Small) * 5)
 {
 }

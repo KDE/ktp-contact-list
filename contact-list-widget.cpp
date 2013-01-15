@@ -266,7 +266,7 @@ void ContactListWidget::addOverlayButtons()
             this, SLOT(startDesktopSharing(Tp::AccountPtr, Tp::ContactPtr)));
 
     connect(logViewerOverlay, SIGNAL(activated(Tp::AccountPtr,Tp::ContactPtr)),
-	    this, SLOT(startLogViewer(Tp::AccountPtr, Tp::ContactPtr)));
+            this, SLOT(startLogViewer(Tp::AccountPtr, Tp::ContactPtr)));
 
     connect(this, SIGNAL(enableOverlays(bool)),
             textOverlay, SLOT(setActive(bool)));
@@ -284,7 +284,7 @@ void ContactListWidget::addOverlayButtons()
             desktopOverlay, SLOT(setActive(bool)));
 
     connect(this, SIGNAL(enableOverlays(bool)),
-	    logViewerOverlay, SLOT(setActive(bool)));
+            logViewerOverlay, SLOT(setActive(bool)));
 }
 
 void ContactListWidget::toggleGroups(bool show)
