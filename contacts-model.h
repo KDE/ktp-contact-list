@@ -27,7 +27,7 @@
 
 #include <TelepathyQt/Types>
 
-class ContactsModel2 : public ContactsFilterModel
+class ContactsModel2 : public KTp::ContactsFilterModel
 {
 public:
     enum GroupMode {NoGrouping, AccountGrouping, GroupGrouping};

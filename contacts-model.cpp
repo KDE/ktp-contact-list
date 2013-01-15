@@ -4,7 +4,7 @@
 #include <KTp/Models/groups-tree-proxy-model.h>
 
 ContactsModel2::ContactsModel2(QObject *parent)
-    : ContactsFilterModel(parent),
+    : KTp::ContactsFilterModel(parent),
       m_groupMode(NoGrouping),
       m_source(new KTp::ContactsListModel(this))
 {
