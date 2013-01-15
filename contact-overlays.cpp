@@ -123,7 +123,7 @@ void StartChannelContactOverlay::slotClicked(bool checked)
 
 bool StartChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    return index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType;
+    return index.data(m_capabilityRole).toBool() && index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType;
 }
 
 // ------------------------------------------------------------------------
