@@ -45,6 +45,7 @@ public:
     ContactDelegateCompact *compactDelegate;
     QRect                   dropIndicatorRect;
     QPoint                  dragStartPosition;
+    QString                 dragSourceGroup;
     bool                    shouldDrag;
     bool                    showOffline;
     QHash<QString, bool>    groupStates;

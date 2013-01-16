@@ -45,6 +45,7 @@
 #include <KDialog>
 #include <KFileDialog>
 #include <KSettings/Dialog>
+#include <KMenu>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -55,6 +56,7 @@
 #include <QDragLeaveEvent>
 #include <QPainter>
 #include <QPixmap>
+#include <QMenu>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
@@ -538,6 +540,7 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
 
     QModelIndex index = indexAt(event->pos());
     d->shouldDrag = false;
+    d->dragSourceGroup.clear();
 
     // no drag when grouping by accounts
     if (d->modelFilter->groupMode() == ContactsModel2::AccountGrouping) {
@@ -585,6 +588,9 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
 
         //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
         stream << contact->id() << account->objectPath();
+
+        //Store source group name so that we can remove the contact from it on move-drop */
+        d->dragSourceGroup = index.parent().data(GroupsModel::GroupNameRole).toString();
     }
 
     mimeData->setData("application/vnd.telepathy.contact", encodedData);
@@ -594,7 +600,15 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
     drag->setMimeData(mimeData);
     drag->setPixmap(dragIndicator);
 
-    drag->exec(Qt::CopyAction);
+    Qt::DropActions actions;
+    if (event->modifiers() & Qt::ShiftModifier) {
+        actions = Qt::MoveAction;
+    } else if (event->modifiers() & Qt::ControlModifier) {
+        actions = Qt::CopyAction;
+    } else {
+        actions = Qt::MoveAction | Qt::CopyAction;
+    }
+    drag->exec(actions);
 }
 
 void ContactListWidget::dropEvent(QDropEvent *event)
@@ -651,29 +665,70 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             }
         }
 
-        Q_FOREACH (const Tp::ContactPtr &contact, contacts) {
-            Q_ASSERT(contact);
-            QString group;
-            if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
-                // contact is dropped on a group, so take it's name
-                group = index.data(GroupsModel::GroupNameRole).toString();
-            } else if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
-                // contact is dropped on another contact, so take it's parents (group) name
-                group = index.parent().data(GroupsModel::GroupNameRole).toString();
-            }
+        Qt::DropAction action = Qt::IgnoreAction;
+        if ((event->possibleActions() & Qt::CopyAction) &&
+            (event->possibleActions() & Qt::MoveAction)) {
 
-            if (group.isEmpty() || (group == QLatin1String("_unsorted")) ||
-                contact->groups().contains(group)) {
+            KMenu menu;
+            QString seq = QKeySequence(Qt::ShiftModifier).toString();
+            seq.chop(1);
+            QAction *move = menu.addAction(KIcon("go-jump"), i18n("&Move here") + QLatin1Char('\t') + seq);
+
+            seq = QKeySequence(Qt::ControlModifier).toString();
+            seq.chop(1);
+            QAction *copy = menu.addAction(KIcon("edit-copy"), i18n("&Copy here") + QLatin1Char('\t') + seq);
+
+            menu.addSeparator();
+            seq = QKeySequence(Qt::Key_Escape).toString();
+            menu.addAction(KIcon("process-stop"), i18n("C&ancel") + QLatin1Char('\t') + seq);
+
+            QAction *result = menu.exec(mapToGlobal(event->pos()));
+
+            if (result == move) {
+                action = Qt::MoveAction;
+            } else if (result == copy) {
+                action = Qt::CopyAction;
+            }
+        } else if (event->possibleActions() & Qt::MoveAction) {
+            action = Qt::MoveAction;
+        } else if (event->possibleActions() & Qt::CopyAction) {
+            action = Qt::CopyAction;
+        }
+
+        Q_FOREACH(const Tp::ContactPtr &contact, contacts) {
+            QString targetGroup;
+
+            if (action == Qt::IgnoreAction) {
                 continue;
             }
 
-            kDebug() << contact->alias() << "added to group" << group;
+            if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
+                // contact is dropped on a group, so take it's name
+                targetGroup = index.data(GroupsModel::GroupNameRole).toString();
+            } else if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+                // contact is dropped on another contact, so take it's parents (group) name
+                targetGroup = index.parent().data(GroupsModel::GroupNameRole).toString();
+            }
 
-            Tp::PendingOperation *op = contact->addToGroup(group);
+            if (targetGroup.isEmpty() || (targetGroup == QLatin1String("_unsorted")) ||
+                contact->groups().contains(targetGroup)) {
+                continue;
+            }
 
-            connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+            kDebug() << contact->alias() << "added to group" << targetGroup;
+
+            if (action == Qt::MoveAction) {
+                Tp::PendingOperation *rmOp = contact->removeFromGroup(d->dragSourceGroup);
+                connect(rmOp, SIGNAL(finished(Tp::PendingOperation*)),
+                        this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+            }
+
+            Tp::PendingOperation *addOp = contact->addToGroup(targetGroup);
+            connect(addOp, SIGNAL(finished(Tp::PendingOperation*)),
                     this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
         }
+        d->dragSourceGroup.clear();
+
         event->acceptProposedAction();
 
     } else {
