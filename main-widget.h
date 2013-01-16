@@ -44,7 +44,6 @@ class AccountsFilterModel;
 class ContactDelegate;
 class FilterBar;
 class KJob;
-class ContactModelItem;
 
 class MainWidget : public KMainWindow, Ui::MainWindow
 {
@@ -91,6 +90,8 @@ private Q_SLOTS:
     void onContactsDeselected();
     void onPersonSelected();
     void onMetacontactsActionTriggered();
+
+    void onListSelectionChanged(ContactListWidget::SelectedItemType selectionType);
 
 private:
     QStringList extractLinksFromIndex(const QModelIndex &index);    /** extract links from a QModelIndex pointing to a contact */

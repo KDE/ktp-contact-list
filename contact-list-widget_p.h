@@ -51,6 +51,7 @@ public:
     bool                    shouldDrag;
     bool                    showOffline;
     QHash<QString, bool>    groupStates;
+    ContactListWidget::SelectedItemType listSelection;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H

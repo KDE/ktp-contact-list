@@ -27,22 +27,14 @@
 #include <KToolInvocation>
 #include <KInputDialog>
 #include <KMessageBox>
+#include <KAction>
 
-#include <KTp/Models/accounts-model.h>
-#include <KTp/Models/contact-model-item.h>
-#include <KTp/Models/proxy-tree-node.h>
-#include <KTp/Models/groups-model-item.h>
-#include <KTp/Models/groups-model.h>
 #include <KTp/text-parser.h>
-
-#include <TelepathyQt/ContactManager>
 
 #include "dialogs/remove-contact-dialog.h"
 #include "dialogs/contact-info.h"
 
 #include "contact-list-widget_p.h"
-
-#include <KTp/Models/accounts-filter-model.h>
 
 #include <kpeople/persons-model.h>
 
@@ -50,17 +42,15 @@ ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
 {
     m_mainWidget = mainWidget;
+
+//     Tpl::init();
+//     m_logManager = Tpl::LogManager::instance();
 }
 
 
 ContextMenu::~ContextMenu()
 {
 
-}
-
-void ContextMenu::setAccountManager(const Tp::AccountManagerPtr &accountManager)
-{
-//     m_accountManager = accountManager;
 }
 
 KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
@@ -207,6 +197,11 @@ void ContextMenu::onStartDesktopSharingTriggered()
 //     if (item) {
 //         m_mainWidget->startDesktopSharing(item);
 //     }
+}
+
+void ContextMenu::onOpenLogViewerTriggered()
+{
+
 }
 
 void ContextMenu::onUnblockContactTriggered()
@@ -391,4 +386,15 @@ void ContextMenu::onResendAuthorization()
 //     Tp::PendingOperation *op = contactItem->contact()->manager()->authorizePresencePublication(QList<Tp::ContactPtr>() << contactItem->contact());
 //     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
 //             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+}
+
+void ContextMenu::onNotificationConfigureTriggered()
+{
+//     ContactModelItem *contactItem = m_currentIndex.data(ContactsModel::ItemRole).value<ContactModelItem*>();
+// 
+//     Q_ASSERT(contactItem);
+//     Tp::ContactPtr contact = contactItem->contact();
+// 
+//     KTp::NotificationConfigDialog *notificationDialog = new KTp::NotificationConfigDialog(contact, m_mainWidget);
+//     notificationDialog->show();
 }

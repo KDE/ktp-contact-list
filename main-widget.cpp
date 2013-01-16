@@ -36,9 +36,7 @@
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/PendingReady>
 
-#include <KTp/Models/accounts-model.h>
-#include <KTp/Models/contact-model-item.h>
-#include <KTp/Models/groups-model-item.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Widgets/add-contact-dialog.h>
 #include <KTp/Widgets/join-chat-room-dialog.h>
 
@@ -292,14 +290,8 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
-    connect(m_contactsListView, SIGNAL(contactsSelectedForGrouping()),
-            this, SLOT(onContactsSelectedForGouping()));
-
-    connect(m_contactsListView, SIGNAL(contactsDeselected()),
-            this, SLOT(onContactsDeselected()));
-
-    connect(m_contactsListView, SIGNAL(personSelected()),
-            this, SLOT(onPersonSelected()));
+    connect(m_contactsListView, SIGNAL(listSelectionChanged(ContactListWidget::SelectedItemType)),
+            this, SLOT(onListSelectionChanged(ContactListWidget::SelectedItemType)));
 
     connect(m_metacontactToggleAction, SIGNAL(triggered()),
             this, SLOT(onMetacontactsActionTriggered()));
@@ -371,7 +363,7 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
 
 void MainWidget::onAddContactRequest()
 {
-    KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_contactsListView->accountsModel(), this);
+    KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_accountManager, this);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
 }
@@ -483,9 +475,9 @@ void MainWidget::closeEvent(QCloseEvent* e)
 
 bool MainWidget::isPresencePlasmoidPresent() const
 {
-    QDBusInterface plasmoidOnDbus("org.kde.Telepathy.PresenceAppletActive", "/PresenceAppletActive");
+    QDBusReply<bool> serviceRegistered = QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.Telepathy.PresenceAppletActive");
 
-    if (plasmoidOnDbus.isValid()) {
+    if (serviceRegistered.isValid() && serviceRegistered.value()) {
         return true;
     } else {
         return false;
@@ -577,6 +569,27 @@ void MainWidget::onMetacontactsActionTriggered()
     } else {
         m_contactsListView->onUngroupSelectedContacts();
     }
+}
+
+void MainWidget::onListSelectionChanged(ContactListWidget::SelectedItemType selectionType)
+{
+    switch (selectionType) {
+        case ContactListWidget::NonGroupedContact:
+        case ContactListWidget::PersonAndNonGroupedContact:
+            m_metacontactToggleAction->setEnabled(true);
+            m_metacontactToggleAction->setIcon(KIcon("list-add"));
+            return;
+        case ContactListWidget::Person:
+        case ContactListWidget::GroupedContact:
+            m_metacontactToggleAction->setEnabled(true);
+            m_metacontactToggleAction->setIcon(KIcon("list-remove"));
+            return;
+        default:
+            break;
+    }
+
+    m_metacontactToggleAction->setDisabled(true);
+    m_metacontactToggleAction->setIcon(KIcon("list-add"));
 }
 
 #include "main-widget.moc"

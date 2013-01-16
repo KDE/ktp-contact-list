@@ -25,13 +25,6 @@
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingReady>
 
-#include <KTp/Models/accounts-model.h>
-#include <KTp/Models/groups-model.h>
-#include <KTp/Models/accounts-filter-model.h>
-#include <KTp/Models/contact-model-item.h>
-#include <KTp/Models/accounts-model-item.h>
-#include <KTp/Models/groups-model-item.h>
-
 #include <KGlobal>
 #include <KSharedConfig>
 #include <KConfigGroup>
@@ -60,11 +53,6 @@
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
 #include "kpeople-proxy.h"
-
-#define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KTp.TextUi"
-#define PREFERRED_FILETRANSFER_HANDLER "org.freedesktop.Telepathy.Client.KTp.FileTransfer"
-#define PREFERRED_AUDIO_VIDEO_HANDLER "org.freedesktop.Telepathy.Client.KTp.CallUi"
-#define PREFERRED_RFB_HANDLER "org.freedesktop.Telepathy.Client.krfb_rfb_handler"
 
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
@@ -167,14 +155,6 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
 //     }
 }
 
-AccountsModel* ContactListWidget::accountsModel()
-{
-//     Q_D(ContactListWidget);
-//
-//     return d->model;
-        return 0;
-}
-
 void ContactListWidget::showSettingsKCM()
 {
     KSettings::Dialog *dialog = new KSettings::Dialog(this);
@@ -183,7 +163,7 @@ void ContactListWidget::showSettingsKCM()
 
     if (!tpAccKcm) {
         KMessageBox::error(this,
-                           i18n("It appears you do not have the IM Accounts control module installed. Please install telepathy-accounts-kcm package."),
+                           i18n("It appears you do not have the IM Accounts control module installed. Please install ktp-accounts-kcm package."),
                            i18n("IM Accounts KCM Plugin Is Not Installed"));
     }
 
@@ -339,7 +319,7 @@ void ContactListWidget::toggleSortByPresence(bool sort)
 //     d->modelFilter->setSortMode(sort ? AccountsFilterModel::SortByPresence : AccountsFilterModel::DoNotSort);
 }
 
-void ContactListWidget::startTextChannel(ContactModelItem *contactItem)
+void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
 //     Q_D(ContactListWidget);
 //
@@ -361,7 +341,7 @@ void ContactListWidget::startTextChannel(ContactModelItem *contactItem)
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
-void ContactListWidget::startAudioChannel(ContactModelItem *contactItem)
+void ContactListWidget::startAudioChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
 //     Q_D(ContactListWidget);
 //
@@ -379,7 +359,7 @@ void ContactListWidget::startAudioChannel(ContactModelItem *contactItem)
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
-void ContactListWidget::startVideoChannel(ContactModelItem *contactItem)
+void ContactListWidget::startVideoChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
 //     Q_D(ContactListWidget);
 //
@@ -398,7 +378,7 @@ void ContactListWidget::startVideoChannel(ContactModelItem *contactItem)
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
-void ContactListWidget::startDesktopSharing(ContactModelItem* contactItem)
+void ContactListWidget::startDesktopSharing(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
 //     Q_D(ContactListWidget);
 //
@@ -418,7 +398,13 @@ void ContactListWidget::startDesktopSharing(ContactModelItem* contactItem)
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
-void ContactListWidget::startFileTransferChannel(ContactModelItem *contactItem)
+void ContactListWidget::startLogViewer(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
+{
+    //log viewer is not a Tp handler so does not return a pending operation
+//     KTp::Actions::openLogViewer(account, contact);
+}
+
+void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
 //     Q_D(ContactListWidget);
 //
@@ -443,10 +429,9 @@ void ContactListWidget::startFileTransferChannel(ContactModelItem *contactItem)
 //     requestFileTransferChannels(account, contact, filenames, now);
 }
 
-void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr& account,
-                                                    const Tp::ContactPtr& contact,
-                                                    const QStringList& filenames,
-                                                    const QDateTime& userActionTime)
+void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &account,
+                                                    const Tp::ContactPtr &contact,
+                                                    const QStringList &filenames)
 {
 //     Q_FOREACH (const QString &filename, filenames) {
 //         kDebug() << "Filename:" << filename;
@@ -463,7 +448,6 @@ void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr& accoun
 //         connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
 //                 SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 //     }
-
 }
 
 void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int start, int end)
@@ -837,31 +821,49 @@ void ContactListWidget::loadGroupStatesFromConfig()
 
 void ContactListWidget::selectionChanged(const QItemSelection &selected, const QItemSelection &deselected)
 {
+    Q_D(ContactListWidget);
+
     if (selectedIndexes().size() > 1) {
         bool contactsSelected = false;
+        bool groupedContactSelected = false;
         bool personsSelected = false;
         Q_FOREACH (const QModelIndex &index, selectedIndexes()) {
             if (index.data(PersonsModel::ResourceTypeRole).toUInt() == PersonsModel::Person) {
                 personsSelected = true;
             } else {
-                contactsSelected = true;
+                if (index.parent().isValid()) {
+                    groupedContactSelected = true;
+                } else {
+                    contactsSelected = true;
+                }
             }
         }
-        //if only contacts have been selected and not persons
-        if (contactsSelected && !personsSelected) {
-            Q_EMIT contactsSelectedForGrouping();
-        } else if (!contactsSelected && personsSelected) { //only persons selected
-            Q_EMIT personSelected();
+
+        if (contactsSelected && !personsSelected && !groupedContactSelected) {
+            d->listSelection = ContactListWidget::NonGroupedContact;
+        } else if (contactsSelected && !personsSelected && groupedContactSelected) {
+            d->listSelection = ContactListWidget::NonAndGroupedContact;
+        } else if (contactsSelected && personsSelected && !groupedContactSelected) {
+            d->listSelection = ContactListWidget::PersonAndNonGroupedContact;
+        } else if (!contactsSelected && personsSelected && groupedContactSelected) {
+            d->listSelection = ContactListWidget::PersonAndGroupedContact;
         }
     } else if (selectedIndexes().size() == 1) {
         //if there's no valid parent, we're dealing with person
         if (selectedIndexes().at(0).data(PersonsModel::ResourceTypeRole).toUInt() == PersonsModel::Person) {
-            Q_EMIT contactsDeselected();
-            Q_EMIT personSelected();
+            d->listSelection = ContactListWidget::Person;
+        } else if (selectedIndexes().at(0).parent().isValid()) {
+            // when a person's subcontact is selected
+            d->listSelection = ContactListWidget::GroupedContact;
+        } else {
+            //this needs to be noselection becase we cannot operate on a single contact
+            d->listSelection = ContactListWidget::NoSelection;
         }
     } else {
-        Q_EMIT contactsDeselected();
+        d->listSelection = ContactListWidget::NoSelection;
     }
+
+    Q_EMIT listSelectionChanged(d->listSelection);
 
     QTreeView::selectionChanged(selected, deselected);
 }
@@ -870,12 +872,7 @@ void ContactListWidget::onGroupSelectedContacts()
 {
     Q_D(ContactListWidget);
 
-    QList<QUrl> selectedContacts;
-    foreach(const QModelIndex &index, selectedIndexes()) {
-        selectedContacts << index.data(PersonsModel::UriRole).toUrl();
-    }
-
-    d->model->createPersonFromContacts(selectedContacts);
+    d->model->createPersonFromIndexes(selectedIndexes());
 
     clearSelection();
 }
@@ -884,8 +881,17 @@ void ContactListWidget::onUngroupSelectedContacts()
 {
     Q_D(ContactListWidget);
 
-    foreach(const QModelIndex &index, selectedIndexes()) {
-        d->model->removePerson(index.data(PersonsModel::UriRole).toUrl());
+    QUrl personUri;
+    QList<QUrl> selectedContacts;
+
+    if (d->listSelection == ContactListWidget::Person) {
+        foreach(const QModelIndex &index, selectedIndexes()) {
+            d->model->removePerson(index.data(PersonsModel::UriRole).toUrl());
+        }
+    } else if (d->listSelection == ContactListWidget::GroupedContact) {
+        //this case is valid for only single selected contact which is a grounding occurance
+        d->model->removeContactsFromPerson(selectedIndexes().at(0).parent().data(PersonsModel::UriRole).toUrl(),
+                                           QList<QUrl>() << selectedIndexes().at(0).data(PersonsModel::UriRole).toUrl());
     }
 
     clearSelection();

@@ -34,7 +34,7 @@
 #include <KGlobalSettings>
 #include <KDE/KLocale>
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contact-model-item.h>
 #include <KTp/Models/proxy-tree-node.h>
 #include <KTp/Models/groups-model-item.h>
@@ -71,22 +71,26 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
     QPixmap avatar;
-    avatar.load(index.data(PersonsModel::PhotoRole).toString());
-
-    bool noContactAvatar = avatar.isNull();
-
-    if (noContactAvatar) {
-        avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
+    QString avatarPath = index.data(PersonsModel::PhotoRole).toUrl().toLocalFile();
+    if (avatarPath.isEmpty()) {
+        avatar = SmallIcon("im-user", KIconLoader::SizeMedium);//avatar.load("/home/mck182/Downloads/dummy-avatar.png");
+    } else {
+        avatar.load(avatarPath);
     }
 
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    int rightIconsWidth;
+    int rightIconsWidth = 0;
     KTp::Presence presence;
 
     for (int i = 0; i < index.data(PersonsModel::ContactsCountRole).toInt(); i++) {
         if (index.data(PersonsModel::StatusRole).toStringList().isEmpty()) {
             continue;
+        }
+
+        if (index.data(PersonsModel::StatusRole).toStringList().size() == i) {
+            //there are no more presences to be painted, get out
+            break;
         }
 
         if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "available") {
@@ -139,10 +143,10 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     const QFontMetrics nameFontMetrics(nameFont);
 
-    if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
     }
 
     painter->setFont(nameFont);
@@ -162,10 +166,10 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     presenceMessageRect.setWidth(optV4.rect.width() - presenceMessageRect.x() - rightIconsWidth);
     presenceMessageRect.setY(presenceMessageRect.y() + (presenceMessageRect.height()/2 - nameFontMetrics.height()/2));
 
-    if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::HighlightedText));
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(option.palette.color(QPalette::Disabled, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Disabled, QPalette::Text));
     }
 
     painter->drawText(presenceMessageRect,
@@ -187,14 +191,14 @@ void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
 {
     if (size == ContactDelegateCompact::Mini) {
         m_spacing = 2;
-        m_avatarSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
+        m_avatarSize = IconSize(KIconLoader::Toolbar);
         m_presenceIconSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
         m_clientTypeIconSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
     } else if (size == ContactDelegateCompact::Normal) {
         m_spacing = 4;
-        m_avatarSize = 22;
-        m_presenceIconSize = 16;
-        m_clientTypeIconSize = 16;
+        m_avatarSize = IconSize(KIconLoader::Toolbar);
+        m_presenceIconSize = IconSize(KIconLoader::Small);
+        m_clientTypeIconSize = IconSize(KIconLoader::Small);
     }
 
     m_listSize = size;

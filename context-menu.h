@@ -24,8 +24,6 @@
 #include <QModelIndex>
 #include <QStringList>
 
-#include <TelepathyQt/Types>
-
 #include "contact-list-widget.h"
 
 class AccountsModel;
@@ -42,7 +40,6 @@ public:
 
     KMenu* groupContextMenu(const QModelIndex &index);
     KMenu* contactContextMenu(const QModelIndex &index);
-    void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
 private Q_SLOTS:
     void onAddContactToGroupTriggered();
@@ -52,6 +49,7 @@ private Q_SLOTS:
     void onStartVideoChatTriggered();
     void onStartFileTransferTriggered();
     void onStartDesktopSharingTriggered();
+    void onOpenLogViewerTriggered();
     void onUnblockContactTriggered();
     void onRemoveContactFromGroupTriggered();
     void onCreateNewGroupTriggered();
@@ -62,11 +60,11 @@ private Q_SLOTS:
     void onOpenLinkTriggered(QAction *action);      /** triggered from custom contact menu when user clicks contact link */
     void onRerequestAuthorization();
     void onResendAuthorization();
+    void onNotificationConfigureTriggered();
 
 private:
     ContactListWidget     *m_mainWidget;
     QModelIndex            m_currentIndex;
-    Tp::AccountManagerPtr  m_accountManager;
 };
 
 #endif // CONTEXT_MENU_H
