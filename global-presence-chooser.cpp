@@ -179,11 +179,6 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_modelExtended(new PresenceModelExtended(m_model, this))
 {
     this->setModel(m_modelExtended);
-    //set an invalid index, which makes the combobox empty and not showing incorrect presence
-    //for short time, this will be changed as soon as GlobalPresence has been init'd
-    //see bug #310529
-    setCurrentIndex(-1);
-
     setEditable(false);
     //needed for mousemove events
     setMouseTracking(true);
@@ -191,8 +186,8 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
     m_busyOverlay->setWidget(this);
-    //start the spinner before the combobox shows correct presence
-    m_busyOverlay->start();
+
+    onPresenceChanged(m_globalPresence->currentPresence());
 
     m_changePresenceMessageButton = new QPushButton(this);
     m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
@@ -365,7 +360,12 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 
 void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
 {
-    for (int i=0; i < count() ; i++) {
+    if (presence.type() == Tp::ConnectionPresenceTypeUnknown) {
+        setCurrentIndex(-1);
+        m_busyOverlay->start();
+        return;
+    }
+    for (int i = 0; i < count() ; i++) {
         KTp::Presence itemPresence = itemData(i, PresenceModel::PresenceRole).value<KTp::Presence>();
         if (itemPresence.type() == presence.type() && itemPresence.statusMessage() == presence.statusMessage()) {
             setCurrentIndex(i);
