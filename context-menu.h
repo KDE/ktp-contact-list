@@ -21,13 +21,12 @@
 #define CONTEXT_MENU_H
 
 #include <QObject>
-#include <QModelIndex>
+#include <QPersistentModelIndex>
 #include <QStringList>
 
 #include "contact-list-widget.h"
 
 class AccountsModel;
-class ContactModelItem;
 class KMenu;
 class QAction;
 

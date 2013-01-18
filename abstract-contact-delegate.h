@@ -53,7 +53,6 @@ protected:
     virtual void paintContact(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const = 0;
     /** The size hint for painting contact items*/
     virtual QSize sizeHintContact(const QStyleOptionViewItem& option, const QModelIndex& index) const = 0;
-    QPalette *m_palette;
 
 private:
     /** Paints header items*/

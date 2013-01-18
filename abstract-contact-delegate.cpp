@@ -32,24 +32,19 @@
 #include <KDE/KIconLoader>
 #include <KDE/KIcon>
 
-#include <KTp/Models/accounts-model.h>
-#include <KTp/Models/accounts-model-item.h>
-#include <KTp/Models/groups-model.h>
-#include <KTp/Models/contact-model-item.h>
+#include <KTp/Models/contacts-model.h>
 #include <KDebug>
 
 const int SPACING = 2;
 const int ACCOUNT_ICON_SIZE = 16;
 
 AbstractContactDelegate::AbstractContactDelegate(QObject* parent)
-        : QStyledItemDelegate(parent), m_palette(0)
+        : QStyledItemDelegate(parent)
 {
-    m_palette = new QPalette(QApplication::palette());
 }
 
 AbstractContactDelegate::~AbstractContactDelegate()
 {
-    delete m_palette;
 }
 
 void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -66,9 +61,10 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
     Q_UNUSED(option);
+
     bool isContact = true;//index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
-    if (isContact) {
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
         return sizeHintContact(option, index);
     } else {
         return sizeHintHeader(option, index);
@@ -104,11 +100,11 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QFont groupFont = KGlobalSettings::smallestReadableFont();
 
-    QString counts = QString(" (%1/%2)").arg(index.data(AccountsModel::OnlineUsersCountRole).toString(),
-                     index.data(AccountsModel::TotalUsersCountRole).toString());
+    QString counts = QString(" (%1/%2)").arg(index.data(ContactsModel::OnlineUsersCountRole).toString(),
+                     index.data(ContactsModel::TotalUsersCountRole).toString());
 
-    if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()) {
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(AccountsModel::IconRole).toString())
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::AccountRowType) {
+        painter->drawPixmap(accountGroupRect, KIcon(index.data(ContactsModel::IconRole).toString())
                             .pixmap(32));
     } else {
         painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),
@@ -119,10 +115,10 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*4),0,0,0);
     QString groupHeaderString =  index.data(Qt::DisplayRole).toString().append(counts);
 
-    if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
     }
 
     painter->setFont(groupFont);
@@ -132,7 +128,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QPen thinLinePen;
     thinLinePen.setWidth(0);
-    thinLinePen.setColor(m_palette->color(QPalette::Inactive, QPalette::Button));
+    thinLinePen.setColor(option.palette.color(QPalette::Inactive, QPalette::Button));
 
     painter->setPen(thinLinePen);
     painter->setRenderHint(QPainter::Antialiasing, false);

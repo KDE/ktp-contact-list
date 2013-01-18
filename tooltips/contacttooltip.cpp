@@ -24,7 +24,7 @@
 #include "ui_contacttooltip.h"
 #include "ktooltip.h"
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/text-parser.h>
 #include <KTp/presence.h>
 
@@ -40,11 +40,11 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
 {
     ui->setupUi(this);
     ui->nameLabel->setText(index.data(Qt::DisplayRole).toString());
-    ui->idLabel->setText(index.data(AccountsModel::IdRole).toString());
+    ui->idLabel->setText(index.data(ContactsModel::IdRole).toString());
     ui->avatarLabel->setScaledContents(false);
     ui->avatarLabel->setAlignment(Qt::AlignCenter);
 
-    QString avatar = index.data(AccountsModel::AvatarRole).toString();
+    QString avatar = index.data(ContactsModel::AvatarRole).toString();
     if (avatar.isEmpty()) {
         ui->avatarLabel->setPixmap(KIconLoader::global()->loadIcon("im-user", KIconLoader::NoGroup, 96));
     } else {
@@ -52,7 +52,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
         ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
     }
 
-    KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
+    KTp::Presence presence = index.data(ContactsModel::PresenceRole).value<KTp::Presence>();
 
     QString presenceMessage;
     QString presenceIconPath = KIconLoader::global()->iconPath("task-attention", 1);
@@ -78,7 +78,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->presenceIcon->setPixmap(QPixmap(presenceIconPath));
     ui->presenceLabel->setText(presenceText);
     ui->presenceMessageLabel->setText(presenceMessage);
-    ui->blockedLabel->setShown(index.data(AccountsModel::BlockedRole).toBool());
+    ui->blockedLabel->setShown(index.data(ContactsModel::BlockedRole).toBool());
 
     connect(ui->presenceMessageLabel, SIGNAL(linkActivated(QString)), this, SLOT(openLink(QString)));
 }

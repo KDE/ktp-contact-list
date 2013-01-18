@@ -25,8 +25,9 @@
 #include <KIconLoader>
 #include <KDebug>
 
-#include <KTp/Models/accounts-model.h>
-#include <KTp/Models/contact-model-item.h>
+#include <KTp/Models/contacts-model.h>
+
+const int spacing = IconSize(KIconLoader::Dialog) / 8;
 
 class GuiItemContactViewHoverButton : public ContactViewHoverButton
 {
@@ -52,14 +53,14 @@ GuiItemContactViewHoverButton::GuiItemContactViewHoverButton(QAbstractItemView *
 
 QSize GuiItemContactViewHoverButton::sizeHint() const
 {
-    return QSize(KIconLoader::SizeSmall, KIconLoader::SizeSmall);
+    return QSize(IconSize(KIconLoader::Small), IconSize(KIconLoader::Small));
 }
 
 QPixmap GuiItemContactViewHoverButton::icon()
 {
     return KIconLoader::global()->loadIcon(m_guiItem.iconName(),
                                            KIconLoader::NoGroup,
-                                           KIconLoader::SizeSmall);
+                                           IconSize(KIconLoader::Small));
 }
 
 void GuiItemContactViewHoverButton::updateToolTip()
@@ -100,7 +101,7 @@ void StartChannelContactOverlay::updateButton(const QModelIndex &index)
     const QRect rect = m_view->visualRect(index);
     const QSize size = button()->size();
 
-    const int gap = 2;
+    const int gap = spacing / 2;
     const int x   = rect.left() + m_xpos; // rect.right() - gap - 96 - size.width();
     const int y   = rect.bottom() - gap - size.height();
     button()->move(QPoint(x, y));
@@ -112,16 +113,17 @@ void StartChannelContactOverlay::slotClicked(bool checked)
     QModelIndex index = button()->index();
 
     if (index.isValid()) {
-        ContactModelItem* contactItem = index.data(AccountsModel::ItemRole).value<ContactModelItem*>();
-        if (contactItem) {
-            emit activated(contactItem);
+        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+        if (account && contact) {
+            emit activated(account, contact);
         }
     }
 }
 
 bool StartChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    return index.data(m_capabilityRole).toBool() && index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
+    return index.data(m_capabilityRole).toBool() && index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType;
 }
 
 // ------------------------------------------------------------------------
@@ -131,8 +133,8 @@ TextChannelContactOverlay::TextChannelContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Start Chat"), "text-x-generic",
                  i18n("Start Chat"), i18n("Start a text chat")),
-        AccountsModel::TextChatCapabilityRole,
-        40)
+        ContactsModel::TextChatCapabilityRole,
+        IconSize(KIconLoader::Dialog) + spacing * 2)
 {
 }
 
@@ -143,8 +145,8 @@ AudioChannelContactOverlay::AudioChannelContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Start Audio Call"), "audio-headset",
                  i18n("Start Audio Call"), i18n("Start an audio call")),
-        AccountsModel::AudioCallCapabilityRole,
-        64)
+        ContactsModel::AudioCallCapabilityRole,
+        IconSize(KIconLoader::Dialog) + spacing * 3 + IconSize(KIconLoader::Small))
 
 {
 }
@@ -156,8 +158,8 @@ VideoChannelContactOverlay::VideoChannelContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Start Video Call"), "camera-web",
                  i18n("Start Video Call"), i18n("Start a video call")),
-        AccountsModel::VideoCallCapabilityRole,
-        88)
+        ContactsModel::VideoCallCapabilityRole,
+        IconSize(KIconLoader::Dialog) + spacing * 4 + IconSize(KIconLoader::Small) * 2)
 {
 }
 
@@ -168,8 +170,8 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Send File..."), "mail-attachment",
                  i18n("Send File..."), i18n("Send a file")),
-        AccountsModel::FileTransferCapabilityRole,
-        128)
+        ContactsModel::FileTransferCapabilityRole,
+        IconSize(KIconLoader::Dialog) + spacing * 5 + IconSize(KIconLoader::Small) * 3)
 {
 }
 
@@ -178,12 +180,23 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject *parent)
 DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject *parent)
     : StartChannelContactOverlay(
         parent,
-        KGuiItem(i18n("Share my desktop"), "krfb",
-                 i18n("Share my desktop"), i18n("Share desktop using RFB")),
-        AccountsModel::DesktopSharingCapabilityRole,
-        152)
+        KGuiItem(i18n("Share My Desktop"), "krfb",
+                 i18n("Share My Desktop"), i18n("Share desktop using RFB")),
+        ContactsModel::DesktopSharingCapabilityRole,
+        IconSize(KIconLoader::Dialog) + spacing * 6 + IconSize(KIconLoader::Small) * 4)
 {
 }
 
+//-------------------------------------------------------------------------
+
+LogViewerOverlay::LogViewerOverlay(QObject* parent)
+    : StartChannelContactOverlay(
+        parent,
+        KGuiItem(i18n("Open Log Viewer"), "documentation",
+                 i18n("Open Log Viewer"), i18n("Show conversation logs")),
+        Qt::DisplayRole, /* Always display the logviewer action */
+        IconSize(KIconLoader::Dialog) + spacing * 7 + IconSize(KIconLoader::Small) * 5)
+{
+}
 
 #include "contact-overlays.moc"

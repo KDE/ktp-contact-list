@@ -54,6 +54,9 @@ protected:
 private:
     QModelIndex m_indexForHiding;
     int         m_fadingValue;
+    int         m_avatarSize;
+    int         m_presenceIconSize;
+    int         m_spacing;
 };
 
 #endif // CONTACTDELEGATE_H

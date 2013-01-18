@@ -37,7 +37,7 @@
 #include <KIcon>
 #include <KColorScheme>
 
-#include <KTp/Models/accounts-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/Models/contact-model-item.h>
 
 
@@ -144,7 +144,7 @@ void ToolTipManager::showToolTip(const  QModelIndex &menuItem)
         return;
     }
 
-    if (!menuItem.data(AccountsModel::ItemRole).canConvert<ContactModelItem*>()) {
+    if (!menuItem.data(ContactsModel::ContactRole).canConvert<Tp::ContactPtr>()) {
         return;
     }
 

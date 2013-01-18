@@ -27,7 +27,7 @@
 #include "contact-delegate-overlay.h"
 #include "contact-view-hover-button.h"
 
-class ContactModelItem;
+#include <TelepathyQt/Types>
 
 class StartChannelContactOverlay : public ContactDelegateOverlay
 {
@@ -41,7 +41,7 @@ public Q_SLOTS:
     virtual void setActive(bool active);
 
 Q_SIGNALS:
-    void activated(ContactModelItem *contactItem);
+    void activated(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
 
 protected:
 
@@ -108,6 +108,16 @@ class DesktopSharingContactOverlay : public StartChannelContactOverlay
 
 public:
     DesktopSharingContactOverlay(QObject *parent);
+};
+
+// ---------------------------------------------------------------------
+
+class LogViewerOverlay: public StartChannelContactOverlay
+{
+    Q_OBJECT
+
+public:
+    LogViewerOverlay(QObject *parent);
 };
 
 #endif // VERSIONSOVERLAYS_H

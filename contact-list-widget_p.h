@@ -23,7 +23,7 @@
 #include <TelepathyQt/Types>
 
 class PersonsModel;
-class GroupsModel;
+
 class AccountsFilterModel;
 class ContactDelegate;
 class ContactDelegateCompact;
@@ -32,25 +32,22 @@ class KPeopleProxy;
 class ContactListWidgetPrivate {
 public:
     ContactListWidgetPrivate()
-    : model(0),
-      groupsModel(0),
-      modelFilter(0),
-      delegate(0),
+    : delegate(0),
       compactDelegate(0),
       shouldDrag(false),
       showOffline(false) {}
 
     PersonsModel           *model;
-    GroupsModel            *groupsModel;
-    AccountsFilterModel    *modelFilter;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     KPeopleProxy           *proxy;
     QRect                   dropIndicatorRect;
     QPoint                  dragStartPosition;
+    QString                 dragSourceGroup;
     bool                    shouldDrag;
     bool                    showOffline;
     QHash<QString, bool>    groupStates;
+
     ContactListWidget::SelectedItemType listSelection;
 };
 

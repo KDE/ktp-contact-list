@@ -35,10 +35,6 @@
 #include <KDE/KLocale>
 
 #include <KTp/Models/contacts-model.h>
-#include <KTp/Models/contact-model-item.h>
-#include <KTp/Models/proxy-tree-node.h>
-#include <KTp/Models/groups-model-item.h>
-#include <KTp/Models/groups-model.h>
 #include <KTp/presence.h>
 
 #include <kpeople/persons-model.h>
@@ -71,6 +67,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
     QPixmap avatar;
+
     QString avatarPath = index.data(PersonsModel::PhotoRole).toUrl().toLocalFile();
     if (avatarPath.isEmpty()) {
         avatar = SmallIcon("im-user", KIconLoader::SizeMedium);//avatar.load("/home/mck182/Downloads/dummy-avatar.png");

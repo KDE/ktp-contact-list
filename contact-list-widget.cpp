@@ -25,6 +25,17 @@
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingReady>
 
+#include <KTp/Models/contacts-model.h>
+#include <KTp/Models/contacts-list-model.h>
+
+#include <KTp/Models/groups-model.h>
+#include <KTp/Models/accounts-filter-model.h>
+#include <KTp/Models/accounts-tree-proxy-model.h>
+#include <KTp/Models/groups-tree-proxy-model.h>
+
+#include <KTp/actions.h>
+#include <KTp/contact.h>
+
 #include <KGlobal>
 #include <KSharedConfig>
 #include <KConfigGroup>
@@ -34,6 +45,7 @@
 #include <KDialog>
 #include <KFileDialog>
 #include <KSettings/Dialog>
+#include <KMenu>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -44,6 +56,7 @@
 #include <QDragLeaveEvent>
 #include <QPainter>
 #include <QPixmap>
+
 #include <QAction>
 
 #include <kpeople/persons-model.h>
@@ -52,7 +65,11 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
+
 #include "kpeople-proxy.h"
+
+#include "contacts-model.h"
+
 
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
@@ -122,6 +139,15 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 //     addOverlayButtons();
 //     emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full"));
 
+//     QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
+//     if (shownContacts == "unblocked") {
+//         d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::HideBlocked);
+//     } else if (shownContacts == "blocked") {
+//         d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::ShowOnlyBlocked);
+//     } else {
+//         d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::DoNotFilterBySubscription);
+//     }
+
     connect(this, SIGNAL(clicked(QModelIndex)),
             this, SLOT(onContactListClicked(QModelIndex)));
 
@@ -141,15 +167,17 @@ ContactListWidget::~ContactListWidget()
 void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
 //     Q_D(ContactListWidget);
-//     d->model->setAccountManager(accountManager);
-//
+// 
+//     d->accountManager = accountManager;
+//     d->modelFilter->setAccountManager(accountManager);
+// 
 //     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
-//
+// 
 //     if(accounts.count() == 0) {
 //         if (KMessageBox::questionYesNo(this,
 //                                        i18n("You have no IM accounts configured. Would you like to do that now?"),
 //                                        i18n("No Accounts Found")) == KMessageBox::Yes) {
-//
+// 
 //             showSettingsKCM();
 //         }
 //     }
@@ -182,19 +210,19 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
     kDebug() << d->model->itemFromIndex(d->proxy->mapToSource(index))->data(PersonsModel::StatusRole).toString();
     QList<QAction *> actions;
     actions = index.data(PersonsModel::ContactActionsRole).value<QList<QAction *> >();
-//
+
 //     if (!index.isValid()) {
 //         return;
 //     }
-//
-//     if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<AccountsModelItem*>()
-//         || index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<GroupsModelItem*>()) {
-//
+// 
+//     if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::AccountRowType
+//         || index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
+// 
 //         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
 //         KConfigGroup groupsConfig = config->group("GroupsState");
-//
-//         QString groupId = index.data(AccountsModel::IdRole).toString();
-//
+// 
+//         QString groupId = index.data(ContactsModel::IdRole).toString();
+// 
 //         if (isExpanded(index)) {
 //             collapse(index);
 //             groupsConfig.writeEntry(groupId, false);
@@ -202,9 +230,9 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
 //             expand(index);
 //             groupsConfig.writeEntry(groupId, true);
 //         }
-//
+// 
 //         groupsConfig.config()->sync();
-//
+// 
 //         //replace the old value or insert new value if it isn't there yet
 //         d->groupStates.insert(groupId, isExpanded(index));
 //     }
@@ -221,84 +249,90 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
         }
     }
 
-//     if (!index.isValid()) {
-//         return;
-//     }
-//
-//     if (index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>()) {
-//         kDebug() << "Text chat requested for index" << index;
-//         startTextChannel(index.data(AccountsModel::ItemRole).value<ContactModelItem*>());
+//     if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+//         Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+//         Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+//         startTextChannel(account, contact);
 //     }
 }
 
 void ContactListWidget::addOverlayButtons()
 {
 //     Q_D(ContactListWidget);
-//
+// 
 //     TextChannelContactOverlay *textOverlay  = new TextChannelContactOverlay(this);
 //     AudioChannelContactOverlay *audioOverlay = new AudioChannelContactOverlay(this);
 //     VideoChannelContactOverlay *videoOverlay = new VideoChannelContactOverlay(this);
-//
+// 
 //     FileTransferContactOverlay *fileOverlay  = new FileTransferContactOverlay(this);
 //     DesktopSharingContactOverlay *desktopOverlay = new DesktopSharingContactOverlay(this);
-//
+//     LogViewerOverlay *logViewerOverlay = new LogViewerOverlay(this);
+// 
 //     d->delegate->installOverlay(textOverlay);
 //     d->delegate->installOverlay(audioOverlay);
 //     d->delegate->installOverlay(videoOverlay);
 //     d->delegate->installOverlay(fileOverlay);
 //     d->delegate->installOverlay(desktopOverlay);
-//
+//     d->delegate->installOverlay(logViewerOverlay);
+// 
 //     d->delegate->setViewOnAllOverlays(this);
 //     d->delegate->setAllOverlaysActive(true);
-//
+// 
 //     connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
 //             d->delegate, SLOT(hideStatusMessageSlot(QModelIndex)));
-//
+// 
 //     connect(textOverlay, SIGNAL(overlayHidden()),
 //             d->delegate, SLOT(reshowStatusMessageSlot()));
-//
-//
-//     connect(textOverlay, SIGNAL(activated(ContactModelItem*)),
-//             this, SLOT(startTextChannel(ContactModelItem*)));
-//
-//     connect(fileOverlay, SIGNAL(activated(ContactModelItem*)),
-//             this, SLOT(startFileTransferChannel(ContactModelItem*)));
-//
-//     connect(audioOverlay, SIGNAL(activated(ContactModelItem*)),
-//             this, SLOT(startAudioChannel(ContactModelItem*)));
-//
-//     connect(videoOverlay, SIGNAL(activated(ContactModelItem*)),
-//             this, SLOT(startVideoChannel(ContactModelItem*)));
-//
-//     connect(desktopOverlay, SIGNAL(activated(ContactModelItem*)),
-//             this, SLOT(startDesktopSharing(ContactModelItem*)));
-//
-//
+// 
+// 
+//     connect(textOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
+//             this, SLOT(startTextChannel(Tp::AccountPtr, Tp::ContactPtr)));
+// 
+//     connect(fileOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
+//             this, SLOT(startFileTransferChannel(Tp::AccountPtr, Tp::ContactPtr)));
+// 
+//     connect(audioOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
+//             this, SLOT(startAudioChannel(Tp::AccountPtr, Tp::ContactPtr)));
+// 
+//     connect(videoOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
+//             this, SLOT(startVideoChannel(Tp::AccountPtr, Tp::ContactPtr)));
+// 
+//     connect(desktopOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
+//             this, SLOT(startDesktopSharing(Tp::AccountPtr, Tp::ContactPtr)));
+// 
+//     connect(logViewerOverlay, SIGNAL(activated(Tp::AccountPtr,Tp::ContactPtr)),
+//             this, SLOT(startLogViewer(Tp::AccountPtr, Tp::ContactPtr)));
+// 
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             textOverlay, SLOT(setActive(bool)));
-//
+// 
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             audioOverlay, SLOT(setActive(bool)));
-//
+// 
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             videoOverlay, SLOT(setActive(bool)));
-//
+// 
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             fileOverlay, SLOT(setActive(bool)));
-//
+// 
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             desktopOverlay, SLOT(setActive(bool)));
+// 
+//     connect(this, SIGNAL(enableOverlays(bool)),
+//             logViewerOverlay, SLOT(setActive(bool)));
 }
 
 void ContactListWidget::toggleGroups(bool show)
 {
-//
+//     Q_D(ContactListWidget);
+// 
+// 
 //     if (show) {
-//         d->modelFilter->setSourceModel(d->groupsModel);
+//         d->modelFilter->setGroupMode(ContactsModel2::GroupGrouping);
 //     } else {
-//         d->modelFilter->setSourceModel(d->model);
+//         d->modelFilter->setGroupMode(ContactsModel2::AccountGrouping);
 //     }
-//
+// 
 //     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
 //         onNewGroupModelItemsInserted(d->modelFilter->index(i, 0, QModelIndex()), 0, 0);
 //     }
@@ -315,86 +349,35 @@ void ContactListWidget::toggleOfflineContacts(bool show)
 void ContactListWidget::toggleSortByPresence(bool sort)
 {
 //     Q_D(ContactListWidget);
-//
+// 
 //     d->modelFilter->setSortMode(sort ? AccountsFilterModel::SortByPresence : AccountsFilterModel::DoNotSort);
 }
 
 void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-//     Q_D(ContactListWidget);
-//
-//     Q_ASSERT(contactItem);
-//     Tp::ContactPtr contact = contactItem->contact();
-//
-//     kDebug() << "Requesting chat for contact" << contact->alias();
-//
-//     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-//
-//     Tp::ChannelRequestHints hints;
-//     hints.setHint("org.freedesktop.Telepathy.ChannelRequest","DelegateToPreferredHandler", QVariant(true));
-//
-//     Tp::PendingChannelRequest *channelRequest = account->ensureTextChat(contact,
-//                                                                         QDateTime::currentDateTime(),
-//                                                                         PREFERRED_TEXTCHAT_HANDLER,
-//                                                                         hints);
-//     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+//     Tp::PendingOperation *op = KTp::Actions::startChat(account, contact, true);
+//     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContactListWidget::startAudioChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-//     Q_D(ContactListWidget);
-//
-//     Q_ASSERT(contactItem);
-//     Tp::ContactPtr contact = contactItem->contact();
-//
-//     kDebug() << "Requesting audio for contact" << contact->alias();
-//
-//     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-//
-//     Tp::PendingChannelRequest *channelRequest = account->ensureAudioCall(contact,
-//             QLatin1String("audio"), QDateTime::currentDateTime(), PREFERRED_AUDIO_VIDEO_HANDLER);
-//
-//     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+//     Tp::PendingOperation *op = KTp::Actions::startAudioCall(account, contact);
+//     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContactListWidget::startVideoChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-//     Q_D(ContactListWidget);
-//
-//     Q_ASSERT(contactItem);
-//     Tp::ContactPtr contact = contactItem->contact();
-//
-//     kDebug() << "Requesting video for contact" << contact->alias();
-//
-//     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-//
-//     Tp::PendingChannelRequest* channelRequest = account->ensureAudioVideoCall(contact,
-//             QLatin1String("audio"), QLatin1String("video"),
-//             QDateTime::currentDateTime(), PREFERRED_AUDIO_VIDEO_HANDLER);
-//
-//     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+//     Tp::PendingOperation *op = KTp::Actions::startAudioVideoCall(account, contact);
+//     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContactListWidget::startDesktopSharing(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-//     Q_D(ContactListWidget);
-//
-//     Q_ASSERT(contactItem);
-//     Tp::ContactPtr contact = contactItem->contact();
-//
-//     kDebug() << "Requesting desktop sharing for contact" << contact->alias();
-//
-//     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-//
-//     Tp::PendingChannelRequest* channelRequest = account->createStreamTube(contact,
-//                                                                           QLatin1String("rfb"),
-//                                                                           QDateTime::currentDateTime(),
-//                                                                           PREFERRED_RFB_HANDLER);
-//
-//     connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+//     Tp::PendingOperation *op = KTp::Actions::startDesktopSharing(account, contact);
+//     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
 //             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
@@ -406,27 +389,18 @@ void ContactListWidget::startLogViewer(const Tp::AccountPtr &account, const Tp::
 
 void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-//     Q_D(ContactListWidget);
-//
-//     Q_ASSERT(contactItem);
-//     Tp::ContactPtr contact = contactItem->contact();
-//
 //     kDebug() << "Requesting file transfer for contact" << contact->alias();
-//
-//     Tp::AccountPtr account = d->model->accountForContactItem(contactItem);
-//
+// 
 //     QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
 //                                                           QString(),
 //                                                           this,
 //                                                           i18n("Choose files to send to %1", contact->alias()));
-//
+// 
 //     if (filenames.isEmpty()) { // User hit cancel button
 //         return;
 //     }
-//
-//     QDateTime now = QDateTime::currentDateTime();
-//
-//     requestFileTransferChannels(account, contact, filenames, now);
+// 
+//     requestFileTransferChannels(account, contact, filenames);
 }
 
 void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &account,
@@ -434,18 +408,8 @@ void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &accoun
                                                     const QStringList &filenames)
 {
 //     Q_FOREACH (const QString &filename, filenames) {
-//         kDebug() << "Filename:" << filename;
-//         kDebug() << "Content type:" << KMimeType::findByFileContent(filename)->name();
-//
-//         Tp::FileTransferChannelCreationProperties fileTransferProperties(filename,
-//                                                                         KMimeType::findByFileContent(filename)->name());
-//
-//         Tp::PendingChannelRequest* channelRequest = account->createFileTransfer(contact,
-//                                                                                 fileTransferProperties,
-//                                                                                 userActionTime,
-//                                                                                 PREFERRED_FILETRANSFER_HANDLER);
-//
-//         connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)),
+//         Tp::PendingOperation *op = KTp::Actions::startFileTransfer(account, contact, filename);
+//         connect(op, SIGNAL(finished(Tp::PendingOperation*)),
 //                 SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 //     }
 }
@@ -455,18 +419,18 @@ void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, i
 //     Q_UNUSED(start);
 //     Q_UNUSED(end);
 //     Q_D(ContactListWidget);
-//
+// 
 //     if (!index.isValid()) {
 //         return;
 //     }
-//
+// 
 //     //if there is no parent, we deal with top-level item that we want to expand/collapse, ie. group or account
 //     if (!index.parent().isValid()) {
-//
+// 
 //         //we're probably dealing with group item, so let's check if it is expanded first
 //         if (!isExpanded(index)) {
 //             //if it's not expanded, check the config if we should expand it or not
-//             QString groupId = index.data(AccountsModel::IdRole).toString();
+//             QString groupId = index.data(ContactsModel::IdRole).toString();
 //             if (d->groupStates.value(groupId)) {
 //                 expand(index);
 //             }
@@ -561,9 +525,9 @@ void ContactListWidget::onShowBlockedContacts()
 void ContactListWidget::setFilterString(const QString& string)
 {
 //     Q_D(ContactListWidget);
-//
+// 
 //     d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? AccountsFilterModel::ShowOnlyConnected : AccountsFilterModel::DoNotFilterByPresence);
-//     d->modelFilter->setDisplayNameFilterString(string);
+//     d->modelFilter->setGlobalFilterString(string);
 }
 
 void ContactListWidget::setDropIndicatorRect(const QRect &rect)
@@ -805,6 +769,47 @@ void ContactListWidget::setDropIndicatorRect(const QRect &rect)
     //See https://bugreports.qt-project.org/browse/QTBUG-26305
 // }
 
+void ContactListWidget::keyPressEvent(QKeyEvent *event)
+{
+    //this would be normally handled by activated() signal but since we decided
+    //we don't want people starting chats using single click, we can't use activated()
+    //and have to do it ourselves, therefore this. Change only after discussing with the team!
+    if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
+        //start the chat only if the index is valid and has a parent (ie. is not a group/account)
+        if (currentIndex().isValid() && currentIndex().parent().isValid()) {
+            onContactListDoubleClicked(currentIndex());
+        }
+    }
+
+    QTreeView::keyPressEvent(event);
+}
+
+void ContactListWidget::mousePressEvent(QMouseEvent *event)
+{
+//     Q_D(ContactListWidget);
+// 
+    QTreeView::mousePressEvent(event);
+// 
+//     QModelIndex index = indexAt(event->pos());
+//     d->shouldDrag = false;
+//     d->dragSourceGroup.clear();
+// 
+//     // no drag when grouping by accounts
+//     if (d->modelFilter->groupMode() == ContactsModel2::AccountGrouping) {
+//         return;
+//     }
+// 
+//     // if no contact, no drag
+//     if (index.data(ContactsModel::TypeRole).toInt() != ContactsModel::ContactRowType) {
+//         return;
+//     }
+// 
+//     if (event->button() == Qt::LeftButton) {
+//         d->shouldDrag = true;
+//         d->dragStartPosition = event->pos();
+//     }
+}
+
 void ContactListWidget::loadGroupStatesFromConfig()
 {
 //     Q_D(ContactListWidget);
@@ -862,6 +867,7 @@ void ContactListWidget::selectionChanged(const QItemSelection &selected, const Q
     } else {
         d->listSelection = ContactListWidget::NoSelection;
     }
+
 
     Q_EMIT listSelectionChanged(d->listSelection);
 

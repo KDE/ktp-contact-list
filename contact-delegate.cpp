@@ -34,21 +34,14 @@
 #include <KGlobalSettings>
 #include <KDE/KLocale>
 
-#include <KTp/Models/accounts-model.h>
-#include <KTp/Models/contact-model-item.h>
-#include <KTp/Models/proxy-tree-node.h>
-#include <KTp/Models/groups-model-item.h>
-#include <KTp/Models/groups-model.h>
+#include <KTp/Models/contacts-model.h>
 #include <KTp/presence.h>
-
-const int SPACING = 4;
-const int AVATAR_SIZE = 32;
-const int PRESENCE_ICON_SIZE = 22;
-const int CLIENT_TYPE_ICON_SIZE = 22;
-const int ACCOUNT_ICON_SIZE = 13;
 
 ContactDelegate::ContactDelegate(QObject * parent)
     : AbstractContactDelegate(parent)
+    , m_avatarSize(IconSize(KIconLoader::Dialog))
+    , m_presenceIconSize(IconSize(KIconLoader::Toolbar))
+    , m_spacing(IconSize(KIconLoader::Dialog) / 8)
 {
 
 }
@@ -72,11 +65,11 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
     QRect iconRect = optV4.rect;
-    iconRect.setSize(QSize(AVATAR_SIZE, AVATAR_SIZE));
-    iconRect.moveTo(QPoint(iconRect.x() + SPACING, iconRect.y() + SPACING));
+    iconRect.setSize(QSize(m_avatarSize, m_avatarSize));
+    iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
     QPixmap avatar;
-    avatar.load(index.data(AccountsModel::AvatarRole).toString());
+    avatar.load(index.data(ContactsModel::AvatarRole).toString());
 
     bool noContactAvatar = avatar.isNull();
 
@@ -99,44 +92,44 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
         painter->drawPath(roundedPath);
     }
 
-    KTp::Presence presence = index.data(AccountsModel::PresenceRole).value<KTp::Presence>();
+    KTp::Presence presence = index.data(ContactsModel::PresenceRole).value<KTp::Presence>();
 
     // This value is used to set the correct width for the username and the presence message.
-    int rightIconsWidth = PRESENCE_ICON_SIZE + SPACING;
+    int rightIconsWidth = m_presenceIconSize + m_spacing;
 
     QPixmap icon = presence.icon().pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
-    statusIconRect.setSize(QSize(PRESENCE_ICON_SIZE, PRESENCE_ICON_SIZE));
+    statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
     statusIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
-                                 optV4.rect.top() + (optV4.rect.height() - PRESENCE_ICON_SIZE) / 2));
+                                 optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
 
     painter->drawPixmap(statusIconRect, icon);
 
     // Right now we only check for 'phone', as that's the most interesting type.
-    if (index.data(AccountsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
+    if (index.data(ContactsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
         // Additional space is needed for the icons, don't add too much spacing between the two icons
-        rightIconsWidth += CLIENT_TYPE_ICON_SIZE + (SPACING / 2);
+        rightIconsWidth += m_presenceIconSize + m_spacing / 2;
 
-        QPixmap phone = QIcon::fromTheme("phone").pixmap(CLIENT_TYPE_ICON_SIZE);
+        QPixmap phone = QIcon::fromTheme("phone").pixmap(m_presenceIconSize);
         QRect phoneIconRect = optV4.rect;
-        phoneIconRect.setSize(QSize(CLIENT_TYPE_ICON_SIZE, CLIENT_TYPE_ICON_SIZE));
+        phoneIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
         phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
-                                    optV4.rect.top() + (optV4.rect.height() - CLIENT_TYPE_ICON_SIZE) / 2));
+                                    optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
         painter->drawPixmap(phoneIconRect, phone);
     }
 
     QRect userNameRect = optV4.rect;
-    userNameRect.setX(iconRect.x() + iconRect.width() + SPACING);
-    userNameRect.setY(userNameRect.y() + 2);
+    userNameRect.setX(iconRect.x() + iconRect.width() + m_spacing);
+    userNameRect.setY(userNameRect.y() + m_spacing / 2);
     userNameRect.setWidth(userNameRect.width() - rightIconsWidth);
 
     const QFontMetrics nameFontMetrics(KGlobalSettings::generalFont());
 
-    if (option.state & QStyle::State_HasFocus) {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::HighlightedText));
+    if (option.state & QStyle::State_Selected) {
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
-        painter->setPen(m_palette->color(QPalette::Active, QPalette::WindowText));
+        painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
     }
 
     painter->drawText(userNameRect,
@@ -145,15 +138,15 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     const QFontMetrics statusFontMetrics(KGlobalSettings::smallestReadableFont());
 
     QRect statusMsgRect = optV4.rect;
-    statusMsgRect.setX(iconRect.x() + iconRect.width() + SPACING);
+    statusMsgRect.setX(iconRect.x() + iconRect.width() + m_spacing);
     statusMsgRect.setY(userNameRect.bottom() - statusFontMetrics.height() - 4);
     statusMsgRect.setWidth(statusMsgRect.width() - rightIconsWidth);
 
     QColor fadingColor;
-    if (option.state & QStyle::State_HasFocus) {
-        fadingColor = QColor(m_palette->color(QPalette::Disabled, QPalette::HighlightedText));
+    if (option.state & QStyle::State_Selected) {
+        fadingColor = QColor(option.palette.color(QPalette::Disabled, QPalette::HighlightedText));
     } else {
-        fadingColor = QColor(m_palette->color(QPalette::Disabled, QPalette::WindowText));
+        fadingColor = QColor(option.palette.color(QPalette::Disabled, QPalette::Text));
     }
 
     // if the index is hovered, set animated alpha to the color
@@ -175,7 +168,7 @@ QSize ContactDelegate::sizeHintContact(const QStyleOptionViewItem &option, const
 {
     Q_UNUSED(option);
     Q_UNUSED(index);
-    return QSize(0, AVATAR_SIZE + 2 * SPACING);
+    return QSize(0, m_avatarSize + 2 * m_spacing);
 }
 
 void ContactDelegate::hideStatusMessageSlot(const QModelIndex& index)
