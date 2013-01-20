@@ -80,6 +80,9 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->presenceMessageLabel->setText(presenceMessage);
     ui->blockedLabel->setShown(index.data(ContactsModel::BlockedRole).toBool());
 
+    const Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+    ui->accountLabel->setText(i18n("Account: %1").arg(account->displayName()));
+
     connect(ui->presenceMessageLabel, SIGNAL(linkActivated(QString)), this, SLOT(openLink(QString)));
 }
 
