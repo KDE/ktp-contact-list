@@ -779,6 +779,7 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
     } else {
         event->ignore();
     }
+    QAbstractItemView::dragMoveEvent(event);
 }
 
 void ContactListWidget::dragLeaveEvent(QDragLeaveEvent *event)
