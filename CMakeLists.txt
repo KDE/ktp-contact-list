@@ -44,7 +44,6 @@ set (ktp_contactlist_SRCS
      main-widget.cpp
      global-presence-chooser.cpp
      dialogs/remove-contact-dialog.cpp
-     dialogs/contact-info.cpp
      dialogs/custom-presence-dialog.cpp
      presence-model.cpp
      tooltips/ktooltip.cpp
@@ -57,7 +56,6 @@ set (ktp_contactlist_SRCS
 kde4_add_ui_files (ktp_contactlist_SRCS
                    main-widget.ui
                    dialogs/remove-contact-dialog.ui
-                   dialogs/contact-info.ui
                    tooltips/contacttooltip.ui
 )
 

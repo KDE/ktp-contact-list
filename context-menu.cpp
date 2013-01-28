@@ -32,6 +32,7 @@
 #include <KTp/Models/contacts-model.h>
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notificationconfigdialog.h>
+#include <KTp/contact-info-dialog.h>
 
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/Account>
@@ -41,7 +42,6 @@
 #include <TelepathyLoggerQt4/Init>
 
 #include "dialogs/remove-contact-dialog.h"
-#include "dialogs/contact-info.h"
 
 #include "contact-list-widget_p.h"
 #include "contacts-model.h"
@@ -333,11 +333,12 @@ void ContextMenu::onShowInfoTriggered()
         return;
     }
 
-    Tp::ContactPtr contact  = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-    if (contact) {
-        QWeakPointer<ContactInfo> contactInfoDialog = new ContactInfo(contact, m_mainWidget);
-        contactInfoDialog.data()->setAttribute(Qt::WA_DeleteOnClose);
-        contactInfoDialog.data()->show();
+    Tp::AccountPtr account = m_currentIndex.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+    if (account && contact) {
+        KTp::ContactInfoDialog* contactInfoDialog = new KTp::ContactInfoDialog(account, contact, m_mainWidget);
+        contactInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
+        contactInfoDialog->show();
     }
 }
 
