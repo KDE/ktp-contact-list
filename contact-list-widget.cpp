@@ -29,7 +29,7 @@
 #include <KTp/Models/contacts-list-model.h>
 
 #include <KTp/Models/groups-model.h>
-#include <KTp/Models/accounts-filter-model.h>
+#include <KTp/Models/contacts-filter-model.h>
 #include <KTp/Models/accounts-tree-proxy-model.h>
 #include <KTp/Models/groups-tree-proxy-model.h>
 
@@ -61,13 +61,13 @@
 
 #include <kpeople/persons-model.h>
 #include <kpeople/personactions.h>
+#include <kpeople/ktp-translation-proxy.h>
+#include <kpeople/persons-presence-model.h>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
-
 #include "kpeople-proxy.h"
-
 #include "contacts-model.h"
 
 
@@ -88,9 +88,13 @@ ContactListWidget::ContactListWidget(QWidget *parent)
             this, SLOT(reset()));
     connect(d->model, SIGNAL(peopleAdded()),
             this, SLOT(onShowAllContacts()));
-    kDebug() << d->model->rowCount();
+
+
+    d->presenceModel = new PersonsPresenceModel(this);
+    d->presenceModel->setSourceModel(d->model);
+
     d->proxy = new KPeopleProxy(this);
-    d->proxy->setSourceModel(d->model);
+    d->proxy->setSourceModel(d->presenceModel);
     d->proxy->setDynamicSortFilter(true);
     d->proxy->sort(0);
     d->proxy->setSortCaseSensitivity(Qt::CaseInsensitive);

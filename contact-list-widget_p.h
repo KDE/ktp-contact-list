@@ -22,9 +22,13 @@
 
 #include <TelepathyQt/Types>
 
+class KTpTranslationProxy;
+class PersonsPresenceModel;
 class PersonsModel;
 
-class AccountsFilterModel;
+namespace KTp {
+class ContactsFilterModel;
+}
 class ContactDelegate;
 class ContactDelegateCompact;
 class KPeopleProxy;
@@ -38,6 +42,7 @@ public:
       showOffline(false) {}
 
     PersonsModel           *model;
+    PersonsPresenceModel   *presenceModel;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     KPeopleProxy           *proxy;
