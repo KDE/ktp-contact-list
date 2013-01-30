@@ -46,6 +46,7 @@ public:
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     KPeopleProxy           *proxy;
+    KTpTranslationProxy    *translationProxy;
     QRect                   dropIndicatorRect;
     QPoint                  dragStartPosition;
     QString                 dragSourceGroup;

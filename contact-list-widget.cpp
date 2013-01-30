@@ -96,18 +96,17 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->proxy = new KPeopleProxy(this);
     d->proxy->setSourceModel(d->presenceModel);
     d->proxy->setDynamicSortFilter(true);
-    d->proxy->sort(0);
-    d->proxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-//     d->groupsModel = new GroupsModel(d->model, this);
-//     d->modelFilter = new AccountsFilterModel(this);
-//     d->modelFilter->setDynamicSortFilter(true);
-//     d->modelFilter->setSortRole(Qt::DisplayRole);
+
+    d->translationProxy = new KTpTranslationProxy(this);
+    d->translationProxy->setSourceModel(d->proxy);
     setItemDelegate(d->compactDelegate);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
-    setModel(d->proxy);
-//    setSortingEnabled(true);
+
+    setModel(d->translationProxy);
+
+   setSortingEnabled(true);
 //    sortByColumn(0);
-//     sortByColumn(0, Qt::AscendingOrder);
+    sortByColumn(0, Qt::AscendingOrder);
 //     loadGroupStatesFromConfig();
 
 //     connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
@@ -119,12 +118,11 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     header()->hide();
     setRootIsDecorated(false);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
-//     setSortingEnabled(true);
     setContextMenuPolicy(Qt::CustomContextMenu);
     setIndentation(10);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
 //     setMouseTracking(true);
-//     setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
+    setExpandsOnDoubleClick(true); //the expanding/collapsing is handled manually
 //     setDragEnabled(true);
 //     viewport()->setAcceptDrops(true);
 //     setDropIndicatorShown(true);
@@ -149,7 +147,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 //     } else if (shownContacts == "blocked") {
 //         d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::ShowOnlyBlocked);
 //     } else {
-//         d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::DoNotFilterBySubscription);
+//         d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
 //     }
 
     connect(this, SIGNAL(clicked(QModelIndex)),
@@ -210,10 +208,10 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
 {
     Q_D(ContactListWidget);
 
-    kDebug() << d->model->itemFromIndex(d->proxy->mapToSource(index))->data(PersonsModel::UriRole).toString();
-    kDebug() << d->model->itemFromIndex(d->proxy->mapToSource(index))->data(PersonsModel::StatusRole).toString();
-    QList<QAction *> actions;
-    actions = index.data(PersonsModel::ContactActionsRole).value<QList<QAction *> >();
+    kDebug() << index.data(PersonsModel::UriRole).toString();
+    kDebug() << index.data(PersonsModel::StatusRole).toString();
+//     QList<QAction *> actions;
+//     actions = index.data(PersonsModel::ContactActionsRole).value<QList<QAction *> >();
 
 //     if (!index.isValid()) {
 //         return;
@@ -244,20 +242,11 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
 
 void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
 {
-    QList<QAction *> actions;
-    actions = index.data(PersonsModel::ContactActionsRole).value<QList<QAction *> >();
-    //kDebug() << actions;//.size();
-    Q_FOREACH (QAction *a, actions) {
-        if (a->property("capability").toString() == QLatin1String("http://www.semanticdesktop.org/ontologies/2007/03/22/nco#imCapabilityText")) {
-            a->trigger();
-        }
+    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+        startTextChannel(account, contact);
     }
-
-//     if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
-//         Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-//         Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
-//         startTextChannel(account, contact);
-//     }
 }
 
 void ContactListWidget::addOverlayButtons()
@@ -359,9 +348,9 @@ void ContactListWidget::toggleSortByPresence(bool sort)
 
 void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-//     Tp::PendingOperation *op = KTp::Actions::startChat(account, contact, true);
-//     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-//             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    Tp::PendingOperation *op = KTp::Actions::startChat(account, contact, true);
+    connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+            SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContactListWidget::startAudioChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -760,18 +749,18 @@ void ContactListWidget::setDropIndicatorRect(const QRect &rect)
 //     }
 // }
 
-// void ContactListWidget::drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const
-// {
-//     Q_UNUSED(painter);
-//     Q_UNUSED(rect);
-//     Q_UNUSED(index);
+void ContactListWidget::drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const
+{
+    Q_UNUSED(painter);
+    Q_UNUSED(rect);
+    Q_UNUSED(index);
 
-    // There is a 0px identation set in the constructor, with setIndentation(0).
-    // Because of that, no branches are shown, so they should be disabled completely (overriding drawBranches).
-    // Leaving branches enabled with 0px identation results in a 1px branch line on the left of all items,
-    // which looks like an artifact.
-    //See https://bugreports.qt-project.org/browse/QTBUG-26305
-// }
+//     There is a 0px identation set in the constructor, with setIndentation(0).
+//     Because of that, no branches are shown, so they should be disabled completely (overriding drawBranches).
+//     Leaving branches enabled with 0px identation results in a 1px branch line on the left of all items,
+//     which looks like an artifact.
+//     See https://bugreports.qt-project.org/browse/QTBUG-26305
+}
 
 void ContactListWidget::keyPressEvent(QKeyEvent *event)
 {

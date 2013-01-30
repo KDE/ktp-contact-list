@@ -111,7 +111,7 @@ protected:
 //     virtual void dragEnterEvent(QDragEnterEvent *event);
 //     virtual void dragMoveEvent(QDragMoveEvent *event);
 //     virtual void dragLeaveEvent(QDragLeaveEvent *event);
-//     virtual void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const;
+    virtual void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const;
 
 private:
     void requestFileTransferChannels(const Tp::AccountPtr &account,
