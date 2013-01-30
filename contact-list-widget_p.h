@@ -53,6 +53,7 @@ public:
     bool                    shouldDrag;
     bool                    showOffline;
     QHash<QString, bool>    groupStates;
+    KTp::ContactsFilterModel *modelFilter;
 
     ContactListWidget::SelectedItemType listSelection;
 };

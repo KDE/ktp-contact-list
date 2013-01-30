@@ -99,6 +99,15 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
     d->translationProxy = new KTpTranslationProxy(this);
     d->translationProxy->setSourceModel(d->proxy);
+
+    d->modelFilter = new KTp::ContactsFilterModel(this);
+    d->modelFilter->setDynamicSortFilter(true);
+    d->modelFilter->setSortRole(Qt::DisplayRole);
+    d->modelFilter->setSourceModel(d->translationProxy);
+    d->modelFilter->setPresenceTypeFilterFlags(KTp::ContactsFilterModel::HideAllOffline);
+    d->modelFilter->setCapabilityFilterFlags(KTp::ContactsFilterModel::DoNotFilterByCapability);
+    d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
+    d->modelFilter->sort(0);
     setItemDelegate(d->compactDelegate);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
 
@@ -317,14 +326,14 @@ void ContactListWidget::addOverlayButtons()
 
 void ContactListWidget::toggleGroups(bool show)
 {
-//     Q_D(ContactListWidget);
+    Q_D(ContactListWidget);
 // 
 // 
-//     if (show) {
-//         d->modelFilter->setGroupMode(ContactsModel2::GroupGrouping);
-//     } else {
-//         d->modelFilter->setGroupMode(ContactsModel2::AccountGrouping);
-//     }
+    if (show) {
+        setModel(d->modelFilter);
+    } else {
+        setModel(d->translationProxy);
+    }
 // 
 //     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
 //         onNewGroupModelItemsInserted(d->modelFilter->index(i, 0, QModelIndex()), 0, 0);
@@ -333,10 +342,11 @@ void ContactListWidget::toggleGroups(bool show)
 
 void ContactListWidget::toggleOfflineContacts(bool show)
 {
-//     Q_D(ContactListWidget);
-//
-//     d->showOffline = show;
-//     d->modelFilter->setPresenceTypeFilterFlags(show ? AccountsFilterModel::DoNotFilterByPresence : AccountsFilterModel::ShowOnlyConnected);
+    Q_D(ContactListWidget);
+
+    kDebug();
+    d->showOffline = show;
+    d->modelFilter->setPresenceTypeFilterFlags(show ? KTp::ContactsFilterModel::DoNotFilterByPresence : KTp::ContactsFilterModel::ShowOnlyConnected);
 }
 
 void ContactListWidget::toggleSortByPresence(bool sort)
