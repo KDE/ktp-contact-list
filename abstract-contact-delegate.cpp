@@ -64,11 +64,11 @@ QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, cons
 
     bool isContact = true;//index.data(AccountsModel::ItemRole).userType() == qMetaTypeId<ContactModelItem*>();
 
-    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+//     if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
         return sizeHintContact(option, index);
-    } else {
-        return sizeHintHeader(option, index);
-    }
+//     } else {
+//         return sizeHintHeader(option, index);
+//     }
 }
 
 
