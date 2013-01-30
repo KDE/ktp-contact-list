@@ -42,12 +42,26 @@ bool KPeopleProxy::filterAcceptsRow(int source_row, const QModelIndex &source_pa
         }
     } else {
         QVariantList l = sourceModel()->data(i, PersonsModel::ContactTypeRole).toList();
-        kDebug() << l;
+        //kDebug() << l;
         Q_FOREACH (const QVariant &v, l) {
             if ((PersonsModel::ContactType)v.toInt() == PersonsModel::IM) {
                 return true;
             }
         }
     }
+
     return false;
+}
+
+QVariant KPeopleProxy::data(const QModelIndex &index, int role) const
+{
+    if (role == PersonsModel::ContactsCountRole) {
+        if (index.parent().isValid() || (!index.parent().isValid() && rowCount(index) == 0)) {
+            return 1;
+        } else {
+            return rowCount(index);
+        }
+    }
+
+    return QSortFilterProxyModel::data(index, role);
 }

@@ -30,6 +30,8 @@ public:
     KPeopleProxy(QObject *parent = 0);
     virtual ~KPeopleProxy();
 
+    virtual QVariant data(const QModelIndex &index, int role) const;
+
 protected:
     bool filterAcceptsRow(int source_row, const QModelIndex& source_parent) const;
 };
