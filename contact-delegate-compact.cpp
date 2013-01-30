@@ -68,7 +68,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     QPixmap avatar;
 
-    QString avatarPath = index.data(PersonsModel::PhotoRole).toUrl().toLocalFile();
+    QString avatarPath = index.data(ContactsModel::AvatarRole).toUrl().toLocalFile();
     if (avatarPath.isEmpty()) {
         avatar = SmallIcon("im-user", KIconLoader::SizeMedium);//avatar.load("/home/mck182/Downloads/dummy-avatar.png");
     } else {
@@ -80,26 +80,21 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     int rightIconsWidth = 0;
     KTp::Presence presence;
 
-    for (int i = 0; i < index.data(PersonsModel::ContactsCountRole).toInt(); i++) {
-        if (index.data(PersonsModel::StatusRole).toStringList().isEmpty()) {
-            continue;
-        }
+//     kDebug() << index.data(Qt::DisplayRole).toString() << index.data(PersonsModel::ContactsCountRole).toInt() << index.data(PersonsModel::StatusRole);
 
-        if (index.data(PersonsModel::StatusRole).toStringList().size() == i) {
-            //there are no more presences to be painted, get out
-            break;
-        }
-
-        if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "available") {
+    if (index.model()->rowCount(index) == 0) {
+        if (index.data(PersonsModel::StatusRole).toString() == "available") {
             presence = KTp::Presence(Tp::Presence::available());
-        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "away") {
+        } else if (index.data(PersonsModel::StatusRole).toString() == "away") {
             presence = KTp::Presence(Tp::Presence::away());
-        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "busy"
-            || index.data(PersonsModel::StatusRole).toStringList().at(i) == "dnd") {
+        } else if (index.data(PersonsModel::StatusRole).toString() == "busy"
+            || index.data(PersonsModel::StatusRole).toString() == "dnd") {
             presence = KTp::Presence(Tp::Presence::busy());
-        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "xa") {
+        } else if (index.data(PersonsModel::StatusRole).toString() == "xa") {
             presence = KTp::Presence(Tp::Presence::xa());
-        } else if (index.data(PersonsModel::StatusRole).toStringList().at(i) == "offline") {
+        } else if (index.data(PersonsModel::StatusRole).toString() == "hidden") {
+            presence = KTp::Presence(Tp::Presence::hidden());
+        } else if (index.data(PersonsModel::StatusRole).toString() == "offline") {
             presence = KTp::Presence(Tp::Presence::offline());
         }
 
@@ -111,10 +106,41 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
         QRect statusIconRect = optV4.rect;
 
         statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
-        statusIconRect.moveTo(QPoint(optV4.rect.right() - (rightIconsWidth * (i + 1)),
-                                    optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
+        statusIconRect.moveTo(QPoint(optV4.rect.right() - (rightIconsWidth),
+                                        optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
 
         painter->drawPixmap(statusIconRect, icon);
+    } else {
+        for (int i = 0; i < index.model()->rowCount(index); i++) {
+
+            if (index.child(i, 0).data(PersonsModel::StatusRole).toString() == "available") {
+                presence = KTp::Presence(Tp::Presence::available());
+            } else if (index.child(i, 0).data(PersonsModel::StatusRole).toString() == "away") {
+                presence = KTp::Presence(Tp::Presence::away());
+            } else if (index.child(i, 0).data(PersonsModel::StatusRole).toString() == "busy"
+                || index.child(i, 0).data(PersonsModel::StatusRole).toString() == "dnd") {
+                presence = KTp::Presence(Tp::Presence::busy());
+            } else if (index.child(i, 0).data(PersonsModel::StatusRole).toString() == "xa") {
+                presence = KTp::Presence(Tp::Presence::xa());
+            } else if (index.child(i, 0).data(PersonsModel::StatusRole).toString() == "hidden") {
+                presence = KTp::Presence(Tp::Presence::hidden());
+            } else if (index.child(i, 0).data(PersonsModel::StatusRole).toString() == "offline") {
+                presence = KTp::Presence(Tp::Presence::offline());
+            }
+
+            // This value is used to set the correct width for the username and the presence message.
+            rightIconsWidth = m_presenceIconSize + m_spacing;
+
+            QPixmap icon = presence.icon().pixmap(KIconLoader::SizeSmallMedium);
+
+            QRect statusIconRect = optV4.rect;
+
+            statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
+            statusIconRect.moveTo(QPoint(optV4.rect.right() - (rightIconsWidth * (i + 1)),
+                                        optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
+
+            painter->drawPixmap(statusIconRect, icon);
+        }
     }
 
     // Right now we only check for 'phone', as that's the most interesting type.
