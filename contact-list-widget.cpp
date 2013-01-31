@@ -113,9 +113,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
     setModel(d->translationProxy);
 
-   setSortingEnabled(true);
-//    sortByColumn(0);
-    sortByColumn(0, Qt::AscendingOrder);
 //     loadGroupStatesFromConfig();
 
 //     connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
