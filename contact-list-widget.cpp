@@ -104,7 +104,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
     d->modelFilter->setSourceModel(d->translationProxy);
-    d->modelFilter->setPresenceTypeFilterFlags(KTp::ContactsFilterModel::HideAllOffline);
     d->modelFilter->setCapabilityFilterFlags(KTp::ContactsFilterModel::DoNotFilterByCapability);
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
     d->modelFilter->sort(0);
