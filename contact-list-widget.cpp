@@ -106,7 +106,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->modelFilter->setSourceModel(d->translationProxy);
     d->modelFilter->setCapabilityFilterFlags(KTp::ContactsFilterModel::DoNotFilterByCapability);
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
-    d->modelFilter->sort(0);
     setItemDelegate(d->compactDelegate);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
 
@@ -343,6 +342,7 @@ void ContactListWidget::toggleOfflineContacts(bool show)
     kDebug();
     d->showOffline = show;
     d->modelFilter->setPresenceTypeFilterFlags(show ? KTp::ContactsFilterModel::DoNotFilterByPresence : KTp::ContactsFilterModel::ShowOnlyConnected);
+    d->modelFilter->sort(0);
 }
 
 void ContactListWidget::toggleSortByPresence(bool sort)
