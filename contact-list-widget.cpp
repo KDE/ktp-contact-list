@@ -316,7 +316,7 @@ void ContactListWidget::toggleSortByPresence(bool sort)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSortMode(sort ? KTp::ContactsFilterModel::SortByPresence : KTp::ContactsFilterModel::DoNotSort);
+    d->modelFilter->setSortRole(sort ? KTp::ContactPresenceTypeRole : Qt::DisplayRole);
 }
 
 void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
