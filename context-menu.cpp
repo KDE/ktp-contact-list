@@ -29,6 +29,7 @@
 #include <KMessageBox>
 #include <KAction>
 
+
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notificationconfigdialog.h>
 #include <KTp/contact-info-dialog.h>

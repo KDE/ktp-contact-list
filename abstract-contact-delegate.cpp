@@ -32,7 +32,7 @@
 #include <KDE/KIconLoader>
 #include <KDE/KIcon>
 
-#include <KTp/type.h>
+#include <KTp/types.h>
 #include <KDebug>
 
 const int SPACING = 2;
