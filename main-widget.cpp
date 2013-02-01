@@ -54,6 +54,7 @@
 #include <KStandardShortcut>
 #include <KNotification>
 #include <KToolInvocation>
+#include <KMenuBar>
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
@@ -116,7 +117,6 @@ MainWidget::MainWidget(QWidget *parent)
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
     m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add New Contacts..."), this);
-    actionCollection()->addAction("add_contact", m_addContactAction);
 
     m_toolBar->addAction(m_addContactAction);
 

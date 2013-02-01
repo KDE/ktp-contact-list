@@ -34,7 +34,6 @@
 #include <KGlobalSettings>
 #include <KDE/KLocale>
 
-#include <KTp/Models/contacts-model.h>
 #include <KTp/presence.h>
 
 ContactDelegate::ContactDelegate(QObject * parent)
