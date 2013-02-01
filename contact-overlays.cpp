@@ -113,8 +113,8 @@ void StartChannelContactOverlay::slotClicked(bool checked)
     QModelIndex index = button()->index();
 
     if (index.isValid()) {
-        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
-        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
         if (account && contact) {
             emit activated(account, contact);
         }

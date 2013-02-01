@@ -217,8 +217,8 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
     }
 
     if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
-        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
         startTextChannel(account, contact);
     }
 }
@@ -583,8 +583,8 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
     if (index.isValid()) {
-        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
         //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
         stream << contact->id() << account->objectPath();
@@ -624,8 +624,8 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasUrls()) {
         kDebug() << "Filed dropped";
 
-        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
         QStringList filenames;
         Q_FOREACH (const QUrl &url, event->mimeData()->urls()) {
