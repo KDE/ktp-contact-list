@@ -34,6 +34,7 @@
 #include <KGlobalSettings>
 #include <KDE/KLocale>
 
+#include <KTp/types.h>
 #include <KTp/presence.h>
 
 ContactDelegate::ContactDelegate(QObject * parent)
@@ -68,7 +69,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
     QPixmap avatar;
-    avatar.load(index.data(ContactsModel::AvatarRole).toString());
+    avatar.load(index.data(KTp::ContactAvatarPathRole).toString());
 
     bool noContactAvatar = avatar.isNull();
 
@@ -91,12 +92,10 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
         painter->drawPath(roundedPath);
     }
 
-    KTp::Presence presence = index.data(ContactsModel::PresenceRole).value<KTp::Presence>();
-
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
 
-    QPixmap icon = presence.icon().pixmap(KIconLoader::SizeSmallMedium);
+    QPixmap icon = KIcon(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
     statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
@@ -106,7 +105,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     painter->drawPixmap(statusIconRect, icon);
 
     // Right now we only check for 'phone', as that's the most interesting type.
-    if (index.data(ContactsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
+    if (index.data(KTp::ContactClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
         // Additional space is needed for the icons, don't add too much spacing between the two icons
         rightIconsWidth += m_presenceIconSize + m_spacing / 2;
 
@@ -157,7 +156,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
 
     painter->setFont(KGlobalSettings::smallestReadableFont());
     painter->drawText(statusMsgRect,
-                      statusFontMetrics.elidedText(presence.statusMessage().simplified(),
+                      statusFontMetrics.elidedText(index.data(KTp::ContactPresenceMessageRole).toString().trimmed(),
                                                    Qt::ElideRight, statusMsgRect.width()));
 
     painter->restore();
