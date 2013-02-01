@@ -313,7 +313,7 @@ void ContextMenu::onRemoveContactFromGroupTriggered()
     }
 
     const QString groupName = m_currentIndex.parent().data(Qt::DisplayRole).toString();
-    Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     Tp::PendingOperation *operation = contact->removeFromGroup(groupName);
 
@@ -350,7 +350,7 @@ void ContextMenu::onStartTextChatTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (contact && account) {
@@ -360,7 +360,7 @@ void ContextMenu::onStartTextChatTriggered()
 
 void ContextMenu::onStartAudioChatTriggered()
 {
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (contact && account) {
@@ -375,7 +375,7 @@ void ContextMenu::onStartVideoChatTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (contact && account) {
@@ -390,7 +390,7 @@ void ContextMenu::onStartFileTransferTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (contact && account) {
@@ -405,7 +405,7 @@ void ContextMenu::onStartDesktopSharingTriggered()
         return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (contact && account) {
@@ -420,7 +420,7 @@ void ContextMenu::onOpenLogViewerTriggered()
       return;
     }
 
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (contact && account) {
@@ -430,7 +430,7 @@ void ContextMenu::onOpenLogViewerTriggered()
 
 void ContextMenu::onUnblockContactTriggered()
 {
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     Tp::PendingOperation *operation = contact->unblock(); //FIXME
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
@@ -439,7 +439,7 @@ void ContextMenu::onUnblockContactTriggered()
 
 void ContextMenu::onAddContactToGroupTriggered()
 {
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     QAction *action = qobject_cast<QAction*>(sender());
     if (!action) {
@@ -473,7 +473,7 @@ void ContextMenu::onCreateNewGroupTriggered()
                                                  &ok);
 
     if (ok) {
-	Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
         Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
 
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
@@ -500,7 +500,7 @@ void ContextMenu::onRenameGroupTriggered()
     if (ok && groupName != newGroupName) {
         //loop through all child indexes of m_currentIndex
         for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
-            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<Tp::ContactPtr>();
+            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<KTp::ContactPtr>();
             Q_ASSERT(contact);
 
             Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
@@ -531,7 +531,7 @@ void ContextMenu::onDeleteGroupTriggered()
                                            i18n("Remove Group")) == KMessageBox::Continue) {
 
         for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
-            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<Tp::ContactPtr>();
+            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<KTp::ContactPtr>();
 
             Q_ASSERT(contact);
 
@@ -552,7 +552,7 @@ void ContextMenu::onDeleteGroupTriggered()
 
 void ContextMenu::onBlockContactTriggered()
 {
-    Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     Tp::PendingOperation *operation = contact->block();
     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
@@ -561,7 +561,7 @@ void ContextMenu::onBlockContactTriggered()
 
 void ContextMenu::onDeleteContactTriggered()
 {
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     QList<Tp::ContactPtr>contactList;
     contactList.append(contact);
@@ -590,7 +590,7 @@ void ContextMenu::onDeleteContactTriggered()
 
 void ContextMenu::onRerequestAuthorization()
 {
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::PendingOperation *op = contact->manager()->requestPresenceSubscription(QList<Tp::ContactPtr>() << contact);
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
@@ -598,7 +598,7 @@ void ContextMenu::onRerequestAuthorization()
 
 void ContextMenu::onResendAuthorization()
 {
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     Tp::PendingOperation *op = contact->manager()->authorizePresencePublication(QList<Tp::ContactPtr>() << contact);
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
@@ -606,7 +606,7 @@ void ContextMenu::onResendAuthorization()
 
 void ContextMenu::onNotificationConfigureTriggered()
 {
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     KTp::NotificationConfigDialog *notificationDialog = new KTp::NotificationConfigDialog(contact, m_mainWidget);
     notificationDialog->show();

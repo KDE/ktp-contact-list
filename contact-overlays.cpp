@@ -114,7 +114,7 @@ void StartChannelContactOverlay::slotClicked(bool checked)
 
     if (index.isValid()) {
         Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
-        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
         if (account && contact) {
             emit activated(account, contact);
         }
@@ -123,7 +123,7 @@ void StartChannelContactOverlay::slotClicked(bool checked)
 
 bool StartChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
-    return index.data(m_capabilityRole).toBool() && index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType;
+    return index.data(m_capabilityRole).toBool() && index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType;
 }
 
 // ------------------------------------------------------------------------
