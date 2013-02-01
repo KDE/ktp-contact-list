@@ -25,7 +25,7 @@
 #include <KIconLoader>
 #include <KDebug>
 
-#include <KTp/Models/contacts-model.h>
+#include <KTp/types.h>
 
 const int spacing = IconSize(KIconLoader::Dialog) / 8;
 
@@ -133,7 +133,7 @@ TextChannelContactOverlay::TextChannelContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Start Chat"), "text-x-generic",
                  i18n("Start Chat"), i18n("Start a text chat")),
-        ContactsModel::TextChatCapabilityRole,
+        KTp::ContactCanTextChatRole,
         IconSize(KIconLoader::Dialog) + spacing * 2)
 {
 }
@@ -145,7 +145,7 @@ AudioChannelContactOverlay::AudioChannelContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Start Audio Call"), "audio-headset",
                  i18n("Start Audio Call"), i18n("Start an audio call")),
-        ContactsModel::AudioCallCapabilityRole,
+        KTp::ContactCanAudioCallRole,
         IconSize(KIconLoader::Dialog) + spacing * 3 + IconSize(KIconLoader::Small))
 
 {
@@ -158,7 +158,7 @@ VideoChannelContactOverlay::VideoChannelContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Start Video Call"), "camera-web",
                  i18n("Start Video Call"), i18n("Start a video call")),
-        ContactsModel::VideoCallCapabilityRole,
+        KTp::ContactCanVideoCallRole,
         IconSize(KIconLoader::Dialog) + spacing * 4 + IconSize(KIconLoader::Small) * 2)
 {
 }
@@ -170,7 +170,7 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Send File..."), "mail-attachment",
                  i18n("Send File..."), i18n("Send a file")),
-        ContactsModel::FileTransferCapabilityRole,
+        KTp::ContactCanFileTransferRole,
         IconSize(KIconLoader::Dialog) + spacing * 5 + IconSize(KIconLoader::Small) * 3)
 {
 }
@@ -182,7 +182,7 @@ DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject *parent)
         parent,
         KGuiItem(i18n("Share My Desktop"), "krfb",
                  i18n("Share My Desktop"), i18n("Share desktop using RFB")),
-        ContactsModel::DesktopSharingCapabilityRole,
+        -1, //FIXME: the share desktop is now part of ContactTubesRole, not returning bool anymore, needs porting
         IconSize(KIconLoader::Dialog) + spacing * 6 + IconSize(KIconLoader::Small) * 4)
 {
 }
