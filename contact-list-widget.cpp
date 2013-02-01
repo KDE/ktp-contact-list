@@ -582,7 +582,7 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
     if (index.isValid()) {
-        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
         Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
         //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
@@ -623,7 +623,7 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasUrls()) {
         kDebug() << "Filed dropped";
 
-        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
         Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
         QStringList filenames;
@@ -701,7 +701,7 @@ void ContactListWidget::dropEvent(QDropEvent *event)
                 continue;
             }
 
-            if (index.data(KTp::TypeRole).toInt() == KTp::GroupRowType) {
+            if (index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType) {
                 // contact is dropped on a group, so take it's name
                 targetGroup = index.data(KTp::IdRole).toString();
 //             } else if (index.data(ContactsModel::TypeRole).toInt() == KTp::ContactRowType) {
@@ -767,7 +767,7 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
 
     // urls can be dropped on a contact with file transfer capability,
     // contacts can be dropped either on a group or on another contact if GroupsModel is used
-    if (event->mimeData()->hasUrls() && index.data(KTp::FileTransferCapabilityRole).toBool()) {
+    if (event->mimeData()->hasUrls() && index.data(KTp::ContactCanFileTransferRole).toBool()) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
