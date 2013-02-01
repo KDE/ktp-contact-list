@@ -81,7 +81,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
-    Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+    KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     if (contact.isNull()) {
         kDebug() << "Contact is nulled";
@@ -483,7 +483,7 @@ void ContextMenu::onCreateNewGroupTriggered()
 
 void ContextMenu::onRenameGroupTriggered()
 {
-    if (m_currentIndex.data(ContactsModel::TypeRole).toUInt() != ContactsModel::GroupRowType) {
+    if (m_currentIndex.data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType) {
         return;
     }
 
@@ -517,7 +517,7 @@ void ContextMenu::onRenameGroupTriggered()
 void ContextMenu::onDeleteGroupTriggered()
 {
     if (m_accountManager.isNull() ||
-        (m_currentIndex.data(ContactsModel::TypeRole).toUInt() != ContactsModel::GroupRowType)) {
+        (m_currentIndex.data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType)) {
         return;
     }
 

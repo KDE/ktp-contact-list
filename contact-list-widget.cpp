@@ -216,7 +216,7 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
     }
 
     if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
-        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<Tp::ContactPtr>();
+        KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
         Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
         startTextChannel(account, contact);
     }
