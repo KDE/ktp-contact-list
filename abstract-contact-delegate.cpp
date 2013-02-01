@@ -100,7 +100,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
                      index.data(KTp::HeaderTotalUsersRole).toString());
 
     if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType) {
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>().pixmap(32));
+        painter->drawPixmap(accountGroupRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>()).pixmap(32));
     } else {
         painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),
                             KIconLoader::Desktop));
