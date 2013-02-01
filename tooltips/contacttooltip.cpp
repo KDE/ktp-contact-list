@@ -44,7 +44,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->avatarLabel->setScaledContents(false);
     ui->avatarLabel->setAlignment(Qt::AlignCenter);
 
-    QString avatar = index.data(KTp::AvatarRole).toString();
+    QString avatar = index.data(KTp::ContactAvatarPathRole).toString();
     if (avatar.isEmpty()) {
         ui->avatarLabel->setPixmap(KIconLoader::global()->loadIcon("im-user", KIconLoader::NoGroup, 96));
     } else {
@@ -52,9 +52,9 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
         ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
     }
 
-    QString presenceMessage = index.data(KTp::ContactPresenceMessageRole);
-    QString presenceIconPath = index.data(KTp::ContactPresenceIconRole);
-    QString presenceText = index.data(KTp::ContactPresenceNameRole);
+    QString presenceMessage = index.data(KTp::ContactPresenceMessageRole).toString();
+    QString presenceIconPath = index.data(KTp::ContactPresenceIconRole).toString();
+    QString presenceText = index.data(KTp::ContactPresenceNameRole).toString();
 
     if (index.data(KTp::ContactPresenceTypeRole).toInt() == Tp::ConnectionPresenceTypeError) {
         presenceIconPath = KIconLoader::global()->iconPath("task-attention", 1);
@@ -70,7 +70,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->presenceIcon->setPixmap(QPixmap(presenceIconPath));
     ui->presenceLabel->setText(presenceText);
     ui->presenceMessageLabel->setText(presenceMessage);
-    ui->blockedLabel->setShown(index.data(KTp::BlockedRole).toBool());
+    ui->blockedLabel->setShown(index.data(KTp::ContactIsBlockedRole).toBool());
 
     const Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
     ui->accountLabel->setText(i18n("Account: %1").arg(account->displayName()));

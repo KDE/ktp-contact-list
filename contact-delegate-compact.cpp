@@ -65,7 +65,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
     QPixmap avatar;
-    avatar.load(index.data(KTp::AvatarRole).toString());
+    avatar.load(index.data(KTp::ContactAvatarPathRole).toString());
 
     bool noContactAvatar = avatar.isNull();
 
@@ -78,7 +78,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
 
-    QPixmap icon = KIcon(index.data(KTp::PresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
+    QPixmap icon = KIcon(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
 
@@ -89,7 +89,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     painter->drawPixmap(statusIconRect, icon);
 
     // Right now we only check for 'phone', as that's the most interesting type.
-    if (index.data(KTp::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
+    if (index.data(KTp::ContactClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
         // Additional space is needed for the icons, don't add too much spacing between the two icons
         rightIconsWidth += m_clientTypeIconSize + (m_spacing / 2);
 
@@ -139,7 +139,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     }
 
     painter->drawText(presenceMessageRect,
-                      nameFontMetrics.elidedText(presence.statusMessage().simplified(),
+                      nameFontMetrics.elidedText(index.data(KTp::ContactPresenceMessageRole).toString().trimmed(),
                                                  Qt::ElideRight, presenceMessageRect.width()));
 
     painter->restore();

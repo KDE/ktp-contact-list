@@ -29,13 +29,14 @@
 #include <KMessageBox>
 #include <KAction>
 
-#include <KTp/Models/contacts-model.h>
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notificationconfigdialog.h>
 #include <KTp/contact-info-dialog.h>
+#include <KTp/types.h>
 
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/Account>
+#include <TelepathyQt/PendingOperation>
 
 #include <TelepathyLoggerQt4/Entity>
 #include <TelepathyLoggerQt4/LogManager>
@@ -103,7 +104,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartTextChatTriggered()));
 
-    if (index.data(ContactsModel::TextChatCapabilityRole).toBool()) {
+    if (index.data(KTp::ContactCanTextChatRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -119,7 +120,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartAudioChatTriggered()));
 
-    if (index.data(ContactsModel::AudioCallCapabilityRole).toBool()) {
+    if (index.data(KTp::ContactCanAudioCallRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -129,7 +130,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartVideoChatTriggered()));
 
-    if (index.data(ContactsModel::VideoCallCapabilityRole).toBool()) {
+    if (index.data(KTp::ContactCanVideoCallRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -139,7 +140,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartFileTransferTriggered()));
 
-    if (index.data(ContactsModel::FileTransferCapabilityRole).toBool()) {
+    if (index.data(KTp::ContactCanFileTransferRole).toBool()) {
         action->setEnabled(true);
     }
 
@@ -149,7 +150,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onStartDesktopSharingTriggered()));
 
-    if (index.data(ContactsModel::DesktopSharingCapabilityRole).toBool()) {
+    if (index.data(KTp::ContactTubesRole).toStringList().contains(QLatin1String("rfb"))) {
         action->setEnabled(true);
     }
 
@@ -173,7 +174,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     // add "goto" submenu for navigating to links the contact has in presence message
     // first check to see if there are any links in the contact's presence message
     QStringList contactLinks;
-    QString presenceMsg = index.data(ContactsModel::PresenceMessageRole).toString();
+    QString presenceMsg = index.data(KTp::ContactPresenceMessageRole).toString();
     if (presenceMsg.isEmpty()) {
         contactLinks = QStringList();
     } else {
@@ -306,14 +307,14 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
 void ContextMenu::onRemoveContactFromGroupTriggered()
 {
-    if (m_currentIndex.parent().data(ContactsModel::TypeRole).toUInt() != ContactsModel::GroupRowType) {
+    if (m_currentIndex.parent().data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType) {
         return;
     }
 
     const QString groupName = m_currentIndex.parent().data(Qt::DisplayRole).toString();
     Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<Tp::ContactPtr>();
 
-    Tp::PendingOperation* operation = contact->removeFromGroup(groupName);
+    Tp::PendingOperation *operation = contact->removeFromGroup(groupName);
 
     if (operation) {
         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
