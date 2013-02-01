@@ -32,7 +32,7 @@
 #include <KDE/KIconLoader>
 #include <KDE/KIcon>
 
-#include <KTp/Models/contacts-model.h>
+#include <KTp/type.h>
 #include <KDebug>
 
 const int SPACING = 2;
@@ -49,7 +49,7 @@ AbstractContactDelegate::~AbstractContactDelegate()
 
 void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
         paintContact(painter, option, index);
     } else {
         paintHeader(painter, option, index);
@@ -60,7 +60,7 @@ QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, cons
 {
     Q_UNUSED(option);
 
-    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
         return sizeHintContact(option, index);
     } else {
         return sizeHintHeader(option, index);
@@ -96,12 +96,11 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QFont groupFont = KGlobalSettings::smallestReadableFont();
 
-    QString counts = QString(" (%1/%2)").arg(index.data(ContactsModel::OnlineUsersCountRole).toString(),
-                     index.data(ContactsModel::TotalUsersCountRole).toString());
+    QString counts = QString(" (%1/%2)").arg(index.data(KTp::HeaderOnlineUsersRole).toString(),
+                     index.data(KTp::HeaderTotalUsersRole).toString());
 
-    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::AccountRowType) {
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(ContactsModel::IconRole).toString())
-                            .pixmap(32));
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType) {
+        painter->drawPixmap(accountGroupRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>().pixmap(32));
     } else {
         painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),
                             KIconLoader::Desktop));
