@@ -1,10 +1,11 @@
 /*
- * This file is part of telepathy-contactslist-prototype
+ * This file is part of ktp-contact-list
  *
  * Copyright (C) 2009-2010 Collabora Ltd. <info@collabora.co.uk>
  *   @Author George Goldberg <george.goldberg@collabora.co.uk>
- * Copyright (C) 2011 Martin Klapetek <martin.klapetek@gmail.com>
  * Copyright (C) 2011 Keith Rusler <xzekecomax@gmail.com>
+ * Copyright (C) 2011-2013 Martin Klapetek <martin.klapetek@gmail.com>
+ * Copyright (C) 2012-2012 David Edmundson <kde@davidedmundson.co.uk>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -37,7 +38,7 @@
 #include <TelepathyQt/PendingReady>
 
 #include <KTp/contact-factory.h>
-#include <KTp/Models/contacts-model.h>
+#include <KTp/types.h>
 #include <KTp/Widgets/add-contact-dialog.h>
 #include <KTp/Widgets/join-chat-room-dialog.h>
 
@@ -53,6 +54,7 @@
 #include <KStandardShortcut>
 #include <KNotification>
 #include <KToolInvocation>
+#include <KMenuBar>
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
@@ -73,6 +75,8 @@ MainWidget::MainWidget(QWidget *parent)
     Tp::registerTypes();
 
     setupUi(this);
+
+    menuBar()->hide();
     m_filterBar->hide();
     setWindowIcon(KIcon("telepathy-kde"));
     setAutoSaveSettings();
@@ -367,13 +371,13 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
         return;
     }
 
-    ContactsModel::RowType type = (ContactsModel::RowType)index.data(ContactsModel::TypeRole).toInt();
+    KTp::RowType type = (KTp::RowType)index.data(KTp::RowTypeRole).toInt();
 
     KMenu *menu = 0;
 
-    if (type == ContactsModel::ContactRowType) {
+    if (type == KTp::ContactRowType) {
         menu = m_contextMenu->contactContextMenu(index);
-    } else if (type == ContactsModel::GroupRowType) {
+    } else if (type == KTp::GroupRowType) {
         menu = m_contextMenu->groupContextMenu(index);
     }
 

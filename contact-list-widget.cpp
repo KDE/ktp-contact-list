@@ -25,11 +25,10 @@
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingReady>
 
-#include <KTp/Models/contacts-model.h>
-#include <KTp/Models/contacts-list-model.h>
+#include <KTp/types.h>
 
-#include <KTp/Models/groups-model.h>
-#include <KTp/Models/accounts-filter-model.h>
+#include <KTp/Models/contacts-list-model.h>
+#include <KTp/Models/contacts-filter-model.h>
 #include <KTp/Models/accounts-tree-proxy-model.h>
 #include <KTp/Models/groups-tree-proxy-model.h>
 
@@ -118,11 +117,11 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
     QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
     if (shownContacts == "unblocked") {
-        d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::HideBlocked);
+        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
     } else if (shownContacts == "blocked") {
-        d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::ShowOnlyBlocked);
+        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
     } else {
-        d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::DoNotFilterBySubscription);
+        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
     }
 
     connect(this, SIGNAL(clicked(QModelIndex)),
@@ -187,13 +186,13 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
         return;
     }
 
-    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::AccountRowType
-        || index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType
+        || index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType) {
 
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
         KConfigGroup groupsConfig = config->group("GroupsState");
 
-        QString groupId = index.data(ContactsModel::IdRole).toString();
+        QString groupId = index.data(KTp::IdRole).toString();
 
         if (isExpanded(index)) {
             collapse(index);
@@ -216,9 +215,9 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
         return;
     }
 
-    if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
-        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
+        KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
         startTextChannel(account, contact);
     }
 }
@@ -310,14 +309,14 @@ void ContactListWidget::toggleOfflineContacts(bool show)
     Q_D(ContactListWidget);
 
     d->showOffline = show;
-    d->modelFilter->setPresenceTypeFilterFlags(show ? AccountsFilterModel::DoNotFilterByPresence : AccountsFilterModel::ShowOnlyConnected);
+    d->modelFilter->setPresenceTypeFilterFlags(show ? KTp::ContactsFilterModel::DoNotFilterByPresence : KTp::ContactsFilterModel::ShowOnlyConnected);
 }
 
 void ContactListWidget::toggleSortByPresence(bool sort)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSortMode(sort ? AccountsFilterModel::SortByPresence : AccountsFilterModel::DoNotSort);
+    d->modelFilter->setSortRole(sort ? KTp::ContactPresenceTypeRole : Qt::DisplayRole);
 }
 
 void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -397,7 +396,7 @@ void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, i
         //we're probably dealing with group item, so let's check if it is expanded first
         if (!isExpanded(index)) {
             //if it's not expanded, check the config if we should expand it or not
-            QString groupId = index.data(ContactsModel::IdRole).toString();
+            QString groupId = index.data(KTp::IdRole).toString();
             if (d->groupStates.value(groupId)) {
                 expand(index);
             }
@@ -456,7 +455,7 @@ void ContactListWidget::onShowAllContacts()
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::DoNotFilterBySubscription);
+    d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -468,7 +467,7 @@ void ContactListWidget::onShowUnblockedContacts()
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::HideBlocked);
+    d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -480,7 +479,7 @@ void ContactListWidget::onShowBlockedContacts()
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::ShowOnlyBlocked);
+    d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -492,7 +491,7 @@ void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? AccountsFilterModel::ShowOnlyConnected : AccountsFilterModel::DoNotFilterByPresence);
+    d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? KTp::ContactsFilterModel::ShowOnlyConnected : KTp::ContactsFilterModel::DoNotFilterByPresence);
     d->modelFilter->setGlobalFilterString(string);
 }
 
@@ -548,7 +547,7 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
     }
 
     // if no contact, no drag
-    if (index.data(ContactsModel::TypeRole).toInt() != ContactsModel::ContactRowType) {
+    if (index.data(KTp::RowTypeRole).toInt() != KTp::ContactRowType) {
         return;
     }
 
@@ -583,14 +582,14 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
     if (index.isValid()) {
-        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
         //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
         stream << contact->id() << account->objectPath();
 
         //Store source group name so that we can remove the contact from it on move-drop */
-        d->dragSourceGroup = index.parent().data(GroupsModel::GroupNameRole).toString();
+        d->dragSourceGroup = index.parent().data(KTp::IdRole).toString();
     }
 
     mimeData->setData("application/vnd.telepathy.contact", encodedData);
@@ -624,8 +623,8 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     if (event->mimeData()->hasUrls()) {
         kDebug() << "Filed dropped";
 
-        Tp::ContactPtr contact = index.data(ContactsModel::ContactRole).value<Tp::ContactPtr>();
-        Tp::AccountPtr account = index.data(ContactsModel::AccountRole).value<Tp::AccountPtr>();
+        Tp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
         QStringList filenames;
         Q_FOREACH (const QUrl &url, event->mimeData()->urls()) {
@@ -702,12 +701,12 @@ void ContactListWidget::dropEvent(QDropEvent *event)
                 continue;
             }
 
-            if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
+            if (index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType) {
                 // contact is dropped on a group, so take it's name
-                targetGroup = index.data(GroupsModel::GroupNameRole).toString();
-            } else if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType) {
+                targetGroup = index.data(KTp::IdRole).toString();
+//             } else if (index.data(ContactsModel::TypeRole).toInt() == KTp::ContactRowType) {
                 // contact is dropped on another contact, so take it's parents (group) name
-                targetGroup = index.parent().data(GroupsModel::GroupNameRole).toString();
+                targetGroup = index.parent().data(KTp::IdRole).toString();
             }
 
             if (targetGroup.isEmpty() || (targetGroup == QLatin1String("_unsorted")) ||
@@ -768,12 +767,12 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
 
     // urls can be dropped on a contact with file transfer capability,
     // contacts can be dropped either on a group or on another contact if GroupsModel is used
-    if (event->mimeData()->hasUrls() && index.data(ContactsModel::FileTransferCapabilityRole).toBool()) {
+    if (event->mimeData()->hasUrls() && index.data(KTp::ContactCanFileTransferRole).toBool()) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
-               (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType ||
-                index.data(ContactsModel::TypeRole).toInt() == ContactsModel::ContactRowType)) {
+               (index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType ||
+                index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType)) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else {

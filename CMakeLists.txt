@@ -74,6 +74,10 @@ target_link_libraries (ktp-contactlist
                        ${TELEPATHY_LOGGER_QT4_LIBRARIES}
 )
 
+install(FILES ktp-contact-list.rc
+        DESTINATION  ${DATA_INSTALL_DIR}/ktp-contact-list/)
+
+
 # Install:
 install (TARGETS ktp-contactlist
          DESTINATION ${BIN_INSTALL_DIR}
