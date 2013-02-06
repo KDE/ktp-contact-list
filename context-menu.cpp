@@ -341,6 +341,7 @@ void ContextMenu::onShowInfoTriggered()
         KTp::ContactInfoDialog* contactInfoDialog = new KTp::ContactInfoDialog(account, contact, m_mainWidget);
         contactInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
         contactInfoDialog->show();
+    }
 }
 
 void ContextMenu::onStartTextChatTriggered()
