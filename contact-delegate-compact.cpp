@@ -34,8 +34,7 @@
 #include <KGlobalSettings>
 #include <KDE/KLocale>
 
-#include <KTp/Models/contacts-model.h>
-#include <KTp/presence.h>
+#include <KTp/types.h>
 
 #include <kpeople/persons-model.h>
 
@@ -68,7 +67,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     QPixmap avatar;
 
-    QString avatarPath = index.data(ContactsModel::AvatarRole).toUrl().toLocalFile();
+    QString avatarPath = index.data(KTp::ContactAvatarPathRole).toUrl().toLocalFile();
     if (avatarPath.isEmpty()) {
         avatar = SmallIcon("im-user", KIconLoader::SizeMedium);//avatar.load("/home/mck182/Downloads/dummy-avatar.png");
     } else {
@@ -196,7 +195,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     }
 
     painter->drawText(presenceMessageRect,
-                      nameFontMetrics.elidedText(presence.statusMessage().simplified(),
+                      nameFontMetrics.elidedText(index.data(KTp::ContactPresenceMessageRole).toString().trimmed(),
                                                  Qt::ElideRight, presenceMessageRect.width()));
 
     painter->restore();

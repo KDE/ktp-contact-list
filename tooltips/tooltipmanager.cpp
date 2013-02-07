@@ -37,9 +37,7 @@
 #include <KIcon>
 #include <KColorScheme>
 
-#include <KTp/Models/contacts-model.h>
-#include <KTp/Models/contact-model-item.h>
-
+#include <KTp/types.h>
 
 class ToolTipManager::Private
 {
@@ -138,13 +136,13 @@ void ToolTipManager::prepareToolTip()
     }
 }
 
-void ToolTipManager::showToolTip(const  QModelIndex &menuItem)
+void ToolTipManager::showToolTip(const QModelIndex &menuItem)
 {
     if (QApplication::mouseButtons() & Qt::LeftButton || !menuItem.isValid()) {
         return;
     }
 
-    if (!menuItem.data(ContactsModel::ContactRole).canConvert<Tp::ContactPtr>()) {
+    if (!menuItem.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
         return;
     }
 

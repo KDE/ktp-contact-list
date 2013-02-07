@@ -44,7 +44,6 @@ set (ktp_contactlist_SRCS kpeople-proxy.cpp
      main-widget.cpp
      global-presence-chooser.cpp
      dialogs/remove-contact-dialog.cpp
-     dialogs/contact-info.cpp
      dialogs/custom-presence-dialog.cpp
      presence-model.cpp
      tooltips/ktooltip.cpp
@@ -57,7 +56,6 @@ set (ktp_contactlist_SRCS kpeople-proxy.cpp
 kde4_add_ui_files (ktp_contactlist_SRCS
                    main-widget.ui
                    dialogs/remove-contact-dialog.ui
-                   dialogs/contact-info.ui
                    tooltips/contacttooltip.ui
 )
 
@@ -76,6 +74,10 @@ target_link_libraries (ktp-contactlist
                        kpeople
 #                       ${TELEPATHY_LOGGER_QT4_LIBRARIES}
 )
+
+install(FILES ktp-contact-list.rc
+        DESTINATION  ${DATA_INSTALL_DIR}/ktp-contact-list/)
+
 
 # Install:
 install (TARGETS ktp-contactlist
