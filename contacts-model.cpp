@@ -3,7 +3,7 @@
 #include <KTp/Models/accounts-tree-proxy-model.h>
 #include <KTp/Models/groups-tree-proxy-model.h>
 
-ContactsModel2::ContactsModel2(QObject *parent)
+KTp::ContactsModel::KTp::ContactsModel(QObject *parent)
     : KTp::ContactsFilterModel(parent),
       m_groupMode(NoGrouping),
       m_source(new KTp::ContactsListModel(this))
@@ -11,7 +11,7 @@ ContactsModel2::ContactsModel2(QObject *parent)
 
 }
 
-void ContactsModel2::setAccountManager(const Tp::AccountManagerPtr &accountManager)
+void KTp::ContactsModel::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     m_accountManager = accountManager;
 
@@ -19,7 +19,7 @@ void ContactsModel2::setAccountManager(const Tp::AccountManagerPtr &accountManag
     m_source->setAccountManager(accountManager);
 }
 
-void ContactsModel2::setGroupMode(ContactsModel2::GroupMode mode)
+void KTp::ContactsModel::setGroupMode(KTp::ContactsModel::GroupMode mode)
 {
 
     m_groupMode = mode;
@@ -47,7 +47,7 @@ void ContactsModel2::setGroupMode(ContactsModel2::GroupMode mode)
     }
 }
 
-ContactsModel2::GroupMode ContactsModel2::groupMode() const
+KTp::ContactsModel::GroupMode KTp::ContactsModel::groupMode() const
 {
     return m_groupMode;
 }

@@ -27,11 +27,8 @@
 
 #include <KTp/types.h>
 
-#include <KTp/Models/contacts-list-model.h>
-#include <KTp/Models/contacts-filter-model.h>
-#include <KTp/Models/accounts-tree-proxy-model.h>
-#include <KTp/Models/groups-tree-proxy-model.h>
-
+#include <KTp/Models/contacts-model.h>
+#include <KTp/global-contact-manager.h>
 #include <KTp/actions.h>
 #include <KTp/contact.h>
 
@@ -74,10 +71,9 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
-    d->modelFilter = new ContactsModel2(this);
+    d->modelFilter = new KTp::ContactsModel(this);
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
-
 
     setModel(d->modelFilter);
 
@@ -294,9 +290,9 @@ void ContactListWidget::toggleGroups(bool show)
 
 
     if (show) {
-        d->modelFilter->setGroupMode(ContactsModel2::GroupGrouping);
+        d->modelFilter->setGroupMode(KTp::ContactsModel::GroupGrouping);
     } else {
-        d->modelFilter->setGroupMode(ContactsModel2::AccountGrouping);
+        d->modelFilter->setGroupMode(KTp::ContactsModel::AccountGrouping);
     }
 
     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
@@ -542,7 +538,7 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
     d->dragSourceGroup.clear();
 
     // no drag when grouping by accounts
-    if (d->modelFilter->groupMode() == ContactsModel2::AccountGrouping) {
+    if (d->modelFilter->groupMode() == KTp::ContactsModel::AccountGrouping) {
         return;
     }
 

@@ -23,11 +23,9 @@
 #include <TelepathyQt/Types>
 
 namespace KTp {
-    class ContactsListModel;
+    class ContactsModel;
 }
 
-class ContactsModel2;
-class AccountsFilterModel;
 class ContactDelegate;
 class ContactDelegateCompact;
 
@@ -40,7 +38,7 @@ public:
       shouldDrag(false),
       showOffline(false) {}
 
-    ContactsModel2          *modelFilter;
+    KTp::ContactsModel     *modelFilter;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     QRect                   dropIndicatorRect;
