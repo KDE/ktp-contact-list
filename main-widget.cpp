@@ -36,6 +36,7 @@
 #include <TelepathyQt/PendingContacts>
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/PendingReady>
+#include <TelepathyQt/TextChannel>
 
 #include <KTp/contact-factory.h>
 #include <KTp/types.h>
@@ -101,6 +102,7 @@ MainWidget::MainWidget(QWidget *parent)
                                                                       << Tp::Contact::FeatureClientTypes);
 
     Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
+    channelFactory->addFeaturesForTextChats(Tp::Features() << Tp::Channel::FeatureCore << Tp::TextChannel::FeatureMessageQueue);
 
     m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(),
                                                   accountFactory,

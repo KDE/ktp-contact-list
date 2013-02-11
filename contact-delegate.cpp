@@ -77,6 +77,10 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
         avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
     }
 
+    if (index.data(KTp::ContactUnreadMessageCountRole).toInt() > 0) {
+        avatar = SmallIcon("mail-unread-new", KIconLoader::SizeMedium);
+    }
+
     QPainterPath roundedPath;
     roundedPath.addRoundedRect(iconRect, 20, 20, Qt::RelativeSize);
 

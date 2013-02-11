@@ -73,6 +73,10 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
         avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
     }
 
+    if (index.data(KTp::ContactUnreadMessageCountRole).toInt() > 0) {
+        avatar = SmallIcon("mail-unread-new", KIconLoader::SizeMedium);
+    }
+
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     // This value is used to set the correct width for the username and the presence message.
