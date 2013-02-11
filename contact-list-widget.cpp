@@ -765,6 +765,8 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
     QModelIndex index = indexAt(event->pos());
     setDropIndicatorRect(QRect());
 
+    QAbstractItemView::dragMoveEvent(event);
+
     // urls can be dropped on a contact with file transfer capability,
     // contacts can be dropped either on a group or on another contact if GroupsModel is used
     if (event->mimeData()->hasUrls() && index.data(KTp::ContactCanFileTransferRole).toBool()) {
@@ -778,7 +780,6 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
     } else {
         event->ignore();
     }
-    QAbstractItemView::dragMoveEvent(event);
 }
 
 void ContactListWidget::dragLeaveEvent(QDragLeaveEvent *event)
