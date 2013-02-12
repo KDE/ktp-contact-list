@@ -71,17 +71,17 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
-    d->modelFilter = new KTp::ContactsModel(this);
-    d->modelFilter->setDynamicSortFilter(true);
-    d->modelFilter->setSortRole(Qt::DisplayRole);
+    d->model = new KTp::ContactsModel(this);
+    d->model->setDynamicSortFilter(true);
+    d->model->setSortRole(Qt::DisplayRole);
 
-    setModel(d->modelFilter);
+    setModel(d->model);
 
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
     loadGroupStatesFromConfig();
 
-    connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
+    connect(d->model, SIGNAL(rowsInserted(QModelIndex,int,int)),
             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
 
     header()->hide();
@@ -113,11 +113,11 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
     QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
     if (shownContacts == "unblocked") {
-        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
+        d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
     } else if (shownContacts == "blocked") {
-        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
+        d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
     } else {
-        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
+        d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
     }
 
     connect(this, SIGNAL(clicked(QModelIndex)),
@@ -141,7 +141,7 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
     Q_D(ContactListWidget);
 
     d->accountManager = accountManager;
-    d->modelFilter->setAccountManager(accountManager);
+    d->model->setAccountManager(accountManager);
 
     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
 
@@ -290,13 +290,13 @@ void ContactListWidget::toggleGroups(bool show)
 
 
     if (show) {
-        d->modelFilter->setGroupMode(KTp::ContactsModel::GroupGrouping);
+        d->model->setGroupMode(KTp::ContactsModel::GroupGrouping);
     } else {
-        d->modelFilter->setGroupMode(KTp::ContactsModel::AccountGrouping);
+        d->model->setGroupMode(KTp::ContactsModel::AccountGrouping);
     }
 
-    for (int i = 0; i < d->modelFilter->rowCount(); i++) {
-        onNewGroupModelItemsInserted(d->modelFilter->index(i, 0, QModelIndex()), 0, 0);
+    for (int i = 0; i < d->model->rowCount(); i++) {
+        onNewGroupModelItemsInserted(d->model->index(i, 0, QModelIndex()), 0, 0);
     }
 }
 
@@ -305,14 +305,14 @@ void ContactListWidget::toggleOfflineContacts(bool show)
     Q_D(ContactListWidget);
 
     d->showOffline = show;
-    d->modelFilter->setPresenceTypeFilterFlags(show ? KTp::ContactsFilterModel::DoNotFilterByPresence : KTp::ContactsFilterModel::ShowOnlyConnected);
+    d->model->setPresenceTypeFilterFlags(show ? KTp::ContactsFilterModel::DoNotFilterByPresence : KTp::ContactsFilterModel::ShowOnlyConnected);
 }
 
 void ContactListWidget::toggleSortByPresence(bool sort)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSortRole(sort ? KTp::ContactPresenceTypeRole : Qt::DisplayRole);
+    d->model->setSortRole(sort ? KTp::ContactPresenceTypeRole : Qt::DisplayRole);
 }
 
 void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -451,7 +451,7 @@ void ContactListWidget::onShowAllContacts()
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
+    d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -463,7 +463,7 @@ void ContactListWidget::onShowUnblockedContacts()
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
+    d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -475,7 +475,7 @@ void ContactListWidget::onShowBlockedContacts()
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
+    d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -487,8 +487,8 @@ void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? KTp::ContactsFilterModel::ShowOnlyConnected : KTp::ContactsFilterModel::DoNotFilterByPresence);
-    d->modelFilter->setGlobalFilterString(string);
+    d->model->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? KTp::ContactsFilterModel::ShowOnlyConnected : KTp::ContactsFilterModel::DoNotFilterByPresence);
+    d->model->setGlobalFilterString(string);
 }
 
 void ContactListWidget::setDropIndicatorRect(const QRect &rect)
@@ -538,7 +538,7 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
     d->dragSourceGroup.clear();
 
     // no drag when grouping by accounts
-    if (d->modelFilter->groupMode() == KTp::ContactsModel::AccountGrouping) {
+    if (d->model->groupMode() == KTp::ContactsModel::AccountGrouping) {
         return;
     }
 

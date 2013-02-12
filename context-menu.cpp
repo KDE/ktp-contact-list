@@ -197,7 +197,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-    if (m_mainWidget->d_ptr->modelFilter->groupMode() == KTp::ContactsModel::GroupGrouping) {
+    if (m_mainWidget->d_ptr->model->groupMode() == KTp::ContactsModel::GroupGrouping) {
         // remove contact from group action, must be QAction because menu->addAction returns QAction
         QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));

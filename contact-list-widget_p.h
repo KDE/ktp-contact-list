@@ -32,13 +32,13 @@ class ContactDelegateCompact;
 class ContactListWidgetPrivate {
 public:
     ContactListWidgetPrivate()
-    : modelFilter(0),
+    : model(0),
       delegate(0),
       compactDelegate(0),
       shouldDrag(false),
       showOffline(false) {}
 
-    KTp::ContactsModel     *modelFilter;
+    KTp::ContactsModel     *model;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     QRect                   dropIndicatorRect;
