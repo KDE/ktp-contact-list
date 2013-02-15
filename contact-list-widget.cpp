@@ -57,7 +57,6 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
-#include "contacts-model.h"
 
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),

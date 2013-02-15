@@ -47,7 +47,6 @@
 #include "dialogs/remove-contact-dialog.h"
 
 #include "contact-list-widget_p.h"
-#include "contacts-model.h"
 
 ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
