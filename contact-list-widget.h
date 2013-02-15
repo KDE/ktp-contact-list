@@ -24,7 +24,6 @@
 #include <TelepathyQt/Types>
 #include <TelepathyQt/Connection>
 
-class ContactsModel;
 class ContactListWidgetPrivate;
 
 namespace Tp {

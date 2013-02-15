@@ -34,6 +34,7 @@
 #include <KTp/Widgets/notificationconfigdialog.h>
 #include <KTp/contact-info-dialog.h>
 #include <KTp/types.h>
+#include <KTp/Models/contacts-model.h>
 
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/Account>
@@ -196,7 +197,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-    if (m_mainWidget->d_ptr->modelFilter->groupMode() == ContactsModel2::GroupGrouping) {
+    if (m_mainWidget->d_ptr->model->groupMode() == KTp::ContactsModel::GroupGrouping) {
         // remove contact from group action, must be QAction because menu->addAction returns QAction
         QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));

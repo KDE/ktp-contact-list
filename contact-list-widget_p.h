@@ -23,24 +23,22 @@
 #include <TelepathyQt/Types>
 
 namespace KTp {
-    class ContactsListModel;
+    class ContactsModel;
 }
 
-class ContactsModel2;
-class AccountsFilterModel;
 class ContactDelegate;
 class ContactDelegateCompact;
 
 class ContactListWidgetPrivate {
 public:
     ContactListWidgetPrivate()
-    : modelFilter(0),
+    : model(0),
       delegate(0),
       compactDelegate(0),
       shouldDrag(false),
       showOffline(false) {}
 
-    ContactsModel2          *modelFilter;
+    KTp::ContactsModel     *model;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     QRect                   dropIndicatorRect;
