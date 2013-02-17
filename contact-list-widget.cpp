@@ -27,7 +27,6 @@
 
 #include <KTp/types.h>
 
-#include <KTp/Models/groups-model.h>
 #include <KTp/Models/contacts-filter-model.h>
 #include <KTp/Models/accounts-tree-proxy-model.h>
 #include <KTp/Models/groups-tree-proxy-model.h>
