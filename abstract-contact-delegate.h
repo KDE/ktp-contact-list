@@ -24,17 +24,16 @@
 
 #include <QtGui/QStyledItemDelegate>
 
-
 class AbstractContactDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
 
 public:
-    AbstractContactDelegate(QObject* parent = 0);
+    AbstractContactDelegate(QObject *parent = 0);
     virtual ~AbstractContactDelegate();
 
-    virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-    virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    virtual void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
 public Q_SLOTS:
     /**
@@ -50,14 +49,14 @@ Q_SIGNALS:
 
 protected:
     /** Paint contact items. Pure virtual, items should be subclass this for painting*/
-    virtual void paintContact(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const = 0;
+    virtual void paintContact(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
     /** The size hint for painting contact items*/
-    virtual QSize sizeHintContact(const QStyleOptionViewItem& option, const QModelIndex& index) const = 0;
+    virtual QSize sizeHintContact(const QStyleOptionViewItem &option, const QModelIndex &index) const = 0;
 
 private:
     /** Paints header items*/
-    void paintHeader(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
-    QSize sizeHintHeader(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+    void paintHeader(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+    QSize sizeHintHeader(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 };
 
 #endif // ABSTRACT_CONTACT_DELEGATE_H
