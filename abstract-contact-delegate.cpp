@@ -33,13 +33,12 @@
 #include <KDE/KIcon>
 
 #include <KTp/types.h>
-#include <KDebug>
 
-const int SPACING = 2;
-const int ACCOUNT_ICON_SIZE = 16;
+const int SPACING = 4;
+const int ACCOUNT_ICON_SIZE = 22;
 
-AbstractContactDelegate::AbstractContactDelegate(QObject* parent)
-        : QStyledItemDelegate(parent)
+AbstractContactDelegate::AbstractContactDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
 {
 }
 
@@ -47,7 +46,7 @@ AbstractContactDelegate::~AbstractContactDelegate()
 {
 }
 
-void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void AbstractContactDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
         paintContact(painter, option, index);
@@ -56,7 +55,7 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     }
 }
 
-QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     Q_UNUSED(option);
 
@@ -83,71 +82,61 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QRect groupRect = optV4.rect;
 
-    QRect accountGroupRect = groupRect;
-    accountGroupRect.setSize(QSize(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
-    accountGroupRect.moveTo(QPoint(groupRect.left() + 2, groupRect.top() + 2));
+    //paint the background
+    QBrush bgBrush(option.palette.color(QPalette::Active, QPalette::Button).lighter(105));
+    painter->fillRect(groupRect, bgBrush);
 
-    QRect groupLabelRect = groupRect;
-    groupLabelRect.setRight(groupLabelRect.right() - SPACING);
-
-    QRect expandSignRect = groupLabelRect;
-    expandSignRect.setLeft(ACCOUNT_ICON_SIZE + (SPACING*5));
-    expandSignRect.setRight(groupLabelRect.left() + 20); //keep it by the left side
-
-    QFont groupFont = KGlobalSettings::smallestReadableFont();
-
-    QString counts = QString(" (%1/%2)").arg(index.data(KTp::HeaderOnlineUsersRole).toString(),
-                     index.data(KTp::HeaderTotalUsersRole).toString());
-
-    if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType) {
-        painter->drawPixmap(accountGroupRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>()).pixmap(32));
-    } else {
-        painter->drawPixmap(accountGroupRect, KIconLoader::global()->loadIcon(QString("system-users"),
-                            KIconLoader::Desktop));
-    }
-
-    //create an area for text which does not overlap with the icons.
-    QRect textRect = groupLabelRect.adjusted(ACCOUNT_ICON_SIZE + (SPACING*4),0,0,0);
-    QString groupHeaderString =  index.data(Qt::DisplayRole).toString().append(counts);
-
-    if (option.state & QStyle::State_Selected) {
-        painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
-    } else {
-        painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
-    }
-
-    painter->setFont(groupFont);
-    painter->drawText(textRect, Qt::AlignVCenter | Qt::AlignRight,
-                      optV4.fontMetrics.elidedText(groupHeaderString, Qt::ElideRight, textRect.width()));
-
-
+    //paint very subtle line at the bottom
     QPen thinLinePen;
     thinLinePen.setWidth(0);
-    thinLinePen.setColor(option.palette.color(QPalette::Inactive, QPalette::Button));
-
+    thinLinePen.setColor(option.palette.color(QPalette::Active, QPalette::Button));
     painter->setPen(thinLinePen);
+    //to get nice sharp 1px line we need to turn AA off, otherwise it will be all blurry
     painter->setRenderHint(QPainter::Antialiasing, false);
-
-    QFontMetrics fm = painter->fontMetrics();
-    int groupNameWidth = fm.width(groupHeaderString);
-
-    //show a horizontal line padding the header if there is any space left.
-    if (groupNameWidth < textRect.width()) {
-        painter->drawLine(expandSignRect.right() + SPACING * 4,
-                          groupRect.y() + groupRect.height() / 2,
-                          groupRect.width() - groupNameWidth - SPACING * 2,
-                          groupRect.y() + groupRect.height() / 2);
-    }
-
+    painter->drawLine(groupRect.bottomLeft(), groupRect.bottomRight());
     painter->setRenderHint(QPainter::Antialiasing, true);
 
-    QStyleOption expandSignOption = option;
-    expandSignOption.rect = expandSignRect;
+    //get the proper rect for the expand sign
+    int iconSize = IconSize(KIconLoader::Toolbar);
 
+    QStyleOption expandSignOption = option;
+    expandSignOption.rect = groupRect;
+    expandSignOption.rect.setSize(QSize(iconSize, iconSize));
+    expandSignOption.rect.moveLeft(groupRect.left() + SPACING);
+    expandSignOption.rect.moveTop(groupRect.top() + 3);
+
+    //paint the expand sign
     if (option.state & QStyle::State_Open) {
         style->drawPrimitive(QStyle::PE_IndicatorArrowDown, &expandSignOption, painter);
     } else {
         style->drawPrimitive(QStyle::PE_IndicatorArrowRight, &expandSignOption, painter);
+    }
+
+    QFont groupFont = KGlobalSettings::smallestReadableFont();
+
+    //paint the header string
+    QRect groupLabelRect;
+    groupLabelRect.setSize(QSize(groupRect.width() - expandSignOption.rect.width(), groupRect.height()));
+    groupLabelRect.moveTo(QPoint(groupRect.left() + expandSignOption.rect.width() + SPACING * 3, groupRect.top() + 2));
+
+    QString counts = QString(" (%1/%2)").arg(index.data(KTp::HeaderOnlineUsersRole).toString(),
+                                             index.data(KTp::HeaderTotalUsersRole).toString());
+
+    QString groupHeaderString =  index.data(Qt::DisplayRole).toString().append(counts);
+
+
+    painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
+    painter->setFont(groupFont);
+    painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignLeft,
+                      optV4.fontMetrics.elidedText(groupHeaderString, Qt::ElideRight, groupLabelRect.width()));
+
+    //paint the group icon
+    QRect groupIconRect;
+    groupIconRect.setSize(QSize(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
+    groupIconRect.moveTo(QPoint(groupRect.right() - ACCOUNT_ICON_SIZE - 2, groupRect.top() + 2));
+
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType) {
+        painter->drawPixmap(groupIconRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>()).pixmap(32));
     }
 
     painter->restore();
@@ -157,7 +146,7 @@ QSize AbstractContactDelegate::sizeHintHeader(const QStyleOptionViewItem &option
 {
     Q_UNUSED(option)
     Q_UNUSED(index)
-    return QSize(0,20);
+    return QSize(0, qMax(ACCOUNT_ICON_SIZE + 2 * SPACING, KGlobalSettings::smallestReadableFont().pixelSize() + SPACING));
 }
 
 bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)
