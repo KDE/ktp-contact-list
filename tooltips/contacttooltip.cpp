@@ -44,7 +44,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->avatarLabel->setScaledContents(false);
     ui->avatarLabel->setAlignment(Qt::AlignCenter);
 
-    QString avatar = index.data(KTp::ContactAvatarPathRole).toString();
+    QString avatar = index.data(KTp::ContactAvatarPathRole).toUrl().toLocalFile();
     if (avatar.isEmpty()) {
         ui->avatarLabel->setPixmap(KIconLoader::global()->loadIcon("im-user", KIconLoader::NoGroup, 96));
     } else {
