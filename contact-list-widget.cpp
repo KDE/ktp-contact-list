@@ -107,13 +107,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->modelFilter->sort(0);
 //     d->modelFilter->setPresenceTypeFilterFlags(KTp::ContactsFilterModel::ShowOnlyConnected);
 
-    QSortFilterProxyModel *sorter = new QSortFilterProxyModel(this);
-    sorter->setSourceModel(d->translationProxy);
-    sorter->setSortRole(Qt::DisplayRole);
-    sorter->setSortLocaleAware(true);
-    sorter->setDynamicSortFilter(true);
-    sorter->sort(0);
-
     setModel(d->modelFilter);
 
     setItemDelegate(d->compactDelegate);
