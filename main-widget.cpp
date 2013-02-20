@@ -259,7 +259,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_contextMenu = new ContextMenu(m_contactsListView);
 
-//     new ToolTipManager(m_contactsListView);
+    new ToolTipManager(m_contactsListView);
 
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));

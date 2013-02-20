@@ -126,7 +126,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
     setIndentation(10);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
-//     setMouseTracking(true);
+    setMouseTracking(true);
     setExpandsOnDoubleClick(true); //the expanding/collapsing is handled manually
 //     setDragEnabled(true);
 //     viewport()->setAcceptDrops(true);
