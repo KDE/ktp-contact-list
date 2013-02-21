@@ -73,7 +73,9 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->blockedLabel->setShown(index.data(KTp::ContactIsBlockedRole).toBool());
 
     const Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
-    ui->accountLabel->setText(i18n("Account: %1").arg(account->displayName()));
+    if (!account.isNull()) {
+        ui->accountLabel->setText(i18n("Account: %1").arg(account->displayName()));
+    }
 
     connect(ui->presenceMessageLabel, SIGNAL(linkActivated(QString)), this, SLOT(openLink(QString)));
 }
