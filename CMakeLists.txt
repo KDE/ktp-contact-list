@@ -71,6 +71,7 @@ target_link_libraries (ktp-contactlist
                        ${KDE4_KIO_LIBS}
                        ${KDE4_KCMUTILS_LIBS}
                        ${TELEPATHY_LOGGER_QT4_LIBRARIES}
+                       ${KDE4_KNOTIFYCONFIG_LIBS}
 )
 
 

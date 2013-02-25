@@ -42,6 +42,7 @@
 #include <KFileDialog>
 #include <KSettings/Dialog>
 #include <KMenu>
+#include <KNotifyConfigWidget>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -169,6 +170,22 @@ void ContactListWidget::showSettingsKCM()
 
     dialog->addModule("kcm_ktp_accounts");
     dialog->addModule("kcm_ktp_integration_module");
+
+    // Setup notifications menu
+    KNotifyConfigWidget *notificationWidget = new KNotifyConfigWidget(dialog);
+    notificationWidget->setApplication("ktelepathy");
+    connect(dialog, SIGNAL(accepted()),
+            notificationWidget, SLOT(save()));
+
+    connect(notificationWidget, SIGNAL(changed(bool)),
+            dialog, SLOT(enableButtonApply(bool)));
+
+    connect(dialog,SIGNAL(applyClicked()),
+            notificationWidget, SLOT(save()));
+
+    KPageWidgetItem* notificationPage = new KPageWidgetItem(notificationWidget, i18n("Notifications"));
+    notificationPage->setIcon(KIcon("preferences-desktop-notification"));
+    dialog->addPage(notificationPage);
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
