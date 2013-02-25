@@ -56,6 +56,7 @@
 #include <KNotification>
 #include <KToolInvocation>
 #include <KMenuBar>
+#include <KStandardAction>
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
@@ -71,7 +72,13 @@ bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 }
 
 MainWidget::MainWidget(QWidget *parent)
-    : KMainWindow(parent)
+    : KMainWindow(parent),
+      m_globalMenu(NULL),
+      m_settingsDialog(NULL),
+      m_joinChatRoom(NULL),
+      m_makeCall(NULL),
+      m_contactListTypeGroup(NULL),
+      m_blockedFilterGroup(NULL)
 {
     Tp::registerTypes();
 
@@ -115,6 +122,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
+    setupActions(guiConfigGroup);
 
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
 
@@ -122,8 +130,8 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_addContactAction);
 
-    m_groupContactsAction = new KDualAction(i18n("Contacts are shown by accounts. Click to show them in groups."),
-                                            i18n("Contacts are shown in groups. Click to show them in accounts."),
+    m_groupContactsAction = new KDualAction(i18n("Show contacts by groups"),
+                                            i18n("Show contacts by accounts"),
                                             this);
     m_groupContactsAction->setActiveIcon(KIcon("user-group-properties"));
     m_groupContactsAction->setInactiveIcon(KIcon("user-group-properties"));
@@ -132,8 +140,8 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_groupContactsAction);
 
-    m_showOfflineAction = new KDualAction(i18n("Offline contacts are hidden. Click to show them."),
-                                          i18n("Offline contacts are shown. Click to hide them."),
+    m_showOfflineAction = new KDualAction(i18n("Show offline contacts"),
+                                          i18n("Show offline contacts"),
                                           this);
     m_showOfflineAction->setActiveIcon(KIcon("meeting-attending-tentative"));
     m_showOfflineAction->setInactiveIcon(KIcon("meeting-attending-tentative"));
@@ -143,8 +151,8 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addAction(m_showOfflineAction);
 
-    m_sortByPresenceAction = new KDualAction(i18n("List is sorted by name. Click to sort by presence."),
-                                             i18n("List is sorted by presence. Click to sort by name."),
+    m_sortByPresenceAction = new KDualAction(i18n("Sorted by name"),
+                                             i18n("Sorted by presence"),
                                              this);
     m_sortByPresenceAction->setActiveIcon(KIcon("sort-presence"));
     m_sortByPresenceAction->setInactiveIcon(KIcon("sort-name"));
@@ -168,69 +176,19 @@ MainWidget::MainWidget(QWidget *parent)
     settingsButton->setPopupMode(QToolButton::InstantPopup);
 
     KMenu *settingsButtonMenu = new KMenu(settingsButton);
-    settingsButtonMenu->addAction(i18n("Instant Messaging Settings..."), m_contactsListView, SLOT(showSettingsKCM()));
+    settingsButtonMenu->addAction(m_settingsDialog);
 
     QActionGroup *delegateTypeGroup = new QActionGroup(this);
     delegateTypeGroup->setExclusive(true);
 
     KMenu *setDelegateTypeMenu = new KMenu(settingsButtonMenu);
     setDelegateTypeMenu->setTitle(i18n("Contact List Type"));
-    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Full List"),
-                                                                m_contactsListView, SLOT(onSwitchToFullView())));
-    delegateTypeGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full")) {
-        delegateTypeGroup->actions().last()->setChecked(true);
-    }
-
-    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Normal List"),
-                                                                m_contactsListView, SLOT(onSwitchToCompactView())));
-    delegateTypeGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("normal")
-        || guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("compact")) { //needed for backwards compatibility
-        delegateTypeGroup->actions().last()->setChecked(true);
-    }
-
-    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Minimalistic List"),
-                                                                     m_contactsListView, SLOT(onSwitchToMiniView())));
-    delegateTypeGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("mini")) {
-        delegateTypeGroup->actions().last()->setChecked(true);
-    }
-
+    setDelegateTypeMenu->addActions(m_contactListTypeGroup->actions());
     settingsButtonMenu->addMenu(setDelegateTypeMenu);
 
     KMenu *setBlockedFilterMenu = new KMenu(settingsButtonMenu);
     setBlockedFilterMenu->setTitle(i18n("Shown Contacts"));
-
-    QActionGroup *blockedFilterGroup = new QActionGroup(this);
-    blockedFilterGroup->setExclusive(true);
-
-    QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
-
-    blockedFilterGroup->addAction(setBlockedFilterMenu->addAction(i18n("Show all contacts"),
-                                                                  m_contactsListView, SLOT(onShowAllContacts())));
-    blockedFilterGroup->actions().last()->setCheckable(true);
-    if (shownContacts == QLatin1String("all")) {
-        blockedFilterGroup->actions().last()->setChecked(true);
-    }
-
-    blockedFilterGroup->addAction(setBlockedFilterMenu->addAction(i18n("Show unblocked contacts"),
-                                                                  m_contactsListView, SLOT(onShowUnblockedContacts())));
-    blockedFilterGroup->actions().last()->setCheckable(true);
-    if (shownContacts == QLatin1String("unblocked")) {
-        blockedFilterGroup->actions().last()->setChecked(true);
-    }
-
-    blockedFilterGroup->addAction(setBlockedFilterMenu->addAction(i18n("Show blocked contacts"),
-                                                                  m_contactsListView, SLOT(onShowBlockedContacts())));
-    blockedFilterGroup->actions().last()->setCheckable(true);
-    if (shownContacts == QLatin1String("blocked")) {
-        blockedFilterGroup->actions().last()->setChecked(true);
-    }
-
+    setBlockedFilterMenu->addActions(m_blockedFilterGroup->actions());
     settingsButtonMenu->addMenu(setBlockedFilterMenu);
 
     if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
@@ -241,10 +199,10 @@ MainWidget::MainWidget(QWidget *parent)
     // Restore window geometry
     restoreGeometry(guiConfigGroup.readEntry("window_geometry", QByteArray()));
 
-    settingsButtonMenu->addAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
+    settingsButtonMenu->addAction(m_joinChatRoom);
 
     if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
-        settingsButtonMenu->addAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
+        settingsButtonMenu->addAction(m_makeCall);
     }
 
     settingsButtonMenu->addSeparator();
@@ -307,6 +265,8 @@ MainWidget::MainWidget(QWidget *parent)
     m_contactsListView->toggleGroups(useGroups);
     m_contactsListView->toggleOfflineContacts(showOffline);
     m_contactsListView->toggleSortByPresence(sortByPresence);
+
+    setupGlobalMenu();
 }
 
 MainWidget::~MainWidget()
@@ -544,6 +504,108 @@ void MainWidget::toggleSearchWidget(bool show)
             m_filterBar->clear();
             m_filterBar->hide();
         }
+}
+
+void MainWidget::setupGlobalMenu()
+{
+    m_globalMenu = new KMenuBar(this);
+    m_globalMenu->setVisible(false);
+
+    KMenu *contacts = new KMenu(i18n("Contacts"), m_globalMenu);
+    contacts->addAction(m_addContactAction);
+    contacts->addAction(m_joinChatRoom);
+    if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
+        contacts->addAction(m_makeCall);
+    }
+    contacts->addAction(m_settingsDialog);
+    contacts->addSeparator();
+    contacts->addAction(KStandardAction::quit(qApp, SLOT(quit()), this));
+    m_globalMenu->addMenu(contacts);
+
+    KMenu *view = new KMenu(i18n("View"), m_globalMenu);
+    view->addAction(m_groupContactsAction);
+    view->addAction(m_showOfflineAction);
+    view->addAction(m_sortByPresenceAction);
+    view->addSeparator();
+    KMenu *view_contactListTypeMenu = new KMenu(i18n("Contact List Type"), view);
+    view_contactListTypeMenu->addActions(m_contactListTypeGroup->actions());
+    view->addMenu(view_contactListTypeMenu);
+    KMenu *view_blockedFilterMenu = new KMenu(i18n("Shown Contacts"), view);
+    view_blockedFilterMenu->addActions(m_blockedFilterGroup->actions());
+    view->addMenu(view_blockedFilterMenu);
+    m_globalMenu->addMenu(view);
+
+    m_globalMenu->addMenu(helpMenu());
+}
+
+void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
+{
+    m_settingsDialog = new KAction(i18n("Settings"), this);
+    m_settingsDialog->setIcon(KIcon("configure"));
+    connect(m_settingsDialog, SIGNAL(triggered()), m_contactsListView, SLOT(showSettingsKCM()));
+
+    m_joinChatRoom = new KAction(i18n("Join Chat Room..."), this);
+    connect(m_joinChatRoom, SIGNAL(triggered()), this, SLOT(onjoinChatRoomRequested()));
+
+    m_makeCall = new KAction(i18n("Make a Call..."), this);
+    connect(m_makeCall, SIGNAL(triggered()), this, SLOT(onmakeCallRequested()));
+
+    // Setup contact list appearance
+    m_contactListTypeGroup = new QActionGroup(this);
+    m_contactListTypeGroup->setExclusive(true);
+
+    m_contactListTypeGroup->addAction(i18n("Use Full List"));
+    connect(m_contactListTypeGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onSwitchToFullView()));
+    m_contactListTypeGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full")) {
+        m_contactListTypeGroup->actions().last()->setChecked(true);
+    }
+
+    m_contactListTypeGroup->addAction(i18n("Use Normal List"));
+    connect(m_contactListTypeGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onSwitchToCompactView()));
+    m_contactListTypeGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("normal")
+        || guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("compact")) { //needed for backwards compatibility
+        m_contactListTypeGroup->actions().last()->setChecked(true);
+    }
+
+    m_contactListTypeGroup->addAction(i18n("Use Minimalistic List"));
+    connect(m_contactListTypeGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onSwitchToMiniView()));
+    m_contactListTypeGroup->actions().last()->setCheckable(true);
+
+    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("mini")) {
+        m_contactListTypeGroup->actions().last()->setChecked(true);
+    }
+
+    // Setup blocked contacts filtering
+    m_blockedFilterGroup = new QActionGroup(this);
+    m_blockedFilterGroup->setExclusive(true);
+
+    QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
+
+    m_blockedFilterGroup->addAction(i18n("Show all contacts"));
+    connect(m_blockedFilterGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onShowAllContacts()));
+    m_blockedFilterGroup->actions().last()->setCheckable(true);
+    if (shownContacts == QLatin1String("all")) {
+        m_blockedFilterGroup->actions().last()->setChecked(true);
+    }
+
+    m_blockedFilterGroup->addAction(i18n("Show unblocked contacts"));
+    connect(m_blockedFilterGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onShowUnblockedContacts()));
+    m_blockedFilterGroup->actions().last()->setCheckable(true);
+    if (shownContacts == QLatin1String("unblocked")) {
+        m_blockedFilterGroup->actions().last()->setChecked(true);
+    }
+
+    m_blockedFilterGroup->addAction(i18n("Show blocked contacts"));
+    connect(m_blockedFilterGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onShowBlockedContacts()));
+    m_blockedFilterGroup->actions().last()->setCheckable(true);
+    if (shownContacts == QLatin1String("blocked")) {
+        m_blockedFilterGroup->actions().last()->setChecked(true);
+    }
+
 }
 
 #include "main-widget.moc"

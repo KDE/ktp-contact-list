@@ -91,6 +91,15 @@ private:
     ///Was moved to telepathy-kded-module
     //void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
+    void setupGlobalMenu();
+    void setupActions(const KConfigGroup&);
+
+    KMenuBar               *m_globalMenu;
+    KAction                *m_settingsDialog;
+    KAction                *m_joinChatRoom;
+    KAction                *m_makeCall;
+    QActionGroup           *m_contactListTypeGroup;
+    QActionGroup           *m_blockedFilterGroup;
 
     KMenu                  *m_accountMenu;
     KSelectAction          *m_setStatusAction;
