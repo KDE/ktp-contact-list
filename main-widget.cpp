@@ -538,74 +538,49 @@ void MainWidget::setupGlobalMenu()
     m_globalMenu->addMenu(helpMenu());
 }
 
+KAction *MainWidget::createAction(const QString &text, QObject *signalReceiver, const char *slot, const KIcon &icon = KIcon())
+{
+    KAction *action = new KAction(icon, text, this);
+    connect(action, SIGNAL(triggered()), signalReceiver, slot);
+    return action;
+}
+
+KAction *MainWidget::createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const KIcon& icon = KIcon())
+{
+    KAction *action = createAction(text, signalReceiver, slot, icon);
+    action->setCheckable(true);
+    action->setChecked(isChecked);
+    return action;
+}
+
 void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
 {
-    m_settingsDialog = new KAction(i18n("Settings"), this);
-    m_settingsDialog->setIcon(KIcon("configure"));
-    connect(m_settingsDialog, SIGNAL(triggered()), m_contactsListView, SLOT(showSettingsKCM()));
-
-    m_joinChatRoom = new KAction(i18n("Join Chat Room..."), this);
-    connect(m_joinChatRoom, SIGNAL(triggered()), this, SLOT(onjoinChatRoomRequested()));
-
-    m_makeCall = new KAction(i18n("Make a Call..."), this);
-    connect(m_makeCall, SIGNAL(triggered()), this, SLOT(onmakeCallRequested()));
+    m_settingsDialog = createAction(i18n("Settings"), m_contactsListView, SLOT(showSettingsKCM()), KIcon("configure"));
+    m_joinChatRoom = createAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
+    m_makeCall = createAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
 
     // Setup contact list appearance
     m_contactListTypeGroup = new QActionGroup(this);
     m_contactListTypeGroup->setExclusive(true);
+    m_contactListTypeGroup->addAction(createAction(i18n("Use Full List"), m_contactsListView, SLOT(onSwitchToFullView()),
+                                                   guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full")));
+    m_contactListTypeGroup->addAction(createAction(i18n("Use Normal List"), m_contactsListView, SLOT(onSwitchToCompactView()),
+                                                   guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("normal")
+                                                   || guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("compact"))); //needed for backwards compatibility
 
-    m_contactListTypeGroup->addAction(i18n("Use Full List"));
-    connect(m_contactListTypeGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onSwitchToFullView()));
-    m_contactListTypeGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full")) {
-        m_contactListTypeGroup->actions().last()->setChecked(true);
-    }
-
-    m_contactListTypeGroup->addAction(i18n("Use Normal List"));
-    connect(m_contactListTypeGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onSwitchToCompactView()));
-    m_contactListTypeGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("normal")
-        || guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("compact")) { //needed for backwards compatibility
-        m_contactListTypeGroup->actions().last()->setChecked(true);
-    }
-
-    m_contactListTypeGroup->addAction(i18n("Use Minimalistic List"));
-    connect(m_contactListTypeGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onSwitchToMiniView()));
-    m_contactListTypeGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("mini")) {
-        m_contactListTypeGroup->actions().last()->setChecked(true);
-    }
+    m_contactListTypeGroup->addAction(createAction(i18n("Use Minimalistic List"), m_contactsListView, SLOT(onSwitchToMiniView()),
+                                                   guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("mini")));
 
     // Setup blocked contacts filtering
+    QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
     m_blockedFilterGroup = new QActionGroup(this);
     m_blockedFilterGroup->setExclusive(true);
-
-    QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
-
-    m_blockedFilterGroup->addAction(i18n("Show all contacts"));
-    connect(m_blockedFilterGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onShowAllContacts()));
-    m_blockedFilterGroup->actions().last()->setCheckable(true);
-    if (shownContacts == QLatin1String("all")) {
-        m_blockedFilterGroup->actions().last()->setChecked(true);
-    }
-
-    m_blockedFilterGroup->addAction(i18n("Show unblocked contacts"));
-    connect(m_blockedFilterGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onShowUnblockedContacts()));
-    m_blockedFilterGroup->actions().last()->setCheckable(true);
-    if (shownContacts == QLatin1String("unblocked")) {
-        m_blockedFilterGroup->actions().last()->setChecked(true);
-    }
-
-    m_blockedFilterGroup->addAction(i18n("Show blocked contacts"));
-    connect(m_blockedFilterGroup->actions().last(), SIGNAL(triggered()), m_contactsListView, SLOT(onShowBlockedContacts()));
-    m_blockedFilterGroup->actions().last()->setCheckable(true);
-    if (shownContacts == QLatin1String("blocked")) {
-        m_blockedFilterGroup->actions().last()->setChecked(true);
-    }
-
+    m_blockedFilterGroup->addAction(createAction(i18n("Show all contacts"), m_contactsListView, SLOT(onShowAllContacts()),
+                                                shownContacts == QLatin1String("all")));
+    m_blockedFilterGroup->addAction(createAction(i18n("Show unblocked contacts"), m_contactsListView, SLOT(onShowUnblockedContacts()),
+                                                shownContacts == QLatin1String("unblocked")));
+    m_blockedFilterGroup->addAction(createAction(i18n("Show blocked contacts"), m_contactsListView, SLOT(onShowBlockedContacts()),
+                                                shownContacts == QLatin1String("blocked")));
 }
 
 #include "main-widget.moc"
