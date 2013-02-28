@@ -555,7 +555,8 @@ KAction *MainWidget::createAction(const QString& text, QObject *signalReceiver, 
 
 void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
 {
-    m_settingsDialog = createAction(i18n("Settings"), m_contactsListView, SLOT(showSettingsKCM()), KIcon("configure"));
+    m_settingsDialog = KStandardAction::preferences(m_contactsListView, SLOT(showSettingsKCM()),this);
+    m_settingsDialog->setText(i18n("Settings")); // We set text manually since standard name is too long
     m_joinChatRoom = createAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
     m_makeCall = createAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
 
