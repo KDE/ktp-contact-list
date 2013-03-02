@@ -78,175 +78,49 @@ MainWidget::MainWidget(QWidget *parent)
       m_joinChatRoom(NULL),
       m_makeCall(NULL),
       m_contactListTypeGroup(NULL),
-      m_blockedFilterGroup(NULL)
+      m_blockedFilterGroup(NULL),
+      m_quitAction(NULL)
 {
-    Tp::registerTypes();
-
     setupUi(this);
 
-    menuBar()->hide();
     m_filterBar->hide();
     setWindowIcon(KIcon("telepathy-kde"));
     setAutoSaveSettings();
-
-    Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
-                                                                       Tp::Features() << Tp::Account::FeatureCore
-                                                                       << Tp::Account::FeatureAvatar
-                                                                       << Tp::Account::FeatureCapabilities
-                                                                       << Tp::Account::FeatureProtocolInfo
-                                                                       << Tp::Account::FeatureProfile);
-
-    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus(),
-                                                                               Tp::Features() << Tp::Connection::FeatureCore
-                                                                               << Tp::Connection::FeatureRosterGroups
-                                                                               << Tp::Connection::FeatureRoster
-                                                                               << Tp::Connection::FeatureSelfContact);
-
-    Tp::ContactFactoryPtr contactFactory = KTp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
-                                                                      << Tp::Contact::FeatureAvatarData
-                                                                      << Tp::Contact::FeatureSimplePresence
-                                                                      << Tp::Contact::FeatureCapabilities
-                                                                      << Tp::Contact::FeatureClientTypes);
-
-    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
-    channelFactory->addFeaturesForTextChats(Tp::Features() << Tp::Channel::FeatureCore << Tp::TextChannel::FeatureMessageQueue);
-
-    m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(),
-                                                  accountFactory,
-                                                  connectionFactory,
-                                                  channelFactory,
-                                                  contactFactory);
-
-    connect(m_accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
+    setupTelepathy();
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
     setupActions(guiConfigGroup);
+    setupToolBar();
+    setupGlobalMenu();
 
-    m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
-
-    m_addContactAction = new KAction(KIcon("list-add-user"), i18n("Add New Contacts..."), this);
-
-    m_toolBar->addAction(m_addContactAction);
-
-    m_groupContactsAction = new KDualAction(i18n("Show contacts by groups"),
-                                            i18n("Show contacts by accounts"),
-                                            this);
-    m_groupContactsAction->setActiveIcon(KIcon("user-group-properties"));
-    m_groupContactsAction->setInactiveIcon(KIcon("user-group-properties"));
-    m_groupContactsAction->setCheckable(true);
-    m_groupContactsAction->setChecked(true);
-
-    m_toolBar->addAction(m_groupContactsAction);
-
-    m_showOfflineAction = new KDualAction(i18n("Show offline contacts"),
-                                          i18n("Show offline contacts"),
-                                          this);
-    m_showOfflineAction->setActiveIcon(KIcon("meeting-attending-tentative"));
-    m_showOfflineAction->setInactiveIcon(KIcon("meeting-attending-tentative"));
-    m_showOfflineAction->setCheckable(true);
-    m_showOfflineAction->setChecked(false);
-    m_showOfflineAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
-
-    m_toolBar->addAction(m_showOfflineAction);
-
-    m_sortByPresenceAction = new KDualAction(i18n("Sorted by name"),
-                                             i18n("Sorted by presence"),
-                                             this);
-    m_sortByPresenceAction->setActiveIcon(KIcon("sort-presence"));
-    m_sortByPresenceAction->setInactiveIcon(KIcon("sort-name"));
-
-    m_toolBar->addAction(m_sortByPresenceAction);
-
-    m_searchContactAction = new KAction(KIcon("edit-find-user"), i18n("Find Contact"), this );
-    m_searchContactAction->setShortcut(KStandardShortcut::find());
-    m_searchContactAction->setCheckable(true);
-    m_searchContactAction->setChecked(false);
-
-    m_toolBar->addAction(m_searchContactAction);
-
-    QWidget *toolBarSpacer = new QWidget(this);
-    toolBarSpacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
-    m_toolBar->addWidget(toolBarSpacer);
-
-    QToolButton *settingsButton = new QToolButton(this);
-    settingsButton->setIcon(KIcon("configure"));
-    settingsButton->setPopupMode(QToolButton::InstantPopup);
-
-    KMenu *settingsButtonMenu = new KMenu(settingsButton);
-    settingsButtonMenu->addAction(m_settingsDialog);
-
-    QActionGroup *delegateTypeGroup = new QActionGroup(this);
-    delegateTypeGroup->setExclusive(true);
-
-    KMenu *setDelegateTypeMenu = new KMenu(settingsButtonMenu);
-    setDelegateTypeMenu->setTitle(i18n("Contact List Type"));
-    setDelegateTypeMenu->addActions(m_contactListTypeGroup->actions());
-    settingsButtonMenu->addMenu(setDelegateTypeMenu);
-
-    KMenu *setBlockedFilterMenu = new KMenu(settingsButtonMenu);
-    setBlockedFilterMenu->setTitle(i18n("Shown Contacts"));
-    setBlockedFilterMenu->addActions(m_blockedFilterGroup->actions());
-    settingsButtonMenu->addMenu(setBlockedFilterMenu);
-
+    // Restore window geometry, global/by-account presence, search widget state
+    restoreGeometry(guiConfigGroup.readEntry("window_geometry", QByteArray()));
+    toggleSearchWidget(guiConfigGroup.readEntry("pin_filterbar", true));
     if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
         //hide account buttons and show global presence
         onUseGlobalPresenceTriggered();
     }
 
-    // Restore window geometry
-    restoreGeometry(guiConfigGroup.readEntry("window_geometry", QByteArray()));
-
-    settingsButtonMenu->addAction(m_joinChatRoom);
-
-    if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
-        settingsButtonMenu->addAction(m_makeCall);
-    }
-
-    settingsButtonMenu->addSeparator();
-    settingsButtonMenu->addMenu(helpMenu());
-
-    settingsButton->setMenu(settingsButtonMenu);
-
-    m_toolBar->addWidget(settingsButton);
-
     m_contextMenu = new ContextMenu(m_contactsListView);
-
     new ToolTipManager(m_contactsListView);
 
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
 
-    connect(m_addContactAction, SIGNAL(triggered(bool)),
-            this, SLOT(onAddContactRequest()));
-
     connect(m_groupContactsAction, SIGNAL(triggered(bool)),
             m_contactsListView, SLOT(toggleGroups(bool)));
-
-    connect(m_searchContactAction, SIGNAL(triggered(bool)),
-            this, SLOT(toggleSearchWidget(bool)));
-
-    if (guiConfigGroup.readEntry("pin_filterbar", true)) {
-        toggleSearchWidget(true);
-        m_searchContactAction->setChecked(true);
-    }
-
     connect(m_showOfflineAction, SIGNAL(toggled(bool)),
             m_contactsListView, SLOT(toggleOfflineContacts(bool)));
+    connect(m_sortByPresenceAction, SIGNAL(activeChanged(bool)),
+            m_contactsListView, SLOT(toggleSortByPresence(bool)));
 
     connect(m_filterBar, SIGNAL(filterChanged(QString)),
             m_contactsListView, SLOT(setFilterString(QString)));
-
     connect(m_filterBar, SIGNAL(closeRequest()),
             m_filterBar, SLOT(hide()));
-
     connect(m_filterBar, SIGNAL(closeRequest()),
             m_searchContactAction, SLOT(trigger()));
-
-    connect(m_sortByPresenceAction, SIGNAL(activeChanged(bool)),
-            m_contactsListView, SLOT(toggleSortByPresence(bool)));
 
     connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
@@ -265,8 +139,6 @@ MainWidget::MainWidget(QWidget *parent)
     m_contactsListView->toggleGroups(useGroups);
     m_contactsListView->toggleOfflineContacts(showOffline);
     m_contactsListView->toggleSortByPresence(sortByPresence);
-
-    setupGlobalMenu();
 }
 
 MainWidget::~MainWidget()
@@ -291,8 +163,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
                            i18n("Something unexpected happened to the core part of your Instant Messaging system "
                            "and it couldn't be initialized. Try restarting the Contact List."),
                            i18n("IM system failed to initialize"));
-
-                           return;
+        return;
     }
 
     m_accountButtons->setAccountManager(m_accountManager);
@@ -519,7 +390,7 @@ void MainWidget::setupGlobalMenu()
     }
     contacts->addAction(m_settingsDialog);
     contacts->addSeparator();
-    contacts->addAction(KStandardAction::quit(qApp, SLOT(quit()), this));
+    contacts->addAction(m_quitAction);
     m_globalMenu->addMenu(contacts);
 
     KMenu *view = new KMenu(i18n("View"), m_globalMenu);
@@ -538,10 +409,92 @@ void MainWidget::setupGlobalMenu()
     m_globalMenu->addMenu(helpMenu());
 }
 
+void MainWidget::setupToolBar()
+{
+    m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    m_toolBar->addAction(m_addContactAction);
+    m_toolBar->addAction(m_groupContactsAction);
+    m_toolBar->addAction(m_showOfflineAction);
+    m_toolBar->addAction(m_sortByPresenceAction);
+    m_toolBar->addAction(m_searchContactAction);
+
+    QWidget *toolBarSpacer = new QWidget(this);
+    toolBarSpacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+    m_toolBar->addWidget(toolBarSpacer);
+
+    QToolButton *settingsButton = new QToolButton(this);
+    settingsButton->setIcon(KIcon("configure"));
+    settingsButton->setPopupMode(QToolButton::InstantPopup);
+
+    KMenu *settingsButtonMenu = new KMenu(settingsButton);
+    settingsButtonMenu->addAction(m_settingsDialog);
+
+    QActionGroup *delegateTypeGroup = new QActionGroup(this);
+    delegateTypeGroup->setExclusive(true);
+
+    KMenu *setDelegateTypeMenu = new KMenu(settingsButtonMenu);
+    setDelegateTypeMenu->setTitle(i18n("Contact List Type"));
+    setDelegateTypeMenu->addActions(m_contactListTypeGroup->actions());
+    settingsButtonMenu->addMenu(setDelegateTypeMenu);
+
+    KMenu *setBlockedFilterMenu = new KMenu(settingsButtonMenu);
+    setBlockedFilterMenu->setTitle(i18n("Shown Contacts"));
+    setBlockedFilterMenu->addActions(m_blockedFilterGroup->actions());
+    settingsButtonMenu->addMenu(setBlockedFilterMenu);
+
+    settingsButtonMenu->addAction(m_joinChatRoom);
+
+    if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
+        settingsButtonMenu->addAction(m_makeCall);
+    }
+
+    settingsButtonMenu->addSeparator();
+    settingsButtonMenu->addMenu(helpMenu());
+
+    settingsButton->setMenu(settingsButtonMenu);
+
+    m_toolBar->addWidget(settingsButton);
+}
+
+void MainWidget::setupTelepathy()
+{
+    Tp::registerTypes();
+    Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
+                                                                       Tp::Features() << Tp::Account::FeatureCore
+                                                                       << Tp::Account::FeatureAvatar
+                                                                       << Tp::Account::FeatureCapabilities
+                                                                       << Tp::Account::FeatureProtocolInfo
+                                                                       << Tp::Account::FeatureProfile);
+
+    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus(),
+                                                                               Tp::Features() << Tp::Connection::FeatureCore
+                                                                               << Tp::Connection::FeatureRosterGroups
+                                                                               << Tp::Connection::FeatureRoster
+                                                                               << Tp::Connection::FeatureSelfContact);
+
+    Tp::ContactFactoryPtr contactFactory = KTp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
+                                                                      << Tp::Contact::FeatureAvatarData
+                                                                      << Tp::Contact::FeatureSimplePresence
+                                                                      << Tp::Contact::FeatureCapabilities
+                                                                      << Tp::Contact::FeatureClientTypes);
+
+    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
+    channelFactory->addFeaturesForTextChats(Tp::Features() << Tp::Channel::FeatureCore << Tp::TextChannel::FeatureMessageQueue);
+
+    m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(),
+                                                  accountFactory,
+                                                  connectionFactory,
+                                                  channelFactory,
+                                                  contactFactory);
+
+    connect(m_accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
+            this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
+}
+
 KAction *MainWidget::createAction(const QString &text, QObject *signalReceiver, const char *slot, const KIcon &icon = KIcon())
 {
     KAction *action = new KAction(icon, text, this);
-    connect(action, SIGNAL(triggered()), signalReceiver, slot);
+    connect(action, SIGNAL(triggered(bool)), signalReceiver, slot);
     return action;
 }
 
@@ -557,8 +510,40 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
 {
     m_settingsDialog = KStandardAction::preferences(m_contactsListView, SLOT(showSettingsKCM()),this);
     m_settingsDialog->setText(i18n("Settings")); // We set text manually since standard name is too long
+
+    m_quitAction = KStandardAction::quit(this, SLOT(close()), this);
+    m_quitAction->setMenuRole(QAction::QuitRole);
+
     m_joinChatRoom = createAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
     m_makeCall = createAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
+    m_addContactAction = createAction(i18n("Add New Contacts..."), this, SLOT(onAddContactRequest()), KIcon("list-add-user"));
+    m_searchContactAction = createAction(i18n("Find Contact"), this, SLOT(toggleSearchWidget(bool)),
+                                         guiConfigGroup.readEntry("pin_filterbar", true), KIcon("edit-find-user"));
+    m_searchContactAction->setShortcut(KStandardShortcut::find());
+
+    // Dual actions
+    m_groupContactsAction = new KDualAction(i18n("Show contacts by groups"),
+                                            i18n("Show contacts by accounts"),
+                                            this);
+    m_groupContactsAction->setActiveIcon(KIcon("user-group-properties"));
+    m_groupContactsAction->setInactiveIcon(KIcon("user-group-properties"));
+    m_groupContactsAction->setCheckable(true);
+    m_groupContactsAction->setChecked(true);
+
+    m_showOfflineAction = new KDualAction(i18n("Show offline contacts"),
+                                          i18n("Show offline contacts"),
+                                          this);
+    m_showOfflineAction->setActiveIcon(KIcon("meeting-attending-tentative"));
+    m_showOfflineAction->setInactiveIcon(KIcon("meeting-attending-tentative"));
+    m_showOfflineAction->setCheckable(true);
+    m_showOfflineAction->setChecked(false);
+    m_showOfflineAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
+
+    m_sortByPresenceAction = new KDualAction(i18n("Sorted by name"),
+                                             i18n("Sorted by presence"),
+                                             this);
+    m_sortByPresenceAction->setActiveIcon(KIcon("sort-presence"));
+    m_sortByPresenceAction->setInactiveIcon(KIcon("sort-name"));
 
     // Setup contact list appearance
     m_contactListTypeGroup = new QActionGroup(this);

@@ -95,6 +95,8 @@ private:
     KAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const KIcon& icon);
     void setupActions(const KConfigGroup&);
     void setupGlobalMenu();
+    void setupToolBar();
+    void setupTelepathy();
 
     KMenuBar               *m_globalMenu;
     KAction                *m_settingsDialog;
@@ -112,6 +114,7 @@ private:
     KDualAction            *m_showOfflineAction;
     KAction                *m_searchContactAction;
     KDualAction            *m_sortByPresenceAction;
+    KAction                *m_quitAction;
 
     Tp::AccountManagerPtr  m_accountManager;
 
