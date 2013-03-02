@@ -379,6 +379,11 @@ void MainWidget::toggleSearchWidget(bool show)
 
 void MainWidget::setupGlobalMenu()
 {
+    // Since our menu is hidden, its shortcuts do not work.
+    // Here's a workarond: we must assign global menu's unique
+    // items to main window. Since it's always active when an
+    // application is active, shortcuts now will work properly.
+
     m_globalMenu = new KMenuBar(this);
     m_globalMenu->setVisible(false);
 
@@ -391,6 +396,7 @@ void MainWidget::setupGlobalMenu()
     contacts->addAction(m_settingsDialog);
     contacts->addSeparator();
     contacts->addAction(m_quitAction);
+    this->addAction(m_quitAction); // Shortcuts workaround.
     m_globalMenu->addMenu(contacts);
 
     KMenu *view = new KMenu(i18n("View"), m_globalMenu);
