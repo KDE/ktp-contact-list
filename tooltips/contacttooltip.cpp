@@ -44,13 +44,8 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->avatarLabel->setScaledContents(false);
     ui->avatarLabel->setAlignment(Qt::AlignCenter);
 
-    QString avatar = index.data(KTp::ContactAvatarPathRole).toString();
-    if (avatar.isEmpty()) {
-        ui->avatarLabel->setPixmap(KIconLoader::global()->loadIcon("im-user", KIconLoader::NoGroup, 96));
-    } else {
-        QPixmap avatarPixmap(avatar);
-        ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
-    }
+    QPixmap avatarPixmap(qvariant_cast<QPixmap>(index.data(KTp::ContactAvatarPixmapRole)));
+    ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
 
     QString presenceMessage = index.data(KTp::ContactPresenceMessageRole).toString();
     QString presenceIconPath = index.data(KTp::ContactPresenceIconRole).toString();

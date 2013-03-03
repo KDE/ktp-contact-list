@@ -64,14 +64,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     iconRect.setSize(QSize(m_avatarSize, m_avatarSize));
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
-    QPixmap avatar;
-    avatar.load(index.data(KTp::ContactAvatarPathRole).toString());
-
-    bool noContactAvatar = avatar.isNull();
-
-    if (noContactAvatar) {
-        avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
-    }
+    QPixmap avatar(qvariant_cast<QPixmap>(index.data(KTp::ContactAvatarPixmapRole)));
 
     if (index.data(KTp::ContactUnreadMessageCountRole).toInt() > 0) {
         avatar = SmallIcon("mail-unread-new", KIconLoader::SizeMedium);
