@@ -36,17 +36,13 @@ bool KPeopleProxy::filterAcceptsRow(int source_row, const QModelIndex &source_pa
 {
     QModelIndex i = sourceModel()->index(source_row, 0, source_parent);
     if ((PersonsModel::ResourceType)sourceModel()->data(i, PersonsModel::ResourceTypeRole).toInt() == PersonsModel::Contact) {
-        PersonsModel::ContactType ct = (PersonsModel::ContactType)sourceModel()->data(i, PersonsModel::ContactTypeRole).toInt();
-        if (ct == PersonsModel::IM) {
+        if (!sourceModel()->data(i, PersonsModel::IMRole).isNull()) {
             return true;
         }
     } else {
-        QVariantList l = sourceModel()->data(i, PersonsModel::ContactTypeRole).toList();
-        //kDebug() << l;
-        Q_FOREACH (const QVariant &v, l) {
-            if ((PersonsModel::ContactType)v.toInt() == PersonsModel::IM) {
-                return true;
-            }
+        QVariantList l = sourceModel()->data(i, PersonsModel::IMRole).toList();
+        if (!l.isEmpty()) {
+            return true;
         }
     }
 
