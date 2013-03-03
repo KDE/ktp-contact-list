@@ -99,6 +99,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
     QString delegateMode = guiConfigGroup.readEntry("selected_delegate", "normal");
 
+    itemDelegate()->deleteLater();
     if (delegateMode == QLatin1String("full")) {
         setItemDelegate(d->delegate);
     } else if (delegateMode == QLatin1String("mini")) {
