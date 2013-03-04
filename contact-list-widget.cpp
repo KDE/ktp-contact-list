@@ -305,12 +305,12 @@ void ContactListWidget::toggleGroups(bool show)
 {
     Q_D(ContactListWidget);
 
-
     if (show) {
         d->model->setGroupMode(KTp::ContactsModel::GroupGrouping);
     } else {
         d->model->setGroupMode(KTp::ContactsModel::AccountGrouping);
     }
+    d->groupMode = d->model->groupMode();
 
     for (int i = 0; i < d->model->rowCount(); i++) {
         onNewGroupModelItemsInserted(d->model->index(i, 0, QModelIndex()), 0, 0);
@@ -503,6 +503,12 @@ void ContactListWidget::onShowBlockedContacts()
 void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
+
+    if (string.isEmpty()) {
+        d->model->setGroupMode(d->groupMode);
+    } else {
+        d->model->setGroupMode(KTp::ContactsModel::NoGrouping);
+    }
 
     d->model->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? KTp::ContactsFilterModel::ShowOnlyConnected : KTp::ContactsFilterModel::DoNotFilterByPresence);
     d->model->setGlobalFilterString(string);

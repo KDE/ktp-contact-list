@@ -21,6 +21,7 @@
 #define CONTACT_LIST_WIDGET_P_H
 
 #include <TelepathyQt/Types>
+#include <KTp/Models/contacts-model.h>
 
 namespace KTp {
     class ContactsModel;
@@ -38,16 +39,17 @@ public:
       shouldDrag(false),
       showOffline(false) {}
 
-    KTp::ContactsModel     *model;
-    ContactDelegate        *delegate;
-    ContactDelegateCompact *compactDelegate;
-    QRect                   dropIndicatorRect;
-    QPoint                  dragStartPosition;
-    QString                 dragSourceGroup;
-    bool                    shouldDrag;
-    bool                    showOffline;
-    QHash<QString, bool>    groupStates;
-    Tp::AccountManagerPtr   accountManager;
+    KTp::ContactsModel           *model;
+    ContactDelegate              *delegate;
+    ContactDelegateCompact       *compactDelegate;
+    QRect                         dropIndicatorRect;
+    QPoint                        dragStartPosition;
+    QString                       dragSourceGroup;
+    bool                          shouldDrag;
+    bool                          showOffline;
+    QHash<QString, bool>          groupStates;
+    Tp::AccountManagerPtr         accountManager;
+    KTp::ContactsModel::GroupMode groupMode; // Stores current grouping mode (by accounts or by groups)
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H
