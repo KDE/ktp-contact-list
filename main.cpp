@@ -30,10 +30,11 @@
 #include <TelepathyQt/Debug>
 
 #include "contact-list-application.h"
+#include "version.h"
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), "0.5.3",
+    KAboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), KTP_CONTACT_LIST_VERSION,
                          ki18n("KDE Telepathy Contact List"), KAboutData::License_GPL,
                          ki18n("(C) 2011, Martin Klapetek"));
 

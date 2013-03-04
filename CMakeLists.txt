@@ -1,5 +1,7 @@
 project (ktp-contactlist)
 
+set(KTP_CONTACT_LIST_VERSION "0.5.3")
+
 set (CMAKE_MODULE_PATH
      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
      ${CMAKE_MODULE_PATH}
@@ -51,6 +53,7 @@ set (ktp_contactlist_SRCS
      tooltips/contacttooltip.cpp
 )
 
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 kde4_add_ui_files (ktp_contactlist_SRCS
                    main-widget.ui
