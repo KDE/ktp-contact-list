@@ -605,11 +605,13 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
         Tp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
         Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
-        //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
-        stream << contact->id() << account->objectPath();
+        if (account && contact) {
+            //We put a contact ID and its account ID to the stream, so we can later recreate the contact using ContactsModel
+            stream << contact->id() << account->objectPath();
 
-        //Store source group name so that we can remove the contact from it on move-drop */
-        d->dragSourceGroup = index.parent().data(KTp::IdRole).toString();
+            //Store source group name so that we can remove the contact from it on move-drop */
+            d->dragSourceGroup = index.parent().data(KTp::IdRole).toString();
+        }
     }
 
     mimeData->setData("application/vnd.telepathy.contact", encodedData);
