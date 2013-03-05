@@ -726,7 +726,7 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             if (index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType) {
                 // contact is dropped on a group, so take it's name
                 targetGroup = index.data(KTp::IdRole).toString();
-//             } else if (index.data(ContactsModel::TypeRole).toInt() == KTp::ContactRowType) {
+            } else if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
                 // contact is dropped on another contact, so take it's parents (group) name
                 targetGroup = index.parent().data(KTp::IdRole).toString();
             }
