@@ -329,7 +329,8 @@ void ContactListWidget::toggleSortByPresence(bool sort)
 {
     Q_D(ContactListWidget);
 
-    d->model->setSortRole(sort ? KTp::ContactPresenceTypeRole : Qt::DisplayRole);
+    //typecast to int before passing to setSortRole to avoid false cpp warning about mixing enum types
+    d->model->setSortRole(sort ? (int)KTp::ContactPresenceTypeRole : (int)Qt::DisplayRole);
 }
 
 void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
