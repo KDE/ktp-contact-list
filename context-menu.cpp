@@ -163,7 +163,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     Tpl::EntityPtr entity = Tpl::Entity::create(contact, Tpl::EntityTypeContact);
     if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
-	action->setEnabled(true);
+        action->setEnabled(true);
     }
 
     menu->addSeparator();
