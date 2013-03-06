@@ -96,14 +96,17 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     painter->drawLine(groupRect.bottomLeft(), groupRect.bottomRight());
     painter->setRenderHint(QPainter::Antialiasing, true);
 
+    //remove spacing from the sides and one point to the bottom for the 1px line
+    groupRect.adjust(SPACING, 0, -SPACING, -1);
+
     //get the proper rect for the expand sign
     int iconSize = IconSize(KIconLoader::Toolbar);
 
     QStyleOption expandSignOption = option;
     expandSignOption.rect = groupRect;
     expandSignOption.rect.setSize(QSize(iconSize, iconSize));
-    expandSignOption.rect.moveLeft(groupRect.left() + SPACING);
-    expandSignOption.rect.moveTop(groupRect.top() + 3);
+    expandSignOption.rect.moveLeft(groupRect.left());
+    expandSignOption.rect.moveTop(groupRect.top() + groupRect.height()/2 - expandSignOption.rect.height()/2);
 
     //paint the expand sign
     if (option.state & QStyle::State_Open) {
@@ -114,30 +117,34 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QFont groupFont = KGlobalSettings::smallestReadableFont();
 
-    //paint the header string
-    QRect groupLabelRect;
-    groupLabelRect.setSize(QSize(groupRect.width() - expandSignOption.rect.width(), groupRect.height()));
-    groupLabelRect.moveTo(QPoint(groupRect.left() + expandSignOption.rect.width() + SPACING * 3, groupRect.top() + 2));
-
-    QString counts = QString(" (%1/%2)").arg(index.data(KTp::HeaderOnlineUsersRole).toString(),
-                                             index.data(KTp::HeaderTotalUsersRole).toString());
-
-    QString groupHeaderString =  index.data(Qt::DisplayRole).toString().append(counts);
-
-
-    painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
-    painter->setFont(groupFont);
-    painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignLeft,
-                      optV4.fontMetrics.elidedText(groupHeaderString, Qt::ElideRight, groupLabelRect.width()));
-
     //paint the group icon
     QRect groupIconRect;
     groupIconRect.setSize(QSize(ACCOUNT_ICON_SIZE, ACCOUNT_ICON_SIZE));
-    groupIconRect.moveTo(QPoint(groupRect.right() - ACCOUNT_ICON_SIZE - 2, groupRect.top() + 2));
+    groupIconRect.moveRight(groupRect.right());
+    groupIconRect.moveTop(groupRect.top() + groupRect.height()/2 - groupIconRect.height()/2);
 
     if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType) {
-        painter->drawPixmap(groupIconRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>()).pixmap(32));
+        painter->drawPixmap(groupIconRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>()).pixmap(ACCOUNT_ICON_SIZE));
+    } else {
+        groupIconRect.setWidth(0);
     }
+
+    //paint the header string
+    QRect groupLabelRect = groupRect.adjusted(expandSignOption.rect.width() + SPACING * 2, 0, -groupIconRect.width() -SPACING, 0);
+    QString countsString = QString("(%1/%2)").arg(index.data(KTp::HeaderOnlineUsersRole).toString(),
+                                                  index.data(KTp::HeaderTotalUsersRole).toString());
+
+    QString groupHeaderString =  index.data(Qt::DisplayRole).toString();
+
+    QFontMetrics groupFontMetrics(groupFont);
+
+    painter->setFont(groupFont);
+    painter->setPen(option.palette.color(QPalette::Disabled, QPalette::Text));
+    painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignRight, countsString);
+    painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
+    painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignLeft,
+                      groupFontMetrics.elidedText(groupHeaderString, Qt::ElideRight,
+                                                  groupLabelRect.width() - groupFontMetrics.width(countsString) - SPACING));
 
     painter->restore();
 }
@@ -146,7 +153,9 @@ QSize AbstractContactDelegate::sizeHintHeader(const QStyleOptionViewItem &option
 {
     Q_UNUSED(option)
     Q_UNUSED(index)
-    return QSize(0, qMax(ACCOUNT_ICON_SIZE + 2 * SPACING, KGlobalSettings::smallestReadableFont().pixelSize() + SPACING));
+
+    // Add one point to the bottom for the 1px line
+    return QSize(0, qMax(ACCOUNT_ICON_SIZE, KGlobalSettings::smallestReadableFont().pixelSize()) + SPACING + 1);
 }
 
 bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)
