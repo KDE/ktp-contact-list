@@ -76,7 +76,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->model->setDynamicSortFilter(true);
     d->model->setSortRole(Qt::DisplayRole);
 
-    setModel(d->model);
 
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
@@ -144,6 +143,11 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
 
     d->accountManager = accountManager;
     d->model->setAccountManager(accountManager);
+
+    // We set the model only when the account manager is set.
+    // This fixes the weird horizontal scrollbar bug
+    // See https://bugs.kde.org/show_bug.cgi?id=316260
+    setModel(d->model);
 
     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
 
