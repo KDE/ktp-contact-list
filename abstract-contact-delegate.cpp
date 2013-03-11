@@ -36,6 +36,7 @@
 
 const int SPACING = 4;
 const int ACCOUNT_ICON_SIZE = 22;
+const qreal GROUP_ICON_OPACITY = 0.6;
 
 AbstractContactDelegate::AbstractContactDelegate(QObject *parent)
     : QStyledItemDelegate(parent)
@@ -124,7 +125,10 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     groupIconRect.moveTop(groupRect.top() + groupRect.height()/2 - groupIconRect.height()/2);
 
     if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType) {
+        //draw the icon with some opacity
+        painter->setOpacity(GROUP_ICON_OPACITY);
         painter->drawPixmap(groupIconRect, KIcon(index.data(Qt::DecorationRole).value<QIcon>()).pixmap(ACCOUNT_ICON_SIZE));
+        painter->setOpacity(1.0);
     } else {
         groupIconRect.setWidth(0);
     }
