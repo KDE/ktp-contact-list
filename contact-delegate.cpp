@@ -82,7 +82,19 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     painter->restore();
+
+    QPen thinLinePen;
+    thinLinePen.setWidth(0);
+    thinLinePen.setColor(option.palette.color(QPalette::Disabled, QPalette::Text));
+
+    painter->save();
+
+    painter->setPen(thinLinePen);
+    painter->setRenderHint(QPainter::Antialiasing, false);
     painter->drawPath(roundedPath);
+
+    //clear the font and AA setting
+    painter->restore();
 
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
