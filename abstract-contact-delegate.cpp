@@ -143,8 +143,11 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QFontMetrics groupFontMetrics(groupFont);
 
     painter->setFont(groupFont);
-    painter->setPen(option.palette.color(QPalette::Disabled, QPalette::Text));
-    painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignRight, countsString);
+    if (index.data(KTp::HeaderTotalUsersRole).toInt() > 0) {
+        painter->setPen(option.palette.color(QPalette::Disabled, QPalette::Text));
+        painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignRight, countsString);
+    }
+
     painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
     painter->drawText(groupLabelRect, Qt::AlignVCenter | Qt::AlignLeft,
                       groupFontMetrics.elidedText(groupHeaderString, Qt::ElideRight,
