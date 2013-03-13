@@ -565,11 +565,6 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
     d->shouldDrag = false;
     d->dragSourceGroup.clear();
 
-    // no drag when grouping by accounts
-    if (d->model->groupMode() == KTp::ContactsModel::AccountGrouping) {
-        return;
-    }
-
     // if no contact, no drag
     if (index.data(KTp::RowTypeRole).toInt() != KTp::ContactRowType) {
         return;
@@ -727,6 +722,11 @@ void ContactListWidget::dropEvent(QDropEvent *event)
                 continue;
             }
 
+            if (d->model->groupMode() != KTp::ContactsModel::GroupGrouping) {
+                // If contacts grouping is disabled, dropping inside the contact list makes no sense.
+                continue;
+            }
+
             if (index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType) {
                 // contact is dropped on a group, so take it's name
                 targetGroup = index.data(KTp::IdRole).toString();
@@ -788,6 +788,8 @@ void ContactListWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
 {
+    Q_D(ContactListWidget);
+
     QModelIndex index = indexAt(event->pos());
     setDropIndicatorRect(QRect());
 
@@ -800,7 +802,9 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
         setDropIndicatorRect(visualRect(index));
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
                (index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType ||
-                index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType)) {
+                index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType)
+               && d->model->groupMode() == KTp::ContactsModel::GroupGrouping) {
+        // Contacts dropping is only allowed if groups are enabled in appearance settings.
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else {
