@@ -38,6 +38,7 @@
 #include <TelepathyQt/PendingReady>
 #include <TelepathyQt/TextChannel>
 
+#include <KTp/actions.h>
 #include <KTp/contact-factory.h>
 #include <KTp/types.h>
 #include <KTp/Widgets/add-contact-dialog.h>
@@ -63,8 +64,6 @@
 #include "contact-list-application.h"
 #include "tooltips/tooltipmanager.h"
 #include "context-menu.h"
-
-#define PREFERRED_TEXTCHAT_HANDLER "org.freedesktop.Telepathy.Client.KDE.TextUi"
 
 bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 {
@@ -238,13 +237,7 @@ void MainWidget::onJoinChatRoomRequested()
         // check account validity. Should NEVER be invalid
         if (!account.isNull()) {
             // ensure chat room
-            Tp::ChannelRequestHints hints;
-            hints.setHint("org.kde.telepathy","forceRaiseWindow", QVariant(true));
-
-            Tp::PendingChannelRequest *channelRequest = account->ensureTextChatroom(dialog.data()->selectedChatRoom(),
-                                                                                    QDateTime::currentDateTime(),
-                                                                                    PREFERRED_TEXTCHAT_HANDLER,
-                                                                                    hints);
+            Tp::PendingChannelRequest *channelRequest = KTp::Actions::startGroupChat(account, dialog.data()->selectedChatRoom());
 
             connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
         }
