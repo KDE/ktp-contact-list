@@ -187,6 +187,8 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     setEditable(false);
 
     onPresenceChanged(m_globalPresence->currentPresence());
+    //we need to check if there is some account connecting and if so, spin the spinner
+    onConnectionStatusChanged(m_globalPresence->connectionStatus());
 
     m_changePresenceMessageButton = new QPushButton(this);
     m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
@@ -384,7 +386,6 @@ void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
             if (itemPresence != m_modelExtended->temporaryPresence()) {
                 m_modelExtended->removeTemporaryPresence();
             }
-            m_busyOverlay->stop();
             return;
         }
     }
