@@ -522,16 +522,16 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_searchContactAction->setShortcut(KStandardShortcut::find());
 
     // Dual actions
-    m_groupContactsAction = new KDualAction(i18n("Show contacts by groups"),
-                                            i18n("Show contacts by accounts"),
+    m_groupContactsAction = new KDualAction(i18n("Show Contacts by Groups"),
+                                            i18n("Show Contacts by Accounts"),
                                             this);
     m_groupContactsAction->setActiveIcon(KIcon("user-group-properties"));
     m_groupContactsAction->setInactiveIcon(KIcon("user-group-properties"));
     m_groupContactsAction->setCheckable(true);
     m_groupContactsAction->setChecked(true);
 
-    m_showOfflineAction = new KDualAction(i18n("Show offline contacts"),
-                                          i18n("Show offline contacts"),
+    m_showOfflineAction = new KDualAction(i18n("Show Offline Contacts"),
+                                          i18n("Hide Offline Contacts"),
                                           this);
     m_showOfflineAction->setActiveIcon(KIcon("meeting-attending-tentative"));
     m_showOfflineAction->setInactiveIcon(KIcon("meeting-attending-tentative"));
@@ -539,8 +539,8 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_showOfflineAction->setChecked(false);
     m_showOfflineAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
 
-    m_sortByPresenceAction = new KDualAction(i18n("Sorted by name"),
-                                             i18n("Sorted by presence"),
+    m_sortByPresenceAction = new KDualAction(i18n("Sort by Presence"),
+                                             i18n("Sort by Name"),
                                              this);
     m_sortByPresenceAction->setActiveIcon(KIcon("sort-presence"));
     m_sortByPresenceAction->setInactiveIcon(KIcon("sort-name"));
@@ -561,11 +561,11 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
     m_blockedFilterGroup = new QActionGroup(this);
     m_blockedFilterGroup->setExclusive(true);
-    m_blockedFilterGroup->addAction(createAction(i18n("Show all contacts"), m_contactsListView, SLOT(onShowAllContacts()),
+    m_blockedFilterGroup->addAction(createAction(i18n("Show All Contacts"), m_contactsListView, SLOT(onShowAllContacts()),
                                                 shownContacts == QLatin1String("all")));
-    m_blockedFilterGroup->addAction(createAction(i18n("Show unblocked contacts"), m_contactsListView, SLOT(onShowUnblockedContacts()),
+    m_blockedFilterGroup->addAction(createAction(i18n("Show Unblocked Contacts"), m_contactsListView, SLOT(onShowUnblockedContacts()),
                                                 shownContacts == QLatin1String("unblocked")));
-    m_blockedFilterGroup->addAction(createAction(i18n("Show blocked contacts"), m_contactsListView, SLOT(onShowBlockedContacts()),
+    m_blockedFilterGroup->addAction(createAction(i18n("Show Blocked Contacts"), m_contactsListView, SLOT(onShowBlockedContacts()),
                                                 shownContacts == QLatin1String("blocked")));
 }
 
