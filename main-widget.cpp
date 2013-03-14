@@ -509,7 +509,7 @@ KAction *MainWidget::createAction(const QString& text, QObject *signalReceiver, 
 void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
 {
     m_settingsDialog = KStandardAction::preferences(m_contactsListView, SLOT(showSettingsKCM()),this);
-    m_settingsDialog->setText(i18n("Settings...")); // We set text manually since standard name is too long
+    m_settingsDialog->setText(i18n("Instant Messaging Settings...")); // We set text manually since standard name is too long
 
     m_quitAction = KStandardAction::quit(this, SLOT(close()), this);
     m_quitAction->setMenuRole(QAction::QuitRole);
