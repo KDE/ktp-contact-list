@@ -91,12 +91,8 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->presenceModel = new PersonsPresenceModel(this);
     d->presenceModel->setSourceModel(d->model);
 
-    d->proxy = new KPeopleProxy(this);
-    d->proxy->setSourceModel(d->presenceModel);
-    d->proxy->setDynamicSortFilter(true);
-
     d->translationProxy = new KTpTranslationProxy(this);
-    d->translationProxy->setSourceModel(d->proxy);
+    d->translationProxy->setSourceModel(d->presenceModel);
 
     d->modelFilter = new KTp::ContactsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
