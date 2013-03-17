@@ -167,7 +167,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     }
 
     menu->addSeparator();
-    action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications ..."));
+    action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications..."));
     action->setEnabled(true);
     connect(action, SIGNAL(triggered()),
                            SLOT(onNotificationConfigureTriggered()));
