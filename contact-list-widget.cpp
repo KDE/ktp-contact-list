@@ -93,14 +93,16 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->translationProxy = new KTpTranslationProxy(this);
     d->translationProxy->setSourceModel(d->presenceModel);
 
+    KTp::GroupsTreeProxyModel *groupsProxy = new KTp::GroupsTreeProxyModel(d->translationProxy);
+
     d->modelFilter = new KTp::ContactsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
-    d->modelFilter->setSourceModel(d->translationProxy);
+    d->modelFilter->setSourceModel(groupsProxy);
     d->modelFilter->setCapabilityFilterFlags(KTp::ContactsFilterModel::DoNotFilterByCapability);
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
     d->modelFilter->sort(0);
-//     d->modelFilter->setPresenceTypeFilterFlags(KTp::ContactsFilterModel::ShowOnlyConnected);
+
 
     setModel(d->modelFilter);
 
