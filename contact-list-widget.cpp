@@ -58,7 +58,6 @@
 #include <QAction>
 
 #include <kpeople/persons-model.h>
-#include <kpeople/personactions.h>
 #include <kpeople/ktp-translation-proxy.h>
 #include <kpeople/persons-presence-model.h>
 
