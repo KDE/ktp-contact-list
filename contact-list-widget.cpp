@@ -833,12 +833,15 @@ void ContactListWidget::selectionChanged(const QItemSelection &selected, const Q
         bool groupedContactSelected = false;
         bool personsSelected = false;
         Q_FOREACH (const QModelIndex &index, selectedIndexes()) {
-            if (index.data(PersonsModel::ResourceTypeRole).toUInt() == PersonsModel::Person) {
+            if (index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+                kDebug() << "Person added to selection";
                 personsSelected = true;
-            } else {
-                if (index.parent().isValid()) {
+            } else if (index.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
+                if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+                    kDebug() << "Grouped contact added to selection";
                     groupedContactSelected = true;
                 } else {
+                    kDebug() << "Contact added to selection";
                     contactsSelected = true;
                 }
             }
@@ -852,16 +855,28 @@ void ContactListWidget::selectionChanged(const QItemSelection &selected, const Q
             d->listSelection = ContactListWidget::PersonAndNonGroupedContact;
         } else if (!contactsSelected && personsSelected && groupedContactSelected) {
             d->listSelection = ContactListWidget::PersonAndGroupedContact;
+        } else {
+            d->listSelection = ContactListWidget::NoSelection;
         }
     } else if (selectedIndexes().size() == 1) {
-        //if there's no valid parent, we're dealing with person
-        if (selectedIndexes().at(0).data(PersonsModel::ResourceTypeRole).toUInt() == PersonsModel::Person) {
+        if (selectedIndexes().at(0).data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+            kDebug() << "Person selected";
             d->listSelection = ContactListWidget::Person;
-        } else if (selectedIndexes().at(0).parent().isValid()) {
+        } else if (selectedIndexes().at(0).data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType
+            && selectedIndexes().at(0).parent().data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+
             // when a person's subcontact is selected
+            kDebug() << "Grouped contact selected";
             d->listSelection = ContactListWidget::GroupedContact;
-        } else {
+        } else if (selectedIndexes().at(0).data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType
+                && selectedIndexes().at(0).parent().data(KTp::RowTypeRole).toUInt() == KTp::GroupRowType) {
+
+            // when a normal contact is selected
+            kDebug() << "Ungrouped contact selected";
+            d->listSelection = ContactListWidget::NoSelection;
+        }  else {
             //this needs to be noselection becase we cannot operate on a single contact
+            kDebug() << "Nothing selected";
             d->listSelection = ContactListWidget::NoSelection;
         }
     } else {
