@@ -91,6 +91,7 @@ private Q_SLOTS:
     void startDesktopSharing(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
     void startLogViewer(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
 
+    void accountEnablingFinished(Tp::PendingOperation *op);
 
 Q_SIGNALS:
     void enableOverlays(bool);

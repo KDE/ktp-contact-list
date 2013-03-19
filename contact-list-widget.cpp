@@ -247,10 +247,56 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
     }
 
     if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
-        KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
         Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
-        startTextChannel(account, contact);
+
+        if (!account->isOnline()) {
+            KGuiItem yes(i18n("Connect account %1", account->displayName()), QLatin1String("dialog-ok"));
+            if (KMessageBox::questionYesNo(this,
+                                           i18n("The account for this contact is disconnected. Do you want to connect it?"),
+                                           i18n("Account offline"),
+                                           yes,
+                                           KStandardGuiItem::no()) == KMessageBox::Yes) {
+
+                if (!account->isEnabled()) {
+                    Tp::PendingOperation *op = account->setEnabled(true);
+                    op->setProperty("contactId", index.data(KTp::IdRole).toString());
+                    connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                            this, SLOT(accountEnablingFinished(Tp::PendingOperation*)));
+                } else {
+                    account->ensureTextChat(index.data(KTp::IdRole).toString(),
+                                            QDateTime::currentDateTime(),
+                                            QLatin1String("org.freedesktop.Telepathy.Client.KTp.TextUi"));
+                }
+
+                return;
+            }
+        }
+
+        KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
+
+        if (!contact.isNull()) {
+            startTextChannel(account, contact);
+        }
     }
+}
+
+void ContactListWidget::accountEnablingFinished(Tp::PendingOperation *op)
+{
+    if (op->isError()) {
+        kWarning() << "Account enabling failed" << op->errorMessage();
+        return;
+    }
+
+    Tp::AccountPtr account = Tp::AccountPtr(qobject_cast<Tp::Account*>(sender()));
+
+    if (account.isNull()) {
+        kWarning() << "Null account passed!";
+        return;
+    }
+
+    account->ensureTextChat(op->property("contactId").toString(),
+                            QDateTime::currentDateTime(),
+                            QLatin1String("org.freedesktop.Telepathy.Client.KTp.TextUi"));
 }
 
 void ContactListWidget::addOverlayButtons()
