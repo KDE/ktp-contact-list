@@ -212,60 +212,32 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
 
     kDebug() << index.data(PersonsModel::UriRole).toString();
     kDebug() << index.data(PersonsModel::StatusRole).toString();
-//     QList<QAction *> actions;
-//     actions = index.data(PersonsModel::ContactActionsRole).value<QList<QAction *> >();
 
-//     if (!index.isValid()) {
-//         return;
-//     }
-// 
-//     if (index.data(ContactsModel::TypeRole).toInt() == ContactsModel::AccountRowType
-//         || index.data(ContactsModel::TypeRole).toInt() == ContactsModel::GroupRowType) {
-// 
-//         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
-//         KConfigGroup groupsConfig = config->group("GroupsState");
-// 
-//         QString groupId = index.data(ContactsModel::IdRole).toString();
-// 
-//         if (isExpanded(index)) {
-//             collapse(index);
-//             groupsConfig.writeEntry(groupId, false);
-//         } else {
-//             expand(index);
-//             groupsConfig.writeEntry(groupId, true);
-//         }
-// 
-//         groupsConfig.config()->sync();
-// 
-//         //replace the old value or insert new value if it isn't there yet
-//         d->groupStates.insert(groupId, isExpanded(index));
-//     }
+    if (!index.isValid()) {
+        return;
+    }
 
-//     if (!index.isValid()) {
-//         return;
-//     }
-//
-//     if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType
-//         || index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType) {
-//
-//         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
-//         KConfigGroup groupsConfig = config->group("GroupsState");
-//
-//         QString groupId = index.data(KTp::IdRole).toString();
-//
-//         if (isExpanded(index)) {
-//             collapse(index);
-//             groupsConfig.writeEntry(groupId, false);
-//         } else {
-//             expand(index);
-//             groupsConfig.writeEntry(groupId, true);
-//         }
-//
-//         groupsConfig.config()->sync();
-//
-//         //replace the old value or insert new value if it isn't there yet
-//         d->groupStates.insert(groupId, isExpanded(index));
-//     }
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::AccountRowType
+        || index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType) {
+
+        KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
+        KConfigGroup groupsConfig = config->group("GroupsState");
+
+        QString groupId = index.data(KTp::IdRole).toString();
+
+        if (isExpanded(index)) {
+            collapse(index);
+            groupsConfig.writeEntry(groupId, false);
+        } else {
+            expand(index);
+            groupsConfig.writeEntry(groupId, true);
+        }
+
+        groupsConfig.config()->sync();
+
+        //replace the old value or insert new value if it isn't there yet
+        d->groupStates.insert(groupId, isExpanded(index));
+    }
 }
 
 void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
@@ -443,26 +415,26 @@ void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &accoun
 
 void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int start, int end)
 {
-//     Q_UNUSED(start);
-//     Q_UNUSED(end);
-//     Q_D(ContactListWidget);
-//
-//     if (!index.isValid()) {
-//         return;
-//     }
-//
-//     //if there is no parent, we deal with top-level item that we want to expand/collapse, ie. group or account
-//     if (!index.parent().isValid()) {
-//
-//         //we're probably dealing with group item, so let's check if it is expanded first
-//         if (!isExpanded(index)) {
-//             //if it's not expanded, check the config if we should expand it or not
-//             QString groupId = index.data(KTp::IdRole).toString();
-//             if (d->groupStates.value(groupId)) {
-//                 expand(index);
-//             }
-//         }
-//     }
+    Q_UNUSED(start);
+    Q_UNUSED(end);
+    Q_D(ContactListWidget);
+
+    if (!index.isValid()) {
+        return;
+    }
+
+    //if there is no parent, we deal with top-level item that we want to expand/collapse, ie. group or account
+    if (!index.parent().isValid()) {
+
+        //we're probably dealing with group item, so let's check if it is expanded first
+        if (!isExpanded(index)) {
+            //if it's not expanded, check the config if we should expand it or not
+            QString groupId = index.data(KTp::IdRole).toString();
+            if (d->groupStates.value(groupId)) {
+                expand(index);
+            }
+        }
+    }
 }
 
 void ContactListWidget::onSwitchToFullView()
