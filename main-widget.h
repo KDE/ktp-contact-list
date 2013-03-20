@@ -48,6 +48,9 @@ class KJob;
 class MainWidget : public KMainWindow, Ui::MainWindow
 {
     Q_OBJECT
+    //this is needed otherwise this class is exported as .ktp-contactlist interface
+    //and dashes are not allowed in dbus interface names, so this interface would not work otherwise
+    Q_CLASSINFO("D-Bus Interface", "org.kde.KTp.ContactList")
 public:
     MainWidget(QWidget *parent = 0);
     ~MainWidget();
@@ -74,6 +77,7 @@ public:
 public Q_SLOTS:
     void showMessageToUser(const QString &text, const SystemMessageType type);
     void goOffline();
+    Q_INVOKABLE void toggleWindowVisibility();
 
 private Q_SLOTS:
     void toggleSearchWidget(bool show);

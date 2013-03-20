@@ -58,6 +58,7 @@
 #include <KToolInvocation>
 #include <KMenuBar>
 #include <KStandardAction>
+#include <KWindowSystem>
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
@@ -567,6 +568,15 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
                                                 shownContacts == QLatin1String("unblocked")));
     m_blockedFilterGroup->addAction(createAction(i18n("Show Blocked Contacts"), m_contactsListView, SLOT(onShowBlockedContacts()),
                                                 shownContacts == QLatin1String("blocked")));
+}
+
+void MainWidget::toggleWindowVisibility()
+{
+    if (isActiveWindow()) {
+        close();
+    } else {
+        KWindowSystem::forceActiveWindow(this->effectiveWinId());
+    }
 }
 
 #include "main-widget.moc"
