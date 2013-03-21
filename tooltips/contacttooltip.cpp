@@ -44,11 +44,11 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->avatarLabel->setScaledContents(false);
     ui->avatarLabel->setAlignment(Qt::AlignCenter);
 
-    QString avatar = index.data(KTp::ContactAvatarPathRole).toUrl().toLocalFile();
-    if (avatar.isEmpty()) {
+    QVariantList avatarsList = index.data(KTp::ContactAvatarPathRole).toList();
+    if (avatarsList.isEmpty()) {
         ui->avatarLabel->setPixmap(KIconLoader::global()->loadIcon("im-user", KIconLoader::NoGroup, 96));
     } else {
-        QPixmap avatarPixmap(avatar);
+        QPixmap avatarPixmap(avatarsList.first().toUrl().toLocalFile());
         ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
     }
 

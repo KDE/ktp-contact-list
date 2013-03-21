@@ -67,11 +67,17 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     QPixmap avatar;
 
-    QString avatarPath = index.data(KTp::ContactAvatarPathRole).toUrl().toLocalFile();
-    if (avatarPath.isEmpty()) {
-        avatar = SmallIcon("im-user", KIconLoader::SizeMedium);//avatar.load("/home/mck182/Downloads/dummy-avatar.png");
-    } else {
+    QVariantList avatarsList = index.data(KTp::ContactAvatarPathRole).toList();
+
+    if (!avatarsList.isEmpty()) {
+        QString avatarPath = avatarsList.first().toUrl().toLocalFile();
         avatar.load(avatarPath);
+    }
+
+    //some avatars might be invalid and their file not exist anymore,
+    //so we need to check if the pixmap is not null
+    if (avatar.isNull()) {
+        avatar = SmallIcon("im-user", KIconLoader::SizeMedium);//avatar.load("/home/mck182/Downloads/dummy-avatar.png");
     }
 
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
