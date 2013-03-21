@@ -117,17 +117,17 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     painter->drawPixmap(statusIconRect, icon);
 
     // Right now we only check for 'phone', as that's the most interesting type.
-//     if (index.data(AccountsModel::ClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
-//         // Additional space is needed for the icons, don't add too much spacing between the two icons
-//         rightIconsWidth += m_clientTypeIconSize + (m_spacing / 2);
-//
-//         QPixmap phone = QIcon::fromTheme("phone").pixmap(m_clientTypeIconSize);
-//         QRect phoneIconRect = optV4.rect;
-//         phoneIconRect.setSize(QSize(m_clientTypeIconSize, m_clientTypeIconSize));
-//         phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
-//                                     optV4.rect.top() + (optV4.rect.height() - m_clientTypeIconSize) / 2));
-//         painter->drawPixmap(phoneIconRect, phone);
-//     }
+    if (index.data(KTp::ContactClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
+        // Additional space is needed for the icons, don't add too much spacing between the two icons
+        rightIconsWidth += m_clientTypeIconSize + (m_spacing / 2);
+
+        QPixmap phone = QIcon::fromTheme("phone").pixmap(m_clientTypeIconSize);
+        QRect phoneIconRect = optV4.rect;
+        phoneIconRect.setSize(QSize(m_clientTypeIconSize, m_clientTypeIconSize));
+        phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
+                                    optV4.rect.top() + (optV4.rect.height() - m_clientTypeIconSize) / 2));
+        painter->drawPixmap(phoneIconRect, phone);
+    }
 
     QFont nameFont;
 
