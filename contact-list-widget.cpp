@@ -285,6 +285,21 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
         if (!contact.isNull()) {
             startTextChannel(account, contact);
         }
+    } else if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+        Tp::ConnectionPresenceType mostOnlinePresence = Tp::ConnectionPresenceTypeOffline;
+        QModelIndex mostOnlineIndex = QModelIndex();
+
+        for (int i = 0; i < index.model()->rowCount(index); i++) {
+            Tp::ConnectionPresenceType presence = (Tp::ConnectionPresenceType)index.child(i, 0).data(KTp::ContactPresenceTypeRole).toUInt();
+            if (KTp::Presence::sortPriority(presence) < KTp::Presence::sortPriority(mostOnlinePresence)) {
+                mostOnlinePresence = presence;
+                mostOnlineIndex = index.child(i, 0);
+            }
+        }
+
+        if (mostOnlineIndex.isValid()) {
+            onContactListDoubleClicked(mostOnlineIndex);
+        }
     }
 }
 
