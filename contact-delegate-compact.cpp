@@ -180,7 +180,14 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
     Q_UNUSED(option);
     Q_UNUSED(index);
 
-    return QSize(0, qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
+    int height = qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
+
+    if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+        int subcontacts = index.model()->rowCount(index);
+        return QSize(0, height + subcontacts * height);
+    }
+
+    return QSize(0, height);
 }
 
 void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
