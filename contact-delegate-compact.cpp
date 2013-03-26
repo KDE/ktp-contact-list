@@ -51,7 +51,10 @@ ContactDelegateCompact::~ContactDelegateCompact()
 
 void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOptionViewItem & option, const QModelIndex & index) const
 {
-    QStyleOptionViewItemV4 optV4 = option; initStyleOption(&optV4, index);
+    QStyleOptionViewItemV4 optV4 = option;
+    initStyleOption(&optV4, index);
+
+    bool isSubcontact = index.parent().data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType;
 
     painter->save();
 
@@ -59,7 +62,17 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     painter->setClipRect(optV4.rect);
 
     QStyle *style = QApplication::style();
-    style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
+    if (!isSubcontact) {
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &optV4, painter);
+    }
+
+    if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+        optV4.rect.setHeight(qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
+    }
+
+    if (isSubcontact) {
+        optV4.rect.setLeft(optV4.rect.left() + 10);
+    }
 
     QRect iconRect = optV4.rect;
     iconRect.setSize(QSize(m_avatarSize, m_avatarSize));
@@ -172,6 +185,17 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
                       nameFontMetrics.elidedText(index.data(KTp::ContactPresenceMessageRole).toString().trimmed(),
                                                  Qt::ElideRight, presenceMessageRect.width()));
 
+    if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+        QStyleOptionViewItem subcontactsOpt = option;
+        subcontactsOpt.rect.setHeight(optV4.rect.height());
+
+        for (int i = 0; i < index.model()->rowCount(index); i++) {
+            subcontactsOpt.rect.moveTo(option.rect.x(), optV4.rect.bottom() + i * subcontactsOpt.rect.height());
+            paintContact(painter, subcontactsOpt, index.child(i, 0));
+        }
+
+    }
+
     painter->restore();
 }
 
@@ -212,5 +236,6 @@ void ContactDelegateCompact::recountSizeHint(const QModelIndex &index)
     m_selectedIndex = index;
     emit sizeHintChanged(index);
 }
+
 
 #include "contact-delegate-compact.moc"
