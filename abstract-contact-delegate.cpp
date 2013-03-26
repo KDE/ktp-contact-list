@@ -59,15 +59,12 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 
 QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-    Q_UNUSED(option);
-
     if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType || index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
         return sizeHintContact(option, index);
     } else {
         return sizeHintHeader(option, index);
     }
 }
-
 
 void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
