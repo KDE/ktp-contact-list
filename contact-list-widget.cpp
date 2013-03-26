@@ -238,6 +238,14 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
         //replace the old value or insert new value if it isn't there yet
         d->groupStates.insert(groupId, isExpanded(index));
     }
+
+    //In order to collapse previously selected metacontact when normal contact is selected,
+    //we need to change the selected index inside the delegate, that will return the default
+    //row height for the previously selected metacontact and thus collapse it.
+    if (index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType
+        || index.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
+        d->compactDelegate->recountSizeHint(index);
+    }
 }
 
 void ContactListWidget::onContactListDoubleClicked(const QModelIndex& index)
