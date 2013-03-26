@@ -27,6 +27,7 @@
 #include <QApplication>
 #include <QStyle>
 #include <QHelpEvent>
+#include <QSortFilterProxyModel>
 
 #include <KIconLoader>
 #include <KIcon>
@@ -189,9 +190,12 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
         QStyleOptionViewItem subcontactsOpt = option;
         subcontactsOpt.rect.setHeight(optV4.rect.height());
 
-        for (int i = 0; i < index.model()->rowCount(index); i++) {
+        //we need to bypass the filter proxy to paint offline contacts too
+        QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
+
+        for (int i = 0; i < sourceIndex.model()->rowCount(sourceIndex); i++) {
             subcontactsOpt.rect.moveTo(option.rect.x(), optV4.rect.bottom() + i * subcontactsOpt.rect.height());
-            paintContact(painter, subcontactsOpt, index.child(i, 0));
+            paintContact(painter, subcontactsOpt, sourceIndex.child(i, 0));
         }
 
     }
@@ -207,7 +211,9 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
     int height = qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
 
     if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-        int subcontacts = index.model()->rowCount(index);
+        //we need to bypass the filter proxy to paint offline contacts too
+        QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
+        int subcontacts = sourceIndex.model()->rowCount(sourceIndex);
         return QSize(0, height + subcontacts * height);
     }
 
