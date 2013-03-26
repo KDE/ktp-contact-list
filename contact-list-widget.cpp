@@ -79,6 +79,8 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
 //     d->delegate = new ContactDelegate();
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
+    connect(d->compactDelegate, SIGNAL(repaintItem(QModelIndex)),
+            this->viewport(), SLOT(update(QModelIndex))); //update(QModelIndex)
 
     d->model = new PersonsModel(this);
     connect(d->model, SIGNAL(peopleAdded()),
@@ -242,9 +244,17 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
     //In order to collapse previously selected metacontact when normal contact is selected,
     //we need to change the selected index inside the delegate, that will return the default
     //row height for the previously selected metacontact and thus collapse it.
-    if (index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType
-        || index.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
-        d->compactDelegate->recountSizeHint(index);
+    if (index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+        collapse(d->compactDelegate->selectedIndex());
+        d->compactDelegate->setSelectedIndex(index);
+        expand(index);
+    }
+
+    if (index.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
+        if (index.parent().data(KTp::RowTypeRole).toUInt() != KTp::PersonRowType) {
+            collapse(d->compactDelegate->selectedIndex());
+            d->compactDelegate->setSelectedIndex((index));
+        }
     }
 }
 

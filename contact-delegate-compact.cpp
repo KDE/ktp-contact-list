@@ -55,19 +55,41 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     QStyleOptionViewItemV4 optV4 = option;
     initStyleOption(&optV4, index);
 
+    int height = qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
+
+    if (index == m_selectedIndex && m_selectedIndex.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+        //we need to bypass the filter proxy to paint offline contacts too
+        QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
+        int subcontacts = sourceIndex.model()->rowCount(sourceIndex);
+        optV4.rect.setHeight(height + subcontacts * height);
+        optV4.state |= QStyle::State_Selected;
+    }
+
     bool isSubcontact = index.parent().data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType;
 
+    if (isSubcontact) {
+        emit const_cast<ContactDelegateCompact*>(this)->repaintItem(index.parent());
+    }
+
     painter->save();
+
+//     if (isSubcontact && option.state & QStyle::State_MouseOver) {
+//         QBrush b;
+//         b.setStyle(Qt::ConicalGradientPattern);
+// //         painter->setBackgroundMode(Qt::OpaqueMode);
+// //         painter->setBackground(b);
+//         kDebug() << optV4.backgroundBrush;
+//     }
 
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
     painter->setClipRect(optV4.rect);
 
     QStyle *style = QApplication::style();
-    if (!isSubcontact) {
+    if (!isSubcontact || optV4.state & QStyle::State_MouseOver || optV4.state & QStyle::State_Selected) {
         style->drawPrimitive(QStyle::PE_PanelItemViewItem, &optV4, painter);
     }
 
-    if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+    if (index == m_selectedIndex && m_selectedIndex.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
         optV4.rect.setHeight(qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
     }
 
@@ -153,7 +175,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     const QFontMetrics nameFontMetrics(nameFont);
 
-    if (option.state & QStyle::State_Selected) {
+    if (option.state & QStyle::State_Selected || isSubcontact) {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
@@ -176,7 +198,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     presenceMessageRect.setWidth(optV4.rect.width() - presenceMessageRect.x() - rightIconsWidth);
     presenceMessageRect.setY(presenceMessageRect.y() + (presenceMessageRect.height()/2 - nameFontMetrics.height()/2));
 
-    if (option.state & QStyle::State_Selected) {
+    if (option.state & QStyle::State_Selected || isSubcontact) {
         painter->setPen(option.palette.color(QPalette::Disabled, QPalette::HighlightedText));
     } else {
         painter->setPen(option.palette.color(QPalette::Disabled, QPalette::Text));
@@ -186,19 +208,19 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
                       nameFontMetrics.elidedText(index.data(KTp::ContactPresenceMessageRole).toString().trimmed(),
                                                  Qt::ElideRight, presenceMessageRect.width()));
 
-    if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-        QStyleOptionViewItem subcontactsOpt = option;
-        subcontactsOpt.rect.setHeight(optV4.rect.height());
-
-        //we need to bypass the filter proxy to paint offline contacts too
-        QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
-
-        for (int i = 0; i < sourceIndex.model()->rowCount(sourceIndex); i++) {
-            subcontactsOpt.rect.moveTo(option.rect.x(), optV4.rect.bottom() + i * subcontactsOpt.rect.height());
-            paintContact(painter, subcontactsOpt, sourceIndex.child(i, 0));
-        }
-
-    }
+//     if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+//         QStyleOptionViewItem subcontactsOpt = option;
+//         subcontactsOpt.rect.setHeight(optV4.rect.height());
+//
+//         //we need to bypass the filter proxy to paint offline contacts too
+//         QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
+//
+//         for (int i = 0; i < sourceIndex.model()->rowCount(sourceIndex); i++) {
+//             subcontactsOpt.rect.moveTo(option.rect.x(), optV4.rect.bottom() + i * subcontactsOpt.rect.height());
+//             paintContact(painter, subcontactsOpt, sourceIndex.child(i, 0));
+//         }
+//
+//     }
 
     painter->restore();
 }
@@ -210,12 +232,12 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
 
     int height = qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
 
-    if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-        //we need to bypass the filter proxy to paint offline contacts too
-        QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
-        int subcontacts = sourceIndex.model()->rowCount(sourceIndex);
-        return QSize(0, height + subcontacts * height);
-    }
+//     if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+//         //we need to bypass the filter proxy to paint offline contacts too
+//         QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
+//         int subcontacts = sourceIndex.model()->rowCount(sourceIndex);
+//         return QSize(0, height + subcontacts * height);
+//     }
 
     return QSize(0, height);
 }
@@ -237,11 +259,15 @@ void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
     m_listSize = size;
 }
 
-void ContactDelegateCompact::recountSizeHint(const QModelIndex &index)
+void ContactDelegateCompact::setSelectedIndex(const QModelIndex &index)
 {
     m_selectedIndex = index;
-    emit sizeHintChanged(index);
+//     emit sizeHintChanged(index);
 }
 
+QModelIndex ContactDelegateCompact::selectedIndex() const
+{
+    return m_selectedIndex;
+}
 
 #include "contact-delegate-compact.moc"

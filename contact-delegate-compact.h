@@ -39,7 +39,8 @@ public:
     QSize sizeHintContact(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
     void setListMode(ContactDelegateCompact::ListSize size);
-    void recountSizeHint(const QModelIndex &index);
+    void setSelectedIndex(const QModelIndex &index);
+    QModelIndex selectedIndex() const;
 
 private:
     int m_spacing;
