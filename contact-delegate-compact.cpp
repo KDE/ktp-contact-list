@@ -200,4 +200,10 @@ void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
     m_listSize = size;
 }
 
+void ContactDelegateCompact::recountSizeHint(const QModelIndex &index)
+{
+    m_selectedIndex = index;
+    emit sizeHintChanged(index);
+}
+
 #include "contact-delegate-compact.moc"

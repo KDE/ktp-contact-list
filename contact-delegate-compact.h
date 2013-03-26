@@ -39,6 +39,7 @@ public:
     QSize sizeHintContact(const QStyleOptionViewItem & option, const QModelIndex & index) const;
 
     void setListMode(ContactDelegateCompact::ListSize size);
+    void recountSizeHint(const QModelIndex &index);
 
 private:
     int m_spacing;
@@ -46,6 +47,7 @@ private:
     int m_presenceIconSize;
     int m_accountIconSize;
     int m_clientTypeIconSize;
+    QModelIndex m_selectedIndex;
     ContactDelegateCompact::ListSize m_listSize;
 };
 
