@@ -37,6 +37,7 @@
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/Account>
 #include <TelepathyQt/PendingOperation>
+#include <TelepathyQt/PendingReady>
 
 #include <TelepathyLoggerQt4/Entity>
 #include <TelepathyLoggerQt4/LogManager>
@@ -60,7 +61,18 @@ ContextMenu::ContextMenu(ContactListWidget *mainWidget)
 
 ContextMenu::~ContextMenu()
 {
+}
 
+void ContextMenu::setAccountManager(const Tp::AccountManagerPtr &accountManager)
+{
+    m_accountManager = accountManager;
+    connect(m_accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
+            SLOT(onAccountManagerReady(Tp::PendingOperation*)));
+}
+
+void ContextMenu::onAccountManagerReady(Tp::PendingOperation *op)
+{
+    m_logManager->setAccountManagerPtr(m_accountManager);
 }
 
 KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)

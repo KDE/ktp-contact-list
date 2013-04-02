@@ -28,6 +28,10 @@
 
 #include "contact-list-widget.h"
 
+namespace Tp {
+class PendingOperation;
+}
+
 class AccountsModel;
 class KMenu;
 class QAction;
@@ -41,8 +45,10 @@ public:
 
     KMenu* groupContextMenu(const QModelIndex &index);
     KMenu* contactContextMenu(const QModelIndex &index);
+    void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
 private Q_SLOTS:
+    void onAccountManagerReady(Tp::PendingOperation *op);
     void onAddContactToGroupTriggered();
     void onBlockContactTriggered();
     void onStartTextChatTriggered();
@@ -66,6 +72,7 @@ private Q_SLOTS:
 private:
     ContactListWidget     *m_mainWidget;
     QModelIndex            m_currentIndex;
+    Tp::AccountManagerPtr  m_accountManager;
     Tpl::LogManagerPtr     m_logManager;
 };
 

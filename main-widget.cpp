@@ -231,6 +231,7 @@ MainWidget::MainWidget(QWidget *parent)
     m_toolBar->addWidget(settingsButton);
 
     m_contextMenu = new ContextMenu(m_contactsListView);
+    m_contextMenu->setAccountManager(m_accountManager);
 
     new ToolTipManager(m_contactsListView);
 
