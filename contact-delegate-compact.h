@@ -50,6 +50,7 @@ private:
     int m_clientTypeIconSize;
     QModelIndex m_selectedIndex;
     ContactDelegateCompact::ListSize m_listSize;
+    QHash<int, QPixmap> m_pixmaps;
 };
 
 #endif // CONTACTDELEGATECOMPACT_H

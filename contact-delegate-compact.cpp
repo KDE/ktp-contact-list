@@ -57,41 +57,42 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     int height = qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
 
-    if (index == m_selectedIndex && m_selectedIndex.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-        //we need to bypass the filter proxy to paint offline contacts too
-        QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
-        int subcontacts = sourceIndex.model()->rowCount(sourceIndex);
-        optV4.rect.setHeight(height + subcontacts * height);
-        optV4.state |= QStyle::State_Selected;
-    }
+//     if (index == m_selectedIndex && m_selectedIndex.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+//         //we need to bypass the filter proxy to paint offline contacts too
+//         QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
+//         int subcontacts = sourceIndex.model()->rowCount(sourceIndex);
+//         optV4.rect.setHeight(height + subcontacts * height);
+//         optV4.state |= QStyle::State_Selected;
+//         if (m_pixmaps.count(subcontacts) == 0) {
+//             QPixmap pix(optV4.rect.size());
+//             QPainter pnt(&pix);
+//             QApplication::style()->drawPrimitive(QStyle::PE_PanelItemViewItem, &optV4, &pnt);
+//             const_cast<ContactDelegateCompact*>(this)->m_pixmaps.insert(subcontacts, pix);
+//         }
+//     }
 
     bool isSubcontact = index.parent().data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType;
 
-    if (isSubcontact) {
-        emit const_cast<ContactDelegateCompact*>(this)->repaintItem(index.parent());
-    }
-
     painter->save();
-
-//     if (isSubcontact && option.state & QStyle::State_MouseOver) {
-//         QBrush b;
-//         b.setStyle(Qt::ConicalGradientPattern);
-// //         painter->setBackgroundMode(Qt::OpaqueMode);
-// //         painter->setBackground(b);
-//         kDebug() << optV4.backgroundBrush;
-//     }
 
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
     painter->setClipRect(optV4.rect);
 
-    QStyle *style = QApplication::style();
-    if (!isSubcontact || optV4.state & QStyle::State_MouseOver || optV4.state & QStyle::State_Selected) {
-        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &optV4, painter);
-    }
+//     if (isSubcontact) {
+//         int subcontacts = index.parent().model()->rowCount(index.parent());
+//         //         QBrush b(m_pixmaps.value(subcontacts));
+//         //         painter->setBackground(b);
+//         painter->drawPixmap(optV4.rect, m_pixmaps.value(subcontacts));
+//     }
 
-    if (index == m_selectedIndex && m_selectedIndex.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-        optV4.rect.setHeight(qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
-    }
+    QStyle *style = QApplication::style();
+//     if (!isSubcontact) {// || optV4.state & QStyle::State_MouseOver || optV4.state & QStyle::State_Selected) {
+        style->drawPrimitive(QStyle::PE_PanelItemViewItem, &optV4, painter);
+//     }
+
+//     if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+//         optV4.rect.setHeight(qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
+//     }
 
     if (isSubcontact) {
         optV4.rect.setLeft(optV4.rect.left() + 10);
@@ -175,7 +176,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
 
     const QFontMetrics nameFontMetrics(nameFont);
 
-    if (option.state & QStyle::State_Selected || isSubcontact) {
+    if (option.state & QStyle::State_Selected) {// || isSubcontact) {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
     } else {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
@@ -198,7 +199,7 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
     presenceMessageRect.setWidth(optV4.rect.width() - presenceMessageRect.x() - rightIconsWidth);
     presenceMessageRect.setY(presenceMessageRect.y() + (presenceMessageRect.height()/2 - nameFontMetrics.height()/2));
 
-    if (option.state & QStyle::State_Selected || isSubcontact) {
+    if (option.state & QStyle::State_Selected) {// || isSubcontact) {
         painter->setPen(option.palette.color(QPalette::Disabled, QPalette::HighlightedText));
     } else {
         painter->setPen(option.palette.color(QPalette::Disabled, QPalette::Text));
@@ -208,20 +209,6 @@ void ContactDelegateCompact::paintContact(QPainter * painter, const QStyleOption
                       nameFontMetrics.elidedText(index.data(KTp::ContactPresenceMessageRole).toString().trimmed(),
                                                  Qt::ElideRight, presenceMessageRect.width()));
 
-//     if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-//         QStyleOptionViewItem subcontactsOpt = option;
-//         subcontactsOpt.rect.setHeight(optV4.rect.height());
-//
-//         //we need to bypass the filter proxy to paint offline contacts too
-//         QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
-//
-//         for (int i = 0; i < sourceIndex.model()->rowCount(sourceIndex); i++) {
-//             subcontactsOpt.rect.moveTo(option.rect.x(), optV4.rect.bottom() + i * subcontactsOpt.rect.height());
-//             paintContact(painter, subcontactsOpt, sourceIndex.child(i, 0));
-//         }
-//
-//     }
-
     painter->restore();
 }
 
@@ -230,16 +217,7 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
     Q_UNUSED(option);
     Q_UNUSED(index);
 
-    int height = qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
-
-//     if (index == m_selectedIndex && index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-//         //we need to bypass the filter proxy to paint offline contacts too
-//         QModelIndex sourceIndex = qobject_cast<const QSortFilterProxyModel*>(index.model())->mapToSource(index);
-//         int subcontacts = sourceIndex.model()->rowCount(sourceIndex);
-//         return QSize(0, height + subcontacts * height);
-//     }
-
-    return QSize(0, height);
+    return QSize(0, qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
 }
 
 void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
@@ -262,7 +240,6 @@ void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
 void ContactDelegateCompact::setSelectedIndex(const QModelIndex &index)
 {
     m_selectedIndex = index;
-//     emit sizeHintChanged(index);
 }
 
 QModelIndex ContactDelegateCompact::selectedIndex() const
