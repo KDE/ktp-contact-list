@@ -26,6 +26,10 @@
 #include <TelepathyQt/AccountManager>
 #include <KTp/presence.h>
 
+namespace Tp {
+class PendingOperation;
+}
+
 class QMenu;
 class QPushButton;
 class KPixmapSequenceOverlayPainter;
@@ -49,6 +53,7 @@ protected:
     virtual bool event(QEvent *event);
 
 private Q_SLOTS:
+    void onAccountManagerReady(Tp::PendingOperation *op);
     void onCurrentIndexChanged(int index);
     void onPresenceChanged(const KTp::Presence &presence);
     void onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus);

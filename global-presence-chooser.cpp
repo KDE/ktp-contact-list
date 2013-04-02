@@ -37,6 +37,8 @@
 
 #include <TelepathyQt/Presence>
 #include <TelepathyQt/Account>
+#include <TelepathyQt/PendingOperation>
+#include <TelepathyQt/PendingReady>
 
 #include <QMouseEvent>
 #include <QtGui/QToolTip>
@@ -204,7 +206,12 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
 void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     m_accountManager = accountManager;
-    m_globalPresence->setAccountManager(accountManager);
+    connect(m_accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)), SLOT(onAccountManagerReady(Tp::PendingOperation*)));
+}
+
+void GlobalPresenceChooser::onAccountManagerReady(Tp::PendingOperation *op)
+{
+    m_globalPresence->setAccountManager(m_accountManager);
 }
 
 bool GlobalPresenceChooser::event(QEvent *e)
