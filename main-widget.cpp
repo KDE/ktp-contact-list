@@ -151,13 +151,13 @@ MainWidget::MainWidget(QWidget *parent)
 
     KMenu *setDelegateTypeMenu = new KMenu(settingsButtonMenu);
     setDelegateTypeMenu->setTitle(i18n("Contact List Type"));
-    delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Full List"),
-                                                                m_contactsListView, SLOT(onSwitchToFullView())));
-    delegateTypeGroup->actions().last()->setCheckable(true);
-
-    if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full")) {
-        delegateTypeGroup->actions().last()->setChecked(true);
-    }
+//     delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Full List"),
+//                                                                 m_contactsListView, SLOT(onSwitchToFullView())));
+//     delegateTypeGroup->actions().last()->setCheckable(true);
+//
+//     if (guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full")) {
+//         delegateTypeGroup->actions().last()->setChecked(true);
+//     }
 
     delegateTypeGroup->addAction(setDelegateTypeMenu->addAction(i18n("Use Normal List"),
                                                                 m_contactsListView, SLOT(onSwitchToCompactView())));
