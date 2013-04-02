@@ -54,6 +54,7 @@ public:
     virtual ~ContactListWidget();
 
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
+    Tp::AccountManagerPtr accountManager() const;
 
 public Q_SLOTS:
     void toggleOfflineContacts(bool show);

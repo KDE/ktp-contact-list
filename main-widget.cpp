@@ -81,35 +81,8 @@ MainWidget::MainWidget(QWidget *parent)
     setWindowIcon(KIcon("telepathy-kde"));
     setAutoSaveSettings();
 
-    Tp::AccountFactoryPtr  accountFactory = Tp::AccountFactory::create(QDBusConnection::sessionBus(),
-                                                                       Tp::Features() << Tp::Account::FeatureCore
-                                                                       << Tp::Account::FeatureAvatar
-                                                                       << Tp::Account::FeatureCapabilities
-                                                                       << Tp::Account::FeatureProtocolInfo
-                                                                       << Tp::Account::FeatureProfile);
-
-    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus(),
-                                                                               Tp::Features() << Tp::Connection::FeatureCore
-                                                                               << Tp::Connection::FeatureRosterGroups
-                                                                               << Tp::Connection::FeatureRoster
-                                                                               << Tp::Connection::FeatureSelfContact);
-
-    Tp::ContactFactoryPtr contactFactory = KTp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
-                                                                      << Tp::Contact::FeatureAvatarData
-                                                                      << Tp::Contact::FeatureSimplePresence
-                                                                      << Tp::Contact::FeatureCapabilities
-                                                                      << Tp::Contact::FeatureClientTypes);
-
-    Tp::ChannelFactoryPtr channelFactory = Tp::ChannelFactory::create(QDBusConnection::sessionBus());
-
-    m_accountManager = Tp::AccountManager::create(QDBusConnection::sessionBus(),
-                                                  accountFactory,
-                                                  connectionFactory,
-                                                  channelFactory,
-                                                  contactFactory);
-
-    connect(m_accountManager->becomeReady(), SIGNAL(finished(Tp::PendingOperation*)),
-            this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
+    m_accountManager = m_contactsListView->accountManager();
+    m_presenceChooser->setAccountManager(m_accountManager);
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -328,26 +301,6 @@ MainWidget::~MainWidget()
     configGroup.writeEntry("show_offline", m_showOfflineAction->isChecked());
     configGroup.writeEntry("sort_by_presence", m_sortByPresenceAction->isActive());
     configGroup.config()->sync();
-}
-
-void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
-{
-    if (op->isError()) {
-        kDebug() << op->errorName();
-        kDebug() << op->errorMessage();
-
-        KMessageBox::error(this,
-                           i18n("Something unexpected happened to the core part of your Instant Messaging system "
-                           "and it couldn't be initialized. Try restarting the Contact List."),
-                           i18n("IM system failed to initialize"));
-
-                           return;
-    }
-
-    m_accountButtons->setAccountManager(m_accountManager);
-    m_presenceChooser->setAccountManager(m_accountManager);
-//     m_contactsListView->setAccountManager(m_accountManager);
-//     m_contextMenu->setAccountManager(m_accountManager);
 }
 
 void MainWidget::showMessageToUser(const QString& text, const MainWidget::SystemMessageType type)

@@ -21,9 +21,7 @@
 #include "contact-list-widget.h"
 #include "contact-list-widget_p.h"
 
-#include <TelepathyQt/AccountManager>
 #include <TelepathyQt/PendingChannelRequest>
-#include <TelepathyQt/PendingReady>
 
 #include <KTp/types.h>
 
@@ -185,6 +183,12 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
 //             showSettingsKCM();
 //         }
 //     }
+}
+
+Tp::AccountManagerPtr ContactListWidget::accountManager() const
+{
+    Q_D(const ContactListWidget);
+    return d->presenceModel->accountManager();
 }
 
 void ContactListWidget::showSettingsKCM()

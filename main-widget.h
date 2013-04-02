@@ -77,7 +77,6 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void toggleSearchWidget(bool show);
-    void onAccountManagerReady(Tp::PendingOperation* op);
     void onAddContactRequest();
     void onUseGlobalPresenceTriggered();
     void onUsePerAccountPresenceTriggered();
