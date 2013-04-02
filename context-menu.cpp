@@ -53,8 +53,8 @@ ContextMenu::ContextMenu(ContactListWidget *mainWidget)
 {
     m_mainWidget = mainWidget;
 
-//     Tpl::init();
-//     m_logManager = Tpl::LogManager::instance();
+    Tpl::init();
+    m_logManager = Tpl::LogManager::instance();
 }
 
 
@@ -145,16 +145,16 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         action->setEnabled(true);
     }
 
-//     action = menu->addAction(i18n("Open Log Viewer..."));
-//     action->setIcon(KIcon("documentation"));
-//     action->setDisabled(true);
-//     connect(action, SIGNAL(triggered(bool)),
-//             SLOT(onOpenLogViewerTriggered()));
-//
-//     Tpl::EntityPtr entity = Tpl::Entity::create(contact, Tpl::EntityTypeContact);
-//     if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
-//         action->setEnabled(true);
-//     }
+    action = menu->addAction(i18n("Open Log Viewer..."));
+    action->setIcon(KIcon("documentation"));
+    action->setDisabled(true);
+    connect(action, SIGNAL(triggered(bool)),
+            SLOT(onOpenLogViewerTriggered()));
+
+    Tpl::EntityPtr entity = Tpl::Entity::create(contact, Tpl::EntityTypeContact);
+    if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
+        action->setEnabled(true);
+    }
 
     menu->addSeparator();
     action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications ..."));
@@ -337,57 +337,57 @@ void ContextMenu::onShowInfoTriggered()
 
 void ContextMenu::onStartTextChatTriggered()
 {
-//     if (!m_currentIndex.isValid()) {
-//         kDebug() << "Invalid index provided.";
-//         return;
-//     }
-//
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-//
-//     if (contact && account) {
-//         m_mainWidget->startTextChannel(account, contact);
-//     }
+    if (!m_currentIndex.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startTextChannel(account, contact);
+    }
 }
 
 void ContextMenu::onStartAudioChatTriggered()
 {
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-//
-//     if (contact && account) {
-//         m_mainWidget->startAudioChannel(account, contact);
-//     }
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startAudioChannel(account, contact);
+    }
 }
 
 void ContextMenu::onStartVideoChatTriggered()
 {
-//     if (!m_currentIndex.isValid()) {
-//         kDebug() << "Invalid index provided.";
-//         return;
-//     }
-//
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-//
-//     if (contact && account) {
-//         m_mainWidget->startVideoChannel(account, contact);
-//     }
+    if (!m_currentIndex.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startVideoChannel(account, contact);
+    }
 }
 
 void ContextMenu::onStartFileTransferTriggered()
 {
-//     if (!m_currentIndex.isValid()) {
-//         kDebug() << "Invalid index provided.";
-//         return;
-//     }
-//
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-//
-//     if (contact && account) {
-//         m_mainWidget->startFileTransferChannel(account, contact);
-//     }
+    if (!m_currentIndex.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startFileTransferChannel(account, contact);
+    }
 }
 
 void ContextMenu::onStartDesktopSharingTriggered()
@@ -407,17 +407,17 @@ void ContextMenu::onStartDesktopSharingTriggered()
 
 void ContextMenu::onOpenLogViewerTriggered()
 {
-//     if (!m_currentIndex.isValid()) {
-//       kDebug() << "Invalid index provided.";
-//       return;
-//     }
-//
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-//
-//     if (contact && account) {
-//         m_mainWidget->startLogViewer(account, contact);
-//     }
+    if (!m_currentIndex.isValid()) {
+      kDebug() << "Invalid index provided.";
+      return;
+    }
+
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startLogViewer(account, contact);
+    }
 }
 
 void ContextMenu::onUnblockContactTriggered()
@@ -598,8 +598,8 @@ void ContextMenu::onResendAuthorization()
 
 void ContextMenu::onNotificationConfigureTriggered()
 {
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//
-//     KTp::NotificationConfigDialog *notificationDialog = new KTp::NotificationConfigDialog(contact, m_mainWidget);
-//     notificationDialog->show();
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+
+    KTp::NotificationConfigDialog *notificationDialog = new KTp::NotificationConfigDialog(contact, m_mainWidget);
+    notificationDialog->show();
 }

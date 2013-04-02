@@ -24,6 +24,8 @@
 #include <QPersistentModelIndex>
 #include <QStringList>
 
+#include <TelepathyLoggerQt4/LogManager>
+
 #include "contact-list-widget.h"
 
 class AccountsModel;
@@ -64,6 +66,7 @@ private Q_SLOTS:
 private:
     ContactListWidget     *m_mainWidget;
     QModelIndex            m_currentIndex;
+    Tpl::LogManagerPtr     m_logManager;
 };
 
 #endif // CONTEXT_MENU_H
