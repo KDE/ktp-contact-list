@@ -103,16 +103,13 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
     d->modelFilter->sort(0);
 
-
     setModel(d->modelFilter);
 
     setItemDelegate(d->compactDelegate);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
 
-//     loadGroupStatesFromConfig();
+    loadGroupStatesFromConfig();
 
-//     connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
-//             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
 //
 //     connect(d->groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
 //             this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
@@ -249,14 +246,18 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
     //we need to change the selected index inside the delegate, that will return the default
     //row height for the previously selected metacontact and thus collapse it.
     if (index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
-        collapse(d->compactDelegate->selectedIndex());
+        if (d->compactDelegate->selectedIndex().isValid()) {
+            collapse(d->compactDelegate->selectedIndex());
+        }
         d->compactDelegate->setSelectedIndex(index);
         expand(index);
     }
 
     if (index.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
         if (index.parent().data(KTp::RowTypeRole).toUInt() != KTp::PersonRowType) {
-            collapse(d->compactDelegate->selectedIndex());
+            if (d->compactDelegate->selectedIndex().isValid()) {
+                collapse(d->compactDelegate->selectedIndex());
+            }
             d->compactDelegate->setSelectedIndex((index));
         }
     }
@@ -496,27 +497,6 @@ void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &accoun
 //     }
 }
 
-void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int start, int end)
-{
-    Q_UNUSED(start);
-    Q_UNUSED(end);
-    Q_D(ContactListWidget);
-
-    if (!index.isValid()) {
-        return;
-    }
-
-    //if there is no parent, we deal with top-level item that we want to expand/collapse, ie. group or account
-    if (!index.parent().isValid()) {
-
-        //we're probably dealing with group item, so let's check if it is expanded first
-        if (!isExpanded(index)) {
-            //if it's not expanded, check the config if we should expand it or not
-            QString groupId = index.data(KTp::IdRole).toString();
-            if (d->groupStates.value(groupId)) {
-                expand(index);
-            }
-        }
     }
 }
 
@@ -574,6 +554,23 @@ void ContactListWidget::onShowAllContacts()
     kDebug() << d->model->rowCount();
 
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
+
+    for (int i = 0; i < d->modelFilter->rowCount(); i++) {
+
+        QModelIndex index = d->modelFilter->index(i, 0);
+
+        if (!index.parent().isValid()) {
+
+            //we're probably dealing with group item, so let's check if it is expanded first
+            if (!isExpanded(index)) {
+                //if it's not expanded, check the config if we should expand it or not
+                QString groupId = index.data(KTp::IdRole).toString();
+                if (d->groupStates.value(groupId)) {
+                    expand(index);
+                }
+            }
+        }
+    }
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
