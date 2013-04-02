@@ -527,34 +527,34 @@ void ContactListWidget::onSwitchToFullView()
 
 void ContactListWidget::onSwitchToCompactView()
 {
-//     Q_D(ContactListWidget);
-//
-//     setItemDelegate(d->compactDelegate);
-//     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
-//     doItemsLayout();
-//
-//     emit enableOverlays(false);
-//
-//     KSharedConfigPtr config = KGlobal::config();
-//     KConfigGroup guiConfigGroup(config, "GUI");
-//     guiConfigGroup.writeEntry("selected_delegate", "normal");
-//     guiConfigGroup.config()->sync();
+    Q_D(ContactListWidget);
+
+    setItemDelegate(d->compactDelegate);
+    d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
+    doItemsLayout();
+
+    emit enableOverlays(false);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("selected_delegate", "normal");
+    guiConfigGroup.config()->sync();
 }
 
 void ContactListWidget::onSwitchToMiniView()
 {
-//     Q_D(ContactListWidget);
-//
-//     setItemDelegate(d->compactDelegate);
-//     d->compactDelegate->setListMode(ContactDelegateCompact::Mini);;
-//     doItemsLayout();
-//
-//     emit enableOverlays(false);
-//
-//     KSharedConfigPtr config = KGlobal::config();
-//     KConfigGroup guiConfigGroup(config, "GUI");
-//     guiConfigGroup.writeEntry("selected_delegate", "mini");
-//     guiConfigGroup.config()->sync();
+    Q_D(ContactListWidget);
+
+    setItemDelegate(d->compactDelegate);
+    d->compactDelegate->setListMode(ContactDelegateCompact::Mini);;
+    doItemsLayout();
+
+    emit enableOverlays(false);
+
+    KSharedConfigPtr config = KGlobal::config();
+    KConfigGroup guiConfigGroup(config, "GUI");
+    guiConfigGroup.writeEntry("selected_delegate", "mini");
+    guiConfigGroup.config()->sync();
 }
 
 void ContactListWidget::onShowAllContacts()
