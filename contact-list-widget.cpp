@@ -456,7 +456,7 @@ void ContactListWidget::startDesktopSharing(const Tp::AccountPtr &account, const
 void ContactListWidget::startLogViewer(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
     //log viewer is not a Tp handler so does not return a pending operation
-//     KTp::Actions::openLogViewer(account, contact);
+    KTp::Actions::openLogViewer(account, contact);
 }
 
 void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
