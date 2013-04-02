@@ -472,31 +472,28 @@ void ContactListWidget::startLogViewer(const Tp::AccountPtr &account, const Tp::
 
 void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
-//     kDebug() << "Requesting file transfer for contact" << contact->alias();
-// 
-//     QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
-//                                                           QString(),
-//                                                           this,
-//                                                           i18n("Choose files to send to %1", contact->alias()));
-// 
-//     if (filenames.isEmpty()) { // User hit cancel button
-//         return;
-//     }
-// 
-//     requestFileTransferChannels(account, contact, filenames);
+    kDebug() << "Requesting file transfer for contact" << contact->alias();
+
+    QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
+                                                          QString(),
+                                                          this,
+                                                          i18n("Choose files to send to %1", contact->alias()));
+
+    if (filenames.isEmpty()) { // User hit cancel button
+        return;
+    }
+
+    requestFileTransferChannels(account, contact, filenames);
 }
 
 void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &account,
                                                     const Tp::ContactPtr &contact,
                                                     const QStringList &filenames)
 {
-//     Q_FOREACH (const QString &filename, filenames) {
-//         Tp::PendingOperation *op = KTp::Actions::startFileTransfer(account, contact, filename);
-//         connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-//                 SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//     }
-}
-
+    Q_FOREACH (const QString &filename, filenames) {
+        Tp::PendingOperation *op = KTp::Actions::startFileTransfer(account, contact, filename);
+        connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+                SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
     }
 }
 
@@ -576,6 +573,7 @@ void ContactListWidget::onShowAllContacts()
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("shown_contacts", "all");
     guiConfigGroup.config()->sync();
+
 }
 
 void ContactListWidget::onShowUnblockedContacts()
