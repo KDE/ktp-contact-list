@@ -198,46 +198,43 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-//     if (m_mainWidget->d_ptr->modelFilter->groupMode() == ContactsModel2::GroupGrouping) {
-//         // remove contact from group action, must be QAction because menu->addAction returns QAction
-//         QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
-//         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
-//
-//         if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
-//             QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
-//
-//             QStringList groupList;
-//             QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
-//             foreach (const Tp::AccountPtr &account, accounts) {
-//                 if (!account->connection().isNull()) {
-//                     groupList.append(account->connection()->contactManager()->allKnownGroups());
-//                 }
-//             }
-//
-//             groupList.removeDuplicates();
-//
-//             QStringList currentGroups = contact->groups();
-//
-//             foreach (const QString &group, currentGroups) {
-//                 groupList.removeAll(group);
-//             }
-//
-//             connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
-//                     this, SLOT(onCreateNewGroupTriggered()));
-//
-//             groupAddMenu->addSeparator();
-//
-//             foreach (const QString &group, groupList) {
-//                 connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
-//                         SLOT(onAddContactToGroupTriggered()));
-//             }
-//         } else {
-//             kDebug() << "Unable to support Groups";
-//         }
-//     }
+    // remove contact from group action, must be QAction because menu->addAction returns QAction
+    QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
+    connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
+
+    if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
+        QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
+
+        QStringList groupList;
+        QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
+        foreach (const Tp::AccountPtr &account, accounts) {
+            if (!account->connection().isNull()) {
+                groupList.append(account->connection()->contactManager()->allKnownGroups());
+            }
+        }
+
+        groupList.removeDuplicates();
+
+        QStringList currentGroups = contact->groups();
+
+        foreach (const QString &group, currentGroups) {
+            groupList.removeAll(group);
+        }
+
+        connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
+                this, SLOT(onCreateNewGroupTriggered()));
+
+        groupAddMenu->addSeparator();
+
+        foreach (const QString &group, groupList) {
+            connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
+                    SLOT(onAddContactToGroupTriggered()));
+        }
+    } else {
+        kDebug() << "Unable to support Groups";
+    }
 
     menu->addSeparator();
-
 
     if (contact->manager()->canRequestPresenceSubscription()) {
         if (contact->subscriptionState() != Tp::Contact::PresenceStateYes) {
@@ -311,19 +308,19 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
 void ContextMenu::onRemoveContactFromGroupTriggered()
 {
-//     if (m_currentIndex.parent().data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType) {
-//         return;
-//     }
-//
-//     const QString groupName = m_currentIndex.parent().data(Qt::DisplayRole).toString();
-//     Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//
-//     Tp::PendingOperation *operation = contact->removeFromGroup(groupName);
-//
-//     if (operation) {
-//         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                 m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//     }
+    if (m_currentIndex.parent().data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType) {
+        return;
+    }
+
+    const QString groupName = m_currentIndex.parent().data(Qt::DisplayRole).toString();
+    Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+
+    Tp::PendingOperation *operation = contact->removeFromGroup(groupName);
+
+    if (operation) {
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    }
 }
 
 void ContextMenu::onOpenLinkTriggered(QAction *action)
@@ -404,17 +401,17 @@ void ContextMenu::onStartFileTransferTriggered()
 
 void ContextMenu::onStartDesktopSharingTriggered()
 {
-//     if (!m_currentIndex.isValid()) {
-//         kDebug() << "Invalid index provided.";
-//         return;
-//     }
-//
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-//
-//     if (contact && account) {
-//         m_mainWidget->startDesktopSharing(account, contact);
-//     }
+    if (!m_currentIndex.isValid()) {
+        kDebug() << "Invalid index provided.";
+        return;
+    }
+
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+
+    if (contact && account) {
+        m_mainWidget->startDesktopSharing(account, contact);
+    }
 }
 
 void ContextMenu::onOpenLogViewerTriggered()
@@ -434,133 +431,133 @@ void ContextMenu::onOpenLogViewerTriggered()
 
 void ContextMenu::onUnblockContactTriggered()
 {
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//
-//     Tp::PendingOperation *operation = contact->unblock(); //FIXME
-//     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+
+    Tp::PendingOperation *operation = contact->unblock(); //FIXME
+    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContextMenu::onAddContactToGroupTriggered()
 {
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//
-//     QAction *action = qobject_cast<QAction*>(sender());
-//     if (!action) {
-//         kDebug() << "Invalid action";
-//         return;
-//     }
-//
-//     const QStringList currentGroups = contact->groups();
-//
-//     Tp::PendingOperation* operation = contact->addToGroup(action->text().remove('&'));
-//
-//     if (operation) {
-//         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                 m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//
-//         foreach (const QString &group, currentGroups) {
-//             Tp::PendingOperation* operation = contact->removeFromGroup(group);
-//             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                     m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//         }
-//     }
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+
+    QAction *action = qobject_cast<QAction*>(sender());
+    if (!action) {
+        kDebug() << "Invalid action";
+        return;
+    }
+
+    const QStringList currentGroups = contact->groups();
+
+    Tp::PendingOperation *operation = contact->addToGroup(action->text().remove('&'));
+
+    if (operation) {
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+
+        foreach (const QString &group, currentGroups) {
+            Tp::PendingOperation *operation = contact->removeFromGroup(group);
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+        }
+    }
 }
 
 void ContextMenu::onCreateNewGroupTriggered()
 {
-//     bool ok = false;
-//
-//     QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
-//                                                  i18n("Please enter the new group name"),
-//                                                  QString(),
-//                                                  &ok);
-//
-//     if (ok) {
-//         Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//         Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
-//
-//         connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                 m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//     }
+    bool ok = false;
+
+    QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
+                                                 i18n("Please enter the new group name"),
+                                                 QString(),
+                                                 &ok);
+
+    if (ok) {
+        Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+        Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
+
+        connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    }
 }
 
 void ContextMenu::onRenameGroupTriggered()
 {
-//     if (m_currentIndex.data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType) {
-//         return;
-//     }
-//
-//     const QString groupName = m_currentIndex.data(Qt::DisplayRole).toString();
-//     const QAbstractItemModel *model = m_currentIndex.model();
-//
-//     bool ok = false;
-//
-//     QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
-//                                                  i18n("Please enter the new group name"),
-//                                                  groupName,
-//                                                  &ok);
-//
-//     if (ok && groupName != newGroupName) {
-//         //loop through all child indexes of m_currentIndex
-//         for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
-//             Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<KTp::ContactPtr>();
-//             Q_ASSERT(contact);
-//
-//             Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
-//             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                     m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//
-//             operation = contact->removeFromGroup(groupName);
-//             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                     m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//         }
-//     }
+    if (m_currentIndex.data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType) {
+        return;
+    }
+
+    const QString groupName = m_currentIndex.data(Qt::DisplayRole).toString();
+    const QAbstractItemModel *model = m_currentIndex.model();
+
+    bool ok = false;
+
+    QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
+                                                 i18n("Please enter the new group name"),
+                                                 groupName,
+                                                 &ok);
+
+    if (ok && groupName != newGroupName) {
+        //loop through all child indexes of m_currentIndex
+        for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
+            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<KTp::ContactPtr>();
+            Q_ASSERT(contact);
+
+            Tp::PendingOperation *operation = contact->addToGroup(newGroupName);
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+
+            operation = contact->removeFromGroup(groupName);
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+        }
+    }
 }
 
 void ContextMenu::onDeleteGroupTriggered()
 {
-//     if (m_accountManager.isNull() ||
-//         (m_currentIndex.data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType)) {
-//         return;
-//     }
-//
-//     const QString groupName = m_currentIndex.data(Qt::DisplayRole).toString();
-//     const QAbstractItemModel *model = m_currentIndex.model();
-//
-//
-//     if (KMessageBox::warningContinueCancel(m_mainWidget,
-//                                            i18n("Do you really want to remove group %1?\n\n"
-//                                                 "Note that all contacts will be moved to group 'Ungrouped'", groupName),
-//                                            i18n("Remove Group")) == KMessageBox::Continue) {
-//
-//         for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
-//             Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<KTp::ContactPtr>();
-//
-//             Q_ASSERT(contact);
-//
-//             Tp::PendingOperation *operation = contact->removeFromGroup(groupName);
-//             connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                     m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//         }
-//
-//         foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
-//             if (account->connection()) {
-//                 Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupName);
-//                 connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//                         m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
-//             }
-//         }
-//     }
+    if (m_accountManager.isNull() ||
+        (m_currentIndex.data(KTp::RowTypeRole).toUInt() != KTp::GroupRowType)) {
+        return;
+    }
+
+    const QString groupName = m_currentIndex.data(Qt::DisplayRole).toString();
+    const QAbstractItemModel *model = m_currentIndex.model();
+
+
+    if (KMessageBox::warningContinueCancel(m_mainWidget,
+                                           i18n("Do you really want to remove group %1?\n\n"
+                                                "Note that all contacts will be moved to group 'Ungrouped'", groupName),
+                                           i18n("Remove Group")) == KMessageBox::Continue) {
+
+        for(int i = 0; i < model->rowCount(m_currentIndex); i++) {
+            Tp::ContactPtr contact = model->index(i, 0 , m_currentIndex).data(KTp::ContactRole).value<KTp::ContactPtr>();
+
+            Q_ASSERT(contact);
+
+            Tp::PendingOperation *operation = contact->removeFromGroup(groupName);
+            connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                    m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+        }
+
+        foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
+            if (account->connection()) {
+                Tp::PendingOperation *operation = account->connection()->contactManager()->removeGroup(groupName);
+                connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+                        m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+            }
+        }
+    }
 }
 
 void ContextMenu::onBlockContactTriggered()
 {
-//     Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//
-//     Tp::PendingOperation *operation = contact->block();
-//     connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
-//             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    Tp::ContactPtr contact =  m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+
+    Tp::PendingOperation *operation = contact->block();
+    connect(operation, SIGNAL(finished(Tp::PendingOperation*)),
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContextMenu::onDeleteContactTriggered()
@@ -594,18 +591,18 @@ void ContextMenu::onDeleteContactTriggered()
 
 void ContextMenu::onRerequestAuthorization()
 {
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::PendingOperation *op = contact->manager()->requestPresenceSubscription(QList<Tp::ContactPtr>() << contact);
-//     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-//             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::PendingOperation *op = contact->manager()->requestPresenceSubscription(QList<Tp::ContactPtr>() << contact);
+    connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContextMenu::onResendAuthorization()
 {
-//     Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-//     Tp::PendingOperation *op = contact->manager()->authorizePresencePublication(QList<Tp::ContactPtr>() << contact);
-//     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
-//             m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+    Tp::PendingOperation *op = contact->manager()->authorizePresencePublication(QList<Tp::ContactPtr>() << contact);
+    connect(op, SIGNAL(finished(Tp::PendingOperation*)),
+            m_mainWidget, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
 }
 
 void ContextMenu::onNotificationConfigureTriggered()
