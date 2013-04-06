@@ -80,7 +80,10 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     connect(d->compactDelegate, SIGNAL(repaintItem(QModelIndex)),
             this->viewport(), SLOT(update(QModelIndex))); //update(QModelIndex)
 
-    d->model = new PersonsModel(this);
+    d->model = new PersonsModel(PersonsModel::FeatureIM,
+                                PersonsModel::FeatureAvatars |
+                                PersonsModel::FeatureGroups,
+                                this);
     connect(d->model, SIGNAL(peopleAdded()),
             this, SLOT(reset()));
     connect(d->model, SIGNAL(peopleAdded()),
