@@ -248,14 +248,12 @@ void ContactListWidget::addOverlayButtons()
     AudioChannelContactOverlay *audioOverlay = new AudioChannelContactOverlay(d->delegate);
     VideoChannelContactOverlay *videoOverlay = new VideoChannelContactOverlay(d->delegate);
     FileTransferContactOverlay *fileOverlay  = new FileTransferContactOverlay(d->delegate);
-    DesktopSharingContactOverlay *desktopOverlay = new DesktopSharingContactOverlay(d->delegate);
     LogViewerOverlay *logViewerOverlay = new LogViewerOverlay(d->delegate);
 
     d->delegate->installOverlay(textOverlay);
     d->delegate->installOverlay(audioOverlay);
     d->delegate->installOverlay(videoOverlay);
     d->delegate->installOverlay(fileOverlay);
-    d->delegate->installOverlay(desktopOverlay);
     d->delegate->installOverlay(logViewerOverlay);
 
     d->delegate->setViewOnAllOverlays(this);
@@ -280,9 +278,6 @@ void ContactListWidget::addOverlayButtons()
     connect(videoOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
             this, SLOT(startVideoChannel(Tp::AccountPtr, Tp::ContactPtr)));
 
-    connect(desktopOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
-            this, SLOT(startDesktopSharing(Tp::AccountPtr, Tp::ContactPtr)));
-
     connect(logViewerOverlay, SIGNAL(activated(Tp::AccountPtr,Tp::ContactPtr)),
             this, SLOT(startLogViewer(Tp::AccountPtr, Tp::ContactPtr)));
 
@@ -297,9 +292,6 @@ void ContactListWidget::addOverlayButtons()
 
     connect(this, SIGNAL(enableOverlays(bool)),
             fileOverlay, SLOT(setActive(bool)));
-
-    connect(this, SIGNAL(enableOverlays(bool)),
-            desktopOverlay, SLOT(setActive(bool)));
 
     connect(this, SIGNAL(enableOverlays(bool)),
             logViewerOverlay, SLOT(setActive(bool)));

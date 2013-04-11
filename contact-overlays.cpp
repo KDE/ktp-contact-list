@@ -175,18 +175,6 @@ FileTransferContactOverlay::FileTransferContactOverlay(QObject *parent)
 {
 }
 
-// -------------------------------------------------------------------------
-
-DesktopSharingContactOverlay::DesktopSharingContactOverlay(QObject *parent)
-    : StartChannelContactOverlay(
-        parent,
-        KGuiItem(i18n("Share My Desktop"), "krfb",
-                 i18n("Share My Desktop"), i18n("Share desktop using RFB")),
-        -1, //FIXME: the share desktop is now part of ContactTubesRole, not returning bool anymore, needs porting
-        IconSize(KIconLoader::Dialog) + spacing * 6 + IconSize(KIconLoader::Small) * 4)
-{
-}
-
 //-------------------------------------------------------------------------
 
 LogViewerOverlay::LogViewerOverlay(QObject* parent)
@@ -195,7 +183,7 @@ LogViewerOverlay::LogViewerOverlay(QObject* parent)
         KGuiItem(i18n("Open Log Viewer"), "documentation",
                  i18n("Open Log Viewer"), i18n("Show conversation logs")),
         Qt::DisplayRole, /* Always display the logviewer action */
-        IconSize(KIconLoader::Dialog) + spacing * 7 + IconSize(KIconLoader::Small) * 5)
+        IconSize(KIconLoader::Dialog) + spacing * 6 + IconSize(KIconLoader::Small) * 4)
 {
 }
 

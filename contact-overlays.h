@@ -102,16 +102,6 @@ public:
 
 // ---------------------------------------------------------------------
 
-class DesktopSharingContactOverlay : public StartChannelContactOverlay
-{
-    Q_OBJECT
-
-public:
-    DesktopSharingContactOverlay(QObject *parent);
-};
-
-// ---------------------------------------------------------------------
-
 class LogViewerOverlay: public StartChannelContactOverlay
 {
     Q_OBJECT
