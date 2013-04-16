@@ -142,7 +142,7 @@ void ToolTipManager::showToolTip(const QModelIndex &menuItem)
         return;
     }
 
-    if (!menuItem.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
+    if (menuItem.data(KTp::RowTypeRole).toUInt() != KTp::ContactRowType) {
         return;
     }
 
