@@ -50,7 +50,8 @@ protected:
     virtual void setEditable(bool editable); /** Hides overlay and calls ancestor's method. */
 
 private Q_SLOTS:
-    void onCurrentIndexChanged(int index);
+    void onUserActivatedComboChange(int index);
+    void onAllComboChanges(int index);
     void onPresenceChanged(const KTp::Presence &presence);
     void onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus);
     void onChangePresenceMessageClicked();

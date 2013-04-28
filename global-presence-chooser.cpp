@@ -191,7 +191,8 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
 
-    connect(this, SIGNAL(currentIndexChanged(int)), SLOT(onCurrentIndexChanged(int)));
+    connect(this, SIGNAL(currentIndexChanged(int)), SLOT(onAllComboChanges(int)));
+    connect(this, SIGNAL(activated(int)), SLOT(onUserActivatedComboChange(int)));
     connect(m_globalPresence, SIGNAL(currentPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
     connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
     connect(m_changePresenceMessageButton, SIGNAL(clicked(bool)), this, SLOT(onChangePresenceMessageClicked()));
@@ -310,7 +311,7 @@ void GlobalPresenceChooser::setEditable(bool editable)
     KComboBox::setEditable(editable);
 }
 
-void GlobalPresenceChooser::onCurrentIndexChanged(int index)
+void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 {
     if (index == -1) {
         return;
@@ -360,6 +361,13 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("deactivateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
+    }
+}
+
+void GlobalPresenceChooser::onAllComboChanges(int index)
+{
+    int lastPresenceIndex = m_model->rowCount();
+    if(index < lastPresenceIndex) {
         KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
         m_globalPresence->setPresence(presence);
         if ((presence.type() == Tp::ConnectionPresenceTypeOffline) ||
@@ -369,7 +377,9 @@ void GlobalPresenceChooser::onCurrentIndexChanged(int index)
             m_changePresenceMessageButton->show();
         }
     }
+
 }
+
 
 void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
 {
@@ -443,10 +453,9 @@ void GlobalPresenceChooser::onConfirmPresenceMessageClicked()
     QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
     setEditable(false);
     setCurrentIndex(newPresence.row());
-    //this is needed because currentIndexChanged signal is not connected and that is to not crash contact list
-    //because this signal is emitted once there is a valid model and that happens before AccountManager is ready
-    //and thus crashes contact list. Therefore it's called manually here.
-    onCurrentIndexChanged(newPresence.row());
+
+    onUserActivatedComboChange(newPresence.row());
+    onAllComboChanges(newPresence.row());
 }
 
 
