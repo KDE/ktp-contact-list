@@ -29,6 +29,7 @@ class PersonsModel;
 namespace KTp {
 class ContactsFilterModel;
 }
+class ContextMenu;
 class ContactDelegate;
 class ContactDelegateCompact;
 class KPeopleProxy;
@@ -54,6 +55,8 @@ public:
     bool                    showOffline;
     QHash<QString, bool>    groupStates;
     KTp::ContactsFilterModel *modelFilter;
+    ContextMenu              *contextMenu;
+
 
     ContactListWidget::SelectedItemType listSelection;
 };

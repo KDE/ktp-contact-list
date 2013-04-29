@@ -230,13 +230,7 @@ MainWidget::MainWidget(QWidget *parent)
 
     m_toolBar->addWidget(settingsButton);
 
-    m_contextMenu = new ContextMenu(m_contactsListView);
-    m_contextMenu->setAccountManager(m_accountManager);
-
     new ToolTipManager(m_contactsListView);
-
-    connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
-            this, SLOT(onCustomContextMenuRequested(QPoint)));
 
     connect(m_addContactAction, SIGNAL(triggered(bool)),
             this, SLOT(onAddContactRequest()));
@@ -326,24 +320,6 @@ void MainWidget::onAddContactRequest()
 //     KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_accountManager, this);
 //     dialog->setAttribute(Qt::WA_DeleteOnClose);
 //     dialog->show();
-}
-
-void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
-{
-    QModelIndex index = m_contactsListView->indexAt(pos);
-
-    if (!index.isValid()) {
-        return;
-    }
-
-    KMenu *menu = 0;
-
-    menu = m_contextMenu->contactContextMenu(index);
-
-    if (menu) {
-        menu->exec(QCursor::pos());
-        menu->deleteLater();
-    }
 }
 
 void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)

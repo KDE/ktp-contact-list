@@ -64,6 +64,7 @@
 #include "contact-overlays.h"
 #include "kpeople-proxy.h"
 #include "contacts-model.h"
+#include "context-menu.h"
 
 
 ContactListWidget::ContactListWidget(QWidget *parent)
@@ -110,6 +111,9 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
     setItemDelegate(d->compactDelegate);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
+
+    d->contextMenu = new ContextMenu(this);
+    d->contextMenu->setAccountManager(d->presenceModel->accountManager());
 
     loadGroupStatesFromConfig();
 
@@ -158,6 +162,8 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     connect(this, SIGNAL(doubleClicked(QModelIndex)),
             this, SLOT(onContactListDoubleClicked(QModelIndex)));
 
+    connect(this, SIGNAL(customContextMenuRequested(QPoint)),
+            this, SLOT(onCustomContextMenuRequested(QPoint)));
 //     connect(d->delegate, SIGNAL(repaintItem(QModelIndex)),
 //             this->viewport(), SLOT(repaint())); //update(QModelIndex)
 }
@@ -997,4 +1003,32 @@ void ContactListWidget::onUngroupSelectedContacts()
     }
 
     clearSelection();
+}
+
+void ContactListWidget::onCustomContextMenuRequested(const QPoint &pos)
+{
+    Q_D(ContactListWidget);
+
+    QModelIndex index = indexAt(pos);
+
+    onContactListClicked(index);
+
+    if (!index.isValid()) {
+        return;
+    }
+
+    KTp::RowType type = (KTp::RowType)index.data(KTp::RowTypeRole).toInt();
+
+    KMenu *menu = 0;
+
+    if (type == KTp::ContactRowType || type == KTp::PersonRowType) {
+        menu = d->contextMenu->contactContextMenu(index);
+    } else if (type == KTp::GroupRowType) {
+        menu = d->contextMenu->groupContextMenu(index);
+    }
+
+    if (menu) {
+        menu->exec(QCursor::pos());
+        menu->deleteLater();
+    }
 }

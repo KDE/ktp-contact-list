@@ -82,7 +82,6 @@ private Q_SLOTS:
     void onUsePerAccountPresenceTriggered();
     void onJoinChatRoomRequested();                 /** join chat room action is triggered */
     void onMakeCallRequested();
-    void onCustomContextMenuRequested(const QPoint &point);
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
 
     void onContactsSelectedForGouping();
@@ -110,9 +109,6 @@ private:
     KAction                *m_metacontactToggleAction;
 
     Tp::AccountManagerPtr  m_accountManager;
-
-    ContextMenu            *m_contextMenu;
 };
-
 
 #endif // Header guard

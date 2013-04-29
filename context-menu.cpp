@@ -48,6 +48,7 @@
 #include "contact-list-widget_p.h"
 
 #include <kpeople/persons-model.h>
+#include <kpeople/persons-presence-model.h>
 
 ContextMenu::ContextMenu(ContactListWidget *mainWidget)
     : QObject(mainWidget)
@@ -83,194 +84,364 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
-    KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
-
-    if (contact.isNull()) {
-        kDebug() << "Contact is nulled";
-        return 0;
-    }
-
-    Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
-
-    if (account.isNull()) {
-        kDebug() << "Account is nulled";
-        return 0;
-    }
-
+    KTp::ContactPtr contact;
+    Tp::AccountPtr account;
     KMenu *menu = new KMenu();
-    menu->addTitle(contact->alias());
 
-    //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
-    QAction *action = menu->addAction(i18n("Start Chat..."));
-    action->setIcon(KIcon("text-x-generic"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartTextChatTriggered()));
 
-    if (index.data(KTp::ContactCanTextChatRole).toBool()) {
-        action->setEnabled(true);
-    }
+    if (m_currentIndex.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+        menu->addTitle(m_currentIndex.data(Qt::DisplayRole).toString());
 
-    Tp::ConnectionPtr accountConnection = account->connection();
-    if (accountConnection.isNull()) {
-        kDebug() << "Account connection is nulled.";
-        return 0;
-    }
+        QList<QAction*> textChatActions;
+        QList<QAction*> audioCallActions;
+        QList<QAction*> videoCallActions;
+        QList<QAction*> sendFileActions;
 
-    action = menu->addAction(i18n("Start Audio Call..."));
-    action->setIcon(KIcon("audio-headset"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartAudioChatTriggered()));
+        QVariantList contacts = index.data(KTp::ContactRole).toList();
+        Q_FOREACH(const QVariant &subcontact, contacts) {
+            KTp::ContactPtr sc = subcontact.value<KTp::ContactPtr>();
+            account = m_mainWidget->d_ptr->presenceModel->dataForContactId(sc->id(), PersonsModel::IMAccountRole).value<Tp::AccountPtr>();
 
-    if (index.data(KTp::ContactCanAudioCallRole).toBool()) {
-        action->setEnabled(true);
-    }
+            if (sc.isNull() || account.isNull()) {
+                kDebug() << "contact or account nulled";
+                continue;
+            }
 
-    action = menu->addAction(i18n("Start Video Call..."));
-    action->setIcon(KIcon("camera-web"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartVideoChatTriggered()));
+            QAction *action = new QAction(account->displayName(), this);
+            action->setIcon(KIcon(account->iconName()));
+            connect(action, SIGNAL(triggered(bool)),
+                    SLOT(onStartTextChatTriggered()));
 
-    if (index.data(KTp::ContactCanVideoCallRole).toBool()) {
-        action->setEnabled(true);
-    }
+            textChatActions.append(action);
 
-    action = menu->addAction(i18n("Send File..."));
-    action->setIcon(KIcon("mail-attachment"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartFileTransferTriggered()));
+            Tp::ConnectionPtr accountConnection = account->connection();
+            if (accountConnection.isNull()) {
+                kDebug() << "Account connection is nulled.";
+//                 return 0;
+            }
 
-    if (index.data(KTp::ContactCanFileTransferRole).toBool()) {
-        action->setEnabled(true);
-    }
+            if (sc->audioCallCapability()) {
+                QAction *action = new QAction(account->displayName(), this);
+                action->setIcon(KIcon(account->iconName()));
+                connect(action, SIGNAL(triggered(bool)),
+                        SLOT(onStartAudioChatTriggered()));
 
-    action = menu->addAction(i18n("Share my desktop..."));
-    action->setIcon(KIcon("krfb"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartDesktopSharingTriggered()));
+                audioCallActions.append(action);
+            }
 
-    if (index.data(KTp::ContactTubesRole).toStringList().contains(QLatin1String("rfb"))) {
-        action->setEnabled(true);
-    }
+            if (sc->videoCallCapability()) {
+                QAction *action = new QAction(account->displayName(), this);
+                action->setIcon(KIcon(account->iconName()));
+                connect(action, SIGNAL(triggered(bool)),
+                        SLOT(onStartVideoChatTriggered()));
 
-    action = menu->addAction(i18n("Open Log Viewer..."));
-    action->setIcon(KIcon("documentation"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onOpenLogViewerTriggered()));
+                videoCallActions.append(action);
+            }
 
-    Tpl::EntityPtr entity = Tpl::Entity::create(contact, Tpl::EntityTypeContact);
-    if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
-        action->setEnabled(true);
-    }
+            if (sc->fileTransferCapability()) {
+                QAction *action = new QAction(account->displayName(), this);
+                action->setIcon(KIcon(account->iconName()));
+                connect(action, SIGNAL(triggered(bool)),
+                        SLOT(onStartFileTransferTriggered()));
 
-    menu->addSeparator();
-    action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications ..."));
-    action->setEnabled(true);
-    connect(action, SIGNAL(triggered()),
-                           SLOT(onNotificationConfigureTriggered()));
+                sendFileActions.append(action);
+            }
 
-    // add "goto" submenu for navigating to links the contact has in presence message
-    // first check to see if there are any links in the contact's presence message
-    QStringList contactLinks;
-    QString presenceMsg = index.data(KTp::ContactPresenceMessageRole).toString();
-    if (presenceMsg.isEmpty()) {
-        contactLinks = QStringList();
-    } else {
-        KTp::TextUrlData urls = KTp::TextParser::instance()->extractUrlData(presenceMsg);
-        contactLinks = urls.fixedUrls;
-    }
+//             action = menu->addAction(i18nc("%1 means an account, eg. Send File Using GTalk...",
+//                                            "Share My Desktop Using %1...",
+//                                            account->displayName()));
+//             action->setIcon(KIcon("krfb"));
+//             action->setDisabled(true);
+//             connect(action, SIGNAL(triggered(bool)),
+//                     SLOT(onStartDesktopSharingTriggered()));
+//
+//             if (index.data(KTp::ContactTubesRole).toStringList().contains(QLatin1String("rfb"))) {
+//                 action->setEnabled(true);
+//             }
 
-    if (!contactLinks.empty()) {
-        KMenu *subMenu = new KMenu(i18np("Presence message link", "Presence message links", contactLinks.count()));
-
-        foreach(const QString &link, contactLinks) {
-            action = subMenu->addAction(link);
-            action->setData(link);
+//             if (contact.isNull()) {
+//                 contact = sc;
+//             } else {
+//                 if (sc->presence() < contact->presence()) {
+//                     contact = sc;
+//                 }
+//             }
         }
-        connect(subMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenLinkTriggered(QAction*)));
-        menu->addMenu(subMenu);
-    }
 
-    menu->addSeparator();
+        if (!textChatActions.isEmpty()) {
+           if (textChatActions.size() == 1) {
+               textChatActions.first()->setText(i18nc("%1 means an account, eg. Start Chat Using GTalk",
+                                                     "Start Chat Using %1",
+                                                     textChatActions.first()->text()));
+               textChatActions.first()->setIcon(KIcon("text-x-generic"));
 
-    // remove contact from group action, must be QAction because menu->addAction returns QAction
-    QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
-    connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
+               menu->addAction(textChatActions.first());
+           } else {
+               KMenu *textChatMenu = new KMenu(i18nc("This is a title of a submenu", "Start Chat Using"), menu);
+               textChatMenu->setIcon(KIcon("text-x-generic"));
+               Q_FOREACH (QAction *action, textChatActions) {
+                   textChatMenu->addAction(action);
+               }
 
-    if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
-        QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
+               menu->addMenu(textChatMenu);
+           }
+        }
 
-        QStringList groupList;
-        QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
-        foreach (const Tp::AccountPtr &account, accounts) {
-            if (!account->connection().isNull()) {
-                groupList.append(account->connection()->contactManager()->allKnownGroups());
+        if (!audioCallActions.isEmpty()) {
+            if (audioCallActions.size() == 1) {
+                audioCallActions.first()->setText(i18nc("%1 means an account, eg. Start Audio Call Using GTalk",
+                                                 "Start Audio Call Using %1",
+                                                 audioCallActions.first()->text()));
+                audioCallActions.first()->setIcon(KIcon("audio-headset"));
+
+                menu->addAction(audioCallActions.first());
+            } else {
+                KMenu *audioCallMenu = new KMenu(i18nc("This is a title of a submenu", "Start Audio Call Using"), menu);
+                audioCallMenu->setIcon(KIcon("audio-headset"));
+                Q_FOREACH (QAction *action, audioCallActions) {
+                    audioCallMenu->addAction(action);
+                }
+
+                menu->addMenu(audioCallMenu);
             }
         }
 
-        groupList.removeDuplicates();
+        if (!videoCallActions.isEmpty()) {
+            if (videoCallActions.size() == 1) {
+                videoCallActions.first()->setText(i18nc("%1 means an account, eg. Start Video Call Using GTalk",
+                                                        "Start Video Call Using %1",
+                                                        videoCallActions.first()->text()));
+                videoCallActions.first()->setIcon(KIcon("camera-web"));
 
-        QStringList currentGroups = contact->groups();
+                menu->addAction(videoCallActions.first());
+            } else {
+                KMenu *videoCallMenu = new KMenu(i18nc("This is a title of a submenu", "Start Video Call Using"), menu);
+                videoCallMenu->setIcon(KIcon("camera-web"));
+                Q_FOREACH (QAction *action, videoCallActions) {
+                    videoCallMenu->addAction(action);
+                }
 
-        foreach (const QString &group, currentGroups) {
-            groupList.removeAll(group);
+                menu->addMenu(videoCallMenu);
+            }
         }
 
-        connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
-                this, SLOT(onCreateNewGroupTriggered()));
+        if (!sendFileActions.isEmpty()) {
+            if (sendFileActions.size() == 1) {
+                sendFileActions.first()->setText(i18nc("%1 means an account, eg. Send File Using GTalk",
+                                                        "Send File Using %1",
+                                                       sendFileActions.first()->text()));
+                sendFileActions.first()->setIcon(KIcon("mail-attachment"));
 
-        groupAddMenu->addSeparator();
+                menu->addAction(sendFileActions.first());
+            } else {
+                KMenu *sendFileMenu = new KMenu(i18nc("This is a title of a submenu", "Send File Using"), menu);
+                sendFileMenu->setIcon(KIcon("mail-attachment"));
+                Q_FOREACH (QAction *action, sendFileActions) {
+                    sendFileMenu->addAction(action);
+                }
 
-        foreach (const QString &group, groupList) {
-            connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
-                    SLOT(onAddContactToGroupTriggered()));
+                menu->addMenu(sendFileMenu);
+            }
         }
+
+        menu->addSeparator();
+
+        QAction *action = menu->addAction(i18n("Ungroup these contacts"));
+        action->setIcon(KIcon("edit-delete"));
+
+        menu->addSeparator();
+
     } else {
-        kDebug() << "Unable to support Groups";
-    }
 
-    menu->addSeparator();
+        KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
-    if (contact->manager()->canRequestPresenceSubscription()) {
-        if (contact->subscriptionState() != Tp::Contact::PresenceStateYes) {
-            action = menu->addAction(i18n("Re-request Contact Authorization"));
-            connect(action, SIGNAL(triggered(bool)), SLOT(onRerequestAuthorization()));
+        if (contact.isNull()) {
+            kDebug() << "Contact is nulled";
+            return 0;
         }
-    }
-    if (contact->manager()->canAuthorizePresencePublication()) {
-        if (contact->publishState() != Tp::Contact::PresenceStateYes) {
-            action = menu->addAction(i18n("Resend Contact Authorization"));
-            connect(action, SIGNAL(triggered(bool)), SLOT(onResendAuthorization()));
+
+        Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
+
+        if (account.isNull()) {
+            kDebug() << "Account is nulled";
+            return 0;
         }
+
+        menu->addTitle(contact->alias());
+
+        //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
+        QAction *action = menu->addAction(i18n("Start Chat..."));
+        action->setIcon(KIcon("text-x-generic"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartTextChatTriggered()));
+
+        if (index.data(KTp::ContactCanTextChatRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        Tp::ConnectionPtr accountConnection = account->connection();
+        if (accountConnection.isNull()) {
+            kDebug() << "Account connection is nulled.";
+            return 0;
+        }
+
+        action = menu->addAction(i18n("Start Audio Call..."));
+        action->setIcon(KIcon("audio-headset"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartAudioChatTriggered()));
+
+        if (index.data(KTp::ContactCanAudioCallRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Start Video Call..."));
+        action->setIcon(KIcon("camera-web"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartVideoChatTriggered()));
+
+        if (index.data(KTp::ContactCanVideoCallRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Send File..."));
+        action->setIcon(KIcon("mail-attachment"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartFileTransferTriggered()));
+
+        if (index.data(KTp::ContactCanFileTransferRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Share my desktop..."));
+        action->setIcon(KIcon("krfb"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartDesktopSharingTriggered()));
+
+        if (index.data(KTp::ContactTubesRole).toStringList().contains(QLatin1String("rfb"))) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Open Log Viewer..."));
+        action->setIcon(KIcon("documentation"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onOpenLogViewerTriggered()));
+
+        Tpl::EntityPtr entity = Tpl::Entity::create(contact, Tpl::EntityTypeContact);
+        if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
+            action->setEnabled(true);
+        }
+
+        menu->addSeparator();
+        action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications ..."));
+        action->setEnabled(true);
+        connect(action, SIGNAL(triggered()),
+                            SLOT(onNotificationConfigureTriggered()));
+
+        // add "goto" submenu for navigating to links the contact has in presence message
+        // first check to see if there are any links in the contact's presence message
+        QStringList contactLinks;
+        QString presenceMsg = index.data(KTp::ContactPresenceMessageRole).toString();
+        if (presenceMsg.isEmpty()) {
+            contactLinks = QStringList();
+        } else {
+            KTp::TextUrlData urls = KTp::TextParser::instance()->extractUrlData(presenceMsg);
+            contactLinks = urls.fixedUrls;
+        }
+
+        if (!contactLinks.empty()) {
+            KMenu *subMenu = new KMenu(i18np("Presence message link", "Presence message links", contactLinks.count()));
+
+            foreach(const QString &link, contactLinks) {
+                action = subMenu->addAction(link);
+                action->setData(link);
+            }
+            connect(subMenu, SIGNAL(triggered(QAction*)), this, SLOT(onOpenLinkTriggered(QAction*)));
+            menu->addMenu(subMenu);
+        }
+
+        menu->addSeparator();
+
+        // remove contact from group action, must be QAction because menu->addAction returns QAction
+        QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
+        connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
+
+        if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
+            QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
+
+            QStringList groupList;
+            QList<Tp::AccountPtr> accounts = m_accountManager->allAccounts();
+            foreach (const Tp::AccountPtr &account, accounts) {
+                if (!account->connection().isNull()) {
+                    groupList.append(account->connection()->contactManager()->allKnownGroups());
+                }
+            }
+
+            groupList.removeDuplicates();
+
+            QStringList currentGroups = contact->groups();
+
+            foreach (const QString &group, currentGroups) {
+                groupList.removeAll(group);
+            }
+
+            connect(groupAddMenu->addAction(i18n("Create New Group...")), SIGNAL(triggered(bool)),
+                    this, SLOT(onCreateNewGroupTriggered()));
+
+            groupAddMenu->addSeparator();
+
+            foreach (const QString &group, groupList) {
+                connect(groupAddMenu->addAction(group), SIGNAL(triggered(bool)),
+                        SLOT(onAddContactToGroupTriggered()));
+            }
+        } else {
+            kDebug() << "Unable to support Groups";
+        }
+
+        menu->addSeparator();
+
+        if (contact->manager()->canRequestPresenceSubscription()) {
+            if (contact->subscriptionState() != Tp::Contact::PresenceStateYes) {
+                action = menu->addAction(i18n("Re-request Contact Authorization"));
+                connect(action, SIGNAL(triggered(bool)), SLOT(onRerequestAuthorization()));
+            }
+        }
+        if (contact->manager()->canAuthorizePresencePublication()) {
+            if (contact->publishState() != Tp::Contact::PresenceStateYes) {
+                action = menu->addAction(i18n("Resend Contact Authorization"));
+                connect(action, SIGNAL(triggered(bool)), SLOT(onResendAuthorization()));
+            }
+        }
+
+        action = menu->addSeparator(); //prevent two seperators in a row
+
+        if (contact->isBlocked()) {
+            action = menu->addAction(i18n("Unblock Contact"));
+            connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
+            action->setEnabled(contact->manager()->canBlockContacts());
+        } else {
+            action = menu->addAction(i18n("Block Contact"));
+            connect(action, SIGNAL(triggered(bool)), SLOT(onBlockContactTriggered()));
+            action->setEnabled(contact->manager()->canBlockContacts());
+        }
+
+        // remove contact action, must be QAction because that's what menu->addAction returns
+
+        //TODO find an "if canRemove"
+        QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
+        connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
+
+        menu->addSeparator();
+
     }
 
-    action = menu->addSeparator(); //prevent two seperators in a row
-
-    if (contact->isBlocked()) {
-        action = menu->addAction(i18n("Unblock Contact"));
-        connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
-        action->setEnabled(contact->manager()->canBlockContacts());
-    } else {
-        action = menu->addAction(i18n("Block Contact"));
-        connect(action, SIGNAL(triggered(bool)), SLOT(onBlockContactTriggered()));
-        action->setEnabled(contact->manager()->canBlockContacts());
-    }
-
-    // remove contact action, must be QAction because that's what menu->addAction returns
-
-    //TODO find an "if canRemove"
-    QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
-    connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
-
-    menu->addSeparator();
-
-    action = menu->addAction(i18n("Show Info..."));
-    action->setIcon(KIcon(""));
+    QAction *action = menu->addAction(i18n("Show Info..."));
+    action->setIcon(KIcon("dialog-information"));
     connect(action, SIGNAL(triggered()), SLOT(onShowInfoTriggered()));
 
     return menu;

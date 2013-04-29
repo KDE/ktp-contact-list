@@ -81,6 +81,7 @@ protected Q_SLOTS:
 private Q_SLOTS:
     void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClicked(const QModelIndex &index);
+    void onCustomContextMenuRequested(const QPoint &pos);
 
     void addOverlayButtons();
 
