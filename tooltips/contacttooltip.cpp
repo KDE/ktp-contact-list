@@ -52,12 +52,12 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
         ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
     }
 
-    QString presenceMessage = index.data(KTp::ContactPresenceMessageRole).toString();
-    QString presenceIconPath = index.data(KTp::ContactPresenceIconRole).toString();
-    QString presenceText = index.data(KTp::ContactPresenceNameRole).toString();
+    KTp::Presence presence(Tp::Presence((Tp::ConnectionPresenceType)index.data(KTp::ContactPresenceTypeRole).toUInt(), QString(), QString()));
+
+    QString presenceMessage = presence.statusMessage();
+    QString presenceText = presence.displayString();
 
     if (index.data(KTp::ContactPresenceTypeRole).toInt() == Tp::ConnectionPresenceTypeError) {
-        presenceIconPath = KIconLoader::global()->iconPath("task-attention", 1);
         presenceText = i18nc("This is an IM user status", "Error Getting Presence");
 
         /** if the presence is error, the message might containt server's error,
@@ -67,7 +67,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
         presenceMessage.clear();
     }
 
-    ui->presenceIcon->setPixmap(QPixmap(presenceIconPath));
+    ui->presenceIcon->setPixmap(presence.icon().pixmap(16, 16));
     ui->presenceLabel->setText(presenceText);
     ui->presenceMessageLabel->setText(presenceMessage);
     ui->blockedLabel->setShown(index.data(KTp::ContactIsBlockedRole).toBool());
