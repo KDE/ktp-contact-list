@@ -21,6 +21,7 @@
 
 #include "ktooltip.h"
 #include "contacttooltip.h"
+#include "persontooltip.h"
 
 #include <QRect>
 #include <QTimer>
@@ -142,7 +143,9 @@ void ToolTipManager::showToolTip(const QModelIndex &menuItem)
         return;
     }
 
-    if (!menuItem.data(KTp::RowTypeRole).toUInt() == KTp::ContactRowType) {
+    if (menuItem.data(KTp::RowTypeRole).toUInt() != KTp::ContactRowType
+            && menuItem.data(KTp::RowTypeRole).toUInt() != KTp::PersonRowType) {
+
         return;
     }
 
@@ -187,7 +190,11 @@ void ToolTipManager::showToolTip(const QModelIndex &menuItem)
 
 QWidget * ToolTipManager::createTipContent(const QModelIndex &index)
 {
-     return new ContactToolTip(index);
+    if (index.data(KTp::RowTypeRole).toUInt() == KTp::PersonRowType) {
+        return new PersonToolTip(index);
+    } else {
+        return new ContactToolTip(index);
+    }
 }
 
 #include "tooltipmanager.moc"
