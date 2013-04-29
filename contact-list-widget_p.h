@@ -26,12 +26,13 @@ class KTpTranslationProxy;
 class PersonsPresenceModel;
 class PersonsModel;
 
-namespace KTp {
-class ContactsFilterModel;
-}
 class ContextMenu;
 class ContactDelegate;
 class ContactDelegateCompact;
+
+namespace KTp {
+    class ContactsFilterModel;
+}
 
 class ContactListWidgetPrivate {
 public:

@@ -619,17 +619,18 @@ void ContactListWidget::setDropIndicatorRect(const QRect &rect)
 //     return QTreeView::event(event);
 // }
 
-// void ContactListWidget::mousePressEvent(QMouseEvent *event)
-// {
-//     Q_D(ContactListWidget);
-//
-//     QTreeView::mousePressEvent(event);
-//
+void ContactListWidget::mousePressEvent(QMouseEvent *event)
+{
+    Q_D(ContactListWidget);
+
+    QTreeView::mousePressEvent(event);
+
 //     QModelIndex index = indexAt(event->pos());
 //     d->shouldDrag = false;
+//     d->dragSourceGroup.clear();
 //
 //     // if no contact, no drag
-//     if (!index.data(AccountsModel::ItemRole).canConvert<ContactModelItem*>()) {
+//     if (index.data(KTp::RowTypeRole).toInt() != KTp::ContactRowType) {
 //         return;
 //     }
 //
@@ -637,7 +638,7 @@ void ContactListWidget::setDropIndicatorRect(const QRect &rect)
 //         d->shouldDrag = true;
 //         d->dragStartPosition = event->pos();
 //     }
-// }
+}
 
 // void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
 // {
@@ -850,32 +851,6 @@ void ContactListWidget::keyPressEvent(QKeyEvent *event)
     }
 
     QTreeView::keyPressEvent(event);
-}
-
-void ContactListWidget::mousePressEvent(QMouseEvent *event)
-{
-//     Q_D(ContactListWidget);
-// 
-    QTreeView::mousePressEvent(event);
-
-//     QModelIndex index = indexAt(event->pos());
-//     d->shouldDrag = false;
-//     d->dragSourceGroup.clear();
-//
-//     // no drag when grouping by accounts
-//     if (d->modelFilter->groupMode() == ContactsModel2::AccountGrouping) {
-//         return;
-//     }
-//
-//     // if no contact, no drag
-//     if (index.data(KTp::RowTypeRole).toInt() != KTp::ContactRowType) {
-//         return;
-//     }
-//
-//     if (event->button() == Qt::LeftButton) {
-//         d->shouldDrag = true;
-//         d->dragStartPosition = event->pos();
-//     }
 }
 
 void ContactListWidget::loadGroupStatesFromConfig()
