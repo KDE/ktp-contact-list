@@ -92,21 +92,21 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         const QFontMetrics fontMetrics(KGlobalSettings::generalFont());
         return QSize(0, qMax(fontMetrics.height(), (int)(KIconLoader::SizeSmall)) + 8);
     }
-    if (index.row() == rowCount(index.parent())-1) {
+    if (index.row() == rowCount(QModelIndex())-1) {
         switch(role) {
         case Qt::DisplayRole:
             return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
             return KIcon("configure");
         }
-    } else if (index.row() == rowCount(index.parent())-2) {
+    } else if (index.row() == rowCount(QModelIndex())-2) {
         switch(role) {
             case Qt::DisplayRole:
                 return i18n("Now listening to...");
             case Qt::DecorationRole:
                 return KIcon("speaker");
         }
-    } else if (m_temporaryPresence.isValid() && index.row() == rowCount(index.parent()) -3) {
+    } else if (m_temporaryPresence.isValid() && index.row() == rowCount(QModelIndex()) -3) {
         switch(role) {
         case Qt::DisplayRole:
             return m_temporaryPresence.statusMessage();
@@ -177,7 +177,8 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_globalPresence(new KTp::GlobalPresence(this)),
     m_model(new PresenceModel(this)),
     m_modelExtended(new PresenceModelExtended(m_model, this)),
-    m_busyOverlay(new KPixmapSequenceOverlayPainter(this))
+    m_busyOverlay(new KPixmapSequenceOverlayPainter(this)),
+    m_changePresenceMessageButton(new QPushButton(this))
 {
     this->setModel(m_modelExtended);
     //needed for mousemove events
@@ -186,11 +187,6 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
     setEditable(false);
 
-    onPresenceChanged(m_globalPresence->currentPresence());
-    //we need to check if there is some account connecting and if so, spin the spinner
-    onConnectionStatusChanged(m_globalPresence->connectionStatus());
-
-    m_changePresenceMessageButton = new QPushButton(this);
     m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
@@ -200,6 +196,9 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
     connect(m_changePresenceMessageButton, SIGNAL(clicked(bool)), this, SLOT(onChangePresenceMessageClicked()));
 
+    onPresenceChanged(m_globalPresence->currentPresence());
+    //we need to check if there is some account connecting and if so, spin the spinner
+    onConnectionStatusChanged(m_globalPresence->connectionStatus());
 }
 
 void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accountManager)
