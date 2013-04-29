@@ -177,7 +177,8 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_globalPresence(new KTp::GlobalPresence(this)),
     m_model(new PresenceModel(this)),
     m_modelExtended(new PresenceModelExtended(m_model, this)),
-    m_busyOverlay(new KPixmapSequenceOverlayPainter(this))
+    m_busyOverlay(new KPixmapSequenceOverlayPainter(this)),
+    m_changePresenceMessageButton(new QPushButton(this))
 {
     this->setModel(m_modelExtended);
     //needed for mousemove events
@@ -186,11 +187,6 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
     setEditable(false);
 
-    onPresenceChanged(m_globalPresence->currentPresence());
-    //we need to check if there is some account connecting and if so, spin the spinner
-    onConnectionStatusChanged(m_globalPresence->connectionStatus());
-
-    m_changePresenceMessageButton = new QPushButton(this);
     m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
@@ -200,6 +196,9 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
     connect(m_changePresenceMessageButton, SIGNAL(clicked(bool)), this, SLOT(onChangePresenceMessageClicked()));
 
+    onPresenceChanged(m_globalPresence->currentPresence());
+    //we need to check if there is some account connecting and if so, spin the spinner
+    onConnectionStatusChanged(m_globalPresence->connectionStatus());
 }
 
 void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accountManager)
