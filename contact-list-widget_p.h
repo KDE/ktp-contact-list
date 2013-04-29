@@ -32,7 +32,6 @@ class ContactsFilterModel;
 class ContextMenu;
 class ContactDelegate;
 class ContactDelegateCompact;
-class KPeopleProxy;
 
 class ContactListWidgetPrivate {
 public:
@@ -46,7 +45,6 @@ public:
     PersonsPresenceModel   *presenceModel;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
-    KPeopleProxy           *proxy;
     KTpTranslationProxy    *translationProxy;
     QRect                   dropIndicatorRect;
     QPoint                  dragStartPosition;
