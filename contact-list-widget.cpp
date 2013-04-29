@@ -174,25 +174,6 @@ ContactListWidget::~ContactListWidget()
     delete d_ptr;
 }
 
-void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
-{
-//     Q_D(ContactListWidget);
-// 
-//     d->accountManager = accountManager;
-//     d->modelFilter->setAccountManager(accountManager);
-// 
-//     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
-// 
-//     if(accounts.count() == 0) {
-//         if (KMessageBox::questionYesNo(this,
-//                                        i18n("You have no IM accounts configured. Would you like to do that now?"),
-//                                        i18n("No Accounts Found")) == KMessageBox::Yes) {
-// 
-//             showSettingsKCM();
-//         }
-//     }
-}
-
 Tp::AccountManagerPtr ContactListWidget::accountManager() const
 {
     Q_D(const ContactListWidget);
