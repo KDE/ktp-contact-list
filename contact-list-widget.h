@@ -24,6 +24,7 @@
 #include <TelepathyQt/Types>
 #include <TelepathyQt/Connection>
 
+class QResizeEvent;
 class ContactsModel;
 class ContactListWidgetPrivate;
 
@@ -108,6 +109,7 @@ protected:
 
 //     virtual void mouseMoveEvent(QMouseEvent *event);
 //     virtual void paintEvent(QPaintEvent *event);
+    virtual void resizeEvent(QResizeEvent *event);
 //     virtual void dropEvent(QDropEvent *event);
 //     virtual void dragEnterEvent(QDragEnterEvent *event);
 //     virtual void dragMoveEvent(QDragMoveEvent *event);

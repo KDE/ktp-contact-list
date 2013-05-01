@@ -22,6 +22,7 @@
 
 #include <TelepathyQt/Types>
 
+class KPixmapSequenceWidget;
 class KTpTranslationProxy;
 class PersonsPresenceModel;
 class PersonsModel;
@@ -55,7 +56,7 @@ public:
     QHash<QString, bool>    groupStates;
     KTp::ContactsFilterModel *modelFilter;
     ContextMenu              *contextMenu;
-
+    KPixmapSequenceWidget *busyWidget;
 
     ContactListWidget::SelectedItemType listSelection;
 };

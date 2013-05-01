@@ -42,6 +42,8 @@
 #include <KFileDialog>
 #include <KSettings/Dialog>
 #include <KMenu>
+#include <KPixmapSequence>
+#include <KPixmapSequenceWidget>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -75,6 +77,10 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
+
+    d->busyWidget = new KPixmapSequenceWidget(this);
+    //apparently KPixmapSequence has only few sizes, 22 is one of them
+    d->busyWidget->setSequence(KPixmapSequence("process-working", 22));
 
 //     d->delegate = new ContactDelegate();
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
@@ -564,6 +570,7 @@ void ContactListWidget::onShowAllContacts()
     guiConfigGroup.writeEntry("shown_contacts", "all");
     guiConfigGroup.config()->sync();
 
+    d->busyWidget->hide();
 }
 
 void ContactListWidget::onShowUnblockedContacts()
@@ -987,4 +994,16 @@ void ContactListWidget::onCustomContextMenuRequested(const QPoint &pos)
         menu->exec(QCursor::pos());
         menu->deleteLater();
     }
+}
+
+void ContactListWidget::resizeEvent(QResizeEvent* event)
+{
+    Q_D(ContactListWidget);
+
+    QTreeView::resizeEvent(event);
+
+    d->busyWidget->setGeometry(size().width() / 2 - 11,
+                               size().height() / 2 - 11,
+                               22,
+                               22);
 }
