@@ -68,7 +68,7 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
         presenceMessage.clear();
     }
 
-    ui->presenceIcon->setPixmap(presence.icon().pixmap(16, 16));
+    ui->presenceIcon->setPixmap(presence.icon().pixmap(KIconLoader::SizeSmall, KIconLoader::SizeSmall));
     ui->presenceLabel->setText(presenceText);
     ui->presenceMessageLabel->setText(presenceMessage);
 
