@@ -34,16 +34,44 @@
 #include <KToolInvocation>
 #include <KDebug>
 
+
+bool contactLessThan(const QVariant &left, const QVariant &right)
+{
+    KTp::ContactPtr c1 = left.value<KTp::ContactPtr>();
+    KTp::ContactPtr c2 = right.value<KTp::ContactPtr>();
+
+    if (c1.isNull() && !c2.isNull()) {
+        return true;
+    }
+
+    if (!c1.isNull() && c2.isNull()) {
+        return false;
+    }
+
+    if (c1.isNull() && c2.isNull()) {
+        return false;
+    }
+
+    if (!c1.isNull() && !c2.isNull()) {
+        return c1->presence() < c2->presence();
+    }
+
+    return false;
+}
+
+//-----------------------------------------------------------------------------
+
 PersonToolTip::PersonToolTip(const QModelIndex &index) :
     QWidget(0),
     ui(new Ui::PersonToolTip)
 {
     ui->setupUi(this);
     ui->nameLabel->setText(index.data(Qt::DisplayRole).toString());
-    ui->idLabel->setText(index.data(KTp::IdRole).toString());
     ui->avatarLabel->setScaledContents(false);
     ui->avatarLabel->setAlignment(Qt::AlignCenter);
-    ui->contactsLabel->setText(i18n("Contacts"));;
+    ui->contactsLabel->setText(i18n("Contacts"));
+    ui->contactsWidget->setLayout(new QGridLayout(ui->contactsWidget));
+    qobject_cast<QGridLayout*>(ui->contactsWidget->layout())->setColumnStretch(1, 500);
 
     QVariantList avatarsList = index.data(KTp::ContactAvatarPathRole).toList();
     if (avatarsList.isEmpty()) {
@@ -74,18 +102,28 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
     ui->presenceLabel->setText(presenceText);
     ui->presenceMessageLabel->setText(presenceMessage);
 
-    QString contactIds;
+    int row = 0;
 
-    Q_FOREACH (const QVariant &contactVariant, index.data(KTp::ContactRole).toList()) {
+    QVariantList contacts = index.data(KTp::ContactRole).toList();
+
+    qSort(contacts.begin(), contacts.end(), contactLessThan);
+
+    Q_FOREACH (const QVariant &contactVariant, contacts) {
         const KTp::ContactPtr contact = contactVariant.value<KTp::ContactPtr>();
 
         if (!contact.isNull()) {
-            contactIds.append(contact->id());
-            contactIds.append("\n");
+            QLabel *contactPresenceLabel = new QLabel(ui->contactsWidget);
+            contactPresenceLabel->setPixmap(contact->presence().icon().pixmap(KIconLoader::SizeSmall, KIconLoader::SizeSmall));
+
+            QLabel *contactIdLabel = new QLabel(ui->contactsWidget);
+            contactIdLabel->setText(contact->id());
+
+            qobject_cast<QGridLayout*>(ui->contactsWidget->layout())->addWidget(contactPresenceLabel, row, 0);
+            qobject_cast<QGridLayout*>(ui->contactsWidget->layout())->addWidget(contactIdLabel, row, 1);
+
+            row++;
         }
     }
-
-    ui->idLabel->setText(contactIds.trimmed());
 
     connect(ui->presenceMessageLabel, SIGNAL(linkActivated(QString)), this, SLOT(openLink(QString)));
 
