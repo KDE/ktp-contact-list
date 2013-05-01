@@ -53,7 +53,9 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
         ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
     }
 
-    KTp::Presence presence(Tp::Presence((Tp::ConnectionPresenceType)index.data(KTp::ContactPresenceTypeRole).toUInt(), QString(), QString()));
+    KTp::Presence presence(Tp::Presence((Tp::ConnectionPresenceType)index.data(KTp::ContactPresenceTypeRole).toUInt(),
+                                        QString(), //the presence name is not needed, saves one call to the model
+                                        index.data(KTp::ContactPresenceMessageRole).toString()));
 
     QString presenceMessage = presence.statusMessage();
     QString presenceText = presence.displayString();
