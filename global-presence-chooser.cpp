@@ -94,21 +94,21 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         const QFontMetrics fontMetrics(KGlobalSettings::generalFont());
         return QSize(0, qMax(fontMetrics.height(), (int)(KIconLoader::SizeSmall)) + 8);
     }
-    if (index.row() == rowCount(index.parent())-1) {
+    if (index.row() == rowCount(QModelIndex())-1) {
         switch(role) {
         case Qt::DisplayRole:
             return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
             return KIcon("configure");
         }
-    } else if (index.row() == rowCount(index.parent())-2) {
+    } else if (index.row() == rowCount(QModelIndex())-2) {
         switch(role) {
             case Qt::DisplayRole:
                 return i18n("Now listening to...");
             case Qt::DecorationRole:
                 return KIcon("speaker");
         }
-    } else if (m_temporaryPresence.isValid() && index.row() == rowCount(index.parent()) -3) {
+    } else if (m_temporaryPresence.isValid() && index.row() == rowCount(QModelIndex()) -3) {
         switch(role) {
         case Qt::DisplayRole:
             return m_temporaryPresence.statusMessage();
@@ -178,20 +178,17 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     KComboBox(parent),
     m_globalPresence(new KTp::GlobalPresence(this)),
     m_model(new PresenceModel(this)),
-    m_modelExtended(new PresenceModelExtended(m_model, this))
+    m_modelExtended(new PresenceModelExtended(m_model, this)),
+    m_busyOverlay(new KPixmapSequenceOverlayPainter(this)),
+    m_changePresenceMessageButton(new QPushButton(this))
 {
     this->setModel(m_modelExtended);
-    setEditable(false);
     //needed for mousemove events
     setMouseTracking(true);
 
-    m_busyOverlay = new KPixmapSequenceOverlayPainter(this);
     m_busyOverlay->setSequence(KPixmapSequence("process-working"));
-    m_busyOverlay->setWidget(this);
+    setEditable(false);
 
-    onPresenceChanged(m_globalPresence->currentPresence());
-
-    m_changePresenceMessageButton = new QPushButton(this);
     m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
@@ -201,6 +198,9 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
     connect(m_changePresenceMessageButton, SIGNAL(clicked(bool)), this, SLOT(onChangePresenceMessageClicked()));
 
+    onPresenceChanged(m_globalPresence->currentPresence());
+    //we need to check if there is some account connecting and if so, spin the spinner
+    onConnectionStatusChanged(m_globalPresence->connectionStatus());
 }
 
 void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accountManager)
@@ -304,6 +304,19 @@ bool GlobalPresenceChooser::event(QEvent *e)
     return KComboBox::event(e); // krazy:exclude=qclasses
 }
 
+void GlobalPresenceChooser::setEditable(bool editable)
+{
+    if (editable) {
+        m_busyOverlay->setWidget(0);
+    } else {
+        m_busyOverlay->setWidget(this);
+        if (m_globalPresence->connectionStatus() == Tp::ConnectionStatusConnecting) {
+            m_busyOverlay->start(); // If telepathy is still connecting, overlay must be spinning again.
+        }
+    }
+    KComboBox::setEditable(editable);
+}
+
 void GlobalPresenceChooser::onCurrentIndexChanged(int index)
 {
     if (index == -1) {
@@ -379,7 +392,6 @@ void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
             if (itemPresence != m_modelExtended->temporaryPresence()) {
                 m_modelExtended->removeTemporaryPresence();
             }
-            m_busyOverlay->stop();
             return;
         }
     }

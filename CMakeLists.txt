@@ -1,5 +1,7 @@
 project (ktp-contactlist)
 
+set(KTP_CONTACT_LIST_VERSION "0.6.1")
+
 set (CMAKE_MODULE_PATH
      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
      ${CMAKE_MODULE_PATH}
@@ -36,7 +38,6 @@ set (ktp_contactlist_SRCS kpeople-proxy.cpp
      contact-delegate-overlay.cpp
      contact-delegate.cpp
      contact-delegate-compact.cpp
-     contacts-model.cpp
      account-button.cpp
      account-buttons-panel.cpp
      filter-bar.cpp
@@ -53,6 +54,7 @@ set (ktp_contactlist_SRCS kpeople-proxy.cpp
      tooltips/persontooltip.cpp
 )
 
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 kde4_add_ui_files (ktp_contactlist_SRCS
                    main-widget.ui
@@ -75,6 +77,7 @@ target_link_libraries (ktp-contactlist
                        ${KDE4_KCMUTILS_LIBS}
                        kpeople
                        ${TELEPATHY_LOGGER_QT4_LIBRARIES}
+                       ${KDE4_KNOTIFYCONFIG_LIBS}
 )
 
 # Install:

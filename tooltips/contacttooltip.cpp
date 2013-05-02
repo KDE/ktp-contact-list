@@ -78,7 +78,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
 
     const Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
     if (!account.isNull()) {
-        ui->accountLabel->setText(i18n("Account: %1").arg(account->displayName()));
+        ui->accountLabel->setText(i18n("Account: %1", account->displayName()));
     }
 
     connect(ui->presenceMessageLabel, SIGNAL(linkActivated(QString)), this, SLOT(openLink(QString)));

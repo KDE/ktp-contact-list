@@ -33,14 +33,13 @@
 #include <KDE/KIcon>
 
 #include <KTp/types.h>
-#include <KDebug>
 
 const int SPACING = 2;
 const int ACCOUNT_ICON_SIZE = 22;
 const qreal GROUP_ICON_OPACITY = 0.6;
 
-AbstractContactDelegate::AbstractContactDelegate(QObject* parent)
-        : QStyledItemDelegate(parent)
+AbstractContactDelegate::AbstractContactDelegate(QObject *parent)
+    : QStyledItemDelegate(parent)
 {
 }
 
@@ -48,7 +47,7 @@ AbstractContactDelegate::~AbstractContactDelegate()
 {
 }
 
-void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void AbstractContactDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType || index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
         paintContact(painter, option, index);
@@ -57,7 +56,7 @@ void AbstractContactDelegate::paint(QPainter* painter, const QStyleOptionViewIte
     }
 }
 
-QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType || index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
         return sizeHintContact(option, index);
@@ -135,9 +134,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QRect groupLabelRect = groupRect.adjusted(expandSignOption.rect.width() + SPACING * 2, 0, -groupIconRect.width() -SPACING, 0);
     QString countsString = QString("(%1/%2)").arg(index.data(KTp::HeaderOnlineUsersRole).toString(),
                                                   index.data(KTp::HeaderTotalUsersRole).toString());
-
     QString groupHeaderString =  index.data(Qt::DisplayRole).toString();
-
     QFontMetrics groupFontMetrics(groupFont);
 
     painter->setFont(groupFont);
@@ -158,6 +155,7 @@ QSize AbstractContactDelegate::sizeHintHeader(const QStyleOptionViewItem &option
 {
     Q_UNUSED(option)
     Q_UNUSED(index)
+
     // Add one point to the bottom for the 1px line
     return QSize(0, qMax(ACCOUNT_ICON_SIZE, KGlobalSettings::smallestReadableFont().pixelSize()) + SPACING + 1);
 }

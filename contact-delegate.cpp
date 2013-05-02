@@ -68,29 +68,33 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     iconRect.setSize(QSize(m_avatarSize, m_avatarSize));
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
-    QPixmap avatar;
-    avatar.load(index.data(KTp::ContactAvatarPathRole).toString());
-
-    bool noContactAvatar = avatar.isNull();
-
-    if (noContactAvatar) {
-        avatar = SmallIcon("im-user", KIconLoader::SizeMedium);
+    QPixmap avatar(qvariant_cast<QPixmap>(index.data(KTp::ContactAvatarPixmapRole)));
+    if (index.data(KTp::ContactUnreadMessageCountRole).toInt() > 0) {
+        avatar = SmallIcon("mail-unread-new", KIconLoader::SizeMedium);
     }
 
     QPainterPath roundedPath;
     roundedPath.addRoundedRect(iconRect, 20, 20, Qt::RelativeSize);
 
-    if (!noContactAvatar) {
-        painter->save();
-        painter->setClipPath(roundedPath);
-    }
+    painter->save();
+    painter->setClipPath(roundedPath);
 
     style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-    if (!noContactAvatar) {
-        painter->restore();
-        painter->drawPath(roundedPath);
-    }
+    painter->restore();
+
+    QPen thinLinePen;
+    thinLinePen.setWidth(0);
+    thinLinePen.setColor(option.palette.color(QPalette::Disabled, QPalette::Text));
+
+    painter->save();
+
+    painter->setPen(thinLinePen);
+    painter->setRenderHint(QPainter::Antialiasing, false);
+    painter->drawPath(roundedPath);
+
+    //clear the font and AA setting
+    painter->restore();
 
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;

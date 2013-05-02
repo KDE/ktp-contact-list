@@ -51,6 +51,7 @@ public:
 
 protected:
     virtual bool event(QEvent *event);
+    virtual void setEditable(bool editable); /** Hides overlay and calls ancestor's method. */
 
 private Q_SLOTS:
     void onAccountManagerReady(Tp::PendingOperation *op);

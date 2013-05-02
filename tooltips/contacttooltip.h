@@ -38,7 +38,7 @@ public:
     explicit ContactToolTip(const QModelIndex &index);
     ~ContactToolTip();
 
-    static QString getTextWithHyperlinks(QString text);
+    static QString getTextWithHyperlinks(QString text);  
 
 public slots:
     void openLink(QString);

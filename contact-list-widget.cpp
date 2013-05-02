@@ -44,6 +44,7 @@
 #include <KMenu>
 #include <KPixmapSequence>
 #include <KPixmapSequenceWidget>
+#include <KNotifyConfigWidget>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -65,9 +66,7 @@
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
 #include "kpeople-proxy.h"
-#include "contacts-model.h"
 #include "context-menu.h"
-
 
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
@@ -103,19 +102,18 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->translationProxy = new KTpTranslationProxy(this);
     d->translationProxy->setSourceModel(d->presenceModel);
 
-    KTp::GroupsTreeProxyModel *groupsProxy = new KTp::GroupsTreeProxyModel(d->translationProxy);
+    d->groupsProxy = new KTp::GroupsTreeProxyModel(d->translationProxy);
 
     d->modelFilter = new KTp::ContactsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
-    d->modelFilter->setSourceModel(groupsProxy);
+    d->modelFilter->setSourceModel(d->groupsProxy);
     d->modelFilter->setCapabilityFilterFlags(KTp::ContactsFilterModel::DoNotFilterByCapability);
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
     d->modelFilter->sort(0);
 
-    setModel(d->modelFilter);
-
     setItemDelegate(d->compactDelegate);
+    setModel(d->modelFilter);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
 
     d->contextMenu = new ContextMenu(this);
@@ -126,6 +124,8 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 //
 //     connect(d->groupsModel, SIGNAL(operationFinished(Tp::PendingOperation*)),
 //             this, SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+//     connect(d->modelFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
+//             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
 
     header()->hide();
     setRootIsDecorated(false);
@@ -139,7 +139,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 //     viewport()->setAcceptDrops(true);
 //     setDropIndicatorShown(true);
 
-    QString delegateMode = guiConfigGroup.readEntry("selected_delegate", "normal");
+//     QString delegateMode = guiConfigGroup.readEntry("selected_delegate", "normal");
 
 //     if (delegateMode == QLatin1String("full")) {
 //         setItemDelegate(d->delegate);
@@ -150,17 +150,14 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 
 //     }
 
-//     addOverlayButtons();
-//     emit enableOverlays(guiConfigGroup.readEntry("selected_delegate", "normal") == QLatin1String("full"));
-
-//     QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
-//     if (shownContacts == "unblocked") {
-//         d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::HideBlocked);
-//     } else if (shownContacts == "blocked") {
-//         d->modelFilter->setSubscriptionStateFilterFlags(AccountsFilterModel::ShowOnlyBlocked);
-//     } else {
-//         d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
-//     }
+    QString shownContacts = guiConfigGroup.readEntry("shown_contacts", "unblocked");
+    if (shownContacts == "unblocked") {
+        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
+    } else if (shownContacts == "blocked") {
+        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
+    } else {
+        d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
+    }
 
     connect(this, SIGNAL(clicked(QModelIndex)),
             this, SLOT(onContactListClicked(QModelIndex)));
@@ -200,6 +197,22 @@ void ContactListWidget::showSettingsKCM()
 
     dialog->addModule("kcm_ktp_accounts");
     dialog->addModule("kcm_ktp_integration_module");
+
+    // Setup notifications menu
+    KNotifyConfigWidget *notificationWidget = new KNotifyConfigWidget(dialog);
+    notificationWidget->setApplication("ktelepathy");
+    connect(dialog, SIGNAL(accepted()),
+            notificationWidget, SLOT(save()));
+
+    connect(notificationWidget, SIGNAL(changed(bool)),
+            dialog, SLOT(enableButtonApply(bool)));
+
+    connect(dialog,SIGNAL(applyClicked()),
+            notificationWidget, SLOT(save()));
+
+    KPageWidgetItem* notificationPage = new KPageWidgetItem(notificationWidget, i18n("Notifications"));
+    notificationPage->setIcon(KIcon("preferences-desktop-notification"));
+    dialog->addPage(notificationPage);
 
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
@@ -402,17 +415,15 @@ void ContactListWidget::addOverlayButtons()
 void ContactListWidget::toggleGroups(bool show)
 {
     Q_D(ContactListWidget);
-// 
-// 
+
     if (show) {
-//         setModel(d->modelFilter);
+        d->modelFilter->setSourceModel(d->groupsProxy);
+        for (int i = 0; i < d->modelFilter->rowCount(); i++) {
+            expand(d->modelFilter->index(i, 0));
+        }
     } else {
-//         setModel(d->translationProxy);
+        d->modelFilter->setSourceModel(d->translationProxy);
     }
-// 
-//     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
-//         onNewGroupModelItemsInserted(d->modelFilter->index(i, 0, QModelIndex()), 0, 0);
-//     }
 }
 
 void ContactListWidget::toggleOfflineContacts(bool show)
@@ -422,14 +433,14 @@ void ContactListWidget::toggleOfflineContacts(bool show)
     d->showOffline = show;
     d->modelFilter->setPresenceTypeFilterFlags(show ? KTp::ContactsFilterModel::DoNotFilterByPresence : KTp::ContactsFilterModel::ShowOnlyConnected);
     d->modelFilter->sort(0);
-    kDebug() << "Show:" << show << "Mode:" << d->modelFilter->presenceTypeFilterFlags();
 }
 
 void ContactListWidget::toggleSortByPresence(bool sort)
 {
     Q_D(ContactListWidget);
 
-    d->modelFilter->setSortRole(sort ? KTp::ContactPresenceTypeRole : Qt::DisplayRole);
+    //typecast to int before passing to setSortRole to avoid false cpp warning about mixing enum types
+    d->model->setSortRole(sort ? (int)KTp::ContactPresenceTypeRole : (int)Qt::DisplayRole);
 }
 
 void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -544,8 +555,6 @@ void ContactListWidget::onShowAllContacts()
 {
     Q_D(ContactListWidget);
 
-    kDebug() << d->model->rowCount();
-
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
 
     for (int i = 0; i < d->modelFilter->rowCount(); i++) {
@@ -600,6 +609,12 @@ void ContactListWidget::onShowBlockedContacts()
 void ContactListWidget::setFilterString(const QString& string)
 {
     Q_D(ContactListWidget);
+
+//     if (string.isEmpty()) {
+//         d->model->setGroupMode(d->groupMode);
+//     } else {
+//         d->model->setGroupMode(KTp::ContactsModel::NoGrouping);
+//     }
 
     d->modelFilter->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? KTp::ContactsFilterModel::ShowOnlyConnected : KTp::ContactsFilterModel::DoNotFilterByPresence);
     d->modelFilter->setGlobalFilterString(string);

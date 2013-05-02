@@ -33,6 +33,7 @@
 #include <KTp/Widgets/notificationconfigdialog.h>
 #include <KTp/contact-info-dialog.h>
 #include <KTp/types.h>
+#include <KTp/Models/contacts-model.h>
 
 #include <TelepathyQt/ContactManager>
 #include <TelepathyQt/Account>

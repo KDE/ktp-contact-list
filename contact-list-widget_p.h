@@ -21,24 +21,25 @@
 #define CONTACT_LIST_WIDGET_P_H
 
 #include <TelepathyQt/Types>
+#include <KTp/Models/contacts-model.h>
 
 class KPixmapSequenceWidget;
 class KTpTranslationProxy;
 class PersonsPresenceModel;
 class PersonsModel;
-
 class ContextMenu;
 class ContactDelegate;
 class ContactDelegateCompact;
 
 namespace KTp {
     class ContactsFilterModel;
+    class GroupsTreeProxyModel;
 }
 
 class ContactListWidgetPrivate {
 public:
     ContactListWidgetPrivate()
-    : delegate(0),
+    : model(0),
       compactDelegate(0),
       shouldDrag(false),
       showOffline(false) {}
@@ -55,8 +56,9 @@ public:
     bool                    showOffline;
     QHash<QString, bool>    groupStates;
     KTp::ContactsFilterModel *modelFilter;
+    KTp::GroupsTreeProxyModel *groupsProxy;
     ContextMenu              *contextMenu;
-    KPixmapSequenceWidget *busyWidget;
+    KPixmapSequenceWidget    *busyWidget;
 
     ContactListWidget::SelectedItemType listSelection;
 };

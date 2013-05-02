@@ -194,10 +194,12 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
 void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
 {
     if (size == ContactDelegateCompact::Mini) {
-        m_spacing = 2;
-        m_avatarSize = IconSize(KIconLoader::Toolbar);
-        m_presenceIconSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
-        m_clientTypeIconSize = qMax(12, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
+        m_spacing = 1;
+        int iconSize = qMax(KIconLoader::global()->currentSize(KIconLoader::Small),
+                            KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
+        m_avatarSize = iconSize;
+        m_presenceIconSize = iconSize;
+        m_clientTypeIconSize = iconSize;
     } else if (size == ContactDelegateCompact::Normal) {
         m_spacing = 4;
         m_avatarSize = IconSize(KIconLoader::Toolbar);
