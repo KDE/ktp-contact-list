@@ -64,7 +64,9 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
         presenceMessage.clear();
     }
 
-    ui->presenceIcon->setPixmap(presence.icon().pixmap(KIconLoader::SizeSmall, KIconLoader::SizeSmall));
+    int smallIconSize = KIconLoader::global()->currentSize(KIconLoader::Small);
+
+    ui->presenceIcon->setPixmap(presence.icon().pixmap(smallIconSize, smallIconSize));
     ui->presenceLabel->setText(presenceText);
     ui->presenceMessageLabel->setText(presenceMessage);
     ui->blockedLabel->setShown(index.data(KTp::ContactIsBlockedRole).toBool());

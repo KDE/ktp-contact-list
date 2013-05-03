@@ -66,6 +66,52 @@
 #include "tooltips/tooltipmanager.h"
 #include "context-menu.h"
 
+/** Start of bodge to work around https://bugs.freedesktop.org/show_bug.cgi?id=57739
+    Due to a bug in TelepathyQt if we request a feature that the connection does not support, it simply fails.
+
+    Local-XMPP does not support grouping, so salut the local-xmpp spec does not either.
+    When we request the ContactRosterGroups feature on all connections, salut fails and therefore doesn't show any contacts.
+
+    Fetching ContactRosterGroups seperately is not a viable option as contacts would move after loading
+
+    In this hack we make a new ConnectionFactory that fetches ContactRosterGroups on all connections _Except_ salut
+    by overriding the featuresFor method which determines which features should be added to a given DBus proxy, in this case a connection.
+
+    When https://bugs.freedesktop.org/show_bug.cgi?id=57739 is fixes all this code should be removed and we should create a standard Tp::ConnectionFactory
+ */
+namespace KTp {
+    class ConnectionFactory : Tp::ConnectionFactory {
+    public:
+        static Tp::ConnectionFactoryPtr create(const QDBusConnection &bus, const Tp::Features &features=Tp::Features());
+    protected:
+        ConnectionFactory(const QDBusConnection &bus, const Tp::Features& features);
+        virtual Tp::Features featuresFor(const Tp::DBusProxyPtr &proxy) const;
+    };
+}
+
+Tp::ConnectionFactoryPtr KTp::ConnectionFactory::create(const QDBusConnection &bus, const Tp::Features &features)
+{
+    return Tp::ConnectionFactoryPtr(new KTp::ConnectionFactory(bus, features));
+}
+
+KTp::ConnectionFactory::ConnectionFactory(const QDBusConnection &bus, const Tp::Features &features): Tp::ConnectionFactory(bus, features)
+{
+}
+
+Tp::Features KTp::ConnectionFactory::featuresFor(const Tp::DBusProxyPtr &proxy) const
+{
+    Tp::Features features = Tp::FixedFeatureFactory::featuresFor(proxy);
+
+    Tp::ConnectionPtr cm = Tp::ConnectionPtr::qObjectCast<>(proxy);
+    if (cm && cm->cmName() == QLatin1String("salut")) {
+        features.remove(Tp::Connection::FeatureRosterGroups);
+    }
+    return features;
+}
+/** End of bodge*/
+
+
+
 bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 {
     return contact->publishState() == Tp::Contact::PresenceStateAsk;
@@ -466,7 +512,7 @@ void MainWidget::setupTelepathy()
                                                                        << Tp::Account::FeatureProtocolInfo
                                                                        << Tp::Account::FeatureProfile);
 
-    Tp::ConnectionFactoryPtr connectionFactory = Tp::ConnectionFactory::create(QDBusConnection::sessionBus(),
+    Tp::ConnectionFactoryPtr connectionFactory = KTp::ConnectionFactory::create(QDBusConnection::sessionBus(),
                                                                                Tp::Features() << Tp::Connection::FeatureCore
                                                                                << Tp::Connection::FeatureRosterGroups
                                                                                << Tp::Connection::FeatureRoster
