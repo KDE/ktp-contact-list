@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=KDE IM Contacts - Metacontacts version
+GenericName=Instant Messenger Contacts - Metacontacts version
+Comment=Displays your instant messenger contacts & metacontacts
+Exec=ktp-contactlist-kpeople %u
+Type=Application
+Terminal=false
+Icon=telepathy-kde
+Categories=Qt;KDE;Network;InstantMessaging;
+X-DBUS-StartupType=Unique
+X-KDE-ServiceTypes=DBUS/InstantMessenger

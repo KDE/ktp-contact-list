@@ -63,11 +63,11 @@ kde4_add_ui_files (ktp_contactlist_SRCS
                    tooltips/persontooltip.ui
 )
 
-kde4_add_executable (ktp-contactlist
+kde4_add_executable (ktp-contactlist-kpeople
                      ${ktp_contactlist_SRCS}
 )
 
-target_link_libraries (ktp-contactlist
+target_link_libraries (ktp-contactlist-kpeople
                        ${TELEPATHY_QT4_LIBRARIES}
                        ${KTP_LIBRARIES}
                        ${KTP_MODELS_LIBRARIES}
@@ -81,10 +81,10 @@ target_link_libraries (ktp-contactlist
 )
 
 # Install:
-install (TARGETS ktp-contactlist
+install (TARGETS ktp-contactlist-kpeople
          DESTINATION ${BIN_INSTALL_DIR}
 )
 
-install (PROGRAMS ktp-contactlist.desktop
+install (PROGRAMS ktp-contactlist-kpeople.desktop
          DESTINATION ${XDG_APPS_INSTALL_DIR}
 )
