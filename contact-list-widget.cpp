@@ -192,6 +192,7 @@ void ContactListWidget::showSettingsKCM()
     notificationPage->setIcon(KIcon("preferences-desktop-notification"));
     dialog->addPage(notificationPage);
 
+    dialog->resize(700, 640);
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->exec();
 }
