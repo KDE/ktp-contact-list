@@ -28,9 +28,9 @@ include_directories (${KDE4_INCLUDES}
 )
 
 
-set (ktp_contactlist_SRCS kpeople-proxy.cpp
+set (ktp_contactlist_SRCS #kpeople-proxy.cpp
      contact-list-widget.cpp
-     context-menu.cpp
+#      context-menu.cpp
      abstract-contact-delegate.cpp
      contact-list-application.cpp
      contact-view-hover-button.cpp

@@ -25,7 +25,6 @@
 
 class KPixmapSequenceWidget;
 class KTpTranslationProxy;
-class PersonsPresenceModel;
 class PersonsModel;
 class ContextMenu;
 class ContactDelegate;
@@ -45,7 +44,6 @@ public:
       showOffline(false) {}
 
     PersonsModel           *model;
-    PersonsPresenceModel   *presenceModel;
     ContactDelegate        *delegate;
     ContactDelegateCompact *compactDelegate;
     KTpTranslationProxy    *translationProxy;

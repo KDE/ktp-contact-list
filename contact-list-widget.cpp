@@ -60,7 +60,9 @@
 
 #include <kpeople/persons-model.h>
 #include <kpeople/ktp-translation-proxy.h>
-#include <kpeople/persons-presence-model.h>
+#include <kpeople/person-plugin-manager.h>
+#include <kpeople/base-persons-data-source.h>
+#include <kpeople/im-persons-data-source.h>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
@@ -95,19 +97,15 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     connect(d->model, SIGNAL(peopleAdded()),
             this, SLOT(onShowAllContacts()));
 
-
-    d->presenceModel = new PersonsPresenceModel(this);
-    d->presenceModel->setSourceModel(d->model);
-
     d->translationProxy = new KTpTranslationProxy(this);
-    d->translationProxy->setSourceModel(d->presenceModel);
+    d->translationProxy->setSourceModel(d->model);
 
-    d->groupsProxy = new KTp::GroupsTreeProxyModel(d->translationProxy);
+//     d->groupsProxy = new KTp::GroupsTreeProxyModel(d->translationProxy);
 
     d->modelFilter = new KTp::ContactsFilterModel(this);
     d->modelFilter->setDynamicSortFilter(true);
     d->modelFilter->setSortRole(Qt::DisplayRole);
-    d->modelFilter->setSourceModel(d->groupsProxy);
+    d->modelFilter->setSourceModel(d->translationProxy);
     d->modelFilter->setCapabilityFilterFlags(KTp::ContactsFilterModel::DoNotFilterByCapability);
     d->modelFilter->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
     d->modelFilter->sort(0);
@@ -116,8 +114,8 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setModel(d->modelFilter);
     d->compactDelegate->setListMode(ContactDelegateCompact::Normal);
 
-    d->contextMenu = new ContextMenu(this);
-    d->contextMenu->setAccountManager(d->presenceModel->accountManager());
+//     d->contextMenu = new ContextMenu(this);
+//     d->contextMenu->setAccountManager(d->presenceModel->accountManager());
 
     loadGroupStatesFromConfig();
 
@@ -180,7 +178,13 @@ ContactListWidget::~ContactListWidget()
 Tp::AccountManagerPtr ContactListWidget::accountManager() const
 {
     Q_D(const ContactListWidget);
-    return d->presenceModel->accountManager();
+    IMPersonsDataSource *b = dynamic_cast<IMPersonsDataSource*>(PersonPluginManager::presencePlugin());
+
+    if (!b) {
+        kDebug() << "no cast! will now crash"; //FIXME?
+    }
+
+    return b->accountManager();
 }
 
 void ContactListWidget::showSettingsKCM()
@@ -223,7 +227,9 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
     Q_D(ContactListWidget);
 
     kDebug() << index.data(PersonsModel::UriRole).toString();
-    kDebug() << index.data(PersonsModel::StatusRole).toString();
+    kDebug() << index.data(PersonsModel::PresenceTypeRole).toString();
+
+    kDebug() << d->model->rowCount(index);
 
     if (!index.isValid()) {
         return;
@@ -991,24 +997,24 @@ void ContactListWidget::onCustomContextMenuRequested(const QPoint &pos)
 
     onContactListClicked(index);
 
-    if (!index.isValid()) {
-        return;
-    }
-
-    KTp::RowType type = (KTp::RowType)index.data(KTp::RowTypeRole).toInt();
-
-    KMenu *menu = 0;
-
-    if (type == KTp::ContactRowType || type == KTp::PersonRowType) {
-        menu = d->contextMenu->contactContextMenu(index);
-    } else if (type == KTp::GroupRowType) {
-        menu = d->contextMenu->groupContextMenu(index);
-    }
-
-    if (menu) {
-        menu->exec(QCursor::pos());
-        menu->deleteLater();
-    }
+//     if (!index.isValid()) {
+//         return;
+//     }
+//
+//     KTp::RowType type = (KTp::RowType)index.data(KTp::RowTypeRole).toInt();
+//
+//     KMenu *menu = 0;
+//
+//     if (type == KTp::ContactRowType || type == KTp::PersonRowType) {
+//         menu = d->contextMenu->contactContextMenu(index);
+//     } else if (type == KTp::GroupRowType) {
+//         menu = d->contextMenu->groupContextMenu(index);
+//     }
+//
+//     if (menu) {
+//         menu->exec(QCursor::pos());
+//         menu->deleteLater();
+//     }
 }
 
 void ContactListWidget::resizeEvent(QResizeEvent* event)
