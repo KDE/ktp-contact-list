@@ -37,8 +37,6 @@
 
 #include <KTp/types.h>
 
-#include <kpeople/persons-model.h>
-
 ContactDelegateCompact::ContactDelegateCompact(ContactDelegateCompact::ListSize size, QObject * parent)
     : AbstractContactDelegate(parent)
 {

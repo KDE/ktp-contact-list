@@ -58,11 +58,11 @@
 
 #include <QAction>
 
-#include <kpeople/persons-model.h>
-#include <kpeople/ktp-translation-proxy.h>
-#include <kpeople/person-plugin-manager.h>
-#include <kpeople/base-persons-data-source.h>
-#include <kpeople/im-persons-data-source.h>
+#include <kpeople/personsmodel.h>
+#include <kpeople/ktptranslationproxy.h>
+#include <kpeople/personpluginmanager.h>
+#include <kpeople/basepersonsdatasource.h>
+#include <kpeople/impersonsdatasource.h>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
@@ -355,65 +355,65 @@ void ContactListWidget::accountEnablingFinished(Tp::PendingOperation *op)
 void ContactListWidget::addOverlayButtons()
 {
 //     Q_D(ContactListWidget);
-// 
+//
 //     TextChannelContactOverlay *textOverlay  = new TextChannelContactOverlay(this);
 //     AudioChannelContactOverlay *audioOverlay = new AudioChannelContactOverlay(this);
 //     VideoChannelContactOverlay *videoOverlay = new VideoChannelContactOverlay(this);
-// 
+//
 //     FileTransferContactOverlay *fileOverlay  = new FileTransferContactOverlay(this);
 //     DesktopSharingContactOverlay *desktopOverlay = new DesktopSharingContactOverlay(this);
 //     LogViewerOverlay *logViewerOverlay = new LogViewerOverlay(this);
-// 
+//
 //     d->delegate->installOverlay(textOverlay);
 //     d->delegate->installOverlay(audioOverlay);
 //     d->delegate->installOverlay(videoOverlay);
 //     d->delegate->installOverlay(fileOverlay);
 //     d->delegate->installOverlay(desktopOverlay);
 //     d->delegate->installOverlay(logViewerOverlay);
-// 
+//
 //     d->delegate->setViewOnAllOverlays(this);
 //     d->delegate->setAllOverlaysActive(true);
-// 
+//
 //     connect(textOverlay, SIGNAL(overlayActivated(QModelIndex)),
 //             d->delegate, SLOT(hideStatusMessageSlot(QModelIndex)));
-// 
+//
 //     connect(textOverlay, SIGNAL(overlayHidden()),
 //             d->delegate, SLOT(reshowStatusMessageSlot()));
-// 
-// 
+//
+//
 //     connect(textOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
 //             this, SLOT(startTextChannel(Tp::AccountPtr, Tp::ContactPtr)));
-// 
+//
 //     connect(fileOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
 //             this, SLOT(startFileTransferChannel(Tp::AccountPtr, Tp::ContactPtr)));
-// 
+//
 //     connect(audioOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
 //             this, SLOT(startAudioChannel(Tp::AccountPtr, Tp::ContactPtr)));
-// 
+//
 //     connect(videoOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
 //             this, SLOT(startVideoChannel(Tp::AccountPtr, Tp::ContactPtr)));
-// 
+//
 //     connect(desktopOverlay, SIGNAL(activated(Tp::AccountPtr, Tp::ContactPtr)),
 //             this, SLOT(startDesktopSharing(Tp::AccountPtr, Tp::ContactPtr)));
-// 
+//
 //     connect(logViewerOverlay, SIGNAL(activated(Tp::AccountPtr,Tp::ContactPtr)),
 //             this, SLOT(startLogViewer(Tp::AccountPtr, Tp::ContactPtr)));
-// 
+//
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             textOverlay, SLOT(setActive(bool)));
-// 
+//
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             audioOverlay, SLOT(setActive(bool)));
-// 
+//
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             videoOverlay, SLOT(setActive(bool)));
-// 
+//
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             fileOverlay, SLOT(setActive(bool)));
-// 
+//
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             desktopOverlay, SLOT(setActive(bool)));
-// 
+//
 //     connect(this, SIGNAL(enableOverlays(bool)),
 //             logViewerOverlay, SLOT(setActive(bool)));
 }
