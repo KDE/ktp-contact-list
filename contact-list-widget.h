@@ -77,7 +77,7 @@ Q_SIGNALS:
     void enableOverlays(bool);
     void accountManagerReady(Tp::PendingOperation* op);
     void genericOperationFinished(Tp::PendingOperation* op);
-
+    void actionStarted();
 
 protected:
     void setDropIndicatorRect(const QRect &rect);

@@ -47,6 +47,9 @@ public slots:
     /** Clears the input field. */
     void clear();
 
+    /** Hides and clears the input field */
+    void hide();
+
 signals:
     /**
      * Signal that reports the name filter has been

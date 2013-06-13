@@ -74,6 +74,12 @@ void FilterBar::clear()
     m_filterInput->clear();
 }
 
+void FilterBar::hide()
+{
+    clear();
+    QWidget::hide();
+}
+
 void FilterBar::showEvent(QShowEvent* event)
 {
     if (!event->spontaneous()) {

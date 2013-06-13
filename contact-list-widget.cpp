@@ -335,6 +335,8 @@ void ContactListWidget::startTextChannel(const Tp::AccountPtr &account, const Tp
     Tp::PendingOperation *op = KTp::Actions::startChat(account, contact, true);
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+
+    Q_EMIT actionStarted();
 }
 
 void ContactListWidget::startAudioChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -342,6 +344,8 @@ void ContactListWidget::startAudioChannel(const Tp::AccountPtr &account, const T
     Tp::PendingOperation *op = KTp::Actions::startAudioCall(account, contact);
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+
+    Q_EMIT actionStarted();
 }
 
 void ContactListWidget::startVideoChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -349,6 +353,8 @@ void ContactListWidget::startVideoChannel(const Tp::AccountPtr &account, const T
     Tp::PendingOperation *op = KTp::Actions::startAudioVideoCall(account, contact);
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+
+    Q_EMIT actionStarted();
 }
 
 void ContactListWidget::startDesktopSharing(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -356,12 +362,16 @@ void ContactListWidget::startDesktopSharing(const Tp::AccountPtr &account, const
     Tp::PendingOperation *op = KTp::Actions::startDesktopSharing(account, contact);
     connect(op, SIGNAL(finished(Tp::PendingOperation*)),
             SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
+
+    Q_EMIT actionStarted();
 }
 
 void ContactListWidget::startLogViewer(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
 {
     //log viewer is not a Tp handler so does not return a pending operation
     KTp::Actions::openLogViewer(account, contact);
+
+    Q_EMIT actionStarted();
 }
 
 void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact)
@@ -389,6 +399,8 @@ void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &accoun
         connect(op, SIGNAL(finished(Tp::PendingOperation*)),
                 SIGNAL(genericOperationFinished(Tp::PendingOperation*)));
     }
+
+    Q_EMIT actionStarted();
 }
 
 void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int start, int end)

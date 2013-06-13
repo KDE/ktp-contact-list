@@ -171,6 +171,9 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_contactsListView, SIGNAL(genericOperationFinished(Tp::PendingOperation*)),
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
+    connect(m_contactsListView, SIGNAL(actionStarted()),
+            m_filterBar, SLOT(hide()));
+
     bool useGroups = guiConfigGroup.readEntry("use_groups", true);
     m_groupContactsAction->setChecked(useGroups);
     m_groupContactsAction->setActive(useGroups);
