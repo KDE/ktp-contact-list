@@ -84,6 +84,9 @@ bool ToolTipManager::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == d->view->viewport()) {
         switch (event->type()) {
+            case QEvent::WindowDeactivate:
+                hideToolTip();
+                break;
             case QEvent::Leave:
                 hideToolTip();
                 break;
@@ -131,6 +134,10 @@ void ToolTipManager::hideToolTip()
 
 void ToolTipManager::prepareToolTip()
 {
+    if (!d->view->isActiveWindow()) {
+        return;
+    }
+
     if (d->item.isValid()) {
         showToolTip(d->item);
     }
