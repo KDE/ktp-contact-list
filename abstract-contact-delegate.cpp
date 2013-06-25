@@ -34,7 +34,7 @@
 
 #include <KTp/types.h>
 
-const int SPACING = 4;
+const int SPACING = 2;
 const int ACCOUNT_ICON_SIZE = 22;
 const qreal GROUP_ICON_OPACITY = 0.6;
 
@@ -49,7 +49,7 @@ AbstractContactDelegate::~AbstractContactDelegate()
 
 void AbstractContactDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType || index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
         paintContact(painter, option, index);
     } else {
         paintHeader(painter, option, index);
@@ -58,15 +58,12 @@ void AbstractContactDelegate::paint(QPainter *painter, const QStyleOptionViewIte
 
 QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    Q_UNUSED(option);
-
-    if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
+    if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType || index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
         return sizeHintContact(option, index);
     } else {
         return sizeHintHeader(option, index);
     }
 }
-
 
 void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -137,9 +134,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     QRect groupLabelRect = groupRect.adjusted(expandSignOption.rect.width() + SPACING * 2, 0, -groupIconRect.width() -SPACING, 0);
     QString countsString = QString("(%1/%2)").arg(index.data(KTp::HeaderOnlineUsersRole).toString(),
                                                   index.data(KTp::HeaderTotalUsersRole).toString());
-
     QString groupHeaderString =  index.data(Qt::DisplayRole).toString();
-
     QFontMetrics groupFontMetrics(groupFont);
 
     painter->setFont(groupFont);
