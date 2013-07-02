@@ -50,6 +50,7 @@ public:
     QHash<QString, bool>          groupStates;
     Tp::AccountManagerPtr         accountManager;
     KTp::ContactsModel::GroupMode groupMode; // Stores current grouping mode (by accounts or by groups)
+    QPersistentModelIndex         selectedIndex;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H
