@@ -257,7 +257,7 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 
     KMenu *menu = 0;
 
-    if (type == KTp::ContactRowType) {
+    if (type == KTp::ContactRowType || type == KTp::PersonRowType) {
         menu = m_contextMenu->contactContextMenu(index);
     } else if (type == KTp::GroupRowType) {
         menu = m_contextMenu->groupContextMenu(index);

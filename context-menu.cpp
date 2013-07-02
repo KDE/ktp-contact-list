@@ -44,6 +44,10 @@
 #include <TelepathyLoggerQt4/LogManager>
 #include <TelepathyLoggerQt4/Init>
 
+#ifdef HAVE_KPEOPLE
+#include <kpeople/personpluginmanager.h>
+#endif
+
 #include "dialogs/remove-contact-dialog.h"
 
 #include "contact-list-widget_p.h"
@@ -98,8 +102,14 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     KMenu *menu = new KMenu();
     menu->addTitle(contact->alias());
 
+    QAction *action;
+
+#ifdef HAVE_KPEOPLE
+    menu->addActions(KPeople::PersonPluginManager::actionsForPerson(
+        KPeople::PersonData::createFromUri(index.data(KTp::NepomukUriRole).toString()), menu));
+#else
     //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
-    QAction *action = menu->addAction(i18n("Start Chat..."));
+    action = menu->addAction(i18n("Start Chat..."));
     action->setIcon(KIcon("text-x-generic"));
     action->setDisabled(true);
     connect(action, SIGNAL(triggered(bool)),
@@ -107,12 +117,6 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     if (index.data(KTp::ContactCanTextChatRole).toBool()) {
         action->setEnabled(true);
-    }
-
-    Tp::ConnectionPtr accountConnection = account->connection();
-    if (accountConnection.isNull()) {
-        kDebug() << "Account connection is nulled.";
-        return 0;
     }
 
     action = menu->addAction(i18n("Start Audio Call..."));
@@ -165,6 +169,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
         action->setEnabled(true);
     }
+#endif
 
     menu->addSeparator();
     action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications..."));
@@ -195,6 +200,12 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     }
 
     menu->addSeparator();
+
+    Tp::ConnectionPtr accountConnection = account->connection();
+    if (accountConnection.isNull()) {
+        kDebug() << "Account connection is nulled.";
+        return 0;
+    }
 
     if (m_mainWidget->d_ptr->model->groupMode() == KTp::ContactsModel::GroupGrouping) {
         // remove contact from group action, must be QAction because menu->addAction returns QAction

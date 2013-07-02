@@ -13,6 +13,14 @@ find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
 find_package (TelepathyLoggerQt4 0.5.60 REQUIRED)
+find_package (KPeople)
+
+macro_log_feature(KPEOPLE_FOUND "KPeople" "Support for KDE Contact Aggregation" "https://projects.kde.org/libkpeople" FALSE "" "")
+macro_display_feature_log()
+
+if (KPEOPLE_FOUND)
+    add_definitions(-DHAVE_KPEOPLE)
+endif (KPEOPLE_FOUND)
 
 include (KDE4Defaults)
 include (MacroLibrary)
@@ -77,6 +85,7 @@ target_link_libraries (ktp-contactlist
                        ${KDE4_KCMUTILS_LIBS}
                        ${TELEPATHY_LOGGER_QT4_LIBRARIES}
                        ${KDE4_KNOTIFYCONFIG_LIBS}
+                       kpeople
 )
 
 
