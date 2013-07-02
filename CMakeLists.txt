@@ -51,6 +51,7 @@ set (ktp_contactlist_SRCS
      tooltips/tooltipmanager.cpp
      tooltips/ktooltipwindow.cpp
      tooltips/contacttooltip.cpp
+     tooltips/persontooltip.cpp
 )
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
@@ -59,6 +60,7 @@ kde4_add_ui_files (ktp_contactlist_SRCS
                    main-widget.ui
                    dialogs/remove-contact-dialog.ui
                    tooltips/contacttooltip.ui
+                   tooltips/persontooltip.ui
 )
 
 kde4_add_executable (ktp-contactlist
