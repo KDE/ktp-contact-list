@@ -62,6 +62,27 @@ set (ktp_contactlist_SRCS
      tooltips/persontooltip.cpp
 )
 
+
+
+set (ktp_contactlist_LIBS
+    ${KTP_LIBRARIES}
+    ${KTP_MODELS_LIBRARIES}
+    ${KTP_WIDGETS_LIBRARIES}
+    ${KDE4_KDEUI_LIBS}
+    ${KDE4_KIO_LIBS}
+    ${KDE4_KCMUTILS_LIBS}
+    ${TELEPATHY_LOGGER_QT4_LIBRARIES}
+    ${KDE4_KNOTIFYCONFIG_LIBS}
+    )
+
+if(KPEOPLE_FOUND)
+set (ktp_contactlist_LIBS
+    ${ktp_contactlist_LIBS}
+    kpeople
+)
+endif(KPEOPLE_FOUND)
+
+
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 kde4_add_ui_files (ktp_contactlist_SRCS
@@ -76,16 +97,7 @@ kde4_add_executable (ktp-contactlist
 )
 
 target_link_libraries (ktp-contactlist
-                       ${TELEPATHY_QT4_LIBRARIES}
-                       ${KTP_LIBRARIES}
-                       ${KTP_MODELS_LIBRARIES}
-                       ${KTP_WIDGETS_LIBRARIES}
-                       ${KDE4_KDEUI_LIBS}
-                       ${KDE4_KIO_LIBS}
-                       ${KDE4_KCMUTILS_LIBS}
-                       ${TELEPATHY_LOGGER_QT4_LIBRARIES}
-                       ${KDE4_KNOTIFYCONFIG_LIBS}
-                       kpeople
+                     ${ktp_contactlist_LIBS}
 )
 
 
