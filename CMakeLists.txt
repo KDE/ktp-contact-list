@@ -13,7 +13,7 @@ find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
 find_package (TelepathyLoggerQt4 0.5.60 REQUIRED)
-find_package (KPeople)
+find_package (KPeople QUIET)
 
 macro_log_feature(KPEOPLE_FOUND "KPeople" "Support for KDE Contact Aggregation" "https://projects.kde.org/libkpeople" FALSE "" "")
 macro_display_feature_log()
