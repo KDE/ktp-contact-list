@@ -546,8 +546,10 @@ void ContactListWidget::keyPressEvent(QKeyEvent *event)
     //we don't want people starting chats using single click, we can't use activated()
     //and have to do it ourselves, therefore this. Change only after discussing with the team!
     if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return) {
-        //start the chat only if the index is valid and has a parent (ie. is not a group/account)
-        if (currentIndex().isValid() && currentIndex().parent().isValid()) {
+        //start the chat only if the index is valid and index is a valid contact or person
+        if (currentIndex().isValid() &&
+            (currentIndex().data(KTp::RowTypeRole).toInt() == KTp::ContactRowType
+            || currentIndex().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType)) {
             onContactListDoubleClicked(currentIndex());
         }
     }
