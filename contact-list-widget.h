@@ -71,6 +71,7 @@ private Q_SLOTS:
     void startVideoChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
     void startDesktopSharing(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
     void startLogViewer(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
+    void accountEnablingFinished(Tp::PendingOperation *op);
 
 
 Q_SIGNALS:
