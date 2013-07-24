@@ -20,6 +20,7 @@ macro_display_feature_log()
 
 if (KPEOPLE_FOUND)
     add_definitions(-DHAVE_KPEOPLE)
+    include_directories(${KPEOPLE_INCLUDES})
 endif (KPEOPLE_FOUND)
 
 include (KDE4Defaults)
@@ -36,7 +37,7 @@ include_directories (${KDE4_INCLUDES}
 )
 
 
-set (ktp_contactlist_SRCS
+set (ktp_contactlist_SRCS 
      contact-list-widget.cpp
      context-menu.cpp
      abstract-contact-delegate.cpp
@@ -78,7 +79,8 @@ set (ktp_contactlist_LIBS
 if(KPEOPLE_FOUND)
 set (ktp_contactlist_LIBS
     ${ktp_contactlist_LIBS}
-    kpeople
+    ${KPEOPLE_LIBRARY}
+    ${KPEOPLEWIDGETS_LIBRARY}
 )
 endif(KPEOPLE_FOUND)
 

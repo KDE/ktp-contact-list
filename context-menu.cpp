@@ -46,6 +46,7 @@
 
 #ifdef HAVE_KPEOPLE
 #include <kpeople/personpluginmanager.h>
+#include <kpeople/widgets/persondetailsdialog.h>
 #endif
 
 #include "dialogs/remove-contact-dialog.h"
@@ -346,13 +347,24 @@ void ContextMenu::onShowInfoTriggered()
         return;
     }
 
-    Tp::AccountPtr account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-    Tp::ContactPtr contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+#ifdef HAVE_KPEOPLE
+    const QUrl &uri = m_currentIndex.data(KTp::NepomukUriRole).toUrl();
+    KPeople::PersonDataPtr person = KPeople::PersonData::createFromUri(uri);
+    if (person->isValid()) {
+        KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
+        view->setPerson(person);
+        view->setAttribute(Qt::WA_DeleteOnClose);
+        view->show();
+    }
+#else
+    const Tp::AccountPtr &account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+    const Tp::ContactPtr &contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
     if (account && contact) {
         KTp::ContactInfoDialog* contactInfoDialog = new KTp::ContactInfoDialog(account, contact, m_mainWidget);
         contactInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
         contactInfoDialog->show();
     }
+#endif
 }
 
 void ContextMenu::onStartTextChatTriggered()
