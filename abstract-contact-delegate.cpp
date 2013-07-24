@@ -108,6 +108,10 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
     expandSignOption.rect.setSize(QSize(iconSize, iconSize));
     expandSignOption.rect.moveLeft(groupRect.left());
     expandSignOption.rect.moveTop(groupRect.top() + groupRect.height()/2 - expandSignOption.rect.height()/2);
+    // simulates mouseover to highlight arrow when selected with keyboard
+    if (option.state & QStyle::State_Selected) {
+	expandSignOption.state |= QStyle::State_MouseOver;
+    }
 
     //paint the expand sign
     if (option.state & QStyle::State_Open) {
