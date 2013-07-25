@@ -26,7 +26,9 @@
 
 #include <TelepathyQt/Types>
 
+#ifdef HAVE_TPLOGGERQT
 #include <TelepathyLoggerQt4/LogManager>
+#endif
 
 #include "contact-list-widget.h"
 
@@ -70,7 +72,9 @@ private:
     ContactListWidget     *m_mainWidget;
     QPersistentModelIndex  m_currentIndex;
     Tp::AccountManagerPtr  m_accountManager;
+#ifdef HAVE_TPLOGGERQT
     Tpl::LogManagerPtr     m_logManager;
+#endif
 };
 
 #endif // CONTEXT_MENU_H

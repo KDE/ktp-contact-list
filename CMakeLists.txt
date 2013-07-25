@@ -12,10 +12,11 @@ set(KDE_MIN_VERSION "4.4.75")
 find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
-find_package (TelepathyLoggerQt4 0.5.60 REQUIRED)
+find_package (TelepathyLoggerQt4 0.5.60 QUIET)
 find_package (KPeople QUIET)
 
 macro_log_feature(KPEOPLE_FOUND "KPeople" "Support for KDE Contact Aggregation" "https://projects.kde.org/libkpeople" FALSE "" "")
+macro_log_feature(TELEPATHY_LOGGER_QT4_FOUND "TelepatyLoggerQt4" "Qt bindings for TelepathyLogger. This is needed to provide access to chat logs. HIGHLY recommended" "http://projects.kde.org/telepathy-logger-qt" FALSE "" "")
 macro_display_feature_log()
 
 if (KPEOPLE_FOUND)
@@ -23,16 +24,19 @@ if (KPEOPLE_FOUND)
     include_directories(${KPEOPLE_INCLUDES})
 endif (KPEOPLE_FOUND)
 
+if (TELEPATHY_LOGGER_QT4_FOUND)
+    add_definitions(${TELEPATHY_LOGGER_QT4_DEFINITIONS} -DHAVE_TPLOGGERQT)
+    include_directories(${TELEPATHY_LOGGER_QT4_INCLUDE_DIRS})
+endif (TELEPATHY_LOGGER_QT4_FOUND)
+
+
 include (KDE4Defaults)
 include (MacroLibrary)
 
-add_definitions (${KDE4_DEFINITIONS}
-                 ${TELEPATHY_LOGGER_QT4_DEFINITIONS}
-)
+add_definitions (${KDE4_DEFINITIONS})
 
 include_directories (${KDE4_INCLUDES}
                      ${TELEPATHY_QT4_INCLUDE_DIR}
-                     ${TELEPATHY_LOGGER_QT4_INCLUDE_DIRS}
                      ${KTP_INCLUDE_DIR}
 )
 
@@ -72,7 +76,7 @@ set (ktp_contactlist_LIBS
     ${KDE4_KDEUI_LIBS}
     ${KDE4_KIO_LIBS}
     ${KDE4_KCMUTILS_LIBS}
-    ${TELEPATHY_LOGGER_QT4_LIBRARIES}
+    ${TELEPATHY_QT4_LIBRARIES}
     ${KDE4_KNOTIFYCONFIG_LIBS}
     )
 
@@ -83,6 +87,13 @@ set (ktp_contactlist_LIBS
     ${KPEOPLEWIDGETS_LIBRARY}
 )
 endif(KPEOPLE_FOUND)
+
+if (TELEPATHY_LOGGER_QT4_FOUND)
+set(ktp_contactlist_LIBS
+    ${ktp_contactlist_LIBS}
+    ${TELEPATHY_LOGGER_QT4_LIBRARIES}
+)
+endif (TELEPATHY_LOGGER_QT4_FOUND)
 
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)

@@ -40,9 +40,11 @@
 #include <TelepathyQt/Account>
 #include <TelepathyQt/PendingOperation>
 
+#ifdef HAVE_TPLOGGERQT
 #include <TelepathyLoggerQt4/Entity>
 #include <TelepathyLoggerQt4/LogManager>
 #include <TelepathyLoggerQt4/Init>
+#endif
 
 #ifdef HAVE_KPEOPLE
 #include <kpeople/personpluginmanager.h>
@@ -58,8 +60,10 @@ ContextMenu::ContextMenu(ContactListWidget *mainWidget)
 {
     m_mainWidget = mainWidget;
 
+#ifdef HAVE_TPLOGGERQT
     Tpl::init();
     m_logManager = Tpl::LogManager::instance();
+#endif
 }
 
 
@@ -71,7 +75,9 @@ ContextMenu::~ContextMenu()
 void ContextMenu::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     m_accountManager = accountManager;
+#ifdef HAVE_TPLOGGERQT
     m_logManager->setAccountManagerPtr(accountManager);
+#endif
 }
 
 KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
@@ -166,10 +172,12 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     connect(action, SIGNAL(triggered(bool)),
             SLOT(onOpenLogViewerTriggered()));
 
+#ifdef HAVE_TPLOGGERQT
     Tpl::EntityPtr entity = Tpl::Entity::create(contact, Tpl::EntityTypeContact);
     if (m_logManager->exists(account, entity, Tpl::EventTypeMaskText)) {
         action->setEnabled(true);
     }
+#endif
 #endif
 
     menu->addSeparator();
