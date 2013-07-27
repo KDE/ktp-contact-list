@@ -63,7 +63,7 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
 
     ui->presenceIcon->setPixmap(KIcon(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(smallIconSize, smallIconSize));
     ui->presenceLabel->setText(index.data(KTp::ContactPresenceNameRole).toString());
-    ui->presenceMessageLabel->setText(index.data(KTp::ContactPresenceMessageRole).toString());
+    ui->presenceMessageLabel->setText(getTextWithHyperlinks(index.data(KTp::ContactPresenceMessageRole).toString()));
 
     //collect child indexes for sorting
     QList<QVariant> indexes;
