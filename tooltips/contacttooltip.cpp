@@ -68,7 +68,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
 
     ui->presenceIcon->setPixmap(presence.icon().pixmap(smallIconSize, smallIconSize));
     ui->presenceLabel->setText(presenceText);
-    ui->presenceMessageLabel->setText(presenceMessage);
+    ui->presenceMessageLabel->setText(getTextWithHyperlinks(presenceMessage));
     ui->blockedLabel->setShown(index.data(KTp::ContactIsBlockedRole).toBool());
 
     const Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
