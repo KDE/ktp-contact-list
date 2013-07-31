@@ -1,6 +1,6 @@
 project (ktp-contactlist)
 
-set(KTP_CONTACT_LIST_VERSION "0.6.2")
+set(KTP_CONTACT_LIST_VERSION "0.6.3")
 
 set (CMAKE_MODULE_PATH
      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
