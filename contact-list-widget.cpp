@@ -59,6 +59,11 @@
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
 
+
+#ifdef HAVE_KPEOPLE
+#include <kpeople/personsmodel.h>
+#endif
+
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
       d_ptr(new ContactListWidgetPrivate)
@@ -683,6 +688,11 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
     }
 
     mimeData->setData("application/vnd.telepathy.contact", encodedData);
+
+    qDebug() <<  index.data(KTp::NepomukUriRole).toString().toLatin1();
+
+    mimeData->setData("application/vnd.kpeople.uri", index.data(KTp::NepomukUriRole).toString().toLatin1());
+
     QPixmap dragIndicator = QPixmap::grabWidget(this, visualRect(index).adjusted(3,3,3,3));
 
     QDrag *drag = new QDrag(this);
@@ -726,7 +736,19 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             requestFileTransferChannels(account, contact, filenames);
             event->acceptProposedAction();
         }
+    } else if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType && event->mimeData()->hasFormat("application/vnd.kpeople.uri")) {
+#ifdef HAVE_KPEOPLE
+        QUrl droppedUri(index.data(KTp::NepomukUriRole).toUrl());
+        QUrl draggedUri(event->mimeData()->data("application/vnd.kpeople.uri"));
 
+        KMenu menu;
+        QAction *mergeAction = menu.addAction(i18n("Merge contacts"));
+        QAction *result = menu.exec(mapToGlobal(event->pos()));
+        if (result == mergeAction) {
+            KPeople::PersonsModel::createPersonFromUris(QList<QUrl>() << droppedUri << draggedUri);
+        }
+        event->acceptProposedAction();
+#endif
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
         kDebug() << "Contact dropped";
 
