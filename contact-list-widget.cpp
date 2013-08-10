@@ -635,7 +635,7 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
 
     QTreeView::mousePressEvent(event);
 
-    QModelIndex index = indexAt(event->pos());
+    const QModelIndex index = indexAt(event->pos());
     d->shouldDrag = false;
     d->dragSourceGroup.clear();
 
@@ -656,7 +656,7 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
 
     QTreeView::mouseMoveEvent(event);
 
-    QModelIndex index = indexAt(event->pos());
+    const QModelIndex index = indexAt(event->pos());
 
     if (!(event->buttons() & Qt::LeftButton)) {
         return;
@@ -714,7 +714,7 @@ void ContactListWidget::dropEvent(QDropEvent *event)
 {
     Q_D(ContactListWidget);
 
-    QModelIndex index = indexAt(event->pos());
+    const QModelIndex index = indexAt(event->pos());
 
     if (!index.isValid()) {
         return;
