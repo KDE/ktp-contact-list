@@ -689,7 +689,7 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
 
     mimeData->setData("application/vnd.telepathy.contact", encodedData);
 
-    qDebug() <<  index.data(KTp::NepomukUriRole).toString().toLatin1();
+    kDebug() <<  index.data(KTp::NepomukUriRole).toString().toLatin1();
 
     mimeData->setData("application/vnd.kpeople.uri", index.data(KTp::NepomukUriRole).toString().toLatin1());
 
