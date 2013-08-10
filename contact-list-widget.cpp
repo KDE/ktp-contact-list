@@ -879,9 +879,7 @@ void ContactListWidget::dragEnterEvent(QDragEnterEvent *event)
 
 void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
 {
-    Q_D(ContactListWidget);
-
-    QModelIndex index = indexAt(event->pos());
+    const QModelIndex index = indexAt(event->pos());
     setDropIndicatorRect(QRect());
 
     QAbstractItemView::dragMoveEvent(event);
@@ -891,11 +889,7 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
     if (event->mimeData()->hasUrls() && index.data(KTp::ContactCanFileTransferRole).toBool()) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
-    } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact") &&
-               (index.data(KTp::RowTypeRole).toInt() == KTp::GroupRowType ||
-                index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType)
-               && d->model->groupMode() == KTp::ContactsModel::GroupGrouping) {
-        // Contacts dropping is only allowed if groups are enabled in appearance settings.
+    } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else {
