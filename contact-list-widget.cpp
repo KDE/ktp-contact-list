@@ -235,9 +235,9 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
     if (index.parent() != d->selectedIndex && d->selectedIndex.parent() != index) {
         if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
             expand(index);
+            collapse(d->selectedIndex);
+            d->selectedIndex = index;
         }
-        collapse(d->selectedIndex);
-        d->selectedIndex = index;
     }
 }
 
