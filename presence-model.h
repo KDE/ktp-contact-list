@@ -47,6 +47,12 @@ public:
 
     void removePresence(const KTp::Presence &presence);
 
+    //updates context menu of presence applet
+    void syncCustomPresencesToDisk();
+
+    //updates context menu of presence applet
+    int updatePresenceApplet();
+
     /** Returns the index of a given presence, adding it if needed*/
     QModelIndex indexOf(const KTp::Presence &presence);
 

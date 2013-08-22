@@ -139,6 +139,9 @@ void CustomPresenceDialog::addCustomPresence()
     m_statusMessage->lineEdit()->clear();
     m_listView->setFocus();
     m_removeStatus->setEnabled(true);
+
+    m_model->syncCustomPresencesToDisk();
+    m_model->updatePresenceApplet();
 }
 
 void CustomPresenceDialog::removeCustomPresence()
@@ -153,6 +156,9 @@ void CustomPresenceDialog::removeCustomPresence()
     if (m_listView->model()->rowCount(QModelIndex()) == 0) {
         m_removeStatus->setEnabled(false);
     }
+
+    m_model->syncCustomPresencesToDisk();
+    m_model->updatePresenceApplet();
 }
 
 void CustomPresenceDialog::comboboxIndexChanged(const QString& text)

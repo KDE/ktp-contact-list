@@ -21,6 +21,7 @@
 #include "presence-model.h"
 
 #include <QtGui/QFont>
+#include <QtDBus/QtDBus>
 
 #include <KDE/KIcon>
 #include <KDE/KLocalizedString>
@@ -43,6 +44,13 @@ PresenceModel::PresenceModel(QObject *parent) :
 
 PresenceModel::~PresenceModel()
 {
+    syncCustomPresencesToDisk();
+}
+
+void PresenceModel::syncCustomPresencesToDisk()
+{
+    m_presenceGroup.deleteGroup();
+
     Q_FOREACH(const KTp::Presence &presence, m_presences) {
         if (!presence.statusMessage().isEmpty()) {
             QVariantList presenceVariant;
@@ -61,7 +69,7 @@ QVariant PresenceModel::data(const QModelIndex &index, int role) const
         kDebug() << "invalid index data requested" << index;
         return QVariant();
     }
-    
+
     KTp::Presence presence = m_presences[index.row()];
     switch (role) {
     case Qt::DisplayRole:
@@ -139,13 +147,12 @@ QModelIndex PresenceModel::addPresence(const KTp::Presence &presence)
     }
 
     QList<KTp::Presence>::iterator i = qLowerBound(m_presences.begin(), m_presences.end(), KTp::Presence(presence));
-
     m_presences.insert(i, presence);
+
     int index = m_presences.indexOf(presence);
     //this is technically a backwards and wrong, but I can't get a row from a const iterator, and using qLowerBound does seem a good approach
     beginInsertRows(QModelIndex(), index, index);
     endInsertRows();
-
     return createIndex(index, 0);
 }
 
@@ -156,9 +163,18 @@ void PresenceModel::removePresence(const KTp::Presence &presence)
     m_presences.removeOne(presence);
     endRemoveRows();
     QString id = QString::number(presence.type()).append(presence.statusMessage());
+}
 
-    if(m_presenceGroup.keyList().contains(id)) {
-        m_presenceGroup.deleteEntry(id);
-        m_presenceGroup.sync();
+int PresenceModel::updatePresenceApplet()
+{
+    if (!QDBusConnection::sessionBus().isConnected()) {
+        return 1;
     }
+
+    QDBusInterface callApplet("org.kde.Telepathy.PresenceAppletActive", "/", "", QDBusConnection::sessionBus());
+    if (callApplet.isValid()) {
+        callApplet.asyncCall("handleCustomPresenceChange");
+        return 0;
+    }
+    return 1;
 }
