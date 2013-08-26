@@ -320,7 +320,6 @@ void ContactListWidget::addOverlayButtons()
     d->delegate->installOverlay(videoOverlay);
     d->delegate->installOverlay(fileOverlay);
 
-#ifdef HAVE_TPLOGGERQT
     LogViewerOverlay *logViewerOverlay = new LogViewerOverlay(d->delegate);
     d->delegate->installOverlay(logViewerOverlay);
     connect(logViewerOverlay, SIGNAL(activated(Tp::AccountPtr,Tp::ContactPtr)),
@@ -328,7 +327,6 @@ void ContactListWidget::addOverlayButtons()
 
     connect(this, SIGNAL(enableOverlays(bool)),
             logViewerOverlay, SLOT(setActive(bool)));
-#endif
 
     d->delegate->setViewOnAllOverlays(this);
     d->delegate->setAllOverlaysActive(true);
