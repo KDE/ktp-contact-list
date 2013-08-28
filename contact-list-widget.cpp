@@ -735,18 +735,20 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             event->acceptProposedAction();
         }
     } else if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType && event->mimeData()->hasFormat("application/vnd.kpeople.uri")) {
-#ifdef HAVE_KPEOPLE
-        QUrl droppedUri(index.data(KTp::NepomukUriRole).toUrl());
-        QUrl draggedUri(event->mimeData()->data("application/vnd.kpeople.uri"));
+        if (KTp::kpeopleEnabled()) {
+            #ifdef HAVE_KPEOPLE
+            QUrl droppedUri(index.data(KTp::NepomukUriRole).toUrl());
+            QUrl draggedUri(event->mimeData()->data("application/vnd.kpeople.uri"));
 
-        KMenu menu;
-        QAction *mergeAction = menu.addAction(i18n("Merge contacts"));
-        QAction *result = menu.exec(mapToGlobal(event->pos()));
-        if (result == mergeAction) {
-            KPeople::PersonsModel::createPersonFromUris(QList<QUrl>() << droppedUri << draggedUri);
+            KMenu menu;
+            QAction *mergeAction = menu.addAction(i18n("Merge contacts"));
+            QAction *result = menu.exec(mapToGlobal(event->pos()));
+            if (result == mergeAction) {
+                KPeople::PersonsModel::createPersonFromUris(QList<QUrl>() << droppedUri << draggedUri);
+            }
+            event->acceptProposedAction();
+            #endif
         }
-        event->acceptProposedAction();
-#endif
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
         kDebug() << "Contact dropped";
 

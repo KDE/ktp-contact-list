@@ -100,72 +100,74 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     QAction *action;
 
-#ifdef HAVE_KPEOPLE
-    menu->addActions(KPeople::PersonPluginManager::actionsForPerson(
-        KPeople::PersonData::createFromUri(index.data(KTp::NepomukUriRole).toString()), menu));
-#else
-    //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
-    action = menu->addAction(i18n("Start Chat..."));
-    action->setIcon(KIcon("text-x-generic"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartTextChatTriggered()));
+    if (KTp::kpeopleEnabled()) {
+    #ifdef HAVE_KPEOPLE
+        menu->addActions(KPeople::PersonPluginManager::actionsForPerson(
+            KPeople::PersonData::createFromUri(index.data(KTp::NepomukUriRole).toString()), menu));
+    #endif
+    } else {
+        //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
+        action = menu->addAction(i18n("Start Chat..."));
+        action->setIcon(KIcon("text-x-generic"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartTextChatTriggered()));
 
-    if (index.data(KTp::ContactCanTextChatRole).toBool()) {
-        action->setEnabled(true);
+        if (index.data(KTp::ContactCanTextChatRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Start Audio Call..."));
+        action->setIcon(KIcon("audio-headset"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartAudioChatTriggered()));
+
+        if (index.data(KTp::ContactCanAudioCallRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Start Video Call..."));
+        action->setIcon(KIcon("camera-web"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartVideoChatTriggered()));
+
+        if (index.data(KTp::ContactCanVideoCallRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Send File..."));
+        action->setIcon(KIcon("mail-attachment"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartFileTransferTriggered()));
+
+        if (index.data(KTp::ContactCanFileTransferRole).toBool()) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Share my desktop..."));
+        action->setIcon(KIcon("krfb"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onStartDesktopSharingTriggered()));
+
+        if (index.data(KTp::ContactTubesRole).toStringList().contains(QLatin1String("rfb"))) {
+            action->setEnabled(true);
+        }
+
+        action = menu->addAction(i18n("Open Log Viewer..."));
+        action->setIcon(KIcon("documentation"));
+        action->setDisabled(true);
+        connect(action, SIGNAL(triggered(bool)),
+                SLOT(onOpenLogViewerTriggered()));
+
+        KTp::LogEntity entity(Tp::HandleTypeContact, contact->id());
+        if (KTp::LogManager::instance()->logsExist(account, entity)) {
+            action->setEnabled(true);
+        }
     }
-
-    action = menu->addAction(i18n("Start Audio Call..."));
-    action->setIcon(KIcon("audio-headset"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartAudioChatTriggered()));
-
-    if (index.data(KTp::ContactCanAudioCallRole).toBool()) {
-        action->setEnabled(true);
-    }
-
-    action = menu->addAction(i18n("Start Video Call..."));
-    action->setIcon(KIcon("camera-web"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartVideoChatTriggered()));
-
-    if (index.data(KTp::ContactCanVideoCallRole).toBool()) {
-        action->setEnabled(true);
-    }
-
-    action = menu->addAction(i18n("Send File..."));
-    action->setIcon(KIcon("mail-attachment"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartFileTransferTriggered()));
-
-    if (index.data(KTp::ContactCanFileTransferRole).toBool()) {
-        action->setEnabled(true);
-    }
-
-    action = menu->addAction(i18n("Share my desktop..."));
-    action->setIcon(KIcon("krfb"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onStartDesktopSharingTriggered()));
-
-    if (index.data(KTp::ContactTubesRole).toStringList().contains(QLatin1String("rfb"))) {
-        action->setEnabled(true);
-    }
-
-    action = menu->addAction(i18n("Open Log Viewer..."));
-    action->setIcon(KIcon("documentation"));
-    action->setDisabled(true);
-    connect(action, SIGNAL(triggered(bool)),
-            SLOT(onOpenLogViewerTriggered()));
-
-    KTp::LogEntity entity(Tp::HandleTypeContact, contact->id());
-    if (KTp::LogManager::instance()->logsExist(account, entity)) {
-        action->setEnabled(true);
-    }
-#endif
 
     menu->addSeparator();
     action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications..."));
@@ -342,24 +344,26 @@ void ContextMenu::onShowInfoTriggered()
         return;
     }
 
-#ifdef HAVE_KPEOPLE
-    const QUrl &uri = m_currentIndex.data(KTp::NepomukUriRole).toUrl();
-    KPeople::PersonDataPtr person = KPeople::PersonData::createFromUri(uri);
-    if (person->isValid()) {
-        KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
-        view->setPerson(person);
-        view->setAttribute(Qt::WA_DeleteOnClose);
-        view->show();
+    if (KTp::kpeopleEnabled()) {
+    #ifdef HAVE_KPEOPLE
+        const QUrl &uri = m_currentIndex.data(KTp::NepomukUriRole).toUrl();
+        KPeople::PersonDataPtr person = KPeople::PersonData::createFromUri(uri);
+        if (person->isValid()) {
+            KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
+            view->setPerson(person);
+            view->setAttribute(Qt::WA_DeleteOnClose);
+            view->show();
+        }
+    #endif
+    } else {
+        const Tp::AccountPtr &account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
+        const Tp::ContactPtr &contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
+        if (account && contact) {
+            KTp::ContactInfoDialog* contactInfoDialog = new KTp::ContactInfoDialog(account, contact, m_mainWidget);
+            contactInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
+            contactInfoDialog->show();
+        }
     }
-#else
-    const Tp::AccountPtr &account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
-    const Tp::ContactPtr &contact = m_currentIndex.data(KTp::ContactRole).value<KTp::ContactPtr>();
-    if (account && contact) {
-        KTp::ContactInfoDialog* contactInfoDialog = new KTp::ContactInfoDialog(account, contact, m_mainWidget);
-        contactInfoDialog->setAttribute(Qt::WA_DeleteOnClose);
-        contactInfoDialog->show();
-    }
-#endif
 }
 
 void ContextMenu::onStartTextChatTriggered()
