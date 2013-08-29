@@ -126,7 +126,7 @@ MainWidget::MainWidget(QWidget *parent)
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
     connect(m_contactsListView, SIGNAL(actionStarted()),
-            m_filterBar, SLOT(hide()));
+            this, SLOT(hideSearchWidget()));
 
     bool useGroups = guiConfigGroup.readEntry("use_groups", true);
     m_groupContactsAction->setChecked(useGroups);
@@ -365,13 +365,19 @@ void MainWidget::onUsePerAccountPresenceTriggered()
 
 void MainWidget::toggleSearchWidget(bool show)
 {
-        if(show) {
-            m_filterBar->show();
-        } else {
-            m_contactsListView->setFilterString(QString());
-            m_filterBar->clear();
-            m_filterBar->hide();
-        }
+    m_searchContactAction->setChecked(show);
+    if(show) {
+        m_filterBar->show();
+    } else {
+        m_contactsListView->setFilterString(QString());
+        m_filterBar->clear();
+        m_filterBar->hide();
+    }
+}
+
+void MainWidget::hideSearchWidget()
+{
+    toggleSearchWidget(false);
 }
 
 void MainWidget::setupGlobalMenu()
