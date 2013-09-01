@@ -88,6 +88,7 @@ private Q_SLOTS:
     void onUsePerAccountPresenceTriggered();
     void onJoinChatRoomRequested();                 /** join chat room action is triggered */
     void onMakeCallRequested();
+    void onMergeContactsDialogRequested();
     void onCustomContextMenuRequested(const QPoint &point);
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
 
@@ -107,6 +108,7 @@ private:
     KAction                *m_settingsDialog;
     KAction                *m_joinChatRoom;
     KAction                *m_makeCall;
+    KAction                *m_mergeContacts;
     QActionGroup           *m_contactListTypeGroup;
     QActionGroup           *m_blockedFilterGroup;
 

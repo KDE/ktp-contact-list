@@ -60,6 +60,12 @@
 #include <KStandardAction>
 #include <KWindowSystem>
 
+#ifdef HAVE_KPEOPLE
+#include <kpeople/widgets/mergedialog.h>
+#include <KPeople/PersonsModel>
+#include <KPeople/PersonsModelFeature>
+#endif
+
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
 #include "contact-list-application.h"
@@ -77,6 +83,7 @@ MainWidget::MainWidget(QWidget *parent)
       m_settingsDialog(NULL),
       m_joinChatRoom(NULL),
       m_makeCall(NULL),
+      m_mergeContacts(NULL),
       m_contactListTypeGroup(NULL),
       m_blockedFilterGroup(NULL),
       m_quitAction(NULL)
@@ -255,6 +262,19 @@ void MainWidget::onMakeCallRequested()
     KToolInvocation::kdeinitExec(QLatin1String("ktp-dialout-ui"));
 }
 
+void MainWidget::onMergeContactsDialogRequested()
+{
+#ifdef HAVE_KPEOPLE
+    KPeople::MergeDialog* mergeDialog = new KPeople::MergeDialog(this);
+    //create a new model that queries all the data otherwise we will only show IM contacts
+    KPeople::PersonsModel* model = new KPeople::PersonsModel(mergeDialog);
+    mergeDialog->setPersonsModel(model);
+    model->startQuery(KPeople::PersonsModelFeature::allFeatures());
+    mergeDialog->show();
+    mergeDialog->setAttribute(Qt::WA_DeleteOnClose);
+#endif
+}
+
 void MainWidget::closeEvent(QCloseEvent* e)
 {
     KSharedConfigPtr config = KGlobal::config();
@@ -396,6 +416,9 @@ void MainWidget::setupGlobalMenu()
     if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
         contacts->addAction(m_makeCall);
     }
+    if (KTp::kpeopleEnabled()) {
+        contacts->addAction(m_mergeContacts);
+    }
     contacts->addAction(m_settingsDialog);
     contacts->addSeparator();
     contacts->addAction(m_quitAction);
@@ -455,6 +478,10 @@ void MainWidget::setupToolBar()
 
     if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
         settingsButtonMenu->addAction(m_makeCall);
+    }
+
+    if (KTp::kpeopleEnabled()) {
+        settingsButtonMenu->addAction(m_mergeContacts);
     }
 
     settingsButtonMenu->addSeparator();
@@ -524,6 +551,7 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
 
     m_joinChatRoom = createAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
     m_makeCall = createAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
+    m_mergeContacts = createAction(i18n("Merge Contacts..."), this, SLOT(onMergeContactsDialogRequested()));
     m_addContactAction = createAction(i18n("Add New Contacts..."), this, SLOT(onAddContactRequest()), KIcon("list-add-user"));
     m_searchContactAction = createAction(i18n("Find Contact"), this, SLOT(toggleSearchWidget(bool)),
                                          guiConfigGroup.readEntry("pin_filterbar", true), KIcon("edit-find-user"));
