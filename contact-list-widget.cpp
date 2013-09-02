@@ -734,7 +734,8 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             requestFileTransferChannels(account, contact, filenames);
             event->acceptProposedAction();
         }
-    } else if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType && event->mimeData()->hasFormat("application/vnd.kpeople.uri")) {
+    } else if ((index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType || index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) &&
+        event->mimeData()->hasFormat("application/vnd.kpeople.uri")) {
         if (KTp::kpeopleEnabled()) {
             #ifdef HAVE_KPEOPLE
             QUrl droppedUri(index.data(KTp::NepomukUriRole).toUrl());
@@ -890,6 +891,9 @@ void ContactListWidget::dragMoveEvent(QDragMoveEvent *event)
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else if (event->mimeData()->hasFormat("application/vnd.telepathy.contact")) {
+        event->acceptProposedAction();
+        setDropIndicatorRect(visualRect(index));
+    } else if (event->mimeData()->hasFormat("application/vnd.kpeople.uri")) {
         event->acceptProposedAction();
         setDropIndicatorRect(visualRect(index));
     } else {
