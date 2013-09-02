@@ -637,8 +637,9 @@ void ContactListWidget::mousePressEvent(QMouseEvent *event)
     d->shouldDrag = false;
     d->dragSourceGroup.clear();
 
-    // if no contact, no drag
-    if (index.data(KTp::RowTypeRole).toInt() != KTp::ContactRowType) {
+    // if no contact or person, no drag
+    int type = index.data(KTp::RowTypeRole).toInt();
+    if (type != KTp::ContactRowType && type != KTp::PersonRowType ) {
         return;
     }
 
