@@ -84,6 +84,7 @@ private Q_SLOTS:
     void hideSearchWidget();
     void onAccountManagerReady(Tp::PendingOperation* op);
     void onAddContactRequest();
+    void onStartChatRequest();
     void onUseGlobalPresenceTriggered();
     void onUsePerAccountPresenceTriggered();
     void onJoinChatRoomRequested();                 /** join chat room action is triggered */
@@ -120,6 +121,7 @@ private:
     KDualAction            *m_groupContactsAction;
     KDualAction            *m_showOfflineAction;
     KAction                *m_searchContactAction;
+    KAction                *m_startChatAction;
     KDualAction            *m_sortByPresenceAction;
     KAction                *m_quitAction;
 

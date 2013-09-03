@@ -43,6 +43,7 @@
 #include <KTp/types.h>
 #include <KTp/Widgets/add-contact-dialog.h>
 #include <KTp/Widgets/join-chat-room-dialog.h>
+#include <KTp/Widgets/start-chat-dialog.h>
 
 #include <KDebug>
 #include <KDialog>
@@ -205,6 +206,14 @@ void MainWidget::onAddContactRequest()
     dialog->setAttribute(Qt::WA_DeleteOnClose);
     dialog->show();
 }
+
+void MainWidget::onStartChatRequest()
+{
+    KTp::StartChatDialog *dialog = new KTp::StartChatDialog(m_accountManager, this);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
+}
+
 
 void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 {
@@ -449,6 +458,7 @@ void MainWidget::setupToolBar()
     m_toolBar->addAction(m_showOfflineAction);
     m_toolBar->addAction(m_sortByPresenceAction);
     m_toolBar->addAction(m_searchContactAction);
+    m_toolBar->addAction(m_startChatAction);
 
     QWidget *toolBarSpacer = new QWidget(this);
     toolBarSpacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -556,6 +566,7 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_searchContactAction = createAction(i18n("Find Contact"), this, SLOT(toggleSearchWidget(bool)),
                                          guiConfigGroup.readEntry("pin_filterbar", true), KIcon("edit-find-user"));
     m_searchContactAction->setShortcut(KStandardShortcut::find());
+    m_startChatAction = createAction(i18n("Start a chat..."), this, SLOT(onStartChatRequest()), KIcon("telepathy-kde"));
 
     // Dual actions
     m_groupContactsAction = new KDualAction(i18n("Show Contacts by Groups"),
