@@ -64,6 +64,28 @@
 #include <kpeople/personsmodel.h>
 #endif
 
+//create a new style that does not draw the vertical lines in the tree view
+//this maps "draw branch" to "draw right arrow" and "draw down arrow"
+//we cannot just override drawBranches as then we cannot highlight the active branch
+//Qt does so by utilising some internal methods of QTreeView
+class NoLinesStyle: public QProxyStyle
+{
+    void drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const
+    {
+        if (element == QStyle::PE_IndicatorBranch) {
+            if (option->state & QStyle::State_Children) {
+                if (option->state & QStyle::State_Open) {
+                    return QProxyStyle::drawPrimitive(PE_IndicatorArrowDown, option, painter, widget);
+                } else {
+                    return QProxyStyle::drawPrimitive(PE_IndicatorArrowRight, option, painter, widget);
+                }
+            }
+        } else {
+            return QProxyStyle::drawPrimitive(element, option, painter, widget);
+        }
+    }
+};
+
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
       d_ptr(new ContactListWidgetPrivate)
@@ -80,8 +102,9 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->model->setTrackUnreadMessages(true);
     d->model->setDynamicSortFilter(true);
     d->model->setSortRole(Qt::DisplayRole);
+    d->style.reset(new NoLinesStyle());
 
-
+    setStyle(d->style.data());
     setSortingEnabled(true);
     sortByColumn(0, Qt::AscendingOrder);
     loadGroupStatesFromConfig();
@@ -94,7 +117,11 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setSortingEnabled(true);
     setEditTriggers(NoEditTriggers);
     setContextMenuPolicy(Qt::CustomContextMenu);
-    setIndentation(0);
+    if (KTp::kpeopleEnabled()) {
+        setIndentation(25);
+    } else {
+        setIndentation(0);
+    }
     setMouseTracking(true);
     setExpandsOnDoubleClick(false); //the expanding/collapsing is handled manually
     setDragEnabled(false); // we handle drag&drop ourselves
@@ -923,10 +950,11 @@ void ContactListWidget::paintEvent(QPaintEvent *event)
 
 void ContactListWidget::drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const
 {
-    Q_UNUSED(painter);
-    Q_UNUSED(rect);
-    Q_UNUSED(index);
+    if (indentation() > 0) {
+        QTreeView::drawBranches(painter, rect, index);
+    }
 
+    //if no indentation (non kpeople mode) do nothing
     // There is a 0px identation set in the constructor, with setIndentation(0).
     // Because of that, no branches are shown, so they should be disabled completely (overriding drawBranches).
     // Leaving branches enabled with 0px identation results in a 1px branch line on the left of all items,

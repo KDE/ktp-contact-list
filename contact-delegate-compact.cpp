@@ -63,10 +63,6 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &optV4, painter);
 
-    if (isSubcontact) {
-        optV4.rect.setLeft(optV4.rect.left() + 10);
-    }
-
     QRect iconRect = optV4.rect;
     iconRect.setSize(QSize(m_avatarSize, m_avatarSize));
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
