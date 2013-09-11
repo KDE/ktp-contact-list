@@ -258,14 +258,6 @@ void ContactListWidget::onContactListClicked(const QModelIndex& index)
         //replace the old value or insert new value if it isn't there yet
         d->groupStates.insert(groupId, isExpanded(index));
     }
-
-    if (index.parent() != d->selectedIndex && d->selectedIndex.parent() != index) {
-        if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
-            expand(index);
-            collapse(d->selectedIndex);
-            d->selectedIndex = index;
-        }
-    }
 }
 
 void ContactListWidget::onContactListDoubleClicked(const QModelIndex &index)
