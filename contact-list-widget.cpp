@@ -113,7 +113,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
             this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
 
     header()->hide();
-    setRootIsDecorated(false);
     setSortingEnabled(true);
     setEditTriggers(NoEditTriggers);
     setContextMenuPolicy(Qt::CustomContextMenu);
@@ -387,14 +386,32 @@ void ContactListWidget::addOverlayButtons()
             fileOverlay, SLOT(setActive(bool)));
 }
 
+void ContactListWidget::setGroupMode(KTp::ContactsModel::GroupMode groupMode)
+{
+    Q_D(ContactListWidget);
+
+    d->model->setGroupMode(groupMode);
+    //we want to draw branches for contacts, but not for headers like account names or group names
+    //so we turn it on only when we are in no grouping mode
+    if (groupMode == KTp::ContactsModel::NoGrouping) {
+        setRootIsDecorated(true);
+    } else {
+        setRootIsDecorated(true);
+    }
+}
+
 void ContactListWidget::toggleGroups(bool show)
 {
     Q_D(ContactListWidget);
 
     if (show) {
-        d->model->setGroupMode(KTp::ContactsModel::GroupGrouping);
+        setGroupMode(KTp::ContactsModel::GroupGrouping);
     } else {
-        d->model->setGroupMode(KTp::ContactsModel::AccountGrouping);
+        if (KTp::kpeopleEnabled()) {
+            setGroupMode(KTp::ContactsModel::NoGrouping);
+        } else {
+            setGroupMode(KTp::ContactsModel::AccountGrouping);
+        }
     }
     d->groupMode = d->model->groupMode();
 
@@ -604,9 +621,9 @@ void ContactListWidget::setFilterString(const QString& string)
     Q_D(ContactListWidget);
 
     if (string.isEmpty()) {
-        d->model->setGroupMode(d->groupMode);
+        setGroupMode(d->groupMode);
     } else {
-        d->model->setGroupMode(KTp::ContactsModel::NoGrouping);
+        setGroupMode(KTp::ContactsModel::NoGrouping);
     }
 
     d->model->setPresenceTypeFilterFlags(string.isEmpty() && !d->showOffline ? KTp::ContactsFilterModel::ShowOnlyConnected : KTp::ContactsFilterModel::DoNotFilterByPresence);

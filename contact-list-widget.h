@@ -23,6 +23,7 @@
 #include <QTreeView>
 #include <TelepathyQt/Types>
 #include <TelepathyQt/Connection>
+#include <KTp/Models/contacts-model.h>
 
 class ContactListWidgetPrivate;
 
@@ -95,6 +96,9 @@ protected:
     virtual void drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const;
 
 private:
+    /** Internally set the group mode used by the model. Note this function does not update d->groupMode*/
+    void setGroupMode(KTp::ContactsModel::GroupMode groupMode);
+
     void requestFileTransferChannels(const Tp::AccountPtr &account,
                                      const Tp::ContactPtr &contact,
                                      const QStringList &filenames);
