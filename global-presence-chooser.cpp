@@ -361,6 +361,9 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
                                                           QLatin1String( "org.kde.Telepathy"),
                                                           QLatin1String("deactivateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
+        // only set global presence on user change
+        KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
+        m_globalPresence->setPresence(presence);
     }
 }
 
@@ -369,7 +372,6 @@ void GlobalPresenceChooser::onAllComboChanges(int index)
     int lastPresenceIndex = m_model->rowCount();
     if(index < lastPresenceIndex) {
         KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
-        m_globalPresence->setPresence(presence);
         if ((presence.type() == Tp::ConnectionPresenceTypeOffline) ||
            (presence.type() == Tp::ConnectionPresenceTypeHidden)) {
             m_changePresenceMessageButton->hide();
