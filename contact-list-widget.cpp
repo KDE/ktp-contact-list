@@ -396,7 +396,7 @@ void ContactListWidget::setGroupMode(KTp::ContactsModel::GroupMode groupMode)
     if (groupMode == KTp::ContactsModel::NoGrouping) {
         setRootIsDecorated(true);
     } else {
-        setRootIsDecorated(true);
+        setRootIsDecorated(false);
     }
 }
 
