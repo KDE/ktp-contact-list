@@ -122,6 +122,8 @@ MainWidget::MainWidget(QWidget *parent)
             m_contactsListView, SLOT(toggleOfflineContacts(bool)));
     connect(m_sortByPresenceAction, SIGNAL(activeChanged(bool)),
             m_contactsListView, SLOT(toggleSortByPresence(bool)));
+    connect(m_metacontactToggleAction, SIGNAL(triggered(bool)),
+            this, SLOT(onMetacontactToggleTriggered()));
 
     connect(m_filterBar, SIGNAL(filterChanged(QString)),
             m_contactsListView, SLOT(setFilterString(QString)));
@@ -135,6 +137,9 @@ MainWidget::MainWidget(QWidget *parent)
 
     connect(m_contactsListView, SIGNAL(actionStarted()),
             this, SLOT(hideSearchWidget()));
+
+    connect(m_contactsListView, SIGNAL(contactSelectionChanged()),
+            this, SLOT(onContactSelectionChanged()));
 
     bool useGroups = guiConfigGroup.readEntry("use_groups", true);
     m_groupContactsAction->setChecked(useGroups);
@@ -453,6 +458,9 @@ void MainWidget::setupGlobalMenu()
 void MainWidget::setupToolBar()
 {
     m_toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    if (KTp::kpeopleEnabled()) {
+        m_toolBar->addAction(m_metacontactToggleAction);
+    }
     m_toolBar->addAction(m_addContactAction);
     m_toolBar->addAction(m_groupContactsAction);
     m_toolBar->addAction(m_showOfflineAction);
@@ -569,6 +577,14 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_startChatAction = createAction(i18n("Start a chat..."), this, SLOT(onStartChatRequest()), KIcon("telepathy-kde"));
 
     // Dual actions
+    m_metacontactToggleAction = new KDualAction(i18n("Split Selected Contacts"),
+                                                i18n("Merge Selected Contacts"),
+                                                this);
+    m_metacontactToggleAction->setActiveIcon(KIcon("list-add"));
+    m_metacontactToggleAction->setInactiveIcon(KIcon("list-remove"));
+    m_metacontactToggleAction->setActive(true);
+    m_metacontactToggleAction->setDisabled(true);
+    m_metacontactToggleAction->setAutoToggle(false);
     m_groupContactsAction = new KDualAction(i18n("Show Contacts by Groups"),
                                             i18n("Show Contacts by Accounts"),
                                             this);
@@ -623,6 +639,156 @@ void MainWidget::toggleWindowVisibility()
     } else {
         KWindowSystem::forceActiveWindow(this->effectiveWinId());
     }
+}
+
+void MainWidget::onContactSelectionChanged()
+{
+    QModelIndexList selection = m_contactsListView->selectionModel()->selectedIndexes();
+    if (selection.size() == 0) {
+        //if nothing is selected, disable the button
+        m_metacontactToggleAction->setActive(true);
+        m_metacontactToggleAction->setDisabled(true);
+        return;
+    } else if (selection.size() == 1) {
+        QModelIndex index = selection.first();
+        if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType ||
+            (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType)) {
+            //if a person is selected or a subcontact is selected, switch to unlink action and enable
+            m_metacontactToggleAction->setActive(false);
+            m_metacontactToggleAction->setEnabled(true);
+            return;
+        }
+    } else if (selection.size() > 1) {
+        bool invalid = false;
+        //we cannot merge child contact of a person with anything else
+        Q_FOREACH (const QModelIndex &index, selection) {
+            if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+                invalid = true;
+                break;
+            }
+        }
+
+        if (!invalid) {
+            m_metacontactToggleAction->setActive(true);
+            m_metacontactToggleAction->setEnabled(true);
+            return;
+        }
+    }
+
+    m_metacontactToggleAction->setActive(true);
+    m_metacontactToggleAction->setDisabled(true);
+}
+
+void MainWidget::onMetacontactToggleTriggered()
+{
+#ifdef HAVE_KPEOPLE
+    const QModelIndexList selection = m_contactsListView->selectionModel()->selectedIndexes();
+
+    Q_ASSERT(!selection.isEmpty());
+    if (m_metacontactToggleAction->isActive()) {
+        //we're merging contacts
+        bool invalid = false;
+        QModelIndex person;
+        QList<QUrl> uris;
+
+        Q_FOREACH (const QModelIndex &index, selection) {
+            if (index.parent().isValid()
+                    && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+                //we can merge only standalone contacts, not a contact that's already part of a person
+                invalid = true;
+                kDebug() << "Found selected subcontact, aborting";
+                break;
+            }
+
+            //the selection can have at most one person, so if we encounter second person
+            //we break and do nothing
+            if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+                if (person.isValid()) {
+                    invalid = true;
+                    kDebug() << "Found second person, aborting";
+                    break;
+                } else {
+                    kDebug() << "Found a person, adding";
+                    person = index;
+                }
+            }
+
+            //if we're dealing with contact that's a child of selected person
+            //(we should never get here)
+            if (index.parent().isValid() && index.parent() == person) {
+                invalid = true;
+                kDebug() << "Found subcontact of selected person, aborting";
+                break;
+            }
+
+            uris << index.data(KTp::NepomukUriRole).toUrl();
+        }
+
+        if (!invalid) {
+            KPeople::PersonsModel::createPersonFromUris(uris);
+        }
+    } else {
+        //we're removing contacts from person
+        QList<QUrl> contacts;
+        QUrl personUri;
+
+        if (selection.size() == 1) {
+            QModelIndex index = selection.first();
+            if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+                //the user selected person, which means removing the person
+                personUri = index.data(KTp::NepomukUriRole).toUrl();
+                for (int i = 0; i < m_contactsListView->model()->rowCount(index); i++) {
+                    contacts << index.child(i, 0).data(KTp::NepomukUriRole).toUrl();
+                }
+            } else {
+                //user selected one of person's contacts
+                if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+                    personUri = index.parent().data(KTp::NepomukUriRole).toUrl();
+                    contacts.append(index.data(KTp::NepomukUriRole).toUrl());
+                } else {
+                    return;
+                }
+            }
+
+            KPeople::PersonsModel::unlinkContactFromPerson(personUri, contacts);
+
+        } else if (selection.size() > 1) {
+            QModelIndex person;
+            bool invalid = false;
+            QList<QUrl> contactUris;
+            Q_FOREACH (const QModelIndex &index, selection) {
+                if (!person.isValid()) {
+                    if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+                        //if the current index is person
+                        person = index;
+
+                    } else if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+                        //if the current index is contact that has valid person as parent
+                        person = index.parent();
+                    }
+                } else {
+                    if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType
+                            || (index.parent().isValid() && index.parent() != person)) {
+                        //we can have max 1 person in the selection
+                        //second one means break; also contact from different person
+                        //than the one we already have means break
+                        kDebug() << "Found second person in selection, aborting";
+                        invalid = true;
+                        break;
+                    }
+                }
+
+                if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
+                    contactUris << index.data(KTp::NepomukUriRole).toUrl();
+                }
+            }
+
+            if (!invalid) {
+                KPeople::PersonsModel::unlinkContactFromPerson(person.data(KTp::NepomukUriRole).toUrl(), contactUris);
+            }
+        }
+    }
+#endif
 }
 
 #include "main-widget.moc"

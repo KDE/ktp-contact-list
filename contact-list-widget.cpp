@@ -127,6 +127,8 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setDragEnabled(false); // we handle drag&drop ourselves
     viewport()->setAcceptDrops(true);
     setDropIndicatorShown(true);
+    setSelectionMode(ExtendedSelection);
+    setSelectionBehavior(SelectItems);
 
     QString delegateMode = guiConfigGroup.readEntry("selected_delegate", "normal");
 
@@ -180,6 +182,9 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
     // This fixes the weird horizontal scrollbar bug
     // See https://bugs.kde.org/show_bug.cgi?id=316260
     setModel(d->model);
+
+    connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
+            this, SIGNAL(contactSelectionChanged()));
 
     QList<Tp::AccountPtr> accounts = accountManager->allAccounts();
 

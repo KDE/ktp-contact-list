@@ -92,6 +92,8 @@ private Q_SLOTS:
     void onMergeContactsDialogRequested();
     void onCustomContextMenuRequested(const QPoint &point);
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
+    void onContactSelectionChanged();
+    void onMetacontactToggleTriggered();
 
 private:
     QStringList extractLinksFromIndex(const QModelIndex &index);    /** extract links from a QModelIndex pointing to a contact */
@@ -116,7 +118,7 @@ private:
     KMenu                  *m_accountMenu;
     KSelectAction          *m_setStatusAction;
 
-
+    KDualAction            *m_metacontactToggleAction;
     KAction                *m_addContactAction;
     KDualAction            *m_groupContactsAction;
     KDualAction            *m_showOfflineAction;

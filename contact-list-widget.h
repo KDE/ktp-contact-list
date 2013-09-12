@@ -79,6 +79,7 @@ Q_SIGNALS:
     void accountManagerReady(Tp::PendingOperation* op);
     void genericOperationFinished(Tp::PendingOperation* op);
     void actionStarted();
+    void contactSelectionChanged();
 
 protected:
     void setDropIndicatorRect(const QRect &rect);
