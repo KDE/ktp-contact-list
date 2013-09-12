@@ -117,7 +117,8 @@ void ToolTipManager::requestToolTip(const QModelIndex &index)
         KToolTip::hideTip();
 
         QRect rect = d->view->visualRect(index);
-        d->itemRect = QRect(d->view->viewport()->mapToGlobal(rect.topLeft()),
+        // use 0 as the left x coordinate to make sure the tooltip does not cover the tree view controls
+        d->itemRect = QRect(d->view->viewport()->mapToGlobal(QPoint(0, rect.topLeft().y())),
                             d->view->viewport()->mapToGlobal(rect.bottomRight()));
         d->item = index;
         d->timer->start(300);
