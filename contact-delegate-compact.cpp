@@ -91,7 +91,7 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
     // Right now we only check for 'phone', as that's the most interesting type.
     if (index.data(KTp::ContactClientTypesRole).toStringList().contains(QLatin1String("phone"))) {
         // Additional space is needed for the icons, don't add too much spacing between the two icons
-        rightIconsWidth += m_clientTypeIconSize + (m_spacing / 2);
+        rightIconsWidth += m_clientTypeIconSize + m_spacing;
 
         QPixmap phone = QIcon::fromTheme("phone").pixmap(m_clientTypeIconSize);
         QRect phoneIconRect = optV4.rect;
@@ -99,6 +99,18 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
         phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
                                     optV4.rect.top() + (optV4.rect.height() - m_clientTypeIconSize) / 2));
         painter->drawPixmap(phoneIconRect, phone);
+    }
+
+    const Tp::AccountPtr &account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
+    if (account && isSubcontact) {
+        rightIconsWidth += m_clientTypeIconSize + m_spacing;
+
+        const QPixmap accountIcon = KIcon(account->iconName()).pixmap(m_clientTypeIconSize);
+        QRect accountIconRect = optV4.rect;
+        accountIconRect.setSize(QSize(m_clientTypeIconSize, m_clientTypeIconSize));
+        accountIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
+                                    optV4.rect.top() + (optV4.rect.height() - m_clientTypeIconSize) / 2));
+        painter->drawPixmap(accountIconRect, accountIcon);
     }
 
     QFont nameFont;
