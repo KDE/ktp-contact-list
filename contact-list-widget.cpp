@@ -965,7 +965,9 @@ void ContactListWidget::paintEvent(QPaintEvent *event)
 void ContactListWidget::drawBranches(QPainter *painter, const QRect &rect, const QModelIndex &index) const
 {
     if (indentation() > 0) {
-        QTreeView::drawBranches(painter, rect, index);
+        if (model()->rowCount(index) > 1) {
+            QTreeView::drawBranches(painter, rect, index);
+        }
     }
 
     //if no indentation (non kpeople mode) do nothing
