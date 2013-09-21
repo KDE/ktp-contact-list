@@ -42,10 +42,12 @@ public:
     virtual ~ContactListWidget();
 
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
+    void toggleGroups(bool show);
 
 public Q_SLOTS:
     void toggleOfflineContacts(bool show);
-    void toggleGroups(bool show);
+    void showGrouped();
+    void showUngrouped();
     void toggleSortByPresence(bool sort);
 
     void setFilterString(const QString &string);

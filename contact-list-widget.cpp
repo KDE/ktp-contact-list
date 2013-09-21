@@ -400,6 +400,16 @@ void ContactListWidget::setGroupMode(KTp::ContactsModel::GroupMode groupMode)
     }
 }
 
+void ContactListWidget::showGrouped()
+{
+    toggleGroups(true);
+}
+
+void ContactListWidget::showUngrouped()
+{
+    toggleGroups(false);
+}
+
 void ContactListWidget::toggleGroups(bool show)
 {
     Q_D(ContactListWidget);

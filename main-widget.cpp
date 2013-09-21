@@ -116,8 +116,6 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
 
-    connect(m_groupContactsAction, SIGNAL(triggered(bool)),
-            m_contactsListView, SLOT(toggleGroups(bool)));
     connect(m_showOfflineAction, SIGNAL(toggled(bool)),
             m_contactsListView, SLOT(toggleOfflineContacts(bool)));
     connect(m_sortByPresenceAction, SIGNAL(activeChanged(bool)),
@@ -141,9 +139,6 @@ MainWidget::MainWidget(QWidget *parent)
     connect(m_contactsListView, SIGNAL(contactSelectionChanged()),
             this, SLOT(onContactSelectionChanged()));
 
-    bool useGroups = guiConfigGroup.readEntry("use_groups", true);
-    m_groupContactsAction->setChecked(useGroups);
-    m_groupContactsAction->setActive(useGroups);
 
     bool showOffline = guiConfigGroup.readEntry("show_offline", false);
     m_showOfflineAction->setChecked(showOffline);
@@ -152,6 +147,7 @@ MainWidget::MainWidget(QWidget *parent)
     bool sortByPresence = guiConfigGroup.readEntry("sort_by_presence", true);
     m_sortByPresenceAction->setActive(sortByPresence);
 
+    bool useGroups = guiConfigGroup.readEntry("use_groups", true);
     m_contactsListView->toggleGroups(useGroups);
     m_contactsListView->toggleOfflineContacts(showOffline);
     m_contactsListView->toggleSortByPresence(sortByPresence);
@@ -163,7 +159,7 @@ MainWidget::~MainWidget()
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup configGroup(config, "GUI");
     configGroup.writeEntry("pin_filterbar", m_searchContactAction->isChecked());
-    configGroup.writeEntry("use_groups", m_groupContactsAction->isChecked());
+    configGroup.writeEntry("use_groups", m_groupContactsActionGroup->actions().first()->isChecked());
     configGroup.writeEntry("show_offline", m_showOfflineAction->isChecked());
     configGroup.writeEntry("sort_by_presence", m_sortByPresenceAction->isActive());
     configGroup.config()->sync();
@@ -440,7 +436,6 @@ void MainWidget::setupGlobalMenu()
     m_globalMenu->addMenu(contacts);
 
     KMenu *view = new KMenu(i18n("View"), m_globalMenu);
-    view->addAction(m_groupContactsAction);
     view->addAction(m_showOfflineAction);
     view->addAction(m_sortByPresenceAction);
     view->addSeparator();
@@ -450,6 +445,9 @@ void MainWidget::setupGlobalMenu()
     KMenu *view_blockedFilterMenu = new KMenu(i18n("Shown Contacts"), view);
     view_blockedFilterMenu->addActions(m_blockedFilterGroup->actions());
     view->addMenu(view_blockedFilterMenu);
+    KMenu *view_showGroupedMenu = new KMenu(i18n("Contact Grouping"), view);
+    view_showGroupedMenu->addActions(m_groupContactsActionGroup->actions());
+    view->addMenu(view_showGroupedMenu);
     m_globalMenu->addMenu(view);
 
     m_globalMenu->addMenu(helpMenu());
@@ -462,11 +460,12 @@ void MainWidget::setupToolBar()
         m_toolBar->addAction(m_metacontactToggleAction);
     }
     m_toolBar->addAction(m_addContactAction);
-    m_toolBar->addAction(m_groupContactsAction);
+    m_toolBar->addAction(m_searchContactAction);
     m_toolBar->addAction(m_showOfflineAction);
     m_toolBar->addAction(m_sortByPresenceAction);
-    m_toolBar->addAction(m_searchContactAction);
+    m_toolBar->addSeparator();
     m_toolBar->addAction(m_startChatAction);
+    m_toolBar->addAction(m_joinChatRoom);
 
     QWidget *toolBarSpacer = new QWidget(this);
     toolBarSpacer->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
@@ -492,7 +491,10 @@ void MainWidget::setupToolBar()
     setBlockedFilterMenu->addActions(m_blockedFilterGroup->actions());
     settingsButtonMenu->addMenu(setBlockedFilterMenu);
 
-    settingsButtonMenu->addAction(m_joinChatRoom);
+    KMenu *showGroupedMenu = new KMenu(settingsButton);
+    showGroupedMenu->setTitle(i18n("Contact Grouping"));
+    showGroupedMenu->addActions(m_groupContactsActionGroup->actions());
+    settingsButtonMenu->addMenu(showGroupedMenu);
 
     if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
         settingsButtonMenu->addAction(m_makeCall);
@@ -568,11 +570,12 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_quitAction->setMenuRole(QAction::QuitRole);
 
     m_joinChatRoom = createAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
+    m_joinChatRoom->setIcon(KIcon("im-irc"));
     m_makeCall = createAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
     m_mergeContacts = createAction(i18n("Merge Contacts..."), this, SLOT(onMergeContactsDialogRequested()));
     m_addContactAction = createAction(i18n("Add New Contacts..."), this, SLOT(onAddContactRequest()), KIcon("list-add-user"));
     m_searchContactAction = createAction(i18n("Find Contact"), this, SLOT(toggleSearchWidget(bool)),
-                                         guiConfigGroup.readEntry("pin_filterbar", true), KIcon("edit-find-user"));
+                                         guiConfigGroup.readEntry("pin_filterbar", true), KIcon("edit-find"));
     m_searchContactAction->setShortcut(KStandardShortcut::find());
     m_startChatAction = createAction(i18n("Start a chat..."), this, SLOT(onStartChatRequest()), KIcon("telepathy-kde"));
 
@@ -580,24 +583,24 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_metacontactToggleAction = new KDualAction(i18n("Split Selected Contacts"),
                                                 i18n("Merge Selected Contacts"),
                                                 this);
-    m_metacontactToggleAction->setActiveIcon(KIcon("list-add"));
-    m_metacontactToggleAction->setInactiveIcon(KIcon("list-remove"));
+    m_metacontactToggleAction->setActiveIcon(KIcon("user-group-new"));
+    m_metacontactToggleAction->setInactiveIcon(KIcon("user-group-delete"));
     m_metacontactToggleAction->setActive(true);
     m_metacontactToggleAction->setDisabled(true);
     m_metacontactToggleAction->setAutoToggle(false);
-    m_groupContactsAction = new KDualAction(i18n("Show Contacts by Groups"),
-                                            i18n("Show Contacts by Accounts"),
-                                            this);
-    m_groupContactsAction->setActiveIcon(KIcon("user-group-properties"));
-    m_groupContactsAction->setInactiveIcon(KIcon("user-group-properties"));
-    m_groupContactsAction->setCheckable(true);
-    m_groupContactsAction->setChecked(true);
+
+    m_groupContactsActionGroup = new QActionGroup(this);
+    m_groupContactsActionGroup->setExclusive(true);
+    m_groupContactsActionGroup->addAction(createAction(i18n("Show Contacts by Groups"), m_contactsListView, SLOT(showGrouped()),
+                                          guiConfigGroup.readEntry("use_groups", true)));
+    m_groupContactsActionGroup->addAction(createAction(i18n("Show Contacts by Accounts"), m_contactsListView, SLOT(showUngrouped()),
+                                          ! guiConfigGroup.readEntry("use_groups", true)));
 
     m_showOfflineAction = new KDualAction(i18n("Show Offline Contacts"),
                                           i18n("Hide Offline Contacts"),
                                           this);
-    m_showOfflineAction->setActiveIcon(KIcon("meeting-attending-tentative"));
-    m_showOfflineAction->setInactiveIcon(KIcon("meeting-attending-tentative"));
+    m_showOfflineAction->setActiveIcon(KIcon("show-offline"));
+    m_showOfflineAction->setInactiveIcon(KIcon("show-offline"));
     m_showOfflineAction->setCheckable(true);
     m_showOfflineAction->setChecked(false);
     m_showOfflineAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
