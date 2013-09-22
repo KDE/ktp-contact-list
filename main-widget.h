@@ -120,7 +120,7 @@ private:
 
     KDualAction            *m_metacontactToggleAction;
     KAction                *m_addContactAction;
-    KDualAction            *m_groupContactsAction;
+    QActionGroup           *m_groupContactsActionGroup;
     KDualAction            *m_showOfflineAction;
     KAction                *m_searchContactAction;
     KAction                *m_startChatAction;
