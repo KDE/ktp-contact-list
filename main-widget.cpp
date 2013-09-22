@@ -593,7 +593,14 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_groupContactsActionGroup->setExclusive(true);
     m_groupContactsActionGroup->addAction(createAction(i18n("Show Contacts by Groups"), m_contactsListView, SLOT(showGrouped()),
                                           guiConfigGroup.readEntry("use_groups", true)));
-    m_groupContactsActionGroup->addAction(createAction(i18n("Show Contacts by Accounts"), m_contactsListView, SLOT(showUngrouped()),
+    QString useGroupsDisabledText;
+    if (KTp::kpeopleEnabled()) {
+        useGroupsDisabledText = i18n("Do not group");
+    }
+    else {
+        useGroupsDisabledText = i18n("Show Contacts by Accounts");
+    }
+    m_groupContactsActionGroup->addAction(createAction(useGroupsDisabledText, m_contactsListView, SLOT(showUngrouped()),
                                           ! guiConfigGroup.readEntry("use_groups", true)));
 
     m_showOfflineAction = new KDualAction(i18n("Show Offline Contacts"),
