@@ -56,8 +56,8 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
     ui->contactsWidget->setLayout(new QGridLayout(ui->contactsWidget));
     qobject_cast<QGridLayout*>(ui->contactsWidget->layout())->setColumnStretch(1, 500);
 
-    QPixmap avatar = index.data(KTp::ContactAvatarPixmapRole).value<QPixmap>();
-    ui->avatarLabel->setPixmap(avatar);
+    QPixmap avatarPixmap = index.data(KTp::ContactAvatarPixmapRole).value<QPixmap>();
+    ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     int smallIconSize = KIconLoader::global()->currentSize(KIconLoader::Small);
 
