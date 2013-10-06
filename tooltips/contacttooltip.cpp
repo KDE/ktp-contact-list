@@ -45,7 +45,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
     ui->avatarLabel->setAlignment(Qt::AlignCenter);
 
     QPixmap avatarPixmap(qvariant_cast<QPixmap>(index.data(KTp::ContactAvatarPixmapRole)));
-    ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio));
+    ui->avatarLabel->setPixmap(avatarPixmap.scaled(ui->avatarLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     KTp::Presence presence(Tp::Presence((Tp::ConnectionPresenceType)index.data(KTp::ContactPresenceTypeRole).toUInt(),
                                         QString(), //the presence name is not needed, saves one call to the model
