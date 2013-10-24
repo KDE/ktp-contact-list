@@ -38,7 +38,7 @@ public:
     explicit AccountButton(const Tp::AccountPtr &account, QWidget *parent = 0);
 
     ///Returns the unique account ID
-    QString accountId();
+    QString accountId() const;
 
     ///Returns the action (menu item) string for displaying elsewhere on the screen
     QString presenceDisplayString(const Tp::Presence &presence);
