@@ -145,7 +145,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     updateToolTip();
 }
 
-QString AccountButton::accountId()
+QString AccountButton::accountId() const
 {
     return m_account->uniqueIdentifier();
 }
