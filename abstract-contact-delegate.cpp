@@ -102,7 +102,8 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
 
     QStyleOption expandSignOption = option;
     expandSignOption.rect = groupRect;
-    expandSignOption.rect.setSize(QSize(iconSize, iconSize));
+    //FIXME hardcoded magic...though corresponds with the list indentation
+    expandSignOption.rect.setSize(QSize(14, iconSize));
     expandSignOption.rect.moveLeft(groupRect.left());
     expandSignOption.rect.moveTop(groupRect.top() + groupRect.height()/2 - expandSignOption.rect.height()/2);
     // simulates mouseover to highlight arrow when selected with keyboard

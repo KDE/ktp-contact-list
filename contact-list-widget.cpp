@@ -117,7 +117,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     setEditTriggers(NoEditTriggers);
     setContextMenuPolicy(Qt::CustomContextMenu);
     if (KTp::kpeopleEnabled()) {
-        setIndentation(25);
+        setIndentation(18);
     } else {
         setIndentation(0);
     }
