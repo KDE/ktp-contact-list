@@ -706,7 +706,7 @@ void MainWidget::onMetacontactToggleTriggered()
         //we're merging contacts
         bool invalid = false;
         QModelIndex person;
-        QList<QUrl> uris;
+        QStringList uris;
 
         Q_FOREACH (const QModelIndex &index, selection) {
             if (index.parent().isValid()
@@ -738,11 +738,11 @@ void MainWidget::onMetacontactToggleTriggered()
                 break;
             }
 
-            uris << index.data(KTp::NepomukUriRole).toUrl();
+            uris << index.data(KTp::NepomukUriRole).toString();
         }
 
         if (!invalid) {
-            KPeople::PersonsModel::createPersonFromUris(uris);
+//             KPeople::mergeContacts(uris);
         }
     } else {
         //we're removing contacts from person
@@ -767,7 +767,7 @@ void MainWidget::onMetacontactToggleTriggered()
                 }
             }
 
-            KPeople::PersonsModel::unlinkContactFromPerson(personUri, contacts);
+//             KPeople::PersonsModel::unlinkContactFromPerson(personUri, contacts);
 
         } else if (selection.size() > 1) {
             QModelIndex person;
@@ -801,7 +801,8 @@ void MainWidget::onMetacontactToggleTriggered()
             }
 
             if (!invalid) {
-                KPeople::PersonsModel::unlinkContactFromPerson(person.data(KTp::NepomukUriRole).toUrl(), contactUris);
+                //FXIME
+//                 KPeople::PersonsModel::unlinkContactFromPerson(person.data(KTp::NepomukUriRole).toUrl(), contactUris);
             }
         }
     }
