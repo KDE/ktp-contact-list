@@ -274,6 +274,7 @@ void MainWidget::onMakeCallRequested()
 
 void MainWidget::onMergeContactsDialogRequested()
 {
+    /*
 #ifdef HAVE_KPEOPLE
     KPeople::MergeDialog* mergeDialog = new KPeople::MergeDialog(this);
     //create a new model that queries all the data otherwise we will only show IM contacts
@@ -283,6 +284,7 @@ void MainWidget::onMergeContactsDialogRequested()
     mergeDialog->show();
     mergeDialog->setAttribute(Qt::WA_DeleteOnClose);
 #endif
+*/
 }
 
 void MainWidget::closeEvent(QCloseEvent* e)

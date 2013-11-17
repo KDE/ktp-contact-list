@@ -350,14 +350,15 @@ void ContextMenu::onShowInfoTriggered()
 
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
-        const QUrl &uri = m_currentIndex.data(KTp::NepomukUriRole).toUrl();
-        KPeople::PersonDataPtr person = KPeople::PersonData::createFromUri(uri);
-        if (person->isValid()) {
-            KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
-            view->setPerson(person);
-            view->setAttribute(Qt::WA_DeleteOnClose);
-            view->show();
-        }
+        //FIXME-KPEOPLE
+//         const QUrl &uri = m_currentIndex.data(KTp::NepomukUriRole).toUrl();
+//         KPeople::PersonDataPtr person = KPeople::PersonData::createFromUri(uri);
+//         if (person->isValid()) {
+//             KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
+//             view->setPerson(person);
+//             view->setAttribute(Qt::WA_DeleteOnClose);
+//             view->show();
+//         }
     #endif
     } else {
         const Tp::AccountPtr &account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
