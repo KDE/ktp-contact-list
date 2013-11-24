@@ -738,73 +738,18 @@ void MainWidget::onMetacontactToggleTriggered()
                 break;
             }
 
-            uris << index.data(KTp::NepomukUriRole).toString();
+            uris << index.data(KTp::PersonIdRole).toString();
         }
 
         if (!invalid) {
-//             KPeople::mergeContacts(uris);
+            KPeople::mergeContacts(uris);
         }
     } else {
         //we're removing contacts from person
-        QList<QUrl> contacts;
-        QUrl personUri;
-
-        if (selection.size() == 1) {
-            QModelIndex index = selection.first();
-            if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
-                //the user selected person, which means removing the person
-                personUri = index.data(KTp::NepomukUriRole).toUrl();
-                for (int i = 0; i < m_contactsListView->model()->rowCount(index); i++) {
-                    contacts << index.child(i, 0).data(KTp::NepomukUriRole).toUrl();
-                }
-            } else {
-                //user selected one of person's contacts
-                if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
-                    personUri = index.parent().data(KTp::NepomukUriRole).toUrl();
-                    contacts.append(index.data(KTp::NepomukUriRole).toUrl());
-                } else {
-                    return;
-                }
-            }
-
-//             KPeople::PersonsModel::unlinkContactFromPerson(personUri, contacts);
-
-        } else if (selection.size() > 1) {
-            QModelIndex person;
-            bool invalid = false;
-            QList<QUrl> contactUris;
-            Q_FOREACH (const QModelIndex &index, selection) {
-                if (!person.isValid()) {
-                    if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
-                        //if the current index is person
-                        person = index;
-
-                    } else if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
-                        //if the current index is contact that has valid person as parent
-                        person = index.parent();
-                    }
-                } else {
-                    if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType
-                            || (index.parent().isValid() && index.parent() != person)) {
-                        //we can have max 1 person in the selection
-                        //second one means break; also contact from different person
-                        //than the one we already have means break
-                        kDebug() << "Found second person in selection, aborting";
-                        invalid = true;
-                        break;
-                    }
-                }
-
-                if (index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
-                    contactUris << index.data(KTp::NepomukUriRole).toUrl();
-                }
-            }
-
-            if (!invalid) {
-                //FXIME
-//                 KPeople::PersonsModel::unlinkContactFromPerson(person.data(KTp::NepomukUriRole).toUrl(), contactUris);
-            }
-        }
+        QStringList contacts;
+        const QModelIndex &index = selection.first();
+        const QString &personUri = index.data(KTp::PersonIdRole).toString();
+        KPeople::unmergeContact(personUri);
     }
 #endif
 }

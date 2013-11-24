@@ -739,9 +739,9 @@ void ContactListWidget::mouseMoveEvent(QMouseEvent *event)
 
     mimeData->setData("application/vnd.telepathy.contact", encodedData);
 
-    kDebug() <<  index.data(KTp::NepomukUriRole).toString().toLatin1();
+    kDebug() <<  index.data(KTp::PersonIdRole).toString().toLatin1();
 
-    mimeData->setData("application/vnd.kpeople.uri", index.data(KTp::NepomukUriRole).toString().toLatin1());
+    mimeData->setData("application/vnd.kpeople.uri", index.data(KTp::PersonIdRole).toString().toLatin1());
 
     QPixmap dragIndicator = QPixmap::grabWidget(this, visualRect(index).adjusted(3,3,3,3));
 
@@ -789,14 +789,14 @@ void ContactListWidget::dropEvent(QDropEvent *event)
     } else if ((index.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType || index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) &&
                 event->mimeData()->hasFormat("application/vnd.kpeople.uri") && KTp::kpeopleEnabled()) {
         #ifdef HAVE_KPEOPLE
-        QString droppedUri(index.data(KTp::NepomukUriRole).toString());
+        QString droppedUri(index.data(KTp::PersonIdRole).toString());
         QString draggedUri(event->mimeData()->data("application/vnd.kpeople.uri"));
         if(droppedUri != draggedUri) {
             KMenu menu;
             QAction *mergeAction = menu.addAction(i18n("Merge contacts"));
             QAction *result = menu.exec(mapToGlobal(event->pos()));
             if (result == mergeAction) {
-//                 KPeople::mergeContacts(QStringList << droppedUri << draggedUri);
+                KPeople::mergeContacts(QStringList() << droppedUri << draggedUri);
             }
             event->acceptProposedAction();
         }
