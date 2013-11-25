@@ -45,6 +45,8 @@
 #ifdef HAVE_KPEOPLE
 #include <kpeople/personpluginmanager.h>
 #include <kpeople/widgets/persondetailsdialog.h>
+#include <kpeople/global.h>
+#include <kpeople/personsmodel.h>
 #endif
 
 #include "dialogs/remove-contact-dialog.h"
@@ -102,8 +104,10 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
-        menu->addActions(KPeople::PersonPluginManager::actionsForPerson(
-            KPeople::PersonData::createFromUri(index.data(KTp::NepomukUriRole).toString()), menu));
+        menu->addActions(
+            KPeople::actionsForPerson(index.data(KPeople::PersonsModel::PersonVCardRole).value<KABC::Addressee>(),
+                                      index.data(KPeople::PersonsModel::ContactsVCardRole).value<KABC::AddresseeList>(),
+                                      menu));
     #endif
     } else {
         //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
@@ -346,14 +350,15 @@ void ContextMenu::onShowInfoTriggered()
 
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
-        const QUrl &uri = m_currentIndex.data(KTp::NepomukUriRole).toUrl();
-        KPeople::PersonDataPtr person = KPeople::PersonData::createFromUri(uri);
-        if (person->isValid()) {
-            KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
-            view->setPerson(person);
-            view->setAttribute(Qt::WA_DeleteOnClose);
-            view->show();
-        }
+        //FIXME-KPEOPLE
+//         const QUrl &uri = m_currentIndex.data(KTp::NepomukUriRole).toUrl();
+//         KPeople::PersonDataPtr person = KPeople::PersonData::createFromUri(uri);
+//         if (person->isValid()) {
+//             KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
+//             view->setPerson(person);
+//             view->setAttribute(Qt::WA_DeleteOnClose);
+//             view->show();
+//         }
     #endif
     } else {
         const Tp::AccountPtr &account = m_currentIndex.data(KTp::AccountRole).value<Tp::AccountPtr>();
