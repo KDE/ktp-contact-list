@@ -62,9 +62,8 @@
 #include <KWindowSystem>
 
 #ifdef HAVE_KPEOPLE
-#include <kpeople/widgets/mergedialog.h>
+// #include <kpeople/widgets/mergedialog.h> //Disable for now, re-enable when kpeople re-enables it
 #include <KPeople/PersonsModel>
-#include <KPeople/PersonsModelFeature>
 #endif
 
 #include "ui_main-widget.h"
