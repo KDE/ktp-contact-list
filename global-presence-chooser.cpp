@@ -51,7 +51,7 @@ class PresenceModelExtended : public QAbstractListModel
     Q_OBJECT
 public:
     PresenceModelExtended(PresenceModel *presenceModel, QObject *parent);
-    int rowCount(const QModelIndex &parent) const;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
     KTp::Presence temporaryPresence() const;
     /** Adds a presence to the model which is to be used when the presence has been set externally and we need to show it, but not save it to the config*/
@@ -92,21 +92,21 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         const QFontMetrics fontMetrics(KGlobalSettings::generalFont());
         return QSize(0, qMax(fontMetrics.height(), (int)(KIconLoader::SizeSmall)) + 8);
     }
-    if (index.row() == rowCount(QModelIndex())-1) {
+    if (index.row() == rowCount()-1) {
         switch(role) {
         case Qt::DisplayRole:
             return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
             return KIcon("configure");
         }
-    } else if (index.row() == rowCount(QModelIndex())-2) {
+    } else if (index.row() == rowCount()-2) {
         switch(role) {
             case Qt::DisplayRole:
                 return i18n("Now listening to...");
             case Qt::DecorationRole:
                 return KIcon("speaker");
         }
-    } else if (m_temporaryPresence.isValid() && index.row() == rowCount(QModelIndex()) -3) {
+    } else if (m_temporaryPresence.isValid() && index.row() == rowCount()-3) {
         switch(role) {
         case Qt::DisplayRole:
             return m_temporaryPresence.statusMessage();
@@ -141,7 +141,7 @@ void PresenceModelExtended::sourceRowsRemoved(const QModelIndex &index, int star
 
 QModelIndex PresenceModelExtended::addTemporaryPresence(const KTp::Presence &presence)
 {
-    int row = m_model->rowCount(QModelIndex());
+    int row = m_model->rowCount();
 
     //if the temp presence already exists, don't remove and readd it
     //but simply replace it
@@ -164,7 +164,7 @@ void PresenceModelExtended::removeTemporaryPresence()
         return; //if not already set, do nothing.
     }
 
-    int row = m_model->rowCount(QModelIndex());
+    int row = m_model->rowCount();
     beginRemoveRows(QModelIndex(),row, row);
     m_temporaryPresence = KTp::Presence();
     endRemoveRows();
