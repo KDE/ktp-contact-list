@@ -20,8 +20,8 @@ macro_display_feature_log()
 
 if (KPEOPLE_FOUND)
     add_definitions(-DHAVE_KPEOPLE)
-    include_directories(${KPEOPLE_INCLUDES} ${KDEPIMLIBS_INCLUDE_DIRS})
     find_package (KdepimLibs REQUIRED)
+    include_directories(${KPEOPLE_INCLUDES} ${KDEPIMLIBS_INCLUDE_DIRS})
 endif (KPEOPLE_FOUND)
 
 include (KDE4Defaults)
