@@ -13,7 +13,6 @@ find_package (KDE4 4.4.75 REQUIRED)
 find_package (TelepathyQt4 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
 find_package (KPeople QUIET)
-find_package (KdepimLibs QUIET)
 
 
 macro_log_feature(KPEOPLE_FOUND "KPeople" "Support for KDE Contact Aggregation" "https://projects.kde.org/libkpeople" FALSE "" "")
@@ -21,7 +20,8 @@ macro_display_feature_log()
 
 if (KPEOPLE_FOUND)
     add_definitions(-DHAVE_KPEOPLE)
-    include_directories(${KPEOPLE_INCLUDES})
+    include_directories(${KPEOPLE_INCLUDES} ${KDEPIMLIBS_INCLUDE_DIRS})
+    find_package (KdepimLibs REQUIRED)
 endif (KPEOPLE_FOUND)
 
 include (KDE4Defaults)
