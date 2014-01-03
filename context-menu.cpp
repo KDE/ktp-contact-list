@@ -46,6 +46,7 @@
 #include <kpeople/widgets/persondetailsdialog.h>
 #include <kpeople/global.h>
 #include <kpeople/personsmodel.h>
+#include <kpeople/persondata.h>
 #endif
 
 #include "dialogs/remove-contact-dialog.h"
@@ -103,10 +104,12 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
-        menu->addActions(
-            KPeople::actionsForPerson(index.data(KPeople::PersonsModel::PersonVCardRole).value<KABC::Addressee>(),
-                                      index.data(KPeople::PersonsModel::ContactsVCardRole).value<KABC::AddresseeList>(),
-                                      menu));
+        if (index.parent().isValid()) {
+            menu->addActions(KPeople::actionsForPerson(index.data(KTp::ContactVCardRole).value<KABC::Addressee>(), KABC::AddresseeList(), menu));
+        } else {
+            KPeople::PersonData p(index.data(KTp::PersonIdRole).toString());
+            menu->addActions(KPeople::actionsForPerson(p.person(), p.contacts(), menu));
+        }
     #endif
     } else {
         //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
