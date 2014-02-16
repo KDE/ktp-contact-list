@@ -95,6 +95,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     KSharedConfigPtr config = KGlobal::config();
     KConfigGroup guiConfigGroup(config, "GUI");
 
+    d->groupMode = KTp::ContactsModel::NoGrouping;
     d->delegate = new ContactDelegate(this);
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
