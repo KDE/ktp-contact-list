@@ -427,8 +427,9 @@ void MainWidget::setupGlobalMenu()
     if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
         contacts->addAction(m_makeCall);
     }
+    //temporarily disable until funcationality is restored in libkpeople
     if (KTp::kpeopleEnabled()) {
-        contacts->addAction(m_mergeContacts);
+//         contacts->addAction(m_mergeContacts);
     }
     contacts->addAction(m_settingsDialog);
     contacts->addSeparator();
@@ -502,7 +503,7 @@ void MainWidget::setupToolBar()
     }
 
     if (KTp::kpeopleEnabled()) {
-        settingsButtonMenu->addAction(m_mergeContacts);
+//         settingsButtonMenu->addAction(m_mergeContacts);
     }
 
     settingsButtonMenu->addSeparator();
