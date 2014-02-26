@@ -305,7 +305,7 @@ void ContactListWidget::onContactListDoubleClicked(const QModelIndex &index)
             } else {
                 account->ensureTextChat(contactId,
                                         QDateTime::currentDateTime(),
-                                        QLatin1String("org.freedesktop.Telepathy.Client.KTp.TextUi"));
+                                        QLatin1String("im.telepathy.v1.Client.KTp.TextUi"));
             }
         }
     }
@@ -327,7 +327,7 @@ void ContactListWidget::accountEnablingFinished(Tp::PendingOperation *op)
 
     account->ensureTextChat(op->property("contactId").toString(),
                             QDateTime::currentDateTime(),
-                            QLatin1String("org.freedesktop.Telepathy.Client.KTp.TextUi"));
+                            QLatin1String("im.telepathy.v1.Client.KTp.TextUi"));
 }
 
 void ContactListWidget::addOverlayButtons()
