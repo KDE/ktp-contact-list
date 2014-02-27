@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
     aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), ki18n("Developer"),
                         "martin.klapetek@gmail.com");
     aboutData.setProductName("telepathy/contactlist"); //set the correct name for bug reporting
+    aboutData.setProgramIconName("telepathy-kde");
 
     KCmdLineArgs::init(argc, argv, &aboutData);
 

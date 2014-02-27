@@ -91,7 +91,6 @@ MainWidget::MainWidget(QWidget *parent)
     setupUi(this);
 
     m_filterBar->hide();
-    setWindowIcon(KIcon("telepathy-kde"));
     setAutoSaveSettings();
     setupTelepathy();
 
