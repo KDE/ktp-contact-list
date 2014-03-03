@@ -124,7 +124,7 @@ void StartChannelContactOverlay::slotClicked(bool checked)
 bool StartChannelContactOverlay::checkIndex(const QModelIndex& index) const
 {
     const int rowType = index.data(KTp::RowTypeRole).toInt();
-    return index.data(m_capabilityRole).toBool() &&  (rowType == KTp::ContactRowType || rowType == KTp::PersonRowType);
+    return index.data(m_capabilityRole).toBool() && (rowType == KTp::ContactRowType || rowType == KTp::PersonRowType);
 }
 
 // ------------------------------------------------------------------------
