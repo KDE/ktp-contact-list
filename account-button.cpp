@@ -152,7 +152,7 @@ QString AccountButton::accountId() const
 
 void AccountButton::setAccountStatus(QAction *action)
 {
-    Tp::SimplePresence presence;
+    TpDBus::SimplePresence presence;
     presence.type = qVariantValue<Tp::Presence>(action->data()).type();
     presence.status = qVariantValue<Tp::Presence>(action->data()).status();
     presence.statusMessage = m_customPresenceMessage;
@@ -266,7 +266,7 @@ void AccountButton::setCustomPresenceMessage(const QString& message)
 {
     m_customPresenceMessage = message;
 
-    Tp::SimplePresence presence;
+    TpDBus::SimplePresence presence;
     presence.type = m_account->currentPresence().type();
     presence.status = m_account->currentPresence().status();
     presence.statusMessage = m_customPresenceMessage;
