@@ -536,7 +536,7 @@ void MainWidget::setupTelepathy()
         Tp::ContactFactoryPtr contactFactory = KTp::ContactFactory::create(Tp::Features()  << Tp::Contact::FeatureAlias
                                                                         << Tp::Contact::FeatureAvatarToken
                                                                         << Tp::Contact::FeatureAvatarData
-                                                                        << Tp::Contact::FeatureSimplePresence
+                                                                        << Tp::Contact::FeaturePresence
                                                                         << Tp::Contact::FeatureCapabilities
                                                                         << Tp::Contact::FeatureClientTypes);
 
