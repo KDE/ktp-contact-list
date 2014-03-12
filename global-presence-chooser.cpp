@@ -421,12 +421,20 @@ void GlobalPresenceChooser::repositionOverlays()
     //set 2px margins so that the button is not bigger than the combo
     m_changePresenceMessageButton->setMaximumHeight(height() - 2);
     m_changePresenceMessageButton->setMaximumWidth(height() - 2);
-    //move the button 22px from the right edge
-    m_changePresenceMessageButton->move(width() - m_changePresenceMessageButton->width() - 22, 0);
-
-    //place the spinner 2px left from the button
-    QPoint topLeft(m_changePresenceMessageButton->pos().x() - m_busyOverlay->sequence().frameSize().width() - 2,
-                   (height() - m_busyOverlay->sequence().frameSize().height())/2);
+    QPoint topLeft;
+    if (m_changePresenceMessageButton->layoutDirection() == Qt::RightToLeft) {
+        //move the button 22px from the left edge
+        m_changePresenceMessageButton->move(22, 0);
+        //place the spinner 2px right from the button, 4 is added to take the margin.
+        topLeft.setX(m_changePresenceMessageButton->pos().x() + m_busyOverlay->sequence().frameSize().width() + 4);
+        topLeft.setY((height() - m_busyOverlay->sequence().frameSize().height()) / 2);
+    } else {
+        //move the button 22px from the right edge
+        m_changePresenceMessageButton->move(width() - m_changePresenceMessageButton->width() - 22, 0);
+        //place the spinner 2px left from the button
+        topLeft.setX(m_changePresenceMessageButton->pos().x() - m_busyOverlay->sequence().frameSize().width() - 2);
+        topLeft.setY((height() - m_busyOverlay->sequence().frameSize().height()) / 2);
+    }
     m_busyOverlay->setRect(QRect(topLeft, m_busyOverlay->sequence().frameSize()));
 }
 
