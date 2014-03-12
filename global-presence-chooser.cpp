@@ -92,22 +92,22 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         const QFontMetrics fontMetrics(KGlobalSettings::generalFont());
         return QSize(0, qMax(fontMetrics.height(), (int)(KIconLoader::SizeSmall)) + 8);
     }
-    if (index.row() == rowCount()-1) {
-        switch(role) {
+    if (index.row() == rowCount() - 1) {
+        switch (role) {
         case Qt::DisplayRole:
             return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
             return KIcon("configure");
         }
-    } else if (index.row() == rowCount()-2) {
-        switch(role) {
-            case Qt::DisplayRole:
-                return i18n("Now listening to...");
-            case Qt::DecorationRole:
-                return KIcon("speaker");
+    } else if (index.row() == rowCount() - 2) {
+        switch (role) {
+        case Qt::DisplayRole:
+            return i18n("Now listening to...");
+        case Qt::DecorationRole:
+            return KIcon("speaker");
         }
-    } else if (m_temporaryPresence.isValid() && index.row() == rowCount()-3) {
-        switch(role) {
+    } else if (m_temporaryPresence.isValid() && index.row() == rowCount() - 3) {
+        switch (role) {
         case Qt::DisplayRole:
             return m_temporaryPresence.statusMessage();
         case Qt::DecorationRole:
@@ -115,8 +115,7 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         case PresenceModel::PresenceRole:
             return QVariant::fromValue<KTp::Presence>(m_temporaryPresence);
         }
-    }
-    else {
+    } else {
         return m_model->data(m_model->index(index.row()), role);
     }
     return QVariant();
@@ -150,7 +149,7 @@ QModelIndex PresenceModelExtended::addTemporaryPresence(const KTp::Presence &pre
         emit dataChanged(this->createIndex(row, 0), this->createIndex(row, 0));
     } else {
         kDebug() << "adding temp presence to the model";
-        beginInsertRows(QModelIndex(),row, row);
+        beginInsertRows(QModelIndex(), row, row);
         m_temporaryPresence = presence;
         endInsertRows();
     }
@@ -165,7 +164,7 @@ void PresenceModelExtended::removeTemporaryPresence()
     }
 
     int row = m_model->rowCount();
-    beginRemoveRows(QModelIndex(),row, row);
+    beginRemoveRows(QModelIndex(), row, row);
     m_temporaryPresence = KTp::Presence();
     endRemoveRows();
 }
@@ -317,12 +316,12 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
         return;
     }
     //if they select the "configure item"
-    if (index == count()-1) {
+    if (index == count() - 1) {
         QWeakPointer<CustomPresenceDialog> dialog = new CustomPresenceDialog(m_model, this);
         dialog.data()->exec();
         delete dialog.data();
         onPresenceChanged(m_globalPresence->currentPresence());
-    } else if (index == count()-2) {
+    } else if (index == count() - 2) {
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
         KConfigGroup kdedConfig = config->group("KDED");
 
@@ -330,16 +329,16 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 
         if (!pluginEnabled) {
             if (KMessageBox::questionYesNo(this,
-                i18n("This plugin is currently disabled. Do you want to enable it and use as your presence?"),
-                     i18n("Plugin disabled")) == KMessageBox::Yes) {
+                                           i18n("This plugin is currently disabled. Do you want to enable it and use as your presence?"),
+                                           i18n("Plugin disabled")) == KMessageBox::Yes) {
 
-                    kdedConfig.writeEntry("nowPlayingEnabled", true);
-                    kdedConfig.sync();
+                kdedConfig.writeEntry("nowPlayingEnabled", true);
+                kdedConfig.sync();
 
-                    QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
-                                                                      QLatin1String( "org.kde.Telepathy"),
-                                                                      QLatin1String("settingsChange"));
-                                                                      QDBusConnection::sessionBus().send(message);
+                QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
+                                       QLatin1String("org.kde.Telepathy"),
+                                       QLatin1String("settingsChange"));
+                QDBusConnection::sessionBus().send(message);
             } else {
                 onPresenceChanged(m_globalPresence->currentPresence());
                 return;
@@ -347,19 +346,16 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
         }
 
         QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
-                                                          QLatin1String( "org.kde.Telepathy"),
-                                                          QLatin1String("activateNowPlaying"));
+							  QLatin1String("org.kde.Telepathy"),
+							  QLatin1String("activateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
-    } else if (m_modelExtended->temporaryPresence().isValid() && index == count()-3)
-    {
+    } else if (m_modelExtended->temporaryPresence().isValid() && index == count() - 3) {
         //do nothing if the temporary presence is selected. This is only used for externally set presences.
         //at which point reselecting it does nothing.
-    }
-    else
-    {
+    } else {
         QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
-                                                          QLatin1String( "org.kde.Telepathy"),
-                                                          QLatin1String("deactivateNowPlaying"));
+							  QLatin1String("org.kde.Telepathy"),
+							  QLatin1String("deactivateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
         // only set global presence on user change
         KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
@@ -370,10 +366,10 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 void GlobalPresenceChooser::onAllComboChanges(int index)
 {
     int lastPresenceIndex = m_model->rowCount();
-    if(index < lastPresenceIndex) {
+    if (index < lastPresenceIndex) {
         KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
         if ((presence.type() == Tp::ConnectionPresenceTypeOffline) ||
-           (presence.type() == Tp::ConnectionPresenceTypeHidden)) {
+                (presence.type() == Tp::ConnectionPresenceTypeHidden)) {
             m_changePresenceMessageButton->hide();
         } else {
             m_changePresenceMessageButton->show();
