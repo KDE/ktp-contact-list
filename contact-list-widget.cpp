@@ -43,6 +43,7 @@
 #include <KSettings/Dialog>
 #include <KMenu>
 #include <KNotifyConfigWidget>
+#include <KPushButton>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -495,10 +496,13 @@ void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, 
 {
     kDebug() << "Requesting file transfer for contact" << contact->alias();
 
-    QStringList filenames = KFileDialog::getOpenFileNames(KUrl("kfiledialog:///FileTransferLastDirectory"),
-                                                          QString(),
-                                                          this,
-                                                          i18n("Choose files to send to %1", contact->alias()));
+    KFileDialog *fileDialog = new KFileDialog(KUrl("kfiledialog:///FileTransferLastDirectory"), QString(), this);
+    fileDialog->setOperationMode(KFileDialog::Opening);
+    fileDialog->setWindowTitle(i18n("Choose files to send to %1", contact->alias()));
+    fileDialog->okButton()->setText(i18n("Send"));
+    fileDialog->exec();
+    QStringList filenames = fileDialog->selectedFiles();
+    fileDialog->deleteLater();
 
     if (filenames.isEmpty()) { // User hit cancel button
         return;
