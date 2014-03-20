@@ -20,8 +20,6 @@
 
 #include "custom-presence-dialog.h"
 
-#include "presence-model.h"
-
 #include <QtGui/QListView>
 #include <QtGui/QHBoxLayout>
 #include <QtGui/QVBoxLayout>
@@ -37,6 +35,8 @@
 #include <TelepathyQt/Presence>
 #include <QLineEdit>
 #include <QKeyEvent>
+
+#include <KTp/Models/presence-model.h>
 
 class FilteredModel : public QSortFilterProxyModel
 {
@@ -54,11 +54,11 @@ FilteredModel::FilteredModel(QObject *parent)
 bool FilteredModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
 {
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
-    KTp::Presence presence = index.data(PresenceModel::PresenceRole).value<KTp::Presence>();
+    KTp::Presence presence = index.data(KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
     return ! presence.statusMessage().isEmpty();
 }
 
-CustomPresenceDialog::CustomPresenceDialog(PresenceModel *model, QWidget *parent)
+CustomPresenceDialog::CustomPresenceDialog(KTp::PresenceModel *model, QWidget *parent)
     : KDialog(parent),
       m_model(model)
 {
@@ -150,7 +150,7 @@ void CustomPresenceDialog::removeCustomPresence()
         return;
     }
 
-    KTp::Presence presence = m_listView->currentIndex().data(PresenceModel::PresenceRole).value<KTp::Presence>();
+    KTp::Presence presence = m_listView->currentIndex().data(KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
     m_model->removePresence(presence);
 
     if (m_listView->model()->rowCount(QModelIndex()) == 0) {

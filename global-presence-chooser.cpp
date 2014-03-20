@@ -20,10 +20,9 @@
 
 #include "global-presence-chooser.h"
 
-#include "presence-model.h"
-
 #include <KTp/global-presence.h>
 #include <KTp/presence.h>
+#include <KTp/Models/presence-model.h>
 
 #include "dialogs/custom-presence-dialog.h"
 
@@ -44,13 +43,13 @@
 #include <QtGui/QPushButton>
 #include <QMenu>
 
-//A sneaky class that adds an extra entry to the end of the presence model
-//called "Configure Presences"
+//A sneaky class that adds an extra entries to the end of the presence model,
+//currently "Now listening to" and "Configure Custom Presences"
 class PresenceModelExtended : public QAbstractListModel
 {
     Q_OBJECT
 public:
-    PresenceModelExtended(PresenceModel *presenceModel, QObject *parent);
+    PresenceModelExtended(KTp::PresenceModel *presenceModel, QObject *parent);
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     QVariant data(const QModelIndex &index, int role) const;
     KTp::Presence temporaryPresence() const;
@@ -62,10 +61,10 @@ private slots:
     void sourceRowsRemoved(const QModelIndex &index, int start, int end);
 private:
     KTp::Presence m_temporaryPresence;
-    PresenceModel *m_model;
+    KTp::PresenceModel *m_model;
 };
 
-PresenceModelExtended::PresenceModelExtended(PresenceModel *presenceModel, QObject *parent) :
+PresenceModelExtended::PresenceModelExtended(KTp::PresenceModel *presenceModel, QObject *parent) :
     QAbstractListModel(parent),
     m_model(presenceModel)
 {
@@ -73,7 +72,7 @@ PresenceModelExtended::PresenceModelExtended(PresenceModel *presenceModel, QObje
     connect(m_model, SIGNAL(rowsRemoved(QModelIndex,int,int)), SLOT(sourceRowsRemoved(QModelIndex,int,int)));
 }
 
-//return number of rows + an extra item for the "configure presences" button
+//return number of rows + the extra items added to end of list
 int PresenceModelExtended::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid()) {
@@ -112,7 +111,7 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
             return m_temporaryPresence.statusMessage();
         case Qt::DecorationRole:
             return m_temporaryPresence.icon();
-        case PresenceModel::PresenceRole:
+        case KTp::PresenceModel::PresenceRole:
             return QVariant::fromValue<KTp::Presence>(m_temporaryPresence);
         }
     } else {
@@ -174,7 +173,7 @@ void PresenceModelExtended::removeTemporaryPresence()
 GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     KComboBox(parent),
     m_globalPresence(new KTp::GlobalPresence(this)),
-    m_model(new PresenceModel(this)),
+    m_model(new KTp::PresenceModel(this)),
     m_modelExtended(new PresenceModelExtended(m_model, this)),
     m_busyOverlay(new KPixmapSequenceOverlayPainter(this)),
     m_changePresenceMessageButton(new QPushButton(this))
@@ -358,7 +357,7 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 							  QLatin1String("deactivateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
         // only set global presence on user change
-        KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
+        KTp::Presence presence = itemData(index, KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
         m_globalPresence->setPresence(presence);
     }
 }
@@ -367,7 +366,7 @@ void GlobalPresenceChooser::onAllComboChanges(int index)
 {
     int lastPresenceIndex = m_model->rowCount();
     if (index < lastPresenceIndex) {
-        KTp::Presence presence = itemData(index, PresenceModel::PresenceRole).value<KTp::Presence>();
+        KTp::Presence presence = itemData(index, KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
         if ((presence.type() == Tp::ConnectionPresenceTypeOffline) ||
                 (presence.type() == Tp::ConnectionPresenceTypeHidden)) {
             m_changePresenceMessageButton->hide();
@@ -387,7 +386,7 @@ void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
         return;
     }
     for (int i = 0; i < count() ; i++) {
-        KTp::Presence itemPresence = itemData(i, PresenceModel::PresenceRole).value<KTp::Presence>();
+        KTp::Presence itemPresence = itemData(i, KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
         if (itemPresence.type() == presence.type() && itemPresence.statusMessage() == presence.statusMessage()) {
             setCurrentIndex(i);
             if (itemPresence != m_modelExtended->temporaryPresence()) {
@@ -446,7 +445,7 @@ void GlobalPresenceChooser::onConfirmPresenceMessageClicked()
 {
     m_changePresenceMessageButton->show();
 
-    KTp::Presence presence = itemData(currentIndex(), PresenceModel::PresenceRole).value<KTp::Presence>();
+    KTp::Presence presence = itemData(currentIndex(), KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
     presence.setStatus(presence.type(), presence.status(), lineEdit()->text());
     QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
     setEditable(false);
@@ -458,4 +457,4 @@ void GlobalPresenceChooser::onConfirmPresenceMessageClicked()
 
 
 #include "global-presence-chooser.moc"
-#include "moc_global-presence-chooser.cpp" //hack because we have two QObejcts in teh same file
+#include "moc_global-presence-chooser.cpp" //hack because we have two QObjects in the same file

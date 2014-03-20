@@ -35,7 +35,7 @@ include_directories (${KDE4_INCLUDES}
 )
 
 
-set (ktp_contactlist_SRCS 
+set (ktp_contactlist_SRCS
      contact-list-widget.cpp
      context-menu.cpp
      abstract-contact-delegate.cpp
@@ -53,7 +53,6 @@ set (ktp_contactlist_SRCS
      global-presence-chooser.cpp
      dialogs/remove-contact-dialog.cpp
      dialogs/custom-presence-dialog.cpp
-     presence-model.cpp
      tooltips/ktooltip.cpp
      tooltips/tooltipmanager.cpp
      tooltips/ktooltipwindow.cpp

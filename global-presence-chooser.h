@@ -29,11 +29,11 @@
 class QMenu;
 class QPushButton;
 class KPixmapSequenceOverlayPainter;
-class PresenceModel;
 class PresenceModelExtended;
 
 namespace KTp {
-class GlobalPresence;
+    class GlobalPresence;
+    class PresenceModel;
 }
 
 class GlobalPresenceChooser : public KComboBox
@@ -59,7 +59,7 @@ private Q_SLOTS:
 
 private:
     KTp::GlobalPresence *m_globalPresence;
-    PresenceModel *m_model;
+    KTp::PresenceModel *m_model;
     PresenceModelExtended *m_modelExtended;
 
     KPixmapSequenceOverlayPainter *m_busyOverlay;

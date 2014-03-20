@@ -26,17 +26,19 @@
 #include <KDialog>
 
 class QPushButton;
-//Forward declrare classes
 class KIcon;
 class QListView;
-class PresenceModel;
+
+namespace KTp {
+    class PresenceModel;
+}
 
 class CustomPresenceDialog : public KDialog
 {
     Q_OBJECT
 
 public:
-    explicit CustomPresenceDialog(PresenceModel *model, QWidget *parent = 0);
+    explicit CustomPresenceDialog(KTp::PresenceModel *model, QWidget *parent = 0);
     bool eventFilter(QObject* obj, QEvent* event);
 
 private Q_SLOTS:
@@ -59,7 +61,7 @@ private:
     ///Combobox to type custom presence's
     KComboBox    *m_statusMessage;
 
-    PresenceModel *m_model;
+    KTp::PresenceModel *m_model;
 
     QPushButton *m_addStatus;
     QPushButton *m_removeStatus;
