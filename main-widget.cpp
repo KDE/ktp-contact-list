@@ -111,8 +111,14 @@ MainWidget::MainWidget(QWidget *parent)
     m_contextMenu = new ContextMenu(m_contactsListView);
     new ToolTipManager(m_contactsListView);
 
+    m_messageWidget->setWordWrap(true);
+    m_messageWidget->setCloseButtonVisible(true);
+    m_messageWidget->hide();
+
     connect(m_contactsListView, SIGNAL(customContextMenuRequested(QPoint)),
             this, SLOT(onCustomContextMenuRequested(QPoint)));
+    connect(m_contactsListView->contactsModel(), SIGNAL(modelInitialized(bool)),
+            this, SLOT(onModelInitialized(bool)));
 
     connect(m_showOfflineAction, SIGNAL(toggled(bool)),
             m_contactsListView, SLOT(toggleOfflineContacts(bool)));
@@ -752,5 +758,16 @@ void MainWidget::onMetacontactToggleTriggered()
     }
 #endif
 }
+
+void MainWidget::onModelInitialized(bool success)
+{
+    if (!success) {
+        m_messageWidget->setMessageType(KMessageWidget::Warning);
+        m_messageWidget->setText(i18n("Some data sources failed to initialize properly, your contact list might be incomplete."));
+        m_messageWidget->setIcon(KIcon::fromTheme(QLatin1String("dialog-warning")));
+        m_messageWidget->animatedShow();
+    }
+}
+
 
 #include "main-widget.moc"

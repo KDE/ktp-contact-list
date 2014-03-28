@@ -172,6 +172,11 @@ ContactListWidget::~ContactListWidget()
     delete d_ptr;
 }
 
+KTp::ContactsModel* ContactListWidget::contactsModel() const
+{
+    return d_ptr->model;
+}
+
 void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountManager)
 {
     Q_D(ContactListWidget);

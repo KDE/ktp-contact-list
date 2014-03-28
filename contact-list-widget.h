@@ -44,6 +44,8 @@ public:
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
     void toggleGroups(bool show);
 
+    KTp::ContactsModel* contactsModel() const;
+
 public Q_SLOTS:
     void toggleOfflineContacts(bool show);
     void showGrouped();
@@ -75,7 +77,6 @@ private Q_SLOTS:
     void startDesktopSharing(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
     void startLogViewer(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
     void accountEnablingFinished(Tp::PendingOperation *op);
-
 
 Q_SIGNALS:
     void enableOverlays(bool);

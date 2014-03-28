@@ -58,6 +58,16 @@
      </widget>
     </item>
     <item>
+     <widget class="KMessageWidget" name="m_messageWidget">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+     </widget>
+    </item>
+    <item>
      <widget class="ContactListWidget" name="m_contactsListView">
       <property name="animated">
        <bool>true</bool>
@@ -92,6 +102,12 @@
    <class>ContactListWidget</class>
    <extends>QTreeView</extends>
    <header>contact-list-widget.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KMessageWidget</class>
+   <extends>QFrame</extends>
+   <header>kmessagewidget.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

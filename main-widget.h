@@ -94,6 +94,7 @@ private Q_SLOTS:
     void onGenericOperationFinished(Tp::PendingOperation *operation);   /** called when a Tp::PendingOperation finishes. Used to check for errors */
     void onContactSelectionChanged();
     void onMetacontactToggleTriggered();
+    void onModelInitialized(bool success);
 
 private:
     QStringList extractLinksFromIndex(const QModelIndex &index);    /** extract links from a QModelIndex pointing to a contact */
