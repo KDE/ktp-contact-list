@@ -31,6 +31,7 @@
 #include <KTp/global-contact-manager.h>
 #include <KTp/actions.h>
 #include <KTp/contact.h>
+#include <KTp/Widgets/settings-kcm-dialog.h>
 
 #include <KGlobal>
 #include <KSharedConfig>
@@ -206,38 +207,10 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
 
 void ContactListWidget::showSettingsKCM()
 {
-    KSettings::Dialog *dialog = new KSettings::Dialog(this);
-
-    KService::Ptr tpAccKcm = KService::serviceByDesktopName("kcm_ktp_accounts");
-
-    if (!tpAccKcm) {
-        KMessageBox::error(this,
-                           i18n("It appears you do not have the IM Accounts control module installed. Please install ktp-accounts-kcm package."),
-                           i18n("IM Accounts KCM Plugin Is Not Installed"));
-    }
-
-    dialog->addModule("kcm_ktp_accounts");
-    dialog->addModule("kcm_ktp_integration_module");
-
-    // Setup notifications menu
-    KNotifyConfigWidget *notificationWidget = new KNotifyConfigWidget(dialog);
-    notificationWidget->setApplication("ktelepathy");
-    connect(dialog, SIGNAL(accepted()),
-            notificationWidget, SLOT(save()));
-
-    connect(notificationWidget, SIGNAL(changed(bool)),
-            dialog, SLOT(enableButtonApply(bool)));
-
-    connect(dialog,SIGNAL(applyClicked()),
-            notificationWidget, SLOT(save()));
-
-    KPageWidgetItem* notificationPage = new KPageWidgetItem(notificationWidget, i18n("Notifications"));
-    notificationPage->setIcon(KIcon("preferences-desktop-notification"));
-    dialog->addPage(notificationPage);
-
-    dialog->resize(700, 640);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->exec();
+    KTp::SettingsKcmDialog *dialog = new KTp::SettingsKcmDialog(this);
+    dialog->addGeneralSettingsModule();
+    dialog->addNotificationsModule();
+    dialog->show();
 }
 
 void ContactListWidget::onContactListClicked(const QModelIndex& index)
