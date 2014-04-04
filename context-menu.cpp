@@ -169,7 +169,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         connect(action, SIGNAL(triggered(bool)),
                 SLOT(onOpenLogViewerTriggered()));
 
-        KTp::LogEntity entity(Tp::HandleTypeContact, contact->id());
+        KTp::LogEntity entity(Tp::EntityTypeContact, contact->id());
         if (KTp::LogManager::instance()->logsExist(account, entity)) {
             action->setEnabled(true);
         }
