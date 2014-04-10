@@ -169,6 +169,18 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
     return QSize(0, qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
 }
 
+QSize ContactDelegateCompact::sizeHintHeader(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+    Q_UNUSED(option);
+    Q_UNUSED(index);
+
+    if (m_listSize == ContactDelegateCompact::Mini) {
+        return QSize(0, qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
+    } else {
+        return AbstractContactDelegate::sizeHintHeader(option, index);
+    }
+}
+
 void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
 {
     if (size == ContactDelegateCompact::Mini) {

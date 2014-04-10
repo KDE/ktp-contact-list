@@ -37,6 +37,7 @@ public:
 
     void paintContact(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex & index) const;
     QSize sizeHintContact(const QStyleOptionViewItem & option, const QModelIndex & index) const;
+    QSize sizeHintHeader(const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
     void setListMode(ContactDelegateCompact::ListSize size);
 
