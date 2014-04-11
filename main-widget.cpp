@@ -767,6 +767,8 @@ void MainWidget::onModelInitialized(bool success)
         m_messageWidget->setIcon(KIcon::fromTheme(QLatin1String("dialog-warning")));
         m_messageWidget->animatedShow();
     }
+
+    m_contactsListView->contactsModel()->setTrackUnreadMessages(true);
 }
 
 

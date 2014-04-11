@@ -102,7 +102,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->compactDelegate = new ContactDelegateCompact(ContactDelegateCompact::Normal, this);
 
     d->model = new KTp::ContactsModel(this);
-    d->model->setTrackUnreadMessages(true);
     d->model->setDynamicSortFilter(true);
     d->model->setSortRole(Qt::DisplayRole);
     d->style.reset(new NoLinesStyle());
