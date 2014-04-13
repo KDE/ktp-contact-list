@@ -607,7 +607,7 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
                                           guiConfigGroup.readEntry("use_groups", true)));
     QString useGroupsDisabledText;
     if (KTp::kpeopleEnabled()) {
-        useGroupsDisabledText = i18n("Do not group");
+        useGroupsDisabledText = i18n("Do Not Group");
     }
     else {
         useGroupsDisabledText = i18n("Show Contacts by Accounts");
