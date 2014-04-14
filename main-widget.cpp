@@ -254,21 +254,10 @@ void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
 
 void MainWidget::onJoinChatRoomRequested()
 {
-    QWeakPointer<KTp::JoinChatRoomDialog> dialog = new KTp::JoinChatRoomDialog(m_accountManager);
+    KTp::JoinChatRoomDialog *dialog = new KTp::JoinChatRoomDialog(m_accountManager);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    if (dialog.data()->exec() == QDialog::Accepted) {
-        Tp::AccountPtr account = dialog.data()->selectedAccount();
-
-        // check account validity. Should NEVER be invalid
-        if (!account.isNull()) {
-            // ensure chat room
-            Tp::PendingChannelRequest *channelRequest = KTp::Actions::startGroupChat(account, dialog.data()->selectedChatRoom());
-
-            connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
-        }
-    }
-
-    delete dialog.data();
+    dialog->show();
 }
 
 void MainWidget::onMakeCallRequested()
