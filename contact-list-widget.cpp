@@ -58,33 +58,12 @@
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
 #include "contact-overlays.h"
+#include "empty-row-filter.h"
 
 
 #ifdef HAVE_KPEOPLE
 #include <kpeople/personsmodel.h>
 #endif
-
-//create a new style that does not draw the vertical lines in the tree view
-//this maps "draw branch" to "draw right arrow" and "draw down arrow"
-//we cannot just override drawBranches as then we cannot highlight the active branch
-//Qt does so by utilising some internal methods of QTreeView
-class NoLinesStyle: public QProxyStyle
-{
-    void drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = 0) const
-    {
-        if (element == QStyle::PE_IndicatorBranch) {
-            if (option->state & QStyle::State_Children) {
-                if (option->state & QStyle::State_Open) {
-                    return QProxyStyle::drawPrimitive(PE_IndicatorArrowDown, option, painter, widget);
-                } else {
-                    return QProxyStyle::drawPrimitive(PE_IndicatorArrowRight, option, painter, widget);
-                }
-            }
-        } else {
-            return QProxyStyle::drawPrimitive(element, option, painter, widget);
-        }
-    }
-};
 
 ContactListWidget::ContactListWidget(QWidget *parent)
     : QTreeView(parent),
@@ -103,15 +82,8 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     d->model->setTrackUnreadMessages(true);
     d->model->setDynamicSortFilter(true);
     d->model->setSortRole(Qt::DisplayRole);
-    d->style.reset(new NoLinesStyle());
 
-    setStyle(d->style.data());
-    setSortingEnabled(true);
-    sortByColumn(0, Qt::AscendingOrder);
     loadGroupStatesFromConfig();
-
-    connect(d->model, SIGNAL(rowsInserted(QModelIndex,int,int)),
-            this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
 
     header()->hide();
     setSortingEnabled(true);
@@ -178,10 +150,16 @@ void ContactListWidget::setAccountManager(const Tp::AccountManagerPtr &accountMa
     d->accountManager = accountManager;
     d->model->setAccountManager(accountManager);
 
+    EmptyRowFilter *rowFilter= new EmptyRowFilter(this);
+    rowFilter->setSourceModel(d->model);
+
+    connect(rowFilter, SIGNAL(rowsInserted(QModelIndex,int,int)),
+            this, SLOT(onNewGroupModelItemsInserted(QModelIndex,int,int)));
+
     // We set the model only when the account manager is set.
     // This fixes the weird horizontal scrollbar bug
     // See https://bugs.kde.org/show_bug.cgi?id=316260
-    setModel(d->model);
+    setModel(rowFilter);
 
     connect(selectionModel(), SIGNAL(selectionChanged(QItemSelection,QItemSelection)),
             this, SIGNAL(contactSelectionChanged()));
