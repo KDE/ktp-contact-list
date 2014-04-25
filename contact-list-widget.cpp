@@ -86,7 +86,6 @@ ContactListWidget::ContactListWidget(QWidget *parent)
     loadGroupStatesFromConfig();
 
     header()->hide();
-    setSortingEnabled(true);
     setEditTriggers(NoEditTriggers);
     setContextMenuPolicy(Qt::CustomContextMenu);
     if (KTp::kpeopleEnabled()) {
