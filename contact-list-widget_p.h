@@ -54,6 +54,7 @@ public:
     Tp::AccountManagerPtr         accountManager;
     KTp::ContactsModel::GroupMode groupMode; // Stores current grouping mode (by accounts or by groups)
     QPersistentModelIndex         selectedIndex;
+    QScopedPointer<QStyle>        style;
 };
 
 #endif //CONTACT_LIST_WIDGET_P_H
