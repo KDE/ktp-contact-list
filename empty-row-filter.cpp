@@ -35,7 +35,7 @@ bool EmptyRowFilter::filterAcceptsRow(int sourceRow, const QModelIndex &sourcePa
     }
 
     //hide the expanded view for single contacts
-    if (sourceParent.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
+    if (sourceParent.parent().isValid() && sourceParent.data(KTp::RowTypeRole).toInt() == KTp::ContactRowType) {
         return false;
     }
 
