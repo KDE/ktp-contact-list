@@ -521,11 +521,20 @@ void ContactListWidget::requestFileTransferChannels(const Tp::AccountPtr &accoun
     Q_EMIT actionStarted();
 }
 
-void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& index, int start, int end)
+void ContactListWidget::onNewGroupModelItemsInserted(const QModelIndex& parentIndex, int start, int end)
 {
-    Q_UNUSED(start);
     Q_UNUSED(end);
     Q_D(ContactListWidget);
+
+    QModelIndex index;
+
+    //if the inserted item's parent is valid, it is probably the top-level item we want to expand/collapse
+    if (parentIndex.isValid()) {
+        index = parentIndex;
+    } else {
+        //if it is invalid, the inserted item may be a group added after a child, so we get the group index
+        index = model()->index(start, 0, QModelIndex());
+    }
 
     if (!index.isValid()) {
         return;

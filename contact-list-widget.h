@@ -65,7 +65,7 @@ private Q_SLOTS:
     void onContactListClicked(const QModelIndex &index);
     void onContactListDoubleClicked(const QModelIndex &index);
 
-    void onNewGroupModelItemsInserted(const QModelIndex &index, int start, int end);
+    void onNewGroupModelItemsInserted(const QModelIndex &parentIndex, int start, int end);
     void addOverlayButtons();
 
     void startTextChannel(const Tp::AccountPtr &account, const Tp::ContactPtr &contact);
