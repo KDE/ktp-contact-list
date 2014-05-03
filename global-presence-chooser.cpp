@@ -226,7 +226,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
                 QString presenceIconPath = KIconLoader::global()->iconPath(accountPresence.icon().name(), 1);
                 QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
                 QString accountIconPath = KIconLoader::global()->iconPath(account->iconName(), 1);
-                QString accountIconString = QString::fromLatin1("<img src=\"%1\">").arg(accountIconPath);
+                QString accountIconString = QString::fromLatin1("<img src=\"%1\" width=\"%2\" height=\"%2\">").arg(accountIconPath).arg(KIconLoader::SizeSmallMedium);
                 QString presenceString;
                 if (account->connectionStatus() == Tp::ConnectionStatusConnecting) {
                     presenceString = i18nc("Presence string when the account is connecting", "Connecting...");
