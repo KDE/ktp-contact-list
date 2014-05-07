@@ -191,11 +191,11 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
 
     connect(this, SIGNAL(currentIndexChanged(int)), SLOT(onAllComboChanges(int)));
     connect(this, SIGNAL(activated(int)), SLOT(onUserActivatedComboChange(int)));
-    connect(m_globalPresence, SIGNAL(currentPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
+    connect(m_globalPresence, SIGNAL(requestedPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
     connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
     connect(m_changePresenceMessageButton, SIGNAL(clicked(bool)), this, SLOT(onChangePresenceMessageClicked()));
 
-    onPresenceChanged(m_globalPresence->currentPresence());
+    onPresenceChanged(m_globalPresence->requestedPresence());
     //we need to check if there is some account connecting and if so, spin the spinner
     onConnectionStatusChanged(m_globalPresence->connectionStatus());
 }
@@ -220,7 +220,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
 
         Q_FOREACH(const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->isEnabled()) {
-                KTp::Presence accountPresence(account->currentPresence());
+                KTp::Presence accountPresence(account->requestedPresence());
                 QString presenceIconPath = KIconLoader::global()->iconPath(accountPresence.icon().name(), 1);
                 QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
                 QString accountIconPath = KIconLoader::global()->iconPath(account->iconName(), 1);
@@ -319,7 +319,7 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
         QWeakPointer<CustomPresenceDialog> dialog = new CustomPresenceDialog(m_model, this);
         dialog.data()->exec();
         delete dialog.data();
-        onPresenceChanged(m_globalPresence->currentPresence());
+        onPresenceChanged(m_globalPresence->requestedPresence());
     } else if (index == count() - 2) {
         KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
         KConfigGroup kdedConfig = config->group("KDED");
@@ -339,7 +339,7 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
                                        QLatin1String("settingsChange"));
                 QDBusConnection::sessionBus().send(message);
             } else {
-                onPresenceChanged(m_globalPresence->currentPresence());
+                onPresenceChanged(m_globalPresence->requestedPresence());
                 return;
             }
         }
@@ -348,6 +348,7 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 							  QLatin1String("org.kde.Telepathy"),
 							  QLatin1String("activateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
+        onPresenceChanged(m_globalPresence->requestedPresence());
     } else if (m_modelExtended->temporaryPresence().isValid() && index == count() - 3) {
         //do nothing if the temporary presence is selected. This is only used for externally set presences.
         //at which point reselecting it does nothing.
@@ -356,6 +357,7 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 							  QLatin1String("org.kde.Telepathy"),
 							  QLatin1String("deactivateNowPlaying"));
         QDBusConnection::sessionBus().send(message);
+        onPresenceChanged(m_globalPresence->requestedPresence());
         // only set global presence on user change
         KTp::Presence presence = itemData(index, KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
         m_globalPresence->setPresence(presence);
@@ -440,7 +442,7 @@ void GlobalPresenceChooser::onChangePresenceMessageClicked()
     setEditable(true);
 
     //if current presence has no presence message, delete the text
-    if (m_globalPresence->currentPresence().statusMessage().isEmpty()) {
+    if (m_globalPresence->requestedPresence().statusMessage().isEmpty()) {
         lineEdit()->clear();
     }
 
