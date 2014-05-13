@@ -207,16 +207,20 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
 
 void MainWidget::onAddContactRequest()
 {
-    KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_accountManager, this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    if (m_accountManager->isReady()) {
+        KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_accountManager, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
+    }
 }
 
 void MainWidget::onStartChatRequest()
 {
-    KTp::StartChatDialog *dialog = new KTp::StartChatDialog(m_accountManager, this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    if (m_accountManager->isReady()) {
+        KTp::StartChatDialog *dialog = new KTp::StartChatDialog(m_accountManager, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
+    }
 }
 
 
@@ -254,10 +258,12 @@ void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
 
 void MainWidget::onJoinChatRoomRequested()
 {
-    KTp::JoinChatRoomDialog *dialog = new KTp::JoinChatRoomDialog(m_accountManager);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    if (m_accountManager->isReady()) {
+        KTp::JoinChatRoomDialog *dialog = new KTp::JoinChatRoomDialog(m_accountManager);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
 
-    dialog->show();
+        dialog->show();
+    }
 }
 
 void MainWidget::onMakeCallRequested()
