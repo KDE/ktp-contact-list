@@ -201,16 +201,20 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
 
 void MainWidget::onAddContactRequest()
 {
-    KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_accountManager, this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    if (m_accountManager->isReady()) {
+        KTp::AddContactDialog *dialog = new KTp::AddContactDialog(m_accountManager, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
+    }
 }
 
 void MainWidget::onStartChatRequest()
 {
-    KTp::StartChatDialog *dialog = new KTp::StartChatDialog(m_accountManager, this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->show();
+    if (m_accountManager->isReady()) {
+        KTp::StartChatDialog *dialog = new KTp::StartChatDialog(m_accountManager, this);
+        dialog->setAttribute(Qt::WA_DeleteOnClose);
+        dialog->show();
+    }
 }
 
 
@@ -248,21 +252,22 @@ void MainWidget::onGenericOperationFinished(Tp::PendingOperation* operation)
 
 void MainWidget::onJoinChatRoomRequested()
 {
-    QWeakPointer<KTp::JoinChatRoomDialog> dialog = new KTp::JoinChatRoomDialog(m_accountManager);
+    if (m_accountManager->isReady()) {
+        QWeakPointer<KTp::JoinChatRoomDialog> dialog = new KTp::JoinChatRoomDialog(m_accountManager);
 
-    if (dialog.data()->exec() == QDialog::Accepted) {
-        Tp::AccountPtr account = dialog.data()->selectedAccount();
+        if (dialog.data()->exec() == QDialog::Accepted) {
+            Tp::AccountPtr account = dialog.data()->selectedAccount();
 
-        // check account validity. Should NEVER be invalid
-        if (!account.isNull()) {
-            // ensure chat room
-            Tp::PendingChannelRequest *channelRequest = KTp::Actions::startGroupChat(account, dialog.data()->selectedChatRoom());
+            // check account validity. Should NEVER be invalid
+            if (!account.isNull()) {
+                // ensure chat room
+                Tp::PendingChannelRequest *channelRequest = KTp::Actions::startGroupChat(account, dialog.data()->selectedChatRoom());
 
-            connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+                connect(channelRequest, SIGNAL(finished(Tp::PendingOperation*)), SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
+            }
         }
+        delete dialog.data();
     }
-
-    delete dialog.data();
 }
 
 void MainWidget::onMakeCallRequested()
