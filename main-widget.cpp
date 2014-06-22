@@ -71,6 +71,7 @@
 #include "contact-list-application.h"
 #include "tooltips/tooltipmanager.h"
 #include "context-menu.h"
+#include "filter-bar.h"
 
 bool kde_tp_filter_contacts_by_publication_status(const Tp::ContactPtr &contact)
 {
@@ -138,7 +139,7 @@ MainWidget::MainWidget(QWidget *parent)
             this, SLOT(onGenericOperationFinished(Tp::PendingOperation*)));
 
     connect(m_contactsListView, SIGNAL(actionStarted()),
-            this, SLOT(hideSearchWidget()));
+            this, SLOT(clearSearch()));
 
     connect(m_contactsListView, SIGNAL(contactSelectionChanged()),
             this, SLOT(onContactSelectionChanged()));
@@ -406,9 +407,9 @@ void MainWidget::toggleSearchWidget(bool show)
     }
 }
 
-void MainWidget::hideSearchWidget()
+void MainWidget::clearSearch()
 {
-    toggleSearchWidget(false);
+    m_filterBar->clear();
 }
 
 void MainWidget::setupGlobalMenu()

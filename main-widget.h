@@ -81,7 +81,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void toggleSearchWidget(bool show);
-    void hideSearchWidget();
+    void clearSearch();
     void onAccountManagerReady(Tp::PendingOperation* op);
     void onAddContactRequest();
     void onStartChatRequest();
