@@ -220,7 +220,7 @@ bool GlobalPresenceChooser::event(QEvent *e)
 
         Q_FOREACH(const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
             if (account->isEnabled()) {
-                KTp::Presence accountPresence(account->requestedPresence());
+                KTp::Presence accountPresence(account->currentPresence());
                 QString presenceIconPath = KIconLoader::global()->iconPath(accountPresence.icon().name(), 1);
                 QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
                 QString accountIconPath = KIconLoader::global()->iconPath(account->iconName(), 1);
