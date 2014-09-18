@@ -1,5 +1,14 @@
 [Desktop Entry]
 Name=IM Contacts
+Name[cs]=Kontakty IM
+Name[de]=IM-Kontakte
+Name[fr]=Contacts de messagerie instantanée
+Name[nl]=IM-contactpersonen
+Name[pt]=Contactos de MI
+Name[sk]=IM kontakty
+Name[sv]=Direktmeddelandekontakter
+Name[uk]=Список контактів
+Name[x-test]=xxIM Contactsxx
 GenericName=Instant Messenger Contacts
 GenericName[bs]=Kontakti za instant poruke
 GenericName[ca]=Contactes de missatgeria instantània
