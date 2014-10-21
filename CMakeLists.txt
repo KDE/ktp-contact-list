@@ -34,7 +34,6 @@ set (ktp_contactlist_SRCS
      contact-list-widget.cpp
      context-menu.cpp
      abstract-contact-delegate.cpp
-     contact-list-application.cpp
      contact-view-hover-button.cpp
      contact-overlays.cpp
      contact-delegate-overlay.cpp
@@ -77,6 +76,7 @@ target_link_libraries (ktp-contactlist ${ktp_contactlist_LIBS}
     KF5::KIOWidgets
     KF5::KCMUtils
     KF5::NotifyConfig
+    KF5::DBusAddons
     KF5::KDELibs4Support
     KTp::Models
     KTp::Widgets

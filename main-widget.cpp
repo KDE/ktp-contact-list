@@ -73,7 +73,6 @@
 
 #include "ui_main-widget.h"
 #include "account-buttons-panel.h"
-#include "contact-list-application.h"
 #include "tooltips/tooltipmanager.h"
 #include "context-menu.h"
 #include "filter-bar.h"
@@ -298,8 +297,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
     KConfigGroup notifyConigGroup(config, "Notification Messages");
     KConfigGroup guiConfigGroup(config, "GUI");
 
-    ContactListApplication *app = qobject_cast<ContactListApplication*>(kapp);
-    if (!app->isShuttingDown()) {
+    if (qApp->closingDown()) {
         //the standard KMessageBox control saves "true" if you select the checkbox, therefore the reversed var name
         bool dontCheckForPlasmoid = notifyConigGroup.readEntry("dont_check_for_plasmoid", false);
 

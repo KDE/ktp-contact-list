@@ -21,40 +21,47 @@
 
 #include "main-widget.h"
 
-#include <k4aboutdata.h>
-#include <KCmdLineArgs>
-#include <KDebug>
-#include <KUniqueApplication>
+#include <KAboutData>
+#include <KLocalizedString>
+#include <KDBusService>
 
 #include <TelepathyQt/Types>
 #include <TelepathyQt/Debug>
 
-#include "contact-list-application.h"
+#include <QApplication>
+#include <QCommandLineParser>
+
 #include "version.h"
 
 int main(int argc, char *argv[])
 {
-    K4AboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), KTP_CONTACT_LIST_VERSION,
-                         ki18n("KDE Telepathy Contact List"), K4AboutData::License_GPL,
-                         ki18n("(C) 2011, Martin Klapetek"));
+    QApplication app(argc, argv);
+    KAboutData aboutData("ktpcontactlist", i18n("KDE Telepathy Contact List"), KTP_CONTACT_LIST_VERSION,
+                         i18n("KDE Telepathy Contact List"), KAboutLicense::GPL,
+                         i18n("(C) 2011, Martin Klapetek"));
 
-    aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), ki18n("Developer"),
+    aboutData.addAuthor(i18nc("@info:credit", "Martin Klapetek"), i18n("Developer"),
                         "martin.klapetek@gmail.com");
     aboutData.setProductName("telepathy/contactlist"); //set the correct name for bug reporting
     aboutData.setProgramIconName("telepathy-kde");
+    KAboutData::setApplicationData(aboutData);
 
-    KCmdLineArgs::init(argc, argv, &aboutData);
+    KDBusService service(KDBusService::Unique);
+    {
+        QCommandLineParser parser;
+        // Add --debug as commandline option
+        parser.addOption(QCommandLineOption("debug", i18n("Show Telepathy debugging information")));
 
-    // Add --debug as commandline option
-    KCmdLineOptions options;
-    options.add("debug", ki18n("Show Telepathy debugging information"));
-    KCmdLineArgs::addCmdLineOptions(options);
+        aboutData.setupCommandLine(&parser);
+        parser.addHelpOption();
+        parser.addVersionOption();
+        parser.process(app);
+        aboutData.processCommandLine(&parser);
 
-    ContactListApplication app;
-
-    Tp::registerTypes();
-    Tp::enableDebug(KCmdLineArgs::parsedArgs()->isSet("debug"));
-    Tp::enableWarnings(true);
+        Tp::registerTypes();
+        Tp::enableDebug(parser.isSet("debug"));
+        Tp::enableWarnings(true);
+    }
 
     // Create the main widget and show it.
     MainWidget *mainWidget = new MainWidget(0);
