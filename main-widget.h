@@ -24,13 +24,14 @@
 #ifndef TELEPATHY_CONTACTSLIST_MAIN_WIDGET_H
 #define TELEPATHY_CONTACTSLIST_MAIN_WIDGET_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QStyledItemDelegate>
+#include <QWidget>
+#include <QStyledItemDelegate>
 
 #include <TelepathyQt/Types>
 
 #include <KXmlGuiWindow>
 #include <KAction>
+#include <KIcon>
 #include <KDualAction>
 #include "ui_main-widget.h"
 
@@ -38,6 +39,7 @@ class ContextMenu;
 class ContactDelegateCompact;
 class GroupsModel;
 class KMenu;
+class KMenuBar;
 class KSelectAction;
 class AccountsModel;
 class AccountsFilterModel;
@@ -109,7 +111,7 @@ private:
     void setupTelepathy();
 
     KMenuBar               *m_globalMenu;
-    KAction                *m_settingsDialog;
+    QAction                *m_settingsDialog;
     KAction                *m_joinChatRoom;
     KAction                *m_makeCall;
     KAction                *m_mergeContacts;
@@ -126,7 +128,7 @@ private:
     KAction                *m_searchContactAction;
     KAction                *m_startChatAction;
     KDualAction            *m_sortByPresenceAction;
-    KAction                *m_quitAction;
+    QAction                *m_quitAction;
 
     Tp::AccountManagerPtr  m_accountManager;
 

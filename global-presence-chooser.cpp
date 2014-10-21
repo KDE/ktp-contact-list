@@ -33,14 +33,16 @@
 #include <KPixmapSequence>
 #include <KPixmapSequenceOverlayPainter>
 #include <KMessageBox>
+#include <KIconLoader>
+#include <KGlobalSettings>
 
 #include <TelepathyQt/Presence>
 #include <TelepathyQt/Account>
 
 #include <QMouseEvent>
-#include <QtGui/QToolTip>
+#include <QToolTip>
 #include <QStyle>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 #include <QMenu>
 
 //A sneaky class that adds an extra entries to the end of the presence model,
@@ -182,7 +184,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     //needed for mousemove events
     setMouseTracking(true);
 
-    m_busyOverlay->setSequence(KPixmapSequence("process-working"));
+    m_busyOverlay->setSequence(KPixmapSequence("process-working", KIconLoader::SizeMedium));
     setEditable(false);
 
     m_changePresenceMessageButton->setIcon(KIcon("document-edit"));

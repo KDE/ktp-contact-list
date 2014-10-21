@@ -24,8 +24,8 @@
 #include <KIcon>
 #include <KLocalizedString>
 
-#include <QtGui/QCheckBox>
-#include <QtGui/QLabel>
+#include <QCheckBox>
+#include <QLabel>
 
 #include <TelepathyQt/AvatarData>
 #include <TelepathyQt/Contact>

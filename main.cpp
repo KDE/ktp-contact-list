@@ -21,7 +21,7 @@
 
 #include "main-widget.h"
 
-#include <KAboutData>
+#include <k4aboutdata.h>
 #include <KCmdLineArgs>
 #include <KDebug>
 #include <KUniqueApplication>
@@ -34,8 +34,8 @@
 
 int main(int argc, char *argv[])
 {
-    KAboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), KTP_CONTACT_LIST_VERSION,
-                         ki18n("KDE Telepathy Contact List"), KAboutData::License_GPL,
+    K4AboutData aboutData("ktp-contactlist", 0, ki18n("KDE Telepathy Contact List"), KTP_CONTACT_LIST_VERSION,
+                         ki18n("KDE Telepathy Contact List"), K4AboutData::License_GPL,
                          ki18n("(C) 2011, Martin Klapetek"));
 
     aboutData.addAuthor(ki18nc("@info:credit", "Martin Klapetek"), ki18n("Developer"),

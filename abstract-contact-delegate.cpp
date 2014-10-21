@@ -20,11 +20,11 @@
 
 #include "abstract-contact-delegate.h"
 
-#include <QtGui/QApplication>
-#include <QtGui/QStyle>
-#include <QtGui/QPainter>
-#include <QtGui/QToolTip>
-#include <QtGui/QHelpEvent>
+#include <QApplication>
+#include <QStyle>
+#include <QPainter>
+#include <QToolTip>
+#include <QHelpEvent>
 #include <QAbstractItemView>
 
 #include <KDE/KGlobalSettings>

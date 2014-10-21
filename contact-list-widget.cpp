@@ -45,6 +45,7 @@
 #include <KMenu>
 #include <KNotifyConfigWidget>
 #include <KPushButton>
+#include <KIcon>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -56,6 +57,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QMenu>
+#include <QDrag>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"

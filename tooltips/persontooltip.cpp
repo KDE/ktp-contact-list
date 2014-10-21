@@ -31,7 +31,10 @@
 #include <QDesktopServices>
 #include <QTextDocument>
 
+#include <KIconLoader>
+#include <KLocalizedString>
 #include <KToolInvocation>
+#include <KIcon>
 
 bool contactLessThan(const QVariant &left, const QVariant &right)
 {
@@ -95,7 +98,7 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
 
     connect(ui->presenceMessageLabel, SIGNAL(linkActivated(QString)), this, SLOT(openLink(QString)));
 
-    ui->blockedLabel->setShown(index.data(KTp::ContactIsBlockedRole).toBool());
+    ui->blockedLabel->setVisible(index.data(KTp::ContactIsBlockedRole).toBool());
 }
 
 PersonToolTip::~PersonToolTip()

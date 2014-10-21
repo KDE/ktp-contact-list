@@ -24,10 +24,10 @@
 
 #include "main-widget.h"
 
-#include <QtGui/QSortFilterProxyModel>
-#include <QtGui/QPainter>
-#include <QtGui/QMenu>
-#include <QtGui/QToolButton>
+#include <QSortFilterProxyModel>
+#include <QPainter>
+#include <QMenu>
+#include <QToolButton>
 #include <QtCore/QWeakPointer>
 #include <QWidgetAction>
 #include <QCloseEvent>
@@ -60,6 +60,9 @@
 #include <KMenuBar>
 #include <KStandardAction>
 #include <KWindowSystem>
+#include <KLocalizedString>
+#include <KGlobal>
+#include <KIcon>
 
 #include <kdeversion.h>
 
@@ -201,8 +204,7 @@ void MainWidget::showMessageToUser(const QString& text, const MainWidget::System
         notification = new KNotification("telepathyInfo", this);
     }
 
-    KAboutData aboutData("ktelepathy",0,KLocalizedString(),0);
-    notification->setComponentData(KComponentData(aboutData));
+    notification->setComponentName("ktelepathy");
 
     notification->setText(text);
     notification->sendEvent();
@@ -586,7 +588,7 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_addContactAction = createAction(i18n("Add New Contacts..."), this, SLOT(onAddContactRequest()), KIcon("list-add-user"));
     m_searchContactAction = createAction(i18n("Find Contact"), this, SLOT(toggleSearchWidget(bool)),
                                          guiConfigGroup.readEntry("pin_filterbar", true), KIcon("edit-find"));
-    m_searchContactAction->setShortcut(KStandardShortcut::find());
+    m_searchContactAction->setShortcuts(KStandardShortcut::find());
     m_startChatAction = createAction(i18n("Start a chat..."), this, SLOT(onStartChatRequest()), KIcon("telepathy-kde"));
 
     // Dual actions

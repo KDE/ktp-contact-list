@@ -20,17 +20,19 @@
 
 #include "account-button.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QPixmap>
+#include <QPainter>
+#include <QPixmap>
 
 #include <KAction>
 #include <KIcon>
 #include <KLocale>
+#include <KGlobal>
 #include <KMenu>
 #include <KPixmapSequenceOverlayPainter>
 #include <KPixmapSequence>
 #include <KIconLoader>
 #include <KLineEdit>
+#include <KGlobalSettings>
 
 #include <TelepathyQt/Account>
 #include <TelepathyQt/PendingOperation>
@@ -256,7 +258,7 @@ QString AccountButton::presenceDisplayString(const Tp::Presence &presence)
 {
     QAction *action = actionForPresence(presence);
     if (action) {
-        return KGlobal::locale()->removeAcceleratorMarker(action->text());
+        return KLocalizedString::removeAcceleratorMarker(action->text());
     } else {
         return QString();
     }
