@@ -30,7 +30,7 @@
 #include <TelepathyQt/Types>
 
 #include <KXmlGuiWindow>
-#include <KAction>
+#include <QAction>
 #include <KIcon>
 #include <KDualAction>
 #include "ui_main-widget.h"
@@ -103,8 +103,8 @@ private:
     ///Was moved to telepathy-kded-module
     //void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
-    KAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, const QIcon& icon);
-    KAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const QIcon& icon);
+    QAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, const QIcon& icon);
+    QAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const QIcon& icon);
     void setupActions(const KConfigGroup&);
     void setupGlobalMenu();
     void setupToolBar();
@@ -112,9 +112,9 @@ private:
 
     KMenuBar               *m_globalMenu;
     QAction                *m_settingsDialog;
-    KAction                *m_joinChatRoom;
-    KAction                *m_makeCall;
-    KAction                *m_mergeContacts;
+    QAction                *m_joinChatRoom;
+    QAction                *m_makeCall;
+    QAction                *m_mergeContacts;
     QActionGroup           *m_contactListTypeGroup;
     QActionGroup           *m_blockedFilterGroup;
 
@@ -122,11 +122,11 @@ private:
     KSelectAction          *m_setStatusAction;
 
     KDualAction            *m_metacontactToggleAction;
-    KAction                *m_addContactAction;
+    QAction                *m_addContactAction;
     QActionGroup           *m_groupContactsActionGroup;
     KDualAction            *m_showOfflineAction;
-    KAction                *m_searchContactAction;
-    KAction                *m_startChatAction;
+    QAction                *m_searchContactAction;
+    QAction                *m_startChatAction;
     KDualAction            *m_sortByPresenceAction;
     QAction                *m_quitAction;
 

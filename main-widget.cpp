@@ -556,16 +556,16 @@ void MainWidget::setupTelepathy()
             this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
 }
 
-KAction *MainWidget::createAction(const QString &text, QObject *signalReceiver, const char *slot, const QIcon &icon = QIcon())
+QAction *MainWidget::createAction(const QString &text, QObject *signalReceiver, const char *slot, const QIcon &icon = QIcon())
 {
-    KAction *action = new KAction(icon, text, this);
+    QAction *action = new QAction(icon, text, this);
     connect(action, SIGNAL(triggered(bool)), signalReceiver, slot);
     return action;
 }
 
-KAction *MainWidget::createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const QIcon &icon = QIcon())
+QAction *MainWidget::createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const QIcon &icon = QIcon())
 {
-    KAction *action = createAction(text, signalReceiver, slot, icon);
+    QAction *action = createAction(text, signalReceiver, slot, icon);
     action->setCheckable(true);
     action->setChecked(isChecked);
     return action;
