@@ -307,8 +307,8 @@ void MainWidget::closeEvent(QCloseEvent* e)
                         i18n("You do not have any other presence controls active (a Presence widget for example).\n"
                             "Do you want to stay online or would you rather go offline?"),
                         i18n("No Other Presence Controls Found"),
-                        KGuiItem(i18n("Stay Online"), KIcon("user-online")),
-                        KGuiItem(i18n("Go Offline"), KIcon("user-offline")),
+                        KGuiItem(i18n("Stay Online"), QIcon::fromTheme("user-online")),
+                        KGuiItem(i18n("Go Offline"), QIcon::fromTheme("user-offline")),
                         KStandardGuiItem::cancel(),
                         QString("dont_check_for_plasmoid"))) {
 
@@ -477,7 +477,7 @@ void MainWidget::setupToolBar()
     m_toolBar->addWidget(toolBarSpacer);
 
     QToolButton *settingsButton = new QToolButton(this);
-    settingsButton->setIcon(KIcon("configure"));
+    settingsButton->setIcon(QIcon::fromTheme("configure"));
     settingsButton->setPopupMode(QToolButton::InstantPopup);
 
     KMenu *settingsButtonMenu = new KMenu(settingsButton);
@@ -556,14 +556,14 @@ void MainWidget::setupTelepathy()
             this, SLOT(onAccountManagerReady(Tp::PendingOperation*)));
 }
 
-KAction *MainWidget::createAction(const QString &text, QObject *signalReceiver, const char *slot, const KIcon &icon = KIcon())
+KAction *MainWidget::createAction(const QString &text, QObject *signalReceiver, const char *slot, const QIcon &icon = QIcon())
 {
     KAction *action = new KAction(icon, text, this);
     connect(action, SIGNAL(triggered(bool)), signalReceiver, slot);
     return action;
 }
 
-KAction *MainWidget::createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const KIcon& icon = KIcon())
+KAction *MainWidget::createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const QIcon &icon = QIcon())
 {
     KAction *action = createAction(text, signalReceiver, slot, icon);
     action->setCheckable(true);
@@ -580,21 +580,21 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_quitAction->setMenuRole(QAction::QuitRole);
 
     m_joinChatRoom = createAction(i18n("Join Chat Room..."), this, SLOT(onJoinChatRoomRequested()));
-    m_joinChatRoom->setIcon(KIcon("im-irc"));
+    m_joinChatRoom->setIcon(QIcon::fromTheme("im-irc"));
     m_makeCall = createAction(i18n("Make a Call..."), this, SLOT(onMakeCallRequested()));
     m_mergeContacts = createAction(i18n("Merge Contacts..."), this, SLOT(onMergeContactsDialogRequested()));
-    m_addContactAction = createAction(i18n("Add New Contacts..."), this, SLOT(onAddContactRequest()), KIcon("list-add-user"));
+    m_addContactAction = createAction(i18n("Add New Contacts..."), this, SLOT(onAddContactRequest()), QIcon::fromTheme("list-add-user"));
     m_searchContactAction = createAction(i18n("Find Contact"), this, SLOT(toggleSearchWidget(bool)),
-                                         guiConfigGroup.readEntry("pin_filterbar", true), KIcon("edit-find"));
+                                         guiConfigGroup.readEntry("pin_filterbar", true), QIcon::fromTheme("edit-find"));
     m_searchContactAction->setShortcuts(KStandardShortcut::find());
-    m_startChatAction = createAction(i18n("Start a chat..."), this, SLOT(onStartChatRequest()), KIcon("telepathy-kde"));
+    m_startChatAction = createAction(i18n("Start a chat..."), this, SLOT(onStartChatRequest()), QIcon::fromTheme("telepathy-kde"));
 
     // Dual actions
     m_metacontactToggleAction = new KDualAction(i18n("Split Selected Contacts"),
                                                 i18n("Merge Selected Contacts"),
                                                 this);
-    m_metacontactToggleAction->setActiveIcon(KIcon("user-group-new"));
-    m_metacontactToggleAction->setInactiveIcon(KIcon("user-group-delete"));
+    m_metacontactToggleAction->setActiveIcon(QIcon::fromTheme("user-group-new"));
+    m_metacontactToggleAction->setInactiveIcon(QIcon::fromTheme("user-group-delete"));
     m_metacontactToggleAction->setActive(true);
     m_metacontactToggleAction->setDisabled(true);
     m_metacontactToggleAction->setAutoToggle(false);
@@ -616,8 +616,8 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_showOfflineAction = new KDualAction(i18n("Show Offline Contacts"),
                                           i18n("Hide Offline Contacts"),
                                           this);
-    m_showOfflineAction->setActiveIcon(KIcon("show-offline"));
-    m_showOfflineAction->setInactiveIcon(KIcon("show-offline"));
+    m_showOfflineAction->setActiveIcon(QIcon::fromTheme("show-offline"));
+    m_showOfflineAction->setInactiveIcon(QIcon::fromTheme("show-offline"));
     m_showOfflineAction->setCheckable(true);
     m_showOfflineAction->setChecked(false);
     m_showOfflineAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
@@ -625,8 +625,8 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_sortByPresenceAction = new KDualAction(i18n("Sort by Presence"),
                                              i18n("Sort by Name"),
                                              this);
-    m_sortByPresenceAction->setActiveIcon(KIcon("sort-presence"));
-    m_sortByPresenceAction->setInactiveIcon(KIcon("sort-name"));
+    m_sortByPresenceAction->setActiveIcon(QIcon::fromTheme("sort-presence"));
+    m_sortByPresenceAction->setInactiveIcon(QIcon::fromTheme("sort-name"));
 
     // Setup contact list appearance
     m_contactListTypeGroup = new QActionGroup(this);
@@ -763,7 +763,7 @@ void MainWidget::onModelInitialized(bool success)
         m_messageWidget->setMessageType(KMessageWidget::Warning);
         m_messageWidget->setText(i18n("Some data sources failed to initialize properly, your contact list might be incomplete."));
         #if KDE_IS_VERSION(4, 11, 0)
-        m_messageWidget->setIcon(KIcon::fromTheme(QLatin1String("dialog-warning")));
+        m_messageWidget->setIcon(QIcon::fromTheme(QLatin1String("dialog-warning")));
         #endif
         m_messageWidget->animatedShow();
     }

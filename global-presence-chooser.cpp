@@ -98,14 +98,14 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
             return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
-            return KIcon("configure");
+            return QIcon::fromTheme("configure");
         }
     } else if (index.row() == rowCount() - 2) {
         switch (role) {
         case Qt::DisplayRole:
             return i18n("Now listening to...");
         case Qt::DecorationRole:
-            return KIcon("speaker");
+            return QIcon::fromTheme("speaker");
         }
     } else if (m_temporaryPresence.isValid() && index.row() == rowCount() - 3) {
         switch (role) {
@@ -187,7 +187,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_busyOverlay->setSequence(KPixmapSequence("process-working", KIconLoader::SizeMedium));
     setEditable(false);
 
-    m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
+    m_changePresenceMessageButton->setIcon(QIcon::fromTheme("document-edit"));
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
 

@@ -23,6 +23,11 @@ find_package (KF5People 0.5)
 include(KDEInstallDirs)
 include(KDECMakeSettings)
 include(KDECompilerSettings)
+include(FeatureSummary)
+
+set_package_properties(KF5People PROPERTIES DESCRIPTION "KDE Contacts aggregation"
+                       TYPE OPTIONAL
+)
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 

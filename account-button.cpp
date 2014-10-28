@@ -50,7 +50,6 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
 
     QString iconPath = m_account->iconName();
 
-    setIcon(KIcon(iconPath));
     if (!m_account->isValid()) {
         //we paint a warning symbol in the right-bottom corner
         QPixmap errorPixmap = KIconLoader::global()->loadIcon("dialog-error", KIconLoader::NoGroup, 16);
@@ -58,8 +57,9 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
         QPainter painter(&pixmap);
         painter.drawPixmap(15, 15, 16, 16, errorPixmap);
 
-        setIcon(KIcon(pixmap));
-    }
+        setIcon(QIcon(pixmap));
+    } else
+        setIcon(QIcon(iconPath));
 
     setMaximumWidth(24);
 
@@ -70,14 +70,14 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     QActionGroup *presenceActions = new QActionGroup(this);
     presenceActions->setExclusive(true);
 
-    KAction *onlineAction =     new KAction(KIcon("user-online"), i18nc("@action:inmenu This is an IM user status", "Available"), this);
-    KAction *awayAction =       new KAction(KIcon("user-away"), i18nc("@action:inmenu This is an IM user status", "Away"), this);
-    KAction *brbAction =        new KAction(KIcon("user-away"), i18nc("@action:inmenu This is an IM user status", "Be right back"), this);
-    KAction *busyAction =       new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Busy"), this);
-    KAction *dndAction =        new KAction(KIcon("user-busy"), i18nc("@action:inmenu This is an IM user status", "Do not disturb"), this);
-    KAction *xaAction =         new KAction(KIcon("user-away-extended"), i18nc("@action:inmenu This is an IM user status", "Extended Away"), this);
-    KAction *invisibleAction =  new KAction(KIcon("user-invisible"), i18nc("@action:inmenu This is an IM user status", "Invisible"), this);
-    m_offlineAction =    new KAction(KIcon("user-offline"), i18nc("@action:inmenu This is an IM user status", "Offline"), this);
+    KAction *onlineAction =     new KAction(QIcon::fromTheme("user-online"), i18nc("@action:inmenu This is an IM user status", "Available"), this);
+    KAction *awayAction =       new KAction(QIcon::fromTheme("user-away"), i18nc("@action:inmenu This is an IM user status", "Away"), this);
+    KAction *brbAction =        new KAction(QIcon::fromTheme("user-away"), i18nc("@action:inmenu This is an IM user status", "Be right back"), this);
+    KAction *busyAction =       new KAction(QIcon::fromTheme("user-busy"), i18nc("@action:inmenu This is an IM user status", "Busy"), this);
+    KAction *dndAction =        new KAction(QIcon::fromTheme("user-busy"), i18nc("@action:inmenu This is an IM user status", "Do not disturb"), this);
+    KAction *xaAction =         new KAction(QIcon::fromTheme("user-away-extended"), i18nc("@action:inmenu This is an IM user status", "Extended Away"), this);
+    KAction *invisibleAction =  new KAction(QIcon::fromTheme("user-invisible"), i18nc("@action:inmenu This is an IM user status", "Invisible"), this);
+    m_offlineAction =    new KAction(QIcon::fromTheme("user-offline"), i18nc("@action:inmenu This is an IM user status", "Offline"), this);
 
     m_presenceMessageWidget = new KLineEdit(this);
     m_presenceMessageWidget->setClearButtonShown(true);
@@ -125,7 +125,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     QFontMetrics titleFontMetrics(titleFont);
     QString accountName = titleFontMetrics.elidedText(m_account->displayName(), Qt::ElideMiddle, presenceMenu->width());
 
-    presenceMenu->addTitle(KIcon(), accountName, presenceMenu->actions().first());
+    presenceMenu->addTitle(QIcon(), accountName, presenceMenu->actions().first());
 
     setMenu(presenceMenu);
 
@@ -226,9 +226,9 @@ void AccountButton::presenceChanged(const Tp::Presence &presence)
 
     QPixmap pixmap = icon().pixmap(32, 32);
     QPainter painter(&pixmap);
-    KIcon(action->icon()).paint(&painter, 15, 15, 16, 16);
+    action->icon().paint(&painter, 15, 15, 16, 16);
 
-    setIcon(KIcon(pixmap));
+    setIcon(QIcon(pixmap));
 }
 
 QAction *AccountButton::actionForPresence(const Tp::Presence &presence) const
@@ -296,7 +296,7 @@ void AccountButton::resetMenuFormatting()
 
 void AccountButton::updateIcon(const QString &iconPath)
 {
-    setIcon(KIcon(iconPath));
+    setIcon(QIcon(iconPath));
 }
 
 #include "account-button.moc"

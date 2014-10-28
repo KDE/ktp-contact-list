@@ -80,7 +80,7 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
 
-    QPixmap icon = KIcon(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
+    QPixmap icon = QIcon::fromTheme(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
 
@@ -107,7 +107,7 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
     if (account && isSubcontact) {
         rightIconsWidth += m_clientTypeIconSize + m_spacing;
 
-        const QPixmap accountIcon = KIcon(account->iconName()).pixmap(m_clientTypeIconSize);
+        const QPixmap accountIcon = QIcon::fromTheme(account->iconName()).pixmap(m_clientTypeIconSize);
         QRect accountIconRect = optV4.rect;
         accountIconRect.setSize(QSize(m_clientTypeIconSize, m_clientTypeIconSize));
         accountIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,

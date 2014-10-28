@@ -101,7 +101,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
 
-    QPixmap icon = KIcon(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
+    QPixmap icon = QIcon::fromTheme(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
     statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));

@@ -35,7 +35,7 @@ FilterBar::FilterBar(QWidget* parent) :
     // Create close button
     QToolButton *closeButton = new QToolButton(this);
     closeButton->setAutoRaise(true);
-    closeButton->setIcon(KIcon("dialog-close"));
+    closeButton->setIcon(QIcon::fromTheme("dialog-close"));
     closeButton->setToolTip(i18nc("@info:tooltip", "Hide Filter Bar"));
     connect(closeButton, SIGNAL(clicked()), this, SIGNAL(closeRequest()));
 

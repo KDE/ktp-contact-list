@@ -829,15 +829,15 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             KMenu menu;
             QString seq = QKeySequence(Qt::ShiftModifier).toString();
             seq.chop(1);
-            QAction *move = menu.addAction(KIcon("go-jump"), i18n("&Move here") + QLatin1Char('\t') + seq);
+            QAction *move = menu.addAction(QIcon::fromTheme("go-jump"), i18n("&Move here") + QLatin1Char('\t') + seq);
 
             seq = QKeySequence(Qt::ControlModifier).toString();
             seq.chop(1);
-            QAction *copy = menu.addAction(KIcon("edit-copy"), i18n("&Copy here") + QLatin1Char('\t') + seq);
+            QAction *copy = menu.addAction(QIcon::fromTheme("edit-copy"), i18n("&Copy here") + QLatin1Char('\t') + seq);
 
             menu.addSeparator();
             seq = QKeySequence(Qt::Key_Escape).toString();
-            menu.addAction(KIcon("process-stop"), i18n("C&ancel") + QLatin1Char('\t') + seq);
+            menu.addAction(QIcon::fromTheme("process-stop"), i18n("C&ancel") + QLatin1Char('\t') + seq);
 
             QAction *result = menu.exec(mapToGlobal(event->pos()));
 

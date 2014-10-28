@@ -103,8 +103,8 @@ private:
     ///Was moved to telepathy-kded-module
     //void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
-    KAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, const KIcon& icon);
-    KAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const KIcon& icon);
+    KAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, const QIcon& icon);
+    KAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const QIcon& icon);
     void setupActions(const KConfigGroup&);
     void setupGlobalMenu();
     void setupToolBar();

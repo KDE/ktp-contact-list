@@ -87,10 +87,10 @@ void CustomPresenceDialog::setupDialog()
 
     m_statusMessage = new KComboBox(true, mainDialogWidget);
 
-    m_statusMessage->addItem(KIcon("user-online"), i18n("Set custom available message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::available()));
-    m_statusMessage->addItem(KIcon("user-busy"), i18n("Set custom busy message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::busy()));
-    m_statusMessage->addItem(KIcon("user-away"), i18n("Set custom away message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::away()));
-    m_statusMessage->addItem(KIcon("user-away-extended"), i18n("Set custom extended away message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::xa()));
+    m_statusMessage->addItem(QIcon::fromTheme("user-online"), i18n("Set custom available message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::available()));
+    m_statusMessage->addItem(QIcon::fromTheme("user-busy"), i18n("Set custom busy message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::busy()));
+    m_statusMessage->addItem(QIcon::fromTheme("user-away"), i18n("Set custom away message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::away()));
+    m_statusMessage->addItem(QIcon::fromTheme("user-away-extended"), i18n("Set custom extended away message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::xa()));
 
     m_statusMessage->setAutoCompletion(false);
     m_statusMessage->show();
@@ -100,8 +100,8 @@ void CustomPresenceDialog::setupDialog()
     connect(m_statusMessage, SIGNAL(editTextChanged(QString)),
             this, SLOT(presenceMessageTextChanged(QString)));
 
-    m_addStatus = new QPushButton(KIcon("list-add"), i18n("Add Presence"), mainDialogWidget);
-    m_removeStatus = new QPushButton(KIcon("list-remove"), i18n("Remove Presence"), mainDialogWidget);
+    m_addStatus = new QPushButton(QIcon::fromTheme("list-add"), i18n("Add Presence"), mainDialogWidget);
+    m_removeStatus = new QPushButton(QIcon::fromTheme("list-remove"), i18n("Remove Presence"), mainDialogWidget);
     m_removeStatus->setEnabled(false);
 
     //this triggers the presenceMessageTextChanged() slot and disables the m_addStatus button
