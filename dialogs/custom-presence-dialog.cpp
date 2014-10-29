@@ -27,11 +27,10 @@
 #include <QSortFilterProxyModel>
 #include <QtCore/QModelIndex>
 
-#include <KDE/KDialog>
-#include <KDE/KLocalizedString>
-#include <KDE/KConfig>
-#include <KDE/KSharedConfigPtr>
-#include <KDE/KIcon>
+#include <KDialog>
+#include <KLocalizedString>
+#include <KConfig>
+#include <KSharedConfigPtr>
 
 #include <TelepathyQt/Presence>
 #include <QLineEdit>

@@ -21,7 +21,6 @@
 #include "remove-contact-dialog.h"
 #include "ui_remove-contact-dialog.h"
 
-#include <KIcon>
 #include <KLocalizedString>
 
 #include <QCheckBox>
