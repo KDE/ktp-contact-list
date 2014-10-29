@@ -23,7 +23,6 @@
 
 #include <KMenu>
 #include <KLocalizedString>
-#include <KIcon>
 #include <KToolInvocation>
 #include <KInputDialog>
 #include <KMessageBox>

@@ -35,7 +35,6 @@
 #include <QX11Info>
 #endif
 
-#include <KIcon>
 #include <KColorScheme>
 
 #include <KTp/types.h>

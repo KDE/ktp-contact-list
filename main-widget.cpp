@@ -53,7 +53,6 @@
 #include <KProtocolInfo>
 #include <KSettings/Dialog>
 #include <KSharedConfig>
-#include <KStandardDirs>
 #include <KStandardShortcut>
 #include <KNotification>
 #include <KToolInvocation>
@@ -61,8 +60,6 @@
 #include <KStandardAction>
 #include <KWindowSystem>
 #include <KLocalizedString>
-#include <KGlobal>
-#include <KIcon>
 
 #include <kdeversion.h>
 
@@ -99,7 +96,7 @@ MainWidget::MainWidget(QWidget *parent)
     setAutoSaveSettings();
     setupTelepathy();
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     setupActions(guiConfigGroup);
     setupToolBar();
@@ -165,7 +162,7 @@ MainWidget::MainWidget(QWidget *parent)
 MainWidget::~MainWidget()
 {
     //save the state of the filter bar, pinned or not
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup configGroup(config, "GUI");
     configGroup.writeEntry("pin_filterbar", m_searchContactAction->isChecked());
     configGroup.writeEntry("use_groups", m_groupContactsActionGroup->actions().first()->isChecked());
@@ -292,7 +289,7 @@ void MainWidget::onMergeContactsDialogRequested()
 
 void MainWidget::closeEvent(QCloseEvent* e)
 {
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup generalConfigGroup(config, "General");
     KConfigGroup notifyConigGroup(config, "Notification Messages");
     KConfigGroup guiConfigGroup(config, "GUI");
@@ -373,7 +370,7 @@ bool MainWidget::isAnyAccountOnline() const
 
 void MainWidget::onUseGlobalPresenceTriggered()
 {
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup configGroup(config, "GUI");
 
     m_presenceChooser->show();
@@ -386,7 +383,7 @@ void MainWidget::onUseGlobalPresenceTriggered()
 
 void MainWidget::onUsePerAccountPresenceTriggered()
 {
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup configGroup(config, "GUI");
 
     m_presenceChooser->hide();
@@ -427,7 +424,7 @@ void MainWidget::setupGlobalMenu()
     KMenu *contacts = new KMenu(i18n("Contacts"), m_globalMenu);
     contacts->addAction(m_addContactAction);
     contacts->addAction(m_joinChatRoom);
-    if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
+    if (!QStandardPaths::findExecutable("ktp-dialout-ui").isEmpty()) {
         contacts->addAction(m_makeCall);
     }
     //temporarily disable until funcationality is restored in libkpeople
@@ -501,7 +498,7 @@ void MainWidget::setupToolBar()
     showGroupedMenu->addActions(m_groupContactsActionGroup->actions());
     settingsButtonMenu->addMenu(showGroupedMenu);
 
-    if (!KStandardDirs::findExe("ktp-dialout-ui").isEmpty()) {
+    if (!QStandardPaths::findExecutable("ktp-dialout-ui").isEmpty()) {
         settingsButtonMenu->addAction(m_makeCall);
     }
 

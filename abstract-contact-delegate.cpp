@@ -25,12 +25,10 @@
 #include <QPainter>
 #include <QToolTip>
 #include <QHelpEvent>
+#include <QFontDatabase>
 #include <QAbstractItemView>
 
-#include <KDE/KGlobalSettings>
-#include <KDE/KLocale>
-#include <KDE/KIconLoader>
-#include <KDE/KIcon>
+#include <KIconLoader>
 
 #include <KTp/types.h>
 
@@ -118,7 +116,7 @@ void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionV
         style->drawPrimitive(QStyle::PE_IndicatorArrowRight, &expandSignOption, painter);
     }
 
-    QFont groupFont = KGlobalSettings::smallestReadableFont();
+    QFont groupFont = QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont);
 
     //paint the group icon
     QRect groupIconRect;
@@ -162,7 +160,7 @@ QSize AbstractContactDelegate::sizeHintHeader(const QStyleOptionViewItem &option
     Q_UNUSED(index)
 
     // Add one point to the bottom for the 1px line
-    return QSize(0, qMax(ACCOUNT_ICON_SIZE, KGlobalSettings::smallestReadableFont().pixelSize()) + SPACING + 1);
+    return QSize(0, qMax(ACCOUNT_ICON_SIZE, QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont).pixelSize()) + SPACING + 1);
 }
 
 bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *view, const QStyleOptionViewItem &option, const QModelIndex &index)

@@ -26,19 +26,19 @@
 
 #include "dialogs/custom-presence-dialog.h"
 
-#include <KIcon>
-#include <KLocale>
+#include <KLocalizedString>
+#include <KSharedConfig>
 #include <KLineEdit>
 #include <KDebug>
 #include <KPixmapSequence>
 #include <KPixmapSequenceOverlayPainter>
 #include <KMessageBox>
 #include <KIconLoader>
-#include <KGlobalSettings>
 
 #include <TelepathyQt/Presence>
 #include <TelepathyQt/Account>
 
+#include <QFontDatabase>
 #include <QMouseEvent>
 #include <QToolTip>
 #include <QStyle>
@@ -90,7 +90,7 @@ int PresenceModelExtended::rowCount(const QModelIndex &parent) const
 QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::SizeHintRole) {
-        const QFontMetrics fontMetrics(KGlobalSettings::generalFont());
+        const QFontMetrics fontMetrics(QFontDatabase::systemFont(QFontDatabase::GeneralFont));
         return QSize(0, qMax(fontMetrics.height(), (int)(KIconLoader::SizeSmall)) + 8);
     }
     if (index.row() == rowCount() - 1) {

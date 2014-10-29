@@ -34,7 +34,6 @@
 #include <KIconLoader>
 #include <KLocalizedString>
 #include <KToolInvocation>
-#include <KIcon>
 
 bool contactLessThan(const QVariant &left, const QVariant &right)
 {

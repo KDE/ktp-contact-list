@@ -33,7 +33,6 @@
 #include <KTp/contact.h>
 #include <KTp/Widgets/settings-kcm-dialog.h>
 
-#include <KGlobal>
 #include <KSharedConfig>
 #include <KConfigGroup>
 #include <KDebug>
@@ -45,7 +44,6 @@
 #include <KMenu>
 #include <KNotifyConfigWidget>
 #include <KPushButton>
-#include <KIcon>
 
 #include <QHeaderView>
 #include <QLabel>
@@ -97,7 +95,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 {
     Q_D(ContactListWidget);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
 
     d->groupMode = KTp::ContactsModel::NoGrouping;
@@ -546,7 +544,7 @@ void ContactListWidget::onSwitchToFullView()
 
     emit enableOverlays(true);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("selected_delegate", "full");
     guiConfigGroup.config()->sync();
@@ -562,7 +560,7 @@ void ContactListWidget::onSwitchToCompactView()
 
     emit enableOverlays(false);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("selected_delegate", "normal");
     guiConfigGroup.config()->sync();
@@ -578,7 +576,7 @@ void ContactListWidget::onSwitchToMiniView()
 
     emit enableOverlays(false);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("selected_delegate", "mini");
     guiConfigGroup.config()->sync();
@@ -590,7 +588,7 @@ void ContactListWidget::onShowAllContacts()
 
     d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("shown_contacts", "all");
     guiConfigGroup.config()->sync();
@@ -602,7 +600,7 @@ void ContactListWidget::onShowUnblockedContacts()
 
     d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("shown_contacts", "unblocked");
     guiConfigGroup.config()->sync();
@@ -614,7 +612,7 @@ void ContactListWidget::onShowBlockedContacts()
 
     d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("shown_contacts", "blocked");
     guiConfigGroup.config()->sync();

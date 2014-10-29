@@ -49,8 +49,7 @@ RemoveContactDialog::RemoveContactDialog(Tp::ContactPtr contact, QWidget* parent
 
     // load contact avatar
     if (contact->avatarData().fileName.isEmpty()) {
-        KIcon defaultIcon("im-user");       // load KIcon with the desired pixmap
-        ui->contactAvatarLabel->setPixmap(defaultIcon.pixmap(QSize(90, 90)));
+        ui->contactAvatarLabel->setPixmap(QIcon::fromTheme("im-user").pixmap(QSize(90, 90)));
     } else {
         ui->contactAvatarLabel->setPixmap(QPixmap(contact->avatarData().fileName).scaled(QSize(128, 128), Qt::KeepAspectRatio));
     }

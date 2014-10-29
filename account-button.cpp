@@ -22,17 +22,16 @@
 
 #include <QPainter>
 #include <QPixmap>
+#include <QFontDatabase>
 
 #include <KAction>
-#include <KIcon>
-#include <KLocale>
+#include <KLocalizedString>
 #include <KGlobal>
 #include <KMenu>
 #include <KPixmapSequenceOverlayPainter>
 #include <KPixmapSequence>
 #include <KIconLoader>
 #include <KLineEdit>
-#include <KGlobalSettings>
 
 #include <TelepathyQt/Account>
 #include <TelepathyQt/PendingOperation>
@@ -121,7 +120,7 @@ AccountButton::AccountButton(const Tp::AccountPtr &account, QWidget* parent)
     presenceMenu->setMinimumWidth(180);
     presenceMenu->addActions(presenceActions->actions());
 
-    QFont titleFont = KGlobalSettings::menuFont();
+    QFont titleFont = QFontDatabase::systemFont(QFontDatabase::TitleFont);
     QFontMetrics titleFontMetrics(titleFont);
     QString accountName = titleFontMetrics.elidedText(m_account->displayName(), Qt::ElideMiddle, presenceMenu->width());
 
@@ -212,7 +211,7 @@ void AccountButton::presenceChanged(const Tp::Presence &presence)
     }
 
     resetMenuFormatting();
-    QFont presenceFont = KGlobalSettings::generalFont();
+    QFont presenceFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     presenceFont.setBold(true);
     presenceFont.setItalic(true);
 
@@ -285,7 +284,7 @@ void AccountButton::setCustomPresenceMessage(const QString& message)
 
 void AccountButton::resetMenuFormatting()
 {
-    QFont presenceFont = KGlobalSettings::generalFont();
+    QFont presenceFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     presenceFont.setBold(false);
     presenceFont.setItalic(false);
 

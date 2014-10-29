@@ -27,13 +27,10 @@
 #include <QApplication>
 #include <QStyle>
 #include <QHelpEvent>
+#include <QFontDatabase>
 
 #include <KIconLoader>
-#include <KIcon>
 #include <KDebug>
-#include <KGlobalSettings>
-#include <KDE/KLocale>
-#include <KStandardDirs>
 
 #include <KTp/types.h>
 
@@ -118,9 +115,9 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
     QFont nameFont;
 
     if (m_listSize == ContactDelegateCompact::Mini) {
-        nameFont = KGlobalSettings::smallestReadableFont();
+        nameFont = QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont);
     } else {
-        nameFont = KGlobalSettings::generalFont();
+        nameFont = QFontDatabase::systemFont(QFontDatabase::GeneralFont);
     }
 
     const QFontMetrics nameFontMetrics(nameFont);
@@ -166,7 +163,7 @@ QSize ContactDelegateCompact::sizeHintContact(const QStyleOptionViewItem &option
     Q_UNUSED(option);
     Q_UNUSED(index);
 
-    return QSize(0, qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
+    return QSize(0, qMax(m_avatarSize + 2 * m_spacing, QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont).pixelSize() + m_spacing));
 }
 
 QSize ContactDelegateCompact::sizeHintHeader(const QStyleOptionViewItem& option, const QModelIndex& index) const
@@ -175,7 +172,7 @@ QSize ContactDelegateCompact::sizeHintHeader(const QStyleOptionViewItem& option,
     Q_UNUSED(index);
 
     if (m_listSize == ContactDelegateCompact::Mini) {
-        return QSize(0, qMax(m_avatarSize + 2 * m_spacing, KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing));
+        return QSize(0, qMax(m_avatarSize + 2 * m_spacing, QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont).pixelSize() + m_spacing));
     } else {
         return AbstractContactDelegate::sizeHintHeader(option, index);
     }
@@ -186,7 +183,7 @@ void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
     if (size == ContactDelegateCompact::Mini) {
         m_spacing = 1;
         int iconSize = qMax(KIconLoader::global()->currentSize(KIconLoader::Small),
-                            KGlobalSettings::smallestReadableFont().pixelSize() + m_spacing);
+                            QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont).pixelSize() + m_spacing);
         m_avatarSize = iconSize;
         m_presenceIconSize = iconSize;
         m_clientTypeIconSize = iconSize;

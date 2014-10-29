@@ -31,7 +31,6 @@
 
 #include <KXmlGuiWindow>
 #include <QAction>
-#include <KIcon>
 #include <KDualAction>
 #include "ui_main-widget.h"
 

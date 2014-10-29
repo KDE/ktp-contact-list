@@ -35,7 +35,6 @@
 #include <KDebug>
 #include <KLocalizedString>
 #include <KIconLoader>
-#include <KIcon>
 
 ContactToolTip::ContactToolTip(const QModelIndex &index) :
     QWidget(0),

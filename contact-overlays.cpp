@@ -21,7 +21,7 @@
 
 #include "contact-overlays.h"
 
-#include <KLocale>
+#include <KLocalizedString>
 #include <KIconLoader>
 #include <KDebug>
 

@@ -24,8 +24,7 @@
 #include <QLabel>
 #include <QToolButton>
 
-#include <KIcon>
-#include <KLocale>
+#include <KLocalizedString>
 #include <KLineEdit>
 #include <KIconLoader>
 
