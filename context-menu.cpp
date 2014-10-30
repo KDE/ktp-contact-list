@@ -19,7 +19,7 @@
 
 #include "context-menu.h"
 
-#include <KDebug>
+#include <QDebug>
 
 #include <KMenu>
 #include <KLocalizedString>
@@ -27,7 +27,6 @@
 #include <KInputDialog>
 #include <KMessageBox>
 #include <KAction>
-
 
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notification-config-dialog.h>
@@ -85,14 +84,14 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     if (contact.isNull()) {
-        kDebug() << "Contact is nulled";
+        qWarning() << "Contact is nulled";
         return 0;
     }
 
     Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (account.isNull()) {
-        kDebug() << "Account is nulled";
+        qWarning() << "Account is nulled";
         return 0;
     }
 
@@ -206,7 +205,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     Tp::ConnectionPtr accountConnection = account->connection();
     if (accountConnection.isNull()) {
-        kDebug() << "Account connection is nulled.";
+        qWarning() << "Account connection is nulled.";
         return 0;
     }
 
@@ -244,7 +243,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
                         SLOT(onAddContactToGroupTriggered()));
             }
         } else {
-            kDebug() << "Unable to support Groups";
+            qWarning() << "Unable to support Groups";
         }
     }
 
@@ -345,7 +344,7 @@ void ContextMenu::onOpenLinkTriggered(QAction *action)
 void ContextMenu::onShowInfoTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -374,7 +373,7 @@ void ContextMenu::onShowInfoTriggered()
 void ContextMenu::onStartTextChatTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -399,7 +398,7 @@ void ContextMenu::onStartAudioChatTriggered()
 void ContextMenu::onStartVideoChatTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -414,7 +413,7 @@ void ContextMenu::onStartVideoChatTriggered()
 void ContextMenu::onStartFileTransferTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -429,7 +428,7 @@ void ContextMenu::onStartFileTransferTriggered()
 void ContextMenu::onStartDesktopSharingTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -444,7 +443,7 @@ void ContextMenu::onStartDesktopSharingTriggered()
 void ContextMenu::onOpenLogViewerTriggered()
 {
     if (!m_currentIndex.isValid()) {
-      kDebug() << "Invalid index provided.";
+      qWarning() << "Invalid index provided.";
       return;
     }
 
@@ -471,7 +470,7 @@ void ContextMenu::onAddContactToGroupTriggered()
 
     QAction *action = qobject_cast<QAction*>(sender());
     if (!action) {
-        kDebug() << "Invalid action";
+        qWarning() << "Invalid action";
         return;
     }
 
