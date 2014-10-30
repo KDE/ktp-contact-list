@@ -4,11 +4,6 @@ cmake_minimum_required(VERSION 2.8.12)
 
 set(KTP_CONTACT_LIST_VERSION "0.8.80")
 
-set (CMAKE_MODULE_PATH
-     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
-     ${CMAKE_MODULE_PATH}
-)
-
 set(IS_KTP_INTERNAL_MODULE TRUE)
 
 find_package(ECM 1.3.0 REQUIRED NO_MODULE)
