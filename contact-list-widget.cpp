@@ -474,7 +474,7 @@ void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, 
 {
     kDebug() << "Requesting file transfer for contact" << contact->alias();
 
-    KFileDialog *fileDialog = new KFileDialog(KUrl("kfiledialog:///FileTransferLastDirectory"), QString(), this);
+    KFileDialog *fileDialog = new KFileDialog(QUrl("kfiledialog:///FileTransferLastDirectory"), QString(), this);
     fileDialog->setOperationMode(KFileDialog::Opening);
     fileDialog->setWindowTitle(i18n("Choose files to send to %1", contact->alias()));
     fileDialog->okButton()->setText(i18n("Send"));
