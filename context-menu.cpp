@@ -103,7 +103,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
         if (index.parent().isValid()) {
-            menu->addActions(KPeople::actionsForPerson(index.data(KTp::ContactVCardRole).value<KABC::Addressee>(), KABC::AddresseeList(), menu));
+            menu->addActions(KPeople::actionsForPerson(index.data(KTp::ContactVCardRole).value<KContacts::Addressee>(), KContacts::AddresseeList(), menu));
         } else {
             KPeople::PersonData p(index.data(KTp::PersonIdRole).toString());
             menu->addActions(KPeople::actionsForPerson(p.person(), p.contacts(), menu));
