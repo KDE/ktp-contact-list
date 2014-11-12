@@ -128,4 +128,5 @@ Terminal=false
 Icon=telepathy-kde
 Categories=Qt;KDE;Network;InstantMessaging;
 X-DBUS-StartupType=Unique
+X-DBUS-ServiceName=org.kde.ktpcontactlist
 X-KDE-ServiceTypes=DBUS/InstantMessenger
