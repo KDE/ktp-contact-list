@@ -91,4 +91,4 @@ void KToolTipWindow::arc(QPainterPath &path, qreal cx, qreal cy, qreal radius, q
     path.arcTo(cx-radius, cy-radius, radius * 2, radius * 2, angle, sweeplength);
 }
 
-#include "ktooltipwindow_p.moc"
+#include "ktooltipwindow.moc"

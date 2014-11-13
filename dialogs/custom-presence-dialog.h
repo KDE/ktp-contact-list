@@ -26,7 +26,6 @@
 #include <KDialog>
 
 class QPushButton;
-class KIcon;
 class QListView;
 
 namespace KTp {
@@ -51,9 +50,6 @@ private Q_SLOTS:
 private:
     ///Setup the initial dialog
     void setupDialog();
-
-    ///Returns corresponding icon for index read from the config file
-    static KIcon iconForIndex(int index);
 
     ///ListWidget to display custom presence's
     QListView  *m_listView;

@@ -23,16 +23,14 @@
 
 #include "contact-delegate.h"
 
-#include <QtGui/QPainter>
-#include <QtGui/QPainterPath>
+#include <QPainter>
+#include <QPainterPath>
 #include <QApplication>
+#include <QFontDatabase>
 #include <QStyle>
 
 #include <KIconLoader>
-#include <KIcon>
 #include <KDebug>
-#include <KGlobalSettings>
-#include <KDE/KLocale>
 
 #include <KTp/types.h>
 #include <KTp/presence.h>
@@ -101,7 +99,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     // This value is used to set the correct width for the username and the presence message.
     int rightIconsWidth = m_presenceIconSize + m_spacing;
 
-    QPixmap icon = KIcon(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
+    QPixmap icon = QIcon::fromTheme(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
 
     QRect statusIconRect = optV4.rect;
     statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
@@ -128,7 +126,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     userNameRect.setY(userNameRect.y() + m_spacing / 2);
     userNameRect.setWidth(userNameRect.width() - rightIconsWidth);
 
-    const QFontMetrics nameFontMetrics(KGlobalSettings::generalFont());
+    const QFontMetrics nameFontMetrics(QFontDatabase::systemFont(QFontDatabase::GeneralFont));
 
     if (option.state & QStyle::State_Selected) {
         painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
@@ -139,7 +137,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     painter->drawText(userNameRect,
                       nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
 
-    const QFontMetrics statusFontMetrics(KGlobalSettings::smallestReadableFont());
+    const QFontMetrics statusFontMetrics(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont));
 
     QRect statusMsgRect = optV4.rect;
     statusMsgRect.setX(iconRect.x() + iconRect.width() + m_spacing);
@@ -160,7 +158,7 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
 
     painter->setPen(fadingColor);
 
-    painter->setFont(KGlobalSettings::smallestReadableFont());
+    painter->setFont(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont));
     painter->drawText(statusMsgRect,
                       statusFontMetrics.elidedText(index.data(KTp::ContactPresenceMessageRole).toString().trimmed(),
                                                    Qt::ElideRight, statusMsgRect.width()));

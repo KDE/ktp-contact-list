@@ -26,21 +26,23 @@
 
 #include "dialogs/custom-presence-dialog.h"
 
-#include <KIcon>
-#include <KLocale>
+#include <KLocalizedString>
+#include <KSharedConfig>
 #include <KLineEdit>
 #include <KDebug>
 #include <KPixmapSequence>
 #include <KPixmapSequenceOverlayPainter>
 #include <KMessageBox>
+#include <KIconLoader>
 
 #include <TelepathyQt/Presence>
 #include <TelepathyQt/Account>
 
+#include <QFontDatabase>
 #include <QMouseEvent>
-#include <QtGui/QToolTip>
+#include <QToolTip>
 #include <QStyle>
-#include <QtGui/QPushButton>
+#include <QPushButton>
 #include <QMenu>
 
 //A sneaky class that adds an extra entries to the end of the presence model,
@@ -88,7 +90,7 @@ int PresenceModelExtended::rowCount(const QModelIndex &parent) const
 QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::SizeHintRole) {
-        const QFontMetrics fontMetrics(KGlobalSettings::generalFont());
+        const QFontMetrics fontMetrics(QFontDatabase::systemFont(QFontDatabase::GeneralFont));
         return QSize(0, qMax(fontMetrics.height(), (int)(KIconLoader::SizeSmall)) + 8);
     }
     if (index.row() == rowCount() - 1) {
@@ -96,14 +98,14 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
         case Qt::DisplayRole:
             return i18n("Configure Custom Presences...");
         case Qt::DecorationRole:
-            return KIcon("configure");
+            return QIcon::fromTheme("configure");
         }
     } else if (index.row() == rowCount() - 2) {
         switch (role) {
         case Qt::DisplayRole:
             return i18n("Now listening to...");
         case Qt::DecorationRole:
-            return KIcon("speaker");
+            return QIcon::fromTheme("speaker");
         }
     } else if (m_temporaryPresence.isValid() && index.row() == rowCount() - 3) {
         switch (role) {
@@ -182,10 +184,10 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     //needed for mousemove events
     setMouseTracking(true);
 
-    m_busyOverlay->setSequence(KPixmapSequence("process-working"));
+    m_busyOverlay->setSequence(KPixmapSequence("process-working", KIconLoader::SizeMedium));
     setEditable(false);
 
-    m_changePresenceMessageButton->setIcon(KIcon("document-edit"));
+    m_changePresenceMessageButton->setIcon(QIcon::fromTheme("document-edit"));
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
 

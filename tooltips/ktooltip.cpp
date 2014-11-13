@@ -23,8 +23,8 @@
 #include <QLabel>
 #include <QPoint>
 #include <QWidget>
+#include <QtGlobal>
 
-#include <kglobal.h>
 
 class KToolTipManager
 {
@@ -41,7 +41,7 @@ private:
     QWeakPointer<KToolTipWindow> m_window;
 };
 
-K_GLOBAL_STATIC(KToolTipManager, s_instance)
+Q_GLOBAL_STATIC(KToolTipManager, s_instance)
 
 KToolTipManager::KToolTipManager()
 {

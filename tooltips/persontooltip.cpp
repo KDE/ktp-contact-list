@@ -31,6 +31,8 @@
 #include <QDesktopServices>
 #include <QTextDocument>
 
+#include <KIconLoader>
+#include <KLocalizedString>
 #include <KToolInvocation>
 
 bool contactLessThan(const QVariant &left, const QVariant &right)
@@ -61,7 +63,7 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
 
     int smallIconSize = KIconLoader::global()->currentSize(KIconLoader::Small);
 
-    ui->presenceIcon->setPixmap(KIcon(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(smallIconSize, smallIconSize));
+    ui->presenceIcon->setPixmap(QIcon::fromTheme(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(smallIconSize, smallIconSize));
     ui->presenceLabel->setText(index.data(KTp::ContactPresenceNameRole).toString());
     ui->presenceMessageLabel->setText(getTextWithHyperlinks(index.data(KTp::ContactPresenceMessageRole).toString()));
 
@@ -81,7 +83,7 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
     {
         QModelIndex i = v.value<QModelIndex>();
         QLabel *contactPresenceLabel = new QLabel(ui->contactsWidget);
-        KIcon presenceIcon = KIcon(i.data(KTp::ContactPresenceIconRole).toString());
+        QIcon presenceIcon = QIcon::fromTheme(i.data(KTp::ContactPresenceIconRole).toString());
         contactPresenceLabel->setPixmap(presenceIcon.pixmap(KIconLoader::SizeSmall, KIconLoader::SizeSmall));
 
         QLabel *contactIdLabel = new QLabel(ui->contactsWidget);
@@ -95,7 +97,7 @@ PersonToolTip::PersonToolTip(const QModelIndex &index) :
 
     connect(ui->presenceMessageLabel, SIGNAL(linkActivated(QString)), this, SLOT(openLink(QString)));
 
-    ui->blockedLabel->setShown(index.data(KTp::ContactIsBlockedRole).toBool());
+    ui->blockedLabel->setVisible(index.data(KTp::ContactIsBlockedRole).toBool());
 }
 
 PersonToolTip::~PersonToolTip()

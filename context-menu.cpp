@@ -19,16 +19,14 @@
 
 #include "context-menu.h"
 
-#include <KDebug>
+#include <QDebug>
 
 #include <KMenu>
 #include <KLocalizedString>
-#include <KIcon>
 #include <KToolInvocation>
 #include <KInputDialog>
 #include <KMessageBox>
 #include <KAction>
-
 
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notification-config-dialog.h>
@@ -86,14 +84,14 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     if (contact.isNull()) {
-        kDebug() << "Contact is nulled";
+        qWarning() << "Contact is nulled";
         return 0;
     }
 
     Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (account.isNull()) {
-        kDebug() << "Account is nulled";
+        qWarning() << "Account is nulled";
         return 0;
     }
 
@@ -105,7 +103,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
         if (index.parent().isValid()) {
-            menu->addActions(KPeople::actionsForPerson(index.data(KTp::ContactVCardRole).value<KABC::Addressee>(), KABC::AddresseeList(), menu));
+            menu->addActions(KPeople::actionsForPerson(index.data(KTp::ContactVCardRole).value<KContacts::Addressee>(), KContacts::AddresseeList(), menu));
         } else {
             KPeople::PersonData p(index.data(KTp::PersonIdRole).toString());
             menu->addActions(KPeople::actionsForPerson(p.person(), p.contacts(), menu));
@@ -114,7 +112,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     } else {
         //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
         action = menu->addAction(i18n("Start Chat..."));
-        action->setIcon(KIcon("text-x-generic"));
+        action->setIcon(QIcon::fromTheme("text-x-generic"));
         action->setDisabled(true);
         connect(action, SIGNAL(triggered(bool)),
                 SLOT(onStartTextChatTriggered()));
@@ -124,7 +122,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         }
 
         action = menu->addAction(i18n("Start Audio Call..."));
-        action->setIcon(KIcon("audio-headset"));
+        action->setIcon(QIcon::fromTheme("audio-headset"));
         action->setDisabled(true);
         connect(action, SIGNAL(triggered(bool)),
                 SLOT(onStartAudioChatTriggered()));
@@ -134,7 +132,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         }
 
         action = menu->addAction(i18n("Start Video Call..."));
-        action->setIcon(KIcon("camera-web"));
+        action->setIcon(QIcon::fromTheme("camera-web"));
         action->setDisabled(true);
         connect(action, SIGNAL(triggered(bool)),
                 SLOT(onStartVideoChatTriggered()));
@@ -144,7 +142,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         }
 
         action = menu->addAction(i18n("Send File..."));
-        action->setIcon(KIcon("mail-attachment"));
+        action->setIcon(QIcon::fromTheme("mail-attachment"));
         action->setDisabled(true);
         connect(action, SIGNAL(triggered(bool)),
                 SLOT(onStartFileTransferTriggered()));
@@ -154,7 +152,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         }
 
         action = menu->addAction(i18n("Share my desktop..."));
-        action->setIcon(KIcon("krfb"));
+        action->setIcon(QIcon::fromTheme("krfb"));
         action->setDisabled(true);
         connect(action, SIGNAL(triggered(bool)),
                 SLOT(onStartDesktopSharingTriggered()));
@@ -164,7 +162,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         }
 
         action = menu->addAction(i18n("Open Log Viewer..."));
-        action->setIcon(KIcon("documentation"));
+        action->setIcon(QIcon::fromTheme("documentation"));
         action->setDisabled(true);
         connect(action, SIGNAL(triggered(bool)),
                 SLOT(onOpenLogViewerTriggered()));
@@ -176,7 +174,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     }
 
     menu->addSeparator();
-    action = menu->addAction(KIcon("dialog-information"), i18n("Configure Notifications..."));
+    action = menu->addAction(QIcon::fromTheme("dialog-information"), i18n("Configure Notifications..."));
     action->setEnabled(true);
     connect(action, SIGNAL(triggered()),
                            SLOT(onNotificationConfigureTriggered()));
@@ -207,13 +205,13 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     Tp::ConnectionPtr accountConnection = account->connection();
     if (accountConnection.isNull()) {
-        kDebug() << "Account connection is nulled.";
+        qWarning() << "Account connection is nulled.";
         return 0;
     }
 
     if (m_mainWidget->d_ptr->model->groupMode() == KTp::ContactsModel::GroupGrouping) {
         // remove contact from group action, must be QAction because menu->addAction returns QAction
-        QAction *groupRemoveAction = menu->addAction(KIcon(), i18n("Remove Contact From This Group"));
+        QAction *groupRemoveAction = menu->addAction(QIcon(), i18n("Remove Contact From This Group"));
         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
 
         if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
@@ -245,7 +243,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
                         SLOT(onAddContactToGroupTriggered()));
             }
         } else {
-            kDebug() << "Unable to support Groups";
+            qWarning() << "Unable to support Groups";
         }
     }
 
@@ -280,13 +278,13 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     // remove contact action, must be QAction because that's what menu->addAction returns
 
     //TODO find an "if canRemove"
-    QAction *removeAction = menu->addAction(KIcon("list-remove-user"), i18n("Remove Contact"));
+    QAction *removeAction = menu->addAction(QIcon::fromTheme("list-remove-user"), i18n("Remove Contact"));
     connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
 
     menu->addSeparator();
 
     action = menu->addAction(i18n("Show Info..."));
-    action->setIcon(KIcon(""));
+    action->setIcon(QIcon::fromTheme(""));
     connect(action, SIGNAL(triggered()), SLOT(onShowInfoTriggered()));
 
     return menu;
@@ -307,13 +305,13 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
     //must be QAction, because menu->addAction returns QAction, otherwise compilation dies horribly
     QAction *action = menu->addAction(i18n("Rename Group..."));
-    action->setIcon(KIcon("edit-rename"));
+    action->setIcon(QIcon::fromTheme("edit-rename"));
 
     connect(action, SIGNAL(triggered(bool)),
             this, SLOT(onRenameGroupTriggered()));
 
     action = menu->addAction(i18n("Delete Group"));
-    action->setIcon(KIcon("edit-delete"));
+    action->setIcon(QIcon::fromTheme("edit-delete"));
 
     connect(action, SIGNAL(triggered(bool)),
             this, SLOT(onDeleteGroupTriggered()));
@@ -346,7 +344,7 @@ void ContextMenu::onOpenLinkTriggered(QAction *action)
 void ContextMenu::onShowInfoTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -375,7 +373,7 @@ void ContextMenu::onShowInfoTriggered()
 void ContextMenu::onStartTextChatTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -400,7 +398,7 @@ void ContextMenu::onStartAudioChatTriggered()
 void ContextMenu::onStartVideoChatTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -415,7 +413,7 @@ void ContextMenu::onStartVideoChatTriggered()
 void ContextMenu::onStartFileTransferTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -430,7 +428,7 @@ void ContextMenu::onStartFileTransferTriggered()
 void ContextMenu::onStartDesktopSharingTriggered()
 {
     if (!m_currentIndex.isValid()) {
-        kDebug() << "Invalid index provided.";
+        qWarning() << "Invalid index provided.";
         return;
     }
 
@@ -445,7 +443,7 @@ void ContextMenu::onStartDesktopSharingTriggered()
 void ContextMenu::onOpenLogViewerTriggered()
 {
     if (!m_currentIndex.isValid()) {
-      kDebug() << "Invalid index provided.";
+      qWarning() << "Invalid index provided.";
       return;
     }
 
@@ -472,7 +470,7 @@ void ContextMenu::onAddContactToGroupTriggered()
 
     QAction *action = qobject_cast<QAction*>(sender());
     if (!action) {
-        kDebug() << "Invalid action";
+        qWarning() << "Invalid action";
         return;
     }
 

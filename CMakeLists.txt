@@ -1,45 +1,39 @@
 project (ktp-contactlist)
 
+cmake_minimum_required(VERSION 2.8.12)
+
 set(KTP_CONTACT_LIST_VERSION "0.8.80")
 
-set (CMAKE_MODULE_PATH
-     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules"
-     ${CMAKE_MODULE_PATH}
-)
-
 set(IS_KTP_INTERNAL_MODULE TRUE)
-set(KDE_MIN_VERSION "4.4.75")
-find_package (KDE4 4.4.75 REQUIRED)
-find_package (TelepathyQt4 0.9.3 REQUIRED)
+
+find_package(ECM 1.3.0 REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
+
+find_package (Qt5 5.0 REQUIRED COMPONENTS Widgets Xml)
+find_package (KF5 5.0 REQUIRED COMPONENTS DBusAddons KIO KCMUtils NotifyConfig KDELibs4Support)
+find_package (TelepathyQt5 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
-find_package (KPeople 0.2.1)
+find_package (KF5People 0.5)
 
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings)
+include(FeatureSummary)
 
-macro_log_feature(KPEOPLE_FOUND "KPeople" "Support for KDE Contact Aggregation" "https://projects.kde.org/libkpeople" FALSE "" "")
-macro_display_feature_log()
-
-if (KPEOPLE_FOUND)
-    add_definitions(-DHAVE_KPEOPLE)
-    find_package (KdepimLibs REQUIRED)
-    include_directories(${KPEOPLE_INCLUDES} ${KDEPIMLIBS_INCLUDE_DIRS})
-endif (KPEOPLE_FOUND)
-
-include (KDE4Defaults)
-include (MacroLibrary)
-
-add_definitions (${KDE4_DEFINITIONS})
-
-include_directories (${KDE4_INCLUDES}
-                     ${TELEPATHY_QT4_INCLUDE_DIR}
-                     ${KTP_INCLUDE_DIR}
+set_package_properties(KF5People PROPERTIES DESCRIPTION "KDE Contacts aggregation"
+                       TYPE OPTIONAL
 )
 
+feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
+if (KF5People_FOUND)
+    add_definitions(-DHAVE_KPEOPLE)
+endif ()
 
 set (ktp_contactlist_SRCS
      contact-list-widget.cpp
      context-menu.cpp
      abstract-contact-delegate.cpp
-     contact-list-application.cpp
      contact-view-hover-button.cpp
      contact-overlays.cpp
      contact-delegate-overlay.cpp
@@ -61,52 +55,42 @@ set (ktp_contactlist_SRCS
      tooltips/persontooltip.cpp
 )
 
-
-
-set (ktp_contactlist_LIBS
-    ${KTP_LIBRARIES}
-    ${KTP_MODELS_LIBRARIES}
-    ${KTP_WIDGETS_LIBRARIES}
-    ${KTP_LOGGER_LIBRARIES}
-    ${KDE4_KDEUI_LIBS}
-    ${KDE4_KIO_LIBS}
-    ${KDE4_KCMUTILS_LIBS}
-    ${TELEPATHY_QT4_LIBRARIES}
-    ${KDE4_KNOTIFYCONFIG_LIBS}
+if(KF5People_FOUND)
+    set (ktp_contactlist_LIBS
+        KF5::PeopleWidgets
     )
-
-if(KPEOPLE_FOUND)
-set (ktp_contactlist_LIBS
-    ${ktp_contactlist_LIBS}
-    ${KPEOPLE_LIBRARY}
-    ${KDEPIMLIBS_KABC_LIBS}
-    ${KPEOPLEWIDGETS_LIBRARY}
-)
-endif(KPEOPLE_FOUND)
+endif()
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
-kde4_add_ui_files (ktp_contactlist_SRCS
+qt5_wrap_ui (ktp_contactlist_SRCS
                    main-widget.ui
                    dialogs/remove-contact-dialog.ui
                    tooltips/contacttooltip.ui
                    tooltips/persontooltip.ui
 )
 
-kde4_add_executable (ktp-contactlist
-                     ${ktp_contactlist_SRCS}
-)
+add_executable (ktp-contactlist ${ktp_contactlist_SRCS})
 
-target_link_libraries (ktp-contactlist
-                     ${ktp_contactlist_LIBS}
+target_link_libraries (ktp-contactlist ${ktp_contactlist_LIBS}
+    KF5::KIOWidgets
+    KF5::KCMUtils
+    KF5::NotifyConfig
+    KF5::DBusAddons
+    KF5::KDELibs4Support
+    KTp::Models
+    KTp::Widgets
+    KTp::Logger
+    KTp::CommonInternals
 )
 
 
 # Install:
 install (TARGETS ktp-contactlist
-         DESTINATION ${BIN_INSTALL_DIR}
+         ${INSTALL_TARGETS_DEFAULT_ARGS}
 )
 
 install (PROGRAMS ktp-contactlist.desktop
          DESTINATION ${XDG_APPS_INSTALL_DIR}
 )
+

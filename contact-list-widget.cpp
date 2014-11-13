@@ -33,7 +33,6 @@
 #include <KTp/contact.h>
 #include <KTp/Widgets/settings-kcm-dialog.h>
 
-#include <KGlobal>
 #include <KSharedConfig>
 #include <KConfigGroup>
 #include <KDebug>
@@ -56,6 +55,7 @@
 #include <QPainter>
 #include <QPixmap>
 #include <QMenu>
+#include <QDrag>
 
 #include "contact-delegate.h"
 #include "contact-delegate-compact.h"
@@ -95,7 +95,7 @@ ContactListWidget::ContactListWidget(QWidget *parent)
 {
     Q_D(ContactListWidget);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
 
     d->groupMode = KTp::ContactsModel::NoGrouping;
@@ -474,7 +474,7 @@ void ContactListWidget::startFileTransferChannel(const Tp::AccountPtr &account, 
 {
     kDebug() << "Requesting file transfer for contact" << contact->alias();
 
-    KFileDialog *fileDialog = new KFileDialog(KUrl("kfiledialog:///FileTransferLastDirectory"), QString(), this);
+    KFileDialog *fileDialog = new KFileDialog(QUrl("kfiledialog:///FileTransferLastDirectory"), QString(), this);
     fileDialog->setOperationMode(KFileDialog::Opening);
     fileDialog->setWindowTitle(i18n("Choose files to send to %1", contact->alias()));
     fileDialog->okButton()->setText(i18n("Send"));
@@ -544,7 +544,7 @@ void ContactListWidget::onSwitchToFullView()
 
     emit enableOverlays(true);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("selected_delegate", "full");
     guiConfigGroup.config()->sync();
@@ -560,7 +560,7 @@ void ContactListWidget::onSwitchToCompactView()
 
     emit enableOverlays(false);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("selected_delegate", "normal");
     guiConfigGroup.config()->sync();
@@ -576,7 +576,7 @@ void ContactListWidget::onSwitchToMiniView()
 
     emit enableOverlays(false);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("selected_delegate", "mini");
     guiConfigGroup.config()->sync();
@@ -588,7 +588,7 @@ void ContactListWidget::onShowAllContacts()
 
     d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::DoNotFilterBySubscription);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("shown_contacts", "all");
     guiConfigGroup.config()->sync();
@@ -600,7 +600,7 @@ void ContactListWidget::onShowUnblockedContacts()
 
     d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::HideBlocked);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("shown_contacts", "unblocked");
     guiConfigGroup.config()->sync();
@@ -612,7 +612,7 @@ void ContactListWidget::onShowBlockedContacts()
 
     d->model->setSubscriptionStateFilterFlags(KTp::ContactsFilterModel::ShowOnlyBlocked);
 
-    KSharedConfigPtr config = KGlobal::config();
+    KSharedConfigPtr config = KSharedConfig::openConfig();
     KConfigGroup guiConfigGroup(config, "GUI");
     guiConfigGroup.writeEntry("shown_contacts", "blocked");
     guiConfigGroup.config()->sync();
@@ -827,15 +827,15 @@ void ContactListWidget::dropEvent(QDropEvent *event)
             KMenu menu;
             QString seq = QKeySequence(Qt::ShiftModifier).toString();
             seq.chop(1);
-            QAction *move = menu.addAction(KIcon("go-jump"), i18n("&Move here") + QLatin1Char('\t') + seq);
+            QAction *move = menu.addAction(QIcon::fromTheme("go-jump"), i18n("&Move here") + QLatin1Char('\t') + seq);
 
             seq = QKeySequence(Qt::ControlModifier).toString();
             seq.chop(1);
-            QAction *copy = menu.addAction(KIcon("edit-copy"), i18n("&Copy here") + QLatin1Char('\t') + seq);
+            QAction *copy = menu.addAction(QIcon::fromTheme("edit-copy"), i18n("&Copy here") + QLatin1Char('\t') + seq);
 
             menu.addSeparator();
             seq = QKeySequence(Qt::Key_Escape).toString();
-            menu.addAction(KIcon("process-stop"), i18n("C&ancel") + QLatin1Char('\t') + seq);
+            menu.addAction(QIcon::fromTheme("process-stop"), i18n("C&ancel") + QLatin1Char('\t') + seq);
 
             QAction *result = menu.exec(mapToGlobal(event->pos()));
 
