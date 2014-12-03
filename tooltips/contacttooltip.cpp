@@ -90,7 +90,7 @@ ContactToolTip::~ContactToolTip()
 
 void ContactToolTip::openLink(QString url)
 {
-    KToolInvocation::invokeBrowser(url);
+    QDesktopServices::openUrl(QUrl(url));
     KToolTip::hideTip();
 }
 

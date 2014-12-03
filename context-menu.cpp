@@ -30,7 +30,7 @@
 
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notification-config-dialog.h>
-#include <KTp/contact-info-dialog.h>
+#include <KTp/Widgets/contact-info-dialog.h>
 #include <KTp/types.h>
 #include <KTp/Models/contacts-model.h>
 #include <KTp/Logger/log-manager.h>
