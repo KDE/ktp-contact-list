@@ -97,5 +97,3 @@ void FilterBar::keyReleaseEvent(QKeyEvent* event)
         }
     }
 }
-
-#include "filter-bar.moc"

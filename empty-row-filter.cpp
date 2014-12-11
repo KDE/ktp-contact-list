@@ -41,5 +41,3 @@ bool EmptyRowFilter::filterAcceptsRow(int sourceRow, const QModelIndex &sourcePa
 
     return true;
 }
-
-#include "empty-row-filter.moc"

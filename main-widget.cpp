@@ -23,6 +23,7 @@
  */
 
 #include "main-widget.h"
+#include "ktp-contactlist-debug.h"
 
 #include <QSortFilterProxyModel>
 #include <QPainter>
@@ -31,6 +32,10 @@
 #include <QtCore/QWeakPointer>
 #include <QWidgetAction>
 #include <QCloseEvent>
+#include <QDialog>
+#include <QMenu>
+#include <QMenuBar>
+#include <QDebug>
 
 #include <TelepathyQt/PendingChannelRequest>
 #include <TelepathyQt/PendingContacts>
@@ -45,18 +50,14 @@
 #include <KTp/Widgets/join-chat-room-dialog.h>
 #include <KTp/Widgets/start-chat-dialog.h>
 
-#include <KDebug>
-#include <KDialog>
 #include <KIO/Job>
-#include <KMenu>
 #include <KMessageBox>
 #include <KProtocolInfo>
-#include <KSettings/Dialog>
+#include <ksettings/Dialog>
 #include <KSharedConfig>
 #include <KStandardShortcut>
 #include <KNotification>
 #include <KToolInvocation>
-#include <KMenuBar>
 #include <KStandardAction>
 #include <KWindowSystem>
 #include <KLocalizedString>
@@ -69,7 +70,6 @@
 #endif
 
 #include "ui_main-widget.h"
-#include "account-buttons-panel.h"
 #include "tooltips/tooltipmanager.h"
 #include "context-menu.h"
 #include "filter-bar.h"
@@ -105,10 +105,7 @@ MainWidget::MainWidget(QWidget *parent)
     // Restore window geometry, global/by-account presence, search widget state
     restoreGeometry(guiConfigGroup.readEntry("window_geometry", QByteArray()));
     toggleSearchWidget(guiConfigGroup.readEntry("pin_filterbar", true));
-    if (guiConfigGroup.readEntry("selected_presence_chooser", "global") == QLatin1String("global")) {
-        //hide account buttons and show global presence
-        onUseGlobalPresenceTriggered();
-    }
+    m_presenceChooser->show();
 
     m_contextMenu = new ContextMenu(m_contactsListView);
     new ToolTipManager(m_contactsListView);
@@ -173,9 +170,9 @@ MainWidget::~MainWidget()
 
 void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
 {
-    if (op->isError()) {
-        kDebug() << op->errorName();
-        kDebug() << op->errorMessage();
+    if (op && op->isError()) {
+        qCDebug(KTP_CONTACTLIST_MODULE) << op->errorName();
+        qCDebug(KTP_CONTACTLIST_MODULE) << op->errorMessage();
 
         KMessageBox::error(this,
                            i18n("Something unexpected happened to the core part of your Instant Messaging system "
@@ -184,7 +181,6 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         return;
     }
 
-    m_accountButtons->setAccountManager(m_accountManager);
     m_presenceChooser->setAccountManager(m_accountManager);
     m_contactsListView->setAccountManager(m_accountManager);
     m_contextMenu->setAccountManager(m_accountManager);
@@ -235,7 +231,7 @@ void MainWidget::onCustomContextMenuRequested(const QPoint &pos)
 
     KTp::RowType type = (KTp::RowType)index.data(KTp::RowTypeRole).toInt();
 
-    KMenu *menu = 0;
+    QMenu *menu = 0;
 
     if (type == KTp::ContactRowType || type == KTp::PersonRowType) {
         menu = m_contextMenu->contactContextMenu(index);
@@ -349,7 +345,7 @@ bool MainWidget::isPresencePlasmoidPresent() const
 void MainWidget::goOffline()
 {
     //FIXME use global presence
-    kDebug() << "Setting all accounts offline...";
+    qCDebug(KTP_CONTACTLIST_MODULE) << "Setting all accounts offline...";
     foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
         if (account->isEnabled() && account->isValid()) {
             account->setRequestedPresence(Tp::Presence::offline());
@@ -366,32 +362,6 @@ bool MainWidget::isAnyAccountOnline() const
     }
 
     return false;
-}
-
-void MainWidget::onUseGlobalPresenceTriggered()
-{
-    KSharedConfigPtr config = KSharedConfig::openConfig();
-    KConfigGroup configGroup(config, "GUI");
-
-    m_presenceChooser->show();
-    m_accountButtons->hide();
-
-    configGroup.writeEntry("selected_presence_chooser", "global");
-
-    configGroup.config()->sync();
-}
-
-void MainWidget::onUsePerAccountPresenceTriggered()
-{
-    KSharedConfigPtr config = KSharedConfig::openConfig();
-    KConfigGroup configGroup(config, "GUI");
-
-    m_presenceChooser->hide();
-    m_accountButtons->show();
-
-    configGroup.writeEntry("selected_presence_chooser", "per-account");
-
-    configGroup.config()->sync();
 }
 
 void MainWidget::toggleSearchWidget(bool show)
@@ -418,10 +388,10 @@ void MainWidget::setupGlobalMenu()
     // items to main window. Since it's always active when an
     // application is active, shortcuts now will work properly.
 
-    m_globalMenu = new KMenuBar(this);
+    m_globalMenu = new QMenuBar(this);
     m_globalMenu->setVisible(false);
 
-    KMenu *contacts = new KMenu(i18n("Contacts"), m_globalMenu);
+    QMenu *contacts = new QMenu(i18n("Contacts"), m_globalMenu);
     contacts->addAction(m_addContactAction);
     contacts->addAction(m_joinChatRoom);
     if (!QStandardPaths::findExecutable("ktp-dialout-ui").isEmpty()) {
@@ -437,17 +407,17 @@ void MainWidget::setupGlobalMenu()
     this->addAction(m_quitAction); // Shortcuts workaround.
     m_globalMenu->addMenu(contacts);
 
-    KMenu *view = new KMenu(i18n("View"), m_globalMenu);
+    QMenu *view = new QMenu(i18n("View"), m_globalMenu);
     view->addAction(m_showOfflineAction);
     view->addAction(m_sortByPresenceAction);
     view->addSeparator();
-    KMenu *view_contactListTypeMenu = new KMenu(i18n("Contact List Type"), view);
+    QMenu *view_contactListTypeMenu = new QMenu(i18n("Contact List Type"), view);
     view_contactListTypeMenu->addActions(m_contactListTypeGroup->actions());
     view->addMenu(view_contactListTypeMenu);
-    KMenu *view_blockedFilterMenu = new KMenu(i18n("Shown Contacts"), view);
+    QMenu *view_blockedFilterMenu = new QMenu(i18n("Shown Contacts"), view);
     view_blockedFilterMenu->addActions(m_blockedFilterGroup->actions());
     view->addMenu(view_blockedFilterMenu);
-    KMenu *view_showGroupedMenu = new KMenu(i18n("Contact Grouping"), view);
+    QMenu *view_showGroupedMenu = new QMenu(i18n("Contact Grouping"), view);
     view_showGroupedMenu->addActions(m_groupContactsActionGroup->actions());
     view->addMenu(view_showGroupedMenu);
     m_globalMenu->addMenu(view);
@@ -477,23 +447,23 @@ void MainWidget::setupToolBar()
     settingsButton->setIcon(QIcon::fromTheme("configure"));
     settingsButton->setPopupMode(QToolButton::InstantPopup);
 
-    KMenu *settingsButtonMenu = new KMenu(settingsButton);
+    QMenu *settingsButtonMenu = new QMenu(settingsButton);
     settingsButtonMenu->addAction(m_settingsDialog);
 
     QActionGroup *delegateTypeGroup = new QActionGroup(this);
     delegateTypeGroup->setExclusive(true);
 
-    KMenu *setDelegateTypeMenu = new KMenu(settingsButtonMenu);
+    QMenu *setDelegateTypeMenu = new QMenu(settingsButtonMenu);
     setDelegateTypeMenu->setTitle(i18n("Contact List Type"));
     setDelegateTypeMenu->addActions(m_contactListTypeGroup->actions());
     settingsButtonMenu->addMenu(setDelegateTypeMenu);
 
-    KMenu *setBlockedFilterMenu = new KMenu(settingsButtonMenu);
+    QMenu *setBlockedFilterMenu = new QMenu(settingsButtonMenu);
     setBlockedFilterMenu->setTitle(i18n("Shown Contacts"));
     setBlockedFilterMenu->addActions(m_blockedFilterGroup->actions());
     settingsButtonMenu->addMenu(setBlockedFilterMenu);
 
-    KMenu *showGroupedMenu = new KMenu(settingsButton);
+    QMenu *showGroupedMenu = new QMenu(settingsButton);
     showGroupedMenu->setTitle(i18n("Contact Grouping"));
     showGroupedMenu->addActions(m_groupContactsActionGroup->actions());
     settingsButtonMenu->addMenu(showGroupedMenu);
@@ -713,7 +683,7 @@ void MainWidget::onMetacontactToggleTriggered()
                     && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
                 //we can merge only standalone contacts, not a contact that's already part of a person
                 invalid = true;
-                kDebug() << "Found selected subcontact, aborting";
+                qCDebug(KTP_CONTACTLIST_MODULE) << "Found selected subcontact, aborting";
                 break;
             }
 
@@ -722,10 +692,10 @@ void MainWidget::onMetacontactToggleTriggered()
             if (index.data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
                 if (person.isValid()) {
                     invalid = true;
-                    kDebug() << "Found second person, aborting";
+                    qCDebug(KTP_CONTACTLIST_MODULE) << "Found second person, aborting";
                     break;
                 } else {
-                    kDebug() << "Found a person, adding";
+                    qCDebug(KTP_CONTACTLIST_MODULE) << "Found a person, adding";
                     person = index;
                 }
             }
@@ -734,7 +704,7 @@ void MainWidget::onMetacontactToggleTriggered()
             //(we should never get here)
             if (index.parent().isValid() && index.parent() == person) {
                 invalid = true;
-                kDebug() << "Found subcontact of selected person, aborting";
+                qCDebug(KTP_CONTACTLIST_MODULE) << "Found subcontact of selected person, aborting";
                 break;
             }
 
@@ -767,6 +737,3 @@ void MainWidget::onModelInitialized(bool success)
 
     m_contactsListView->contactsModel()->setTrackUnreadMessages(true);
 }
-
-
-#include "main-widget.moc"

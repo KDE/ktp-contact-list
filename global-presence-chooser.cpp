@@ -29,7 +29,6 @@
 #include <KLocalizedString>
 #include <KSharedConfig>
 #include <KLineEdit>
-#include <KDebug>
 #include <KPixmapSequence>
 #include <KPixmapSequenceOverlayPainter>
 #include <KMessageBox>
@@ -44,6 +43,7 @@
 #include <QStyle>
 #include <QPushButton>
 #include <QMenu>
+#include <QPointer>
 
 //A sneaky class that adds an extra entries to the end of the presence model,
 //currently "Now listening to" and "Configure Custom Presences"
@@ -149,7 +149,6 @@ QModelIndex PresenceModelExtended::addTemporaryPresence(const KTp::Presence &pre
         m_temporaryPresence = presence;
         emit dataChanged(this->createIndex(row, 0), this->createIndex(row, 0));
     } else {
-        kDebug() << "adding temp presence to the model";
         beginInsertRows(QModelIndex(), row, row);
         m_temporaryPresence = presence;
         endInsertRows();
@@ -318,7 +317,7 @@ void GlobalPresenceChooser::onUserActivatedComboChange(int index)
     }
     //if they select the "configure item"
     if (index == count() - 1) {
-        QWeakPointer<CustomPresenceDialog> dialog = new CustomPresenceDialog(m_model, this);
+        QPointer<CustomPresenceDialog> dialog = new CustomPresenceDialog(m_model, this);
         dialog.data()->exec();
         delete dialog.data();
         onPresenceChanged(m_globalPresence->requestedPresence());

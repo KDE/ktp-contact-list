@@ -30,7 +30,6 @@
 #include <QFontDatabase>
 
 #include <KIconLoader>
-#include <KDebug>
 
 #include <KTp/types.h>
 
@@ -196,5 +195,3 @@ void ContactDelegateCompact::setListMode(ContactDelegateCompact::ListSize size)
 
     m_listSize = size;
 }
-
-#include "contact-delegate-compact.moc"

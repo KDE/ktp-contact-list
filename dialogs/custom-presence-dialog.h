@@ -21,18 +21,17 @@
 #ifndef CUSTOM_PRESENCE_DIALOG_H
 #define CUSTOM_PRESENCE_DIALOG_H
 
-//KDE includes
-#include <KComboBox>
-#include <KDialog>
+#include <QDialog>
 
 class QPushButton;
 class QListView;
+class QComboBox;
 
 namespace KTp {
     class PresenceModel;
 }
 
-class CustomPresenceDialog : public KDialog
+class CustomPresenceDialog : public QDialog
 {
     Q_OBJECT
 
@@ -55,7 +54,7 @@ private:
     QListView  *m_listView;
 
     ///Combobox to type custom presence's
-    KComboBox    *m_statusMessage;
+    QComboBox  *m_statusMessage;
 
     KTp::PresenceModel *m_model;
 

@@ -25,12 +25,13 @@
 #include <QVBoxLayout>
 #include <QPushButton>
 #include <QSortFilterProxyModel>
-#include <QtCore/QModelIndex>
+#include <QModelIndex>
+#include <QDialogButtonBox>
+#include <QComboBox>
 
-#include <KDialog>
 #include <KLocalizedString>
 #include <KConfig>
-#include <KSharedConfigPtr>
+#include <KSharedConfig>
 
 #include <TelepathyQt/Presence>
 #include <QLineEdit>
@@ -59,7 +60,7 @@ bool FilteredModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourcePar
 }
 
 CustomPresenceDialog::CustomPresenceDialog(KTp::PresenceModel *model, QWidget *parent)
-    : KDialog(parent),
+    : QDialog(parent),
       m_model(model)
 {
     setupDialog();
@@ -67,15 +68,14 @@ CustomPresenceDialog::CustomPresenceDialog(KTp::PresenceModel *model, QWidget *p
 
 void CustomPresenceDialog::setupDialog()
 {
-    setCaption(i18n("Edit Custom Presences"));
-    setButtons(KDialog::Close);
+    setWindowTitle(i18n("Edit Custom Presences"));
 
-    QWidget *mainDialogWidget = new QWidget(this);
+    QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close, this);
 
     FilteredModel *filteredModel = new FilteredModel(this);
     filteredModel->setSourceModel(m_model);
 
-    m_listView = new QListView(mainDialogWidget);
+    m_listView = new QListView(this);
     m_listView->setModel(filteredModel);
 
     connect(m_listView, SIGNAL(clicked(QModelIndex)),
@@ -84,7 +84,8 @@ void CustomPresenceDialog::setupDialog()
     connect(m_listView, SIGNAL(activated(QModelIndex)),
             this, SLOT(presenceViewSelectionChanged(QModelIndex)));
 
-    m_statusMessage = new KComboBox(true, mainDialogWidget);
+    m_statusMessage = new QComboBox(this);
+    m_statusMessage->setEditable(true);
 
     m_statusMessage->addItem(QIcon::fromTheme("user-online"), i18n("Set custom available message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::available()));
     m_statusMessage->addItem(QIcon::fromTheme("user-busy"), i18n("Set custom busy message..."), qVariantFromValue<KTp::Presence>(Tp::Presence::busy()));
@@ -99,14 +100,14 @@ void CustomPresenceDialog::setupDialog()
     connect(m_statusMessage, SIGNAL(editTextChanged(QString)),
             this, SLOT(presenceMessageTextChanged(QString)));
 
-    m_addStatus = new QPushButton(QIcon::fromTheme("list-add"), i18n("Add Presence"), mainDialogWidget);
-    m_removeStatus = new QPushButton(QIcon::fromTheme("list-remove"), i18n("Remove Presence"), mainDialogWidget);
+    m_addStatus = new QPushButton(QIcon::fromTheme("list-add"), i18n("Add Presence"), this);
+    m_removeStatus = new QPushButton(QIcon::fromTheme("list-remove"), i18n("Remove Presence"), this);
     m_removeStatus->setEnabled(false);
 
     //this triggers the presenceMessageTextChanged() slot and disables the m_addStatus button
     m_statusMessage->lineEdit()->setText(QString());
 
-    QVBoxLayout *vLayout = new QVBoxLayout(mainDialogWidget);
+    QVBoxLayout *vLayout = new QVBoxLayout();
     vLayout->addWidget(m_statusMessage);
 
     QHBoxLayout *hLayout = new QHBoxLayout();
@@ -120,7 +121,8 @@ void CustomPresenceDialog::setupDialog()
     hLayout->addLayout(vLayout2);
     vLayout->addLayout(hLayout);
 
-    setMainWidget(mainDialogWidget);
+    vLayout->addWidget(buttonBox);
+    setLayout(vLayout);
 
     connect(m_addStatus, SIGNAL(clicked()), SLOT(addCustomPresence()));
     connect(m_removeStatus, SIGNAL(clicked()), SLOT(removeCustomPresence()));

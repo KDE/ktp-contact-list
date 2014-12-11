@@ -23,7 +23,6 @@
 
 #include <KLocalizedString>
 #include <KIconLoader>
-#include <KDebug>
 
 #include <KTp/types.h>
 
@@ -187,5 +186,3 @@ LogViewerOverlay::LogViewerOverlay(QObject* parent)
         IconSize(KIconLoader::Dialog) + spacing * 6 + IconSize(KIconLoader::Small) * 4)
 {
 }
-
-#include "contact-overlays.moc"

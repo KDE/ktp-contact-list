@@ -21,7 +21,7 @@
 #ifndef REMOVECONTACTDIALOG_H
 #define REMOVECONTACTDIALOG_H
 
-#include <KDialog>
+#include <QDialog>
 
 #include <TelepathyQt/Contact>
 
@@ -31,7 +31,7 @@ namespace Ui {
 
 class AccountsModel;
 
-class RemoveContactDialog : public KDialog
+class RemoveContactDialog : public QDialog
 {
     Q_OBJECT
 

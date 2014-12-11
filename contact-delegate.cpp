@@ -30,7 +30,6 @@
 #include <QStyle>
 
 #include <KIconLoader>
-#include <KDebug>
 
 #include <KTp/types.h>
 #include <KTp/presence.h>
@@ -217,5 +216,3 @@ void ContactDelegate::triggerRepaint()
 {
     emit repaintItem(m_indexForHiding);
 }
-
-#include "contact-delegate.moc"

@@ -23,6 +23,7 @@
 
 #include "ui_contacttooltip.h"
 #include "ktooltip.h"
+#include "ktp-contactlist-debug.h"
 
 #include <KTp/types.h>
 #include <KTp/text-parser.h>
@@ -30,9 +31,9 @@
 
 #include <QDesktopServices>
 #include <QTextDocument>
+#include <QDebug>
 
 #include <KToolInvocation>
-#include <KDebug>
 #include <KLocalizedString>
 #include <KIconLoader>
 
@@ -64,7 +65,7 @@ ContactToolTip::ContactToolTip(const QModelIndex &index) :
         /** if the presence is error, the message might containt server's error,
         *   so let's print it out and unset it so it won't be displayed to user
         */
-        kDebug() << presenceMessage;
+        qCDebug(KTP_CONTACTLIST_MODULE) << presenceMessage;
         presenceMessage.clear();
     }
 
@@ -106,15 +107,15 @@ QString ContactToolTip::getTextWithHyperlinks(QString text)
         QString fixedLink = urls.fixedUrls[i];
 
         if (pair.first > position) {
-            result += Qt::escape(text.mid(position, pair.first - position));
+            result += QString(text.mid(position, pair.first - position)).toHtmlEscaped();
         }
 
-        result += QString("<a href=\"%1\">%2</a>").arg(Qt::escape(fixedLink)).arg(Qt::escape(displayLink));
+        result += QStringLiteral("<a href=\"%1\">%2</a>").arg(fixedLink.toHtmlEscaped()).arg(displayLink.toHtmlEscaped());
         position = pair.first + pair.second;
     }
 
     if (position < text.length()) {
-        result += Qt::escape(text.mid(position));
+        result += QString(text.mid(position).toHtmlEscaped());
     }
 
     return result;

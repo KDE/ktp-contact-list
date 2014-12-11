@@ -21,6 +21,7 @@
 #include "ktooltipwindow_p.h"
 
 #include <QLabel>
+#include <QPointer>
 #include <QPoint>
 #include <QWidget>
 #include <QtGlobal>
@@ -38,7 +39,7 @@ public:
     void hideTip();
 
 private:
-    QWeakPointer<KToolTipWindow> m_window;
+    QPointer<KToolTipWindow> m_window;
 };
 
 Q_GLOBAL_STATIC(KToolTipManager, s_instance)

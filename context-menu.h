@@ -29,7 +29,7 @@
 #include "contact-list-widget.h"
 
 class AccountsModel;
-class KMenu;
+class QMenu;
 class QAction;
 
 class ContextMenu : public QObject
@@ -39,8 +39,8 @@ public:
     explicit ContextMenu(ContactListWidget *mainWidget);
     virtual ~ContextMenu();
 
-    KMenu* groupContextMenu(const QModelIndex &index);
-    KMenu* contactContextMenu(const QModelIndex &index);
+    QMenu* groupContextMenu(const QModelIndex &index);
+    QMenu* contactContextMenu(const QModelIndex &index);
     void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
 private Q_SLOTS:

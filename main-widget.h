@@ -37,7 +37,7 @@
 class ContextMenu;
 class ContactDelegateCompact;
 class GroupsModel;
-class KMenu;
+class QMenu;
 class KMenuBar;
 class KSelectAction;
 class AccountsModel;
@@ -83,11 +83,9 @@ public Q_SLOTS:
 private Q_SLOTS:
     void toggleSearchWidget(bool show);
     void clearSearch();
-    void onAccountManagerReady(Tp::PendingOperation* op);
+    void onAccountManagerReady(Tp::PendingOperation *op);
     void onAddContactRequest();
     void onStartChatRequest();
-    void onUseGlobalPresenceTriggered();
-    void onUsePerAccountPresenceTriggered();
     void onJoinChatRoomRequested();                 /** join chat room action is triggered */
     void onMakeCallRequested();
     void onMergeContactsDialogRequested();
@@ -102,14 +100,14 @@ private:
     ///Was moved to telepathy-kded-module
     //void handleConnectionError(const Tp::AccountPtr &account);      /** handle connection errors for given account. This method provides visual notification */
     void closeEvent(QCloseEvent *e);
-    QAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, const QIcon& icon);
-    QAction *createAction(const QString& text, QObject *signalReceiver, const char* slot, bool isChecked, const QIcon& icon);
+    QAction *createAction(const QString &text, QObject *signalReceiver, const char *slot, const QIcon &icon);
+    QAction *createAction(const QString &text, QObject *signalReceiver, const char *slot, bool isChecked, const QIcon &icon);
     void setupActions(const KConfigGroup&);
     void setupGlobalMenu();
     void setupToolBar();
     void setupTelepathy();
 
-    KMenuBar               *m_globalMenu;
+    QMenuBar               *m_globalMenu;
     QAction                *m_settingsDialog;
     QAction                *m_joinChatRoom;
     QAction                *m_makeCall;
@@ -117,7 +115,7 @@ private:
     QActionGroup           *m_contactListTypeGroup;
     QActionGroup           *m_blockedFilterGroup;
 
-    KMenu                  *m_accountMenu;
+    QMenu                  *m_accountMenu;
     KSelectAction          *m_setStatusAction;
 
     KDualAction            *m_metacontactToggleAction;

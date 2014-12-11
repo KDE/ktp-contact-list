@@ -29,9 +29,6 @@
      </widget>
     </item>
     <item>
-     <widget class="AccountButtonsPanel" name="m_accountButtons" native="true"/>
-    </item>
-    <item>
      <widget class="Line" name="line">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
@@ -85,12 +82,6 @@
    <class>FilterBar</class>
    <extends>QWidget</extends>
    <header>filter-bar.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>AccountButtonsPanel</class>
-   <extends>QWidget</extends>
-   <header>account-buttons-panel.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

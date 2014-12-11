@@ -32,12 +32,11 @@
 
 // KDE includes
 
-#include <kglobalsettings.h>
 #include <kicon.h>
 #include <kiconloader.h>
 #include <kiconeffect.h>
-#include <klocale.h>
-#include <KDebug>
+
+#include <KLocalizedString>
 
 ContactViewHoverButton::ContactViewHoverButton(QAbstractItemView *view)
     : QAbstractButton(view->viewport()),
@@ -46,8 +45,7 @@ ContactViewHoverButton::ContactViewHoverButton(QAbstractItemView *view)
       m_icon(),
       m_fadingTimeLine(0)
 {
-    const bool animate = KGlobalSettings::graphicEffectsLevel() & KGlobalSettings::SimpleAnimationEffects;
-    const int duration = animate ? 300 : 1;
+    const int duration = 300;
     m_fadingTimeLine   = new QTimeLine(duration, this);
     m_fadingTimeLine->setFrameRange(0, 255);
 
@@ -60,8 +58,9 @@ ContactViewHoverButton::ContactViewHoverButton(QAbstractItemView *view)
     connect(this, SIGNAL(toggled(bool)),
             this, SLOT(refreshIcon()));
 
-    connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
-            this, SLOT(refreshIcon()));
+    //FIXME: what should replace this?
+//     connect(KGlobalSettings::self(), SIGNAL(iconChanged(int)),
+//             this, SLOT(refreshIcon()));
 }
 
 void ContactViewHoverButton::initIcon()
@@ -148,6 +147,8 @@ void ContactViewHoverButton::paintEvent(QPaintEvent* event)
 
     painter.drawEllipse(0, 0, width(), height());
 
+    qreal opacity = painter.opacity();
+
     // draw the icon overlay
     if (m_isHovered) {
         KIconEffect iconEffect;
@@ -157,11 +158,10 @@ void ContactViewHoverButton::paintEvent(QPaintEvent* event)
         if (m_fadingValue < 255) {
             // apply an alpha mask respecting the fading value to the icon
             QPixmap icon = m_icon;
-            QPixmap alphaMask(icon.width(), icon.height());
-            const QColor color(m_fadingValue, m_fadingValue, m_fadingValue);
-            alphaMask.fill(color);
-            icon.setAlphaChannel(alphaMask);
+            painter.setOpacity((1.0 / 255) * m_fadingValue);
             painter.drawPixmap(0, 0, icon);
+            // reset the opacity to the previous value
+            painter.setOpacity(opacity);
         } else {
             // no fading is required
             painter.drawPixmap(0, 0, m_icon);
@@ -210,5 +210,3 @@ void ContactViewHoverButton::stopFading()
     m_fadingTimeLine->stop();
     m_fadingValue = 0;
 }
-
-#include "contact-view-hover-button.moc"

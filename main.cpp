@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     aboutData.addAuthor(i18nc("@info:credit", "Martin Klapetek"), i18n("Developer"),
                         "martin.klapetek@gmail.com");
     aboutData.setProductName("telepathy/contactlist"); //set the correct name for bug reporting
-    aboutData.setProgramIconName("telepathy-kde");
+    QGuiApplication::setWindowIcon(QIcon::fromTheme("telepathy-kde"));
     KAboutData::setApplicationData(aboutData);
 
     KDBusService service(KDBusService::Unique);

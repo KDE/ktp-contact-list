@@ -20,13 +20,13 @@
 #include "context-menu.h"
 
 #include <QDebug>
+#include <QMenu>
+#include <QAction>
+#include <QInputDialog>
 
-#include <KMenu>
 #include <KLocalizedString>
 #include <KToolInvocation>
-#include <KInputDialog>
 #include <KMessageBox>
-#include <KAction>
 
 #include <KTp/text-parser.h>
 #include <KTp/Widgets/notification-config-dialog.h>
@@ -69,7 +69,7 @@ void ContextMenu::setAccountManager(const Tp::AccountManagerPtr &accountManager)
     KTp::LogManager::instance()->setAccountManager(accountManager);
 }
 
-KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
+QMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 {
     if (!index.isValid()) {
         return 0;
@@ -95,8 +95,8 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         return 0;
     }
 
-    KMenu *menu = new KMenu();
-    menu->addTitle(contact->alias());
+    QMenu *menu = new QMenu();
+    menu->setTitle(contact->alias());
 
     QAction *action;
 
@@ -191,7 +191,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     }
 
     if (!contactLinks.empty()) {
-        KMenu *subMenu = new KMenu(i18np("Presence message link", "Presence message links", contactLinks.count()));
+        QMenu *subMenu = new QMenu(i18np("Presence message link", "Presence message links", contactLinks.count()));
 
         foreach(const QString &link, contactLinks) {
             action = subMenu->addAction(link);
@@ -290,7 +290,7 @@ KMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     return menu;
 }
 
-KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
+QMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 {
     if (!index.isValid()) {
         return 0;
@@ -300,8 +300,8 @@ KMenu* ContextMenu::groupContextMenu(const QModelIndex &index)
 
     const QString groupName = index.data(Qt::DisplayRole).toString();
 
-    KMenu *menu = new KMenu();
-    menu->addTitle(groupName);
+    QMenu *menu = new QMenu();
+    menu->setTitle(groupName);
 
     //must be QAction, because menu->addAction returns QAction, otherwise compilation dies horribly
     QAction *action = menu->addAction(i18n("Rename Group..."));
@@ -494,8 +494,9 @@ void ContextMenu::onCreateNewGroupTriggered()
 {
     bool ok = false;
 
-    QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
+    QString newGroupName = QInputDialog::getText(0, i18n("New Group Name"),
                                                  i18n("Please enter the new group name"),
+                                                 QLineEdit::Normal,
                                                  QString(),
                                                  &ok);
 
@@ -519,8 +520,9 @@ void ContextMenu::onRenameGroupTriggered()
 
     bool ok = false;
 
-    QString newGroupName = KInputDialog::getText(i18n("New Group Name"),
+    QString newGroupName = QInputDialog::getText(0, i18n("New Group Name"),
                                                  i18n("Please enter the new group name"),
+                                                 QLineEdit::Normal,
                                                  groupName,
                                                  &ok);
 
@@ -594,7 +596,7 @@ void ContextMenu::onDeleteContactTriggered()
     contactList.append(contact);
 
     // ask for confirmation
-    QWeakPointer<RemoveContactDialog> removeDialog = new RemoveContactDialog(contact, m_mainWidget);
+    QPointer<RemoveContactDialog> removeDialog = new RemoveContactDialog(contact, m_mainWidget);
 
     if (removeDialog.data()->exec() == QDialog::Accepted) {
         if (!removeDialog.isNull()) {

@@ -25,6 +25,7 @@
 // Qt includes
 
 #include <QAbstractItemView>
+#include <QPointer>
 
 class ContactViewHoverButton;
 
@@ -90,7 +91,7 @@ protected:
 
     QAbstractItemView     *m_view;
     QAbstractItemDelegate *m_delegate;
-    QWeakPointer<ContactViewHoverButton> m_button;
+    QPointer<ContactViewHoverButton> m_button;
     bool m_mouseButtonPressedOnWidget;
 };
 

@@ -10,7 +10,7 @@ find_package(ECM 1.3.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 find_package (Qt5 5.0 REQUIRED COMPONENTS Widgets Xml)
-find_package (KF5 5.0 REQUIRED COMPONENTS DBusAddons KIO KCMUtils NotifyConfig KDELibs4Support)
+find_package (KF5 5.0 REQUIRED COMPONENTS DBusAddons KIO KCMUtils Notifications WindowSystem NotifyConfig I18n IconThemes XmlGui KCMUtils)
 find_package (TelepathyQt5 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
 find_package (KF5People 0.5)
@@ -39,9 +39,8 @@ set (ktp_contactlist_SRCS
      contact-delegate-overlay.cpp
      contact-delegate.cpp
      contact-delegate-compact.cpp
-     account-button.cpp
-     account-buttons-panel.cpp
      empty-row-filter.cpp
+     ktp-contactlist-debug.cpp
      filter-bar.cpp
      main.cpp
      main-widget.cpp
@@ -77,7 +76,12 @@ target_link_libraries (ktp-contactlist ${ktp_contactlist_LIBS}
     KF5::KCMUtils
     KF5::NotifyConfig
     KF5::DBusAddons
-    KF5::KDELibs4Support
+    KF5::I18n
+    KF5::IconThemes
+    KF5::XmlGui
+    KF5::KCMUtils
+    KF5::Notifications
+    KF5::WindowSystem
     KTp::Models
     KTp::Widgets
     KTp::Logger

@@ -65,7 +65,7 @@ private:
     KPixmapSequenceOverlayPainter *m_busyOverlay;
     Tp::AccountManagerPtr m_accountManager;
     QPushButton *m_changePresenceMessageButton;
-    QWeakPointer<QMenu> m_lineEditContextMenu;
+    QPointer<QMenu> m_lineEditContextMenu;
 };
 
 #endif // GLOBALPRESENCECHOOSER_H

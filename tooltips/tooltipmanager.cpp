@@ -202,5 +202,3 @@ QWidget * ToolTipManager::createTipContent(const QModelIndex &index)
         return new ContactToolTip(index);
     }
 }
-
-#include "tooltipmanager.moc"

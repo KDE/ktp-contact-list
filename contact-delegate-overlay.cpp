@@ -25,9 +25,8 @@
 #include <QTimer>
 #include <QMouseEvent>
 
-#include <KDebug>
-
 #include "contact-view-hover-button.h"
+#include "ktp-contactlist-debug.h"
 
 ContactDelegateOverlay::ContactDelegateOverlay(QObject *parent)
     : QObject(parent),
@@ -214,7 +213,7 @@ ContactDelegateOverlayContainer::~ContactDelegateOverlayContainer()
 void ContactDelegateOverlayContainer::installOverlay(ContactDelegateOverlay *overlay)
 {
     if (!overlay->acceptsDelegate(asDelegate())) {
-        kError() << "Cannot accept delegate" << asDelegate() << "for installing" << overlay;
+        qCCritical(KTP_CONTACTLIST_MODULE) << "Cannot accept delegate" << asDelegate() << "for installing" << overlay;
         return;
     }
 
@@ -261,5 +260,3 @@ void ContactDelegateOverlayContainer::overlayDestroyed(QObject *o)
         removeOverlay(overlay);
     }
 }
-
-#include "contact-delegate-overlay.moc"

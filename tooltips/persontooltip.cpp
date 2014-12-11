@@ -123,15 +123,15 @@ QString PersonToolTip::getTextWithHyperlinks(QString text)
         QString fixedLink = urls.fixedUrls[i];
 
         if (pair.first > position) {
-            result += Qt::escape(text.mid(position, pair.first - position));
+            result += QString(text.mid(position, pair.first - position)).toHtmlEscaped();
         }
 
-        result += QString("<a href=\"%1\">%2</a>").arg(Qt::escape(fixedLink)).arg(Qt::escape(displayLink));
+        result += QStringLiteral("<a href=\"%1\">%2</a>").arg(fixedLink.toHtmlEscaped()).arg(displayLink.toHtmlEscaped());
         position = pair.first + pair.second;
     }
 
     if (position < text.length()) {
-        result += Qt::escape(text.mid(position));
+        result += QString(text.mid(position).toHtmlEscaped());
     }
 
     return result;
