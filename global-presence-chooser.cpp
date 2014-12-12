@@ -183,7 +183,7 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     //needed for mousemove events
     setMouseTracking(true);
 
-    m_busyOverlay->setSequence(KPixmapSequence("process-working", KIconLoader::SizeMedium));
+    m_busyOverlay->setSequence(KIconLoader::global()->loadPixmapSequence("process-working", KIconLoader::SizeSmallMedium));
     setEditable(false);
 
     m_changePresenceMessageButton->setIcon(QIcon::fromTheme("document-edit"));
