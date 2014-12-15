@@ -32,7 +32,7 @@
 
 // KDE includes
 
-#include <kicon.h>
+#include <QIcon>
 #include <kiconloader.h>
 #include <kiconeffect.h>
 

@@ -62,8 +62,6 @@
 #include <KWindowSystem>
 #include <KLocalizedString>
 
-#include <kdeversion.h>
-
 #ifdef HAVE_KPEOPLE
 // #include <kpeople/widgets/mergedialog.h> //Disable for now, re-enable when kpeople re-enables it
 #include <KPeople/PersonsModel>
@@ -729,9 +727,6 @@ void MainWidget::onModelInitialized(bool success)
     if (!success) {
         m_messageWidget->setMessageType(KMessageWidget::Warning);
         m_messageWidget->setText(i18n("Some data sources failed to initialize properly, your contact list might be incomplete."));
-        #if KDE_IS_VERSION(4, 11, 0)
-        m_messageWidget->setIcon(QIcon::fromTheme(QLatin1String("dialog-warning")));
-        #endif
         m_messageWidget->animatedShow();
     }
 
