@@ -69,6 +69,11 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
         avatar = SmallIcon("mail-unread-new", KIconLoader::SizeMedium);
     }
 
+    //if the contact is offline, gray it out
+    if (index.data(KTp::ContactPresenceTypeRole).toUInt() == Tp::ConnectionPresenceTypeOffline) {
+        avatarToGray(avatar);
+    }
+
     if (!avatar.isNull()) {
         style->drawItemPixmap(painter, iconRect, Qt::AlignCenter, avatar.scaled(iconRect.size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     }

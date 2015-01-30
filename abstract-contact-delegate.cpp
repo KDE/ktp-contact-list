@@ -171,3 +171,17 @@ bool AbstractContactDelegate::helpEvent(QHelpEvent *event, QAbstractItemView *vi
     Q_UNUSED(index)
     return false;
 }
+
+void AbstractContactDelegate::avatarToGray(QPixmap &avatar) const
+{
+    QImage image = avatar.toImage();
+    QImage alpha= image.alphaChannel();
+    for (int i = 0; i < image.width(); ++i) {
+        for (int j = 0; j < image.height(); ++j) {
+            int colour = qGray(image.pixel(i, j));
+            image.setPixel(i, j, qRgb(colour, colour, colour));
+        }
+    }
+    image.setAlphaChannel(alpha);
+    avatar = QPixmap::fromImage(image);
+}
