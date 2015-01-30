@@ -94,7 +94,7 @@ install (TARGETS ktp-contactlist
          ${INSTALL_TARGETS_DEFAULT_ARGS}
 )
 
-install (PROGRAMS ktp-contactlist.desktop
+install (PROGRAMS org.kde.ktpcontactlist.desktop
          DESTINATION ${XDG_APPS_INSTALL_DIR}
 )
 
