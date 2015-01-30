@@ -27,6 +27,7 @@
 #include <QPainterPath>
 #include <QApplication>
 #include <QFontDatabase>
+#include <QPixmapCache>
 #include <QStyle>
 
 #include <KIconLoader>
@@ -40,7 +41,7 @@ ContactDelegate::ContactDelegate(QObject * parent)
     , m_presenceIconSize(IconSize(KIconLoader::Toolbar))
     , m_spacing(IconSize(KIconLoader::Dialog) / 8)
 {
-
+    QPixmapCache::setCacheLimit(102400);
 }
 
 ContactDelegate::~ContactDelegate()
@@ -78,7 +79,10 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
 
     //if the contact is offline, gray it out
     if (index.data(KTp::ContactPresenceTypeRole).toUInt() == Tp::ConnectionPresenceTypeOffline) {
-        avatarToGray(avatar);
+        if (!QPixmapCache::find(index.data(KTp::IdRole).toString() + QStringLiteral("gray"), &avatar)) {
+            avatarToGray(avatar);
+            QPixmapCache::insert(index.data(KTp::IdRole).toString() + QStringLiteral("gray"), avatar);
+        }
     }
 
     if (!avatar.isNull()) {

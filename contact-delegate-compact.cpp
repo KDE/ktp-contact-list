@@ -28,6 +28,8 @@
 #include <QStyle>
 #include <QHelpEvent>
 #include <QFontDatabase>
+#include <QPixmapCache>
+#include <QCryptographicHash>
 
 #include <KIconLoader>
 
@@ -37,6 +39,7 @@ ContactDelegateCompact::ContactDelegateCompact(ContactDelegateCompact::ListSize 
     : AbstractContactDelegate(parent)
 {
     setListMode(size);
+    QPixmapCache::setCacheLimit(102400);
 }
 
 ContactDelegateCompact::~ContactDelegateCompact()
@@ -71,7 +74,10 @@ void ContactDelegateCompact::paintContact(QPainter *painter, const QStyleOptionV
 
     //if the contact is offline, gray it out
     if (index.data(KTp::ContactPresenceTypeRole).toUInt() == Tp::ConnectionPresenceTypeOffline) {
-        avatarToGray(avatar);
+        if (!QPixmapCache::find(index.data(KTp::IdRole).toString() + QStringLiteral("gray"), &avatar)) {
+            avatarToGray(avatar);
+            QPixmapCache::insert(index.data(KTp::IdRole).toString() + QStringLiteral("gray"), avatar);
+        }
     }
 
     if (!avatar.isNull()) {
