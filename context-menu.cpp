@@ -42,6 +42,7 @@
 
 #ifdef HAVE_KPEOPLE
 #include <kpeople/widgets/persondetailsdialog.h>
+#include <kpeople/widgets/actions.h>
 #include <kpeople/global.h>
 #include <kpeople/personsmodel.h>
 #include <kpeople/persondata.h>
