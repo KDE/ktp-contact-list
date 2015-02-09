@@ -1,0 +1,4 @@
+[D-BUS Service]
+Name=org.kde.ktpcontactlist
+Exec=@CMAKE_INSTALL_PREFIX@/bin/ktp-contactlist
+

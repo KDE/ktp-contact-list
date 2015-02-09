@@ -88,6 +88,9 @@ target_link_libraries (ktp-contactlist ${ktp_contactlist_LIBS}
     KTp::CommonInternals
 )
 
+configure_file(org.kde.ktpcontactlist.service.in
+               ${CMAKE_CURRENT_BINARY_DIR}/org.kde.ktpcontactlist.service)
+
 
 # Install:
 install (TARGETS ktp-contactlist
@@ -98,3 +101,6 @@ install (PROGRAMS org.kde.ktpcontactlist.desktop
          DESTINATION ${XDG_APPS_INSTALL_DIR}
 )
 
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.ktpcontactlist.service
+         DESTINATION ${DBUS_SERVICES_INSTALL_DIR}
+)
