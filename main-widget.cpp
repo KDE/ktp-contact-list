@@ -552,7 +552,7 @@ void MainWidget::setupActions(const KConfigGroup& guiConfigGroup)
     m_searchContactAction = createAction(i18n("Find Contact"), this, SLOT(toggleSearchWidget(bool)),
                                          guiConfigGroup.readEntry("pin_filterbar", true), QIcon::fromTheme("edit-find"));
     m_searchContactAction->setShortcuts(KStandardShortcut::find());
-    m_startChatAction = createAction(i18n("Start a chat..."), this, SLOT(onStartChatRequest()), QIcon::fromTheme("telepathy-kde"));
+    m_startChatAction = createAction(i18n("Start a Chat..."), this, SLOT(onStartChatRequest()), QIcon::fromTheme("telepathy-kde"));
 
     // Dual actions
     m_metacontactToggleAction = new KDualAction(i18n("Split Selected Contacts"),
