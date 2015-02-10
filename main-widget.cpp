@@ -524,6 +524,7 @@ void MainWidget::setupTelepathy()
 QAction *MainWidget::createAction(const QString &text, QObject *signalReceiver, const char *slot, const QIcon &icon = QIcon())
 {
     QAction *action = new QAction(icon, text, this);
+    action->setToolTip(text);
     connect(action, SIGNAL(triggered(bool)), signalReceiver, slot);
     return action;
 }
