@@ -80,6 +80,7 @@ GenericName[x-test]=xxInstant Messenger Contactsxx
 GenericName[zh_CN]=即时通讯联系人
 GenericName[zh_TW]=即時訊息聯絡人
 Comment=Displays your instant messenger contacts
+Comment[ast]=Amuesa los tos contautos de mensaxería instanatanea
 Comment[bs]=Prikazuje kontakte programa za instant poruke
 Comment[ca]=Mostra els vostres contactes de missatgeria instantània
 Comment[ca@valencia]=Mostra els vostres contactes de missatgeria instantània
