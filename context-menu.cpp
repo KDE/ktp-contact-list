@@ -351,7 +351,7 @@ void ContextMenu::onShowInfoTriggered()
 
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
-        const QString &personId = m_currentIndex.data(KTp::PersonIdRole).toString();
+        QString personId = m_currentIndex.data(KTp::PersonIdRole).toString();
         if (!personId.isEmpty()) {
             KPeople::PersonDetailsDialog *view = new KPeople::PersonDetailsDialog(m_mainWidget);
             KPeople::PersonData *person = new KPeople::PersonData(personId, view);
