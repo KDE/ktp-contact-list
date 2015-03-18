@@ -2,7 +2,7 @@ project (ktp-contactlist)
 
 cmake_minimum_required(VERSION 2.8.12)
 
-set(KTP_CONTACT_LIST_VERSION "0.9.80")
+set(KTP_CONTACT_LIST_VERSION "15.03.95")
 
 set(IS_KTP_INTERNAL_MODULE TRUE)
 
