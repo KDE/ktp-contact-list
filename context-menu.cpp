@@ -106,8 +106,7 @@ QMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         if (index.parent().isValid()) {
             menu->addActions(KPeople::actionsForPerson(index.data(KTp::ContactUriRole).toString(), menu));
         } else {
-            KPeople::PersonData p(index.data(KTp::PersonIdRole).toString());
-            menu->addActions(KPeople::actionsForPerson(p.personUri(), menu));
+            menu->addActions(KPeople::actionsForPerson(index.data(KTp::PersonIdRole).toString(), menu));
         }
     #endif
     } else {
