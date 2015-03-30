@@ -82,27 +82,23 @@ QMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     m_currentIndex = index;
 
+    QAction *action;
+    QMenu *menu = new QMenu();
     KTp::ContactPtr contact = index.data(KTp::ContactRole).value<KTp::ContactPtr>();
 
     if (contact.isNull()) {
         qWarning() << "Contact is nulled";
-        return 0;
     }
 
     Tp::AccountPtr account = index.data(KTp::AccountRole).value<Tp::AccountPtr>();
 
     if (account.isNull()) {
         qWarning() << "Account is nulled";
-        return 0;
     }
-
-    QMenu *menu = new QMenu();
-    menu->setTitle(contact->alias());
-
-    QAction *action;
 
     if (KTp::kpeopleEnabled()) {
     #ifdef HAVE_KPEOPLE
+        menu->setTitle(index.data(Qt::DisplayRole).toString());
         if (index.parent().isValid()) {
             menu->addActions(KPeople::actionsForPerson(index.data(KTp::ContactUriRole).toString(), menu));
         } else {
@@ -110,6 +106,7 @@ QMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         }
     #endif
     } else {
+        menu->setTitle(contact->alias());
         //must be a QAction because menu->addAction returns QAction, breaks compilation otherwise
         action = menu->addAction(i18n("Start Chat..."));
         action->setIcon(QIcon::fromTheme("text-x-generic"));
@@ -206,7 +203,6 @@ QMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
     Tp::ConnectionPtr accountConnection = account->connection();
     if (accountConnection.isNull()) {
         qWarning() << "Account connection is nulled.";
-        return 0;
     }
 
     if (m_mainWidget->d_ptr->model->groupMode() == KTp::ContactsModel::GroupGrouping) {
@@ -214,7 +210,9 @@ QMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
         QAction *groupRemoveAction = menu->addAction(QIcon(), i18n("Remove Contact From This Group"));
         connect(groupRemoveAction, SIGNAL(triggered(bool)), this, SLOT(onRemoveContactFromGroupTriggered()));
 
-        if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
+        if (accountConnection.isNull()) {
+            groupRemoveAction->setDisabled(true);
+        } else if (accountConnection->actualFeatures().contains(Tp::Connection::FeatureRosterGroups)) {
             QMenu* groupAddMenu = menu->addMenu(i18n("Move to Group"));
 
             QStringList groupList;
@@ -249,39 +247,40 @@ QMenu* ContextMenu::contactContextMenu(const QModelIndex &index)
 
     menu->addSeparator();
 
-
-    if (contact->manager()->canRequestPresenceSubscription()) {
-        if (contact->subscriptionState() != Tp::Contact::PresenceStateYes) {
-            action = menu->addAction(i18n("Re-request Contact Authorization"));
-            connect(action, SIGNAL(triggered(bool)), SLOT(onRerequestAuthorization()));
+    if (!contact.isNull()) {
+        if (contact->manager()->canRequestPresenceSubscription()) {
+            if (contact->subscriptionState() != Tp::Contact::PresenceStateYes) {
+                action = menu->addAction(i18n("Re-request Contact Authorization"));
+                connect(action, SIGNAL(triggered(bool)), SLOT(onRerequestAuthorization()));
+            }
         }
-    }
-    if (contact->manager()->canAuthorizePresencePublication()) {
-        if (contact->publishState() != Tp::Contact::PresenceStateYes) {
-            action = menu->addAction(i18n("Resend Contact Authorization"));
-            connect(action, SIGNAL(triggered(bool)), SLOT(onResendAuthorization()));
+        if (contact->manager()->canAuthorizePresencePublication()) {
+            if (contact->publishState() != Tp::Contact::PresenceStateYes) {
+                action = menu->addAction(i18n("Resend Contact Authorization"));
+                connect(action, SIGNAL(triggered(bool)), SLOT(onResendAuthorization()));
+            }
         }
+
+        action = menu->addSeparator(); //prevent two seperators in a row
+
+        if (contact->isBlocked()) {
+            action = menu->addAction(i18n("Unblock Contact"));
+            connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
+            action->setEnabled(contact->manager()->canBlockContacts());
+        } else {
+            action = menu->addAction(i18n("Block Contact"));
+            connect(action, SIGNAL(triggered(bool)), SLOT(onBlockContactTriggered()));
+            action->setEnabled(contact->manager()->canBlockContacts());
+        }
+
+        // remove contact action, must be QAction because that's what menu->addAction returns
+
+        //TODO find an "if canRemove"
+        QAction *removeAction = menu->addAction(QIcon::fromTheme("list-remove-user"), i18n("Remove Contact"));
+        connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
+
+        menu->addSeparator();
     }
-
-    action = menu->addSeparator(); //prevent two seperators in a row
-
-    if (contact->isBlocked()) {
-        action = menu->addAction(i18n("Unblock Contact"));
-        connect(action, SIGNAL(triggered(bool)), SLOT(onUnblockContactTriggered()));
-        action->setEnabled(contact->manager()->canBlockContacts());
-    } else {
-        action = menu->addAction(i18n("Block Contact"));
-        connect(action, SIGNAL(triggered(bool)), SLOT(onBlockContactTriggered()));
-        action->setEnabled(contact->manager()->canBlockContacts());
-    }
-
-    // remove contact action, must be QAction because that's what menu->addAction returns
-
-    //TODO find an "if canRemove"
-    QAction *removeAction = menu->addAction(QIcon::fromTheme("list-remove-user"), i18n("Remove Contact"));
-    connect(removeAction, SIGNAL(triggered(bool)), this, SLOT(onDeleteContactTriggered()));
-
-    menu->addSeparator();
 
     action = menu->addAction(i18n("Show Info..."));
     action->setIcon(QIcon::fromTheme(""));
