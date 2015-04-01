@@ -717,8 +717,14 @@ void MainWidget::onMetacontactToggleTriggered()
         //we're removing contacts from person
         QStringList contacts;
         const QModelIndex &index = selection.first();
-        const QString &personUri = index.data(KTp::PersonIdRole).toString();
-        KPeople::unmergeContact(personUri);
+        QString uri;
+
+        if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
+            uri = index.data(KTp::IdRole).toString();
+        } else {
+            uri = index.data(KTp::PersonIdRole).toString();
+        }
+        KPeople::unmergeContact(uri);
     }
 #endif
 }
