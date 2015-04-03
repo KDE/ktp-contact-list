@@ -720,7 +720,7 @@ void MainWidget::onMetacontactToggleTriggered()
         QString uri;
 
         if (index.parent().isValid() && index.parent().data(KTp::RowTypeRole).toInt() == KTp::PersonRowType) {
-            uri = index.data(KTp::IdRole).toString();
+            uri = index.data(KTp::ContactUriRole).toString();
         } else {
             uri = index.data(KTp::PersonIdRole).toString();
         }
