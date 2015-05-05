@@ -2,7 +2,7 @@ project (ktp-contactlist)
 
 cmake_minimum_required(VERSION 2.8.12)
 
-set(KTP_CONTACT_LIST_VERSION "15.03.95")
+set(KTP_CONTACT_LIST_VERSION "15.04.0")
 
 set(IS_KTP_INTERNAL_MODULE TRUE)
 
@@ -62,11 +62,11 @@ endif()
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
-qt5_wrap_ui (ktp_contactlist_SRCS
-                   main-widget.ui
-                   dialogs/remove-contact-dialog.ui
-                   tooltips/contacttooltip.ui
-                   tooltips/persontooltip.ui
+ki18n_wrap_ui(ktp_contactlist_SRCS
+    main-widget.ui
+    dialogs/remove-contact-dialog.ui
+    tooltips/contacttooltip.ui
+    tooltips/persontooltip.ui
 )
 
 add_executable (ktp-contactlist ${ktp_contactlist_SRCS})

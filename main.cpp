@@ -36,6 +36,8 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    KLocalizedString::setApplicationDomain("ktp-contactlist");
+
     KAboutData aboutData("ktpcontactlist", i18n("KDE Telepathy Contact List"), KTP_CONTACT_LIST_VERSION,
                          i18n("KDE Telepathy Contact List"), KAboutLicense::GPL,
                          i18n("(C) 2011, Martin Klapetek"));

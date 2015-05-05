@@ -71,6 +71,7 @@ void CustomPresenceDialog::setupDialog()
     setWindowTitle(i18n("Edit Custom Presences"));
 
     QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Close, this);
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
 
     FilteredModel *filteredModel = new FilteredModel(this);
     filteredModel->setSourceModel(m_model);
