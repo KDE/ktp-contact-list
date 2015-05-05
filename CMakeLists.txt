@@ -62,11 +62,11 @@ endif()
 
 configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
-qt5_wrap_ui (ktp_contactlist_SRCS
-                   main-widget.ui
-                   dialogs/remove-contact-dialog.ui
-                   tooltips/contacttooltip.ui
-                   tooltips/persontooltip.ui
+ki18n_wrap_ui(ktp_contactlist_SRCS
+    main-widget.ui
+    dialogs/remove-contact-dialog.ui
+    tooltips/contacttooltip.ui
+    tooltips/persontooltip.ui
 )
 
 add_executable (ktp-contactlist ${ktp_contactlist_SRCS})
