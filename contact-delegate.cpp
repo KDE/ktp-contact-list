@@ -137,9 +137,9 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     const QFontMetrics nameFontMetrics(QFontDatabase::systemFont(QFontDatabase::GeneralFont));
 
     if (option.state & QStyle::State_Selected) {
-        painter->setPen(option.palette.color(QPalette::Active, QPalette::HighlightedText));
+        painter->setPen(option.palette.color(option.palette.currentColorGroup(), QPalette::HighlightedText));
     } else {
-        painter->setPen(option.palette.color(QPalette::Active, QPalette::Text));
+        painter->setPen(option.palette.color(option.palette.currentColorGroup(), QPalette::Text));
     }
 
     painter->drawText(userNameRect,
