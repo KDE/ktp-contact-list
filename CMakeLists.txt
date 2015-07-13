@@ -15,10 +15,9 @@ find_package(ECM 1.3.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH} ${ECM_KDE_MODULE_DIR})
 
 find_package (Qt5 5.0 REQUIRED COMPONENTS Widgets Xml)
-find_package (KF5 5.0 REQUIRED COMPONENTS DBusAddons KIO KCMUtils Notifications WindowSystem NotifyConfig I18n IconThemes XmlGui KCMUtils)
+find_package (KF5 5.11 REQUIRED COMPONENTS DBusAddons KIO KCMUtils Notifications WindowSystem NotifyConfig I18n IconThemes XmlGui KCMUtils People)
 find_package (TelepathyQt5 0.9.3 REQUIRED)
 find_package (KTp REQUIRED)
-find_package (KF5People 0.5)
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
