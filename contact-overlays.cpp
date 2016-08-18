@@ -26,7 +26,7 @@
 
 #include <KTp/types.h>
 
-const int spacing = IconSize(KIconLoader::Dialog) / 8;
+#define spacing (IconSize(KIconLoader::Dialog) / 8)
 
 class GuiItemContactViewHoverButton : public ContactViewHoverButton
 {
