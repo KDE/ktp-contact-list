@@ -144,7 +144,6 @@ void CustomPresenceDialog::addCustomPresence()
     m_removeStatus->setEnabled(true);
 
     m_model->syncCustomPresencesToDisk();
-    m_model->updatePresenceApplet();
 }
 
 void CustomPresenceDialog::removeCustomPresence()
@@ -161,7 +160,6 @@ void CustomPresenceDialog::removeCustomPresence()
     }
 
     m_model->syncCustomPresencesToDisk();
-    m_model->updatePresenceApplet();
 }
 
 void CustomPresenceDialog::comboboxIndexChanged(const QString& text)
