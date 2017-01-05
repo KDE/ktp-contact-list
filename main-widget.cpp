@@ -331,7 +331,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
 
 bool MainWidget::isPresencePlasmoidPresent() const
 {
-    QDBusReply<bool> serviceRegistered = QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.Telepathy.PresenceAppletActive");
+    QDBusReply<bool> serviceRegistered = QDBusConnection::sessionBus().interface()->isServiceRegistered("org.kde.Telepathy.PresenceApplet");
 
     if (serviceRegistered.isValid() && serviceRegistered.value()) {
         return true;
