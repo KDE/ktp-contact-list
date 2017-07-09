@@ -51,6 +51,7 @@ set (ktp_contactlist_SRCS
      global-presence-chooser.cpp
      dialogs/remove-contact-dialog.cpp
      dialogs/custom-presence-dialog.cpp
+     dialogs/advanced-presence-dialog.cpp
      tooltips/ktooltip.cpp
      tooltips/tooltipmanager.cpp
      tooltips/ktooltipwindow.cpp

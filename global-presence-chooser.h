@@ -23,7 +23,7 @@
 
 #include <KComboBox>
 
-#include <TelepathyQt/AccountManager>
+#include <KTp/global-presence.h>
 #include <KTp/presence.h>
 
 class QMenu;
@@ -36,14 +36,17 @@ namespace KTp {
     class PresenceModel;
 }
 
+extern const QString KDED_STATUS_MESSAGE_PARSER_WHATSTHIS;
+
 class GlobalPresenceChooser : public KComboBox
 {
     Q_OBJECT
 public:
     explicit GlobalPresenceChooser(QWidget *parent = 0);
-    void setAccountManager(const Tp::AccountManagerPtr &accountManager);
 
     void repositionOverlays();
+
+    KTp::GlobalPresence *globalPresence() {return m_globalPresence;};
 
 protected:
     virtual bool event(QEvent *event);
@@ -53,7 +56,7 @@ private Q_SLOTS:
     void onUserActivatedComboChange(int index);
     void onAllComboChanges(int index);
     void onPresenceChanged(const KTp::Presence &presence);
-    void onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus);
+    void onConnectionStatusChanged(KTp::GlobalPresence::ConnectionStatus connectionStatus);
     void onChangePresenceMessageClicked();
     void onConfirmPresenceMessageClicked();
 
@@ -63,7 +66,6 @@ private:
     PresenceModelExtended *m_modelExtended;
 
     KPixmapSequenceOverlayPainter *m_busyOverlay;
-    Tp::AccountManagerPtr m_accountManager;
     QPushButton *m_changePresenceMessageButton;
     QPointer<QMenu> m_lineEditContextMenu;
 };

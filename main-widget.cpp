@@ -46,6 +46,7 @@
 #include <KTp/actions.h>
 #include <KTp/contact-factory.h>
 #include <KTp/types.h>
+#include <KTp/global-presence.h>
 #include <KTp/Widgets/add-contact-dialog.h>
 #include <KTp/Widgets/join-chat-room-dialog.h>
 #include <KTp/Widgets/start-chat-dialog.h>
@@ -179,7 +180,7 @@ void MainWidget::onAccountManagerReady(Tp::PendingOperation* op)
         return;
     }
 
-    m_presenceChooser->setAccountManager(m_accountManager);
+    m_presenceChooser->globalPresence()->setAccountManager(m_accountManager);
     m_contactsListView->setAccountManager(m_accountManager);
     m_contextMenu->setAccountManager(m_accountManager);
 }
@@ -291,8 +292,9 @@ void MainWidget::closeEvent(QCloseEvent* e)
     if (qApp->closingDown()) {
         //the standard KMessageBox control saves "true" if you select the checkbox, therefore the reversed var name
         bool dontCheckForPlasmoid = notifyConigGroup.readEntry("dont_check_for_plasmoid", false);
+        bool onlineAccounts = !m_presenceChooser->globalPresence()->onlineAccounts()->accounts().isEmpty();
 
-        if (isAnyAccountOnline() && !dontCheckForPlasmoid) {
+        if (onlineAccounts && !dontCheckForPlasmoid) {
             if (!isPresencePlasmoidPresent()) {
                 switch (KMessageBox::warningYesNoCancel(this,
                         i18n("You do not have any other presence controls active (a Presence widget for example).\n"
@@ -305,17 +307,17 @@ void MainWidget::closeEvent(QCloseEvent* e)
 
                     case KMessageBox::No:
                         generalConfigGroup.writeEntry("go_offline_when_closing", true);
-                        goOffline();
+                        m_presenceChooser->globalPresence()->setPresence(KTp::Presence::offline(), KTp::GlobalPresence::Session);
                         break;
                     case KMessageBox::Cancel:
                         e->ignore();
                         return;
                 }
             }
-        } else if (isAnyAccountOnline() && dontCheckForPlasmoid) {
+        } else if (onlineAccounts && dontCheckForPlasmoid) {
             bool shouldGoOffline = generalConfigGroup.readEntry("go_offline_when_closing", false);
             if (shouldGoOffline) {
-                goOffline();
+                m_presenceChooser->globalPresence()->setPresence(KTp::Presence::offline(), KTp::GlobalPresence::Session);
             }
         }
 
@@ -338,28 +340,6 @@ bool MainWidget::isPresencePlasmoidPresent() const
     } else {
         return false;
     }
-}
-
-void MainWidget::goOffline()
-{
-    //FIXME use global presence
-    qCDebug(KTP_CONTACTLIST_MODULE) << "Setting all accounts offline...";
-    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
-        if (account->isEnabled() && account->isValid()) {
-            account->setRequestedPresence(Tp::Presence::offline());
-        }
-    }
-}
-
-bool MainWidget::isAnyAccountOnline() const
-{
-    foreach (const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
-        if (account->isEnabled() && account->isValid() && account->isOnline()) {
-            return true;
-        }
-    }
-
-    return false;
 }
 
 void MainWidget::toggleSearchWidget(bool show)

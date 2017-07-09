@@ -20,11 +20,12 @@
 
 #include "global-presence-chooser.h"
 
-#include <KTp/global-presence.h>
-#include <KTp/presence.h>
-#include <KTp/Models/presence-model.h>
-
 #include "dialogs/custom-presence-dialog.h"
+#include "dialogs/advanced-presence-dialog.h"
+
+#include <KTp/presence.h>
+#include <KTp/global-presence.h>
+#include <KTp/Models/presence-model.h>
 
 #include <KLocalizedString>
 #include <KSharedConfig>
@@ -34,7 +35,6 @@
 #include <KMessageBox>
 #include <KIconLoader>
 
-#include <TelepathyQt/Presence>
 #include <TelepathyQt/Account>
 
 #include <QFontDatabase>
@@ -45,8 +45,27 @@
 #include <QMenu>
 #include <QPointer>
 
-//A sneaky class that adds an extra entries to the end of the presence model,
-//currently "Now listening to" and "Configure Custom Presences"
+extern const QString KDED_STATUS_MESSAGE_PARSER_WHATSTHIS(
+        i18n("<p>Tokens can be used wherever a status message can be set to create a dynamic status message.</p>")
+        + i18n("<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;</strong> minutes. e.g. %tr+30</p>")
+        + i18n("<p><strong>%time+[&lt;val&gt;]</strong>: The current local time, or if a value is specified, the local time <strong>&lt;val&gt;</strong> minutes in the future. e.g. %time+10</p>")
+        + i18n("<p><strong>%utc+[&lt;val&gt;]</strong>: The current UTC time, or if a value is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the future. e.g. %utc</p>")
+        + i18n("<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. Append an initial elapsed time &quot;&lt;val&gt;&quot in minutes.; e.g. %te+5</p>")
+        + i18n("<p><strong>%title</strong>: Now Playing track title.</p>")
+        + i18n("<p><strong>%artist</strong>: Now Playing track or album artist.</p>")
+        + i18n("<p><strong>%album</strong>: Now Playing album.</p>")
+        + i18n("<p><strong>%track</strong>: Now Playing track number.</p>")
+        + i18n("<p><strong>%um+[&lt;val&gt;]</strong>: When specified globally or in an account presence status message, overrides all automatic presence messages. When specified in an automatic presence status message, is substituted for the global or account presence status message (if specified). When <strong>val = g</strong> in an account presence status message or an automatic presence status message, overrides the account presence status message or automatic presence status message with the global presence status message. e.g. %um, %um+g</p>")
+        + i18n("<p><strong>%tu+&lt;val&gt;</strong>: Refresh the status message every <strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>")
+        + i18n("<p><strong>%tx+&lt;val&gt;</strong>: Expire the status message after <strong>&lt;val&gt;</strong> minutes, or when the Now Playing active player stops (<strong>val = np</strong>). e.g. %tx+20, %tx+np</p>")
+        + i18n("<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Specify a message to follow %tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm+&quot;Running late&quot;&quot;</p>")
+        + i18n("<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for local time using QDateTime::toString() expressions. e.g. %tf+&quot;h:mm AP t&quot;</p>")
+        + i18n("<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for UTC time using QDateTime::toString() expressions. e.g. %uf+&quot;hh:mm t&quot;</p>")
+        + i18n("<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Change the separator for empty fields. e.g. %sp+&quot;-&quot;</p>")
+        + i18n("<p>Using tokens requires the Telepathy KDED module to be loaded. Tokens can be escaped by prepending a backslash character, e.g. &#92;%sp</p>")
+        );
+
+//A sneaky class that adds an extra entries to the end of the presence model.
 class PresenceModelExtended : public QAbstractListModel
 {
     Q_OBJECT
@@ -70,8 +89,8 @@ PresenceModelExtended::PresenceModelExtended(KTp::PresenceModel *presenceModel, 
     QAbstractListModel(parent),
     m_model(presenceModel)
 {
-    connect(m_model, SIGNAL(rowsInserted(QModelIndex,int,int)), SLOT(sourceRowsInserted(QModelIndex,int,int)));
-    connect(m_model, SIGNAL(rowsRemoved(QModelIndex,int,int)), SLOT(sourceRowsRemoved(QModelIndex,int,int)));
+    connect(m_model, &QAbstractItemModel::rowsInserted, this, &PresenceModelExtended::sourceRowsInserted);
+    connect(m_model, &QAbstractItemModel::rowsRemoved, this, &PresenceModelExtended::sourceRowsRemoved);
 }
 
 //return number of rows + the extra items added to end of list
@@ -103,9 +122,9 @@ QVariant PresenceModelExtended::data(const QModelIndex &index, int role) const
     } else if (index.row() == rowCount() - 2) {
         switch (role) {
         case Qt::DisplayRole:
-            return i18n("Now listening to...");
+            return i18n("Advanced Presence Setting...");
         case Qt::DecorationRole:
-            return QIcon::fromTheme("speaker");
+            return QIcon::fromTheme("configure");
         }
     } else if (m_temporaryPresence.isValid() && index.row() == rowCount() - 3) {
         switch (role) {
@@ -180,8 +199,6 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_changePresenceMessageButton(new QPushButton(this))
 {
     this->setModel(m_modelExtended);
-    //needed for mousemove events
-    setMouseTracking(true);
 
     m_busyOverlay->setSequence(KIconLoader::global()->loadPixmapSequence("process-working", KIconLoader::SizeSmallMedium));
     setEditable(false);
@@ -190,37 +207,34 @@ GlobalPresenceChooser::GlobalPresenceChooser(QWidget *parent) :
     m_changePresenceMessageButton->setFlat(true);
     m_changePresenceMessageButton->setToolTip(i18n("Click to change your presence message"));
 
-    connect(this, SIGNAL(currentIndexChanged(int)), SLOT(onAllComboChanges(int)));
-    connect(this, SIGNAL(activated(int)), SLOT(onUserActivatedComboChange(int)));
-    connect(m_globalPresence, SIGNAL(requestedPresenceChanged(KTp::Presence)), SLOT(onPresenceChanged(KTp::Presence)));
-    connect(m_globalPresence, SIGNAL(connectionStatusChanged(Tp::ConnectionStatus)), SLOT(onConnectionStatusChanged(Tp::ConnectionStatus)));
-    connect(m_changePresenceMessageButton, SIGNAL(clicked(bool)), this, SLOT(onChangePresenceMessageClicked()));
+    connect(this, static_cast<void(GlobalPresenceChooser::*)(int)>(&KComboBox::currentIndexChanged), &GlobalPresenceChooser::onAllComboChanges);
+    connect(this, static_cast<void(GlobalPresenceChooser::*)(int)>(&KComboBox::activated), &GlobalPresenceChooser::onUserActivatedComboChange);
+    connect(m_globalPresence, &KTp::GlobalPresence::currentPresenceChanged, this, &GlobalPresenceChooser::onPresenceChanged);
+    connect(m_globalPresence, &KTp::GlobalPresence::connectionStatusChanged, this, &GlobalPresenceChooser::onConnectionStatusChanged);
+    connect(m_changePresenceMessageButton, &QPushButton::clicked, this, &GlobalPresenceChooser::onChangePresenceMessageClicked);
 
-    onPresenceChanged(m_globalPresence->requestedPresence());
+    onPresenceChanged(m_globalPresence->currentPresence());
     //we need to check if there is some account connecting and if so, spin the spinner
     onConnectionStatusChanged(m_globalPresence->connectionStatus());
-}
-
-void GlobalPresenceChooser::setAccountManager(const Tp::AccountManagerPtr &accountManager)
-{
-    m_accountManager = accountManager;
-    m_globalPresence->setAccountManager(accountManager);
 }
 
 bool GlobalPresenceChooser::event(QEvent *e)
 {
     if (e->type() == QEvent::ToolTip) {
-        if (m_accountManager.isNull()) {
-            return false;
-        }
-
         QHelpEvent *helpEvent = static_cast<QHelpEvent *>(e);
 
         QString toolTipText;
-        toolTipText.append("<table>");
 
-        Q_FOREACH(const Tp::AccountPtr &account, m_accountManager->allAccounts()) {
-            if (account->isEnabled()) {
+        if (isEditable()) {
+            toolTipText = KDED_STATUS_MESSAGE_PARSER_WHATSTHIS;
+        } else {
+            if (m_globalPresence->accountManager().isNull()) {
+                return false;
+            }
+
+            toolTipText.append("<table>");
+
+            for (const Tp::AccountPtr &account : m_globalPresence->accountManager()->enabledAccounts()->accounts()) {
                 KTp::Presence accountPresence(account->currentPresence());
                 QString presenceIconPath = KIconLoader::global()->iconPath(accountPresence.icon().name(), 1);
                 QString presenceIconString = QString::fromLatin1("<img src=\"%1\">").arg(presenceIconPath);
@@ -229,14 +243,17 @@ bool GlobalPresenceChooser::event(QEvent *e)
                 QString presenceString;
                 if (account->connectionStatus() == Tp::ConnectionStatusConnecting) {
                     presenceString = i18nc("Presence string when the account is connecting", "Connecting...");
+                } else if (!account->currentPresence().statusMessage().isEmpty()){
+                    presenceString = QString::fromLatin1("(%1) ").arg(accountPresence.displayString()) + accountPresence.statusMessage();
                 } else {
                     presenceString = accountPresence.displayString();
                 }
                 toolTipText.append(QString::fromLatin1("<tr><td>%1 %2</td></tr><tr><td style=\"padding-left: 24px\">%3&nbsp;%4</td></tr>").arg(accountIconString, account->displayName(), presenceIconString, presenceString));
             }
+
+            toolTipText.append("</table>");
         }
 
-        toolTipText.append("</table>");
         QToolTip::showText(helpEvent->globalPos(), toolTipText, this);
         return true;
     }
@@ -246,10 +263,8 @@ bool GlobalPresenceChooser::event(QEvent *e)
     }
 
     if (e->type() == QEvent::ContextMenu) {
-        QMouseEvent *me = static_cast<QMouseEvent*>(e);
         if (isEditable()) {
-            //we need to correctly position the menu, otherwise it just appears at (0;0)
-            m_lineEditContextMenu.data()->exec(me->globalPos());
+            m_lineEditContextMenu = lineEdit()->createStandardContextMenu();
 
             return true;
         }
@@ -303,7 +318,7 @@ void GlobalPresenceChooser::setEditable(bool editable)
         m_busyOverlay->setWidget(0);
     } else {
         m_busyOverlay->setWidget(this);
-        if (m_globalPresence->connectionStatus() == Tp::ConnectionStatusConnecting) {
+        if (m_globalPresence->connectionStatus() == KTp::GlobalPresence::Connecting) {
             m_busyOverlay->start(); // If telepathy is still connecting, overlay must be spinning again.
         }
     }
@@ -312,57 +327,24 @@ void GlobalPresenceChooser::setEditable(bool editable)
 
 void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 {
-    if (index == -1) {
+    if ((index == -1) || (index == count() - 3)) {
         return;
     }
-    //if they select the "configure item"
-    if (index == count() - 1) {
+
+    if (index == count() - 2) {
+        QPointer<AdvancedPresenceDialog> dialog = new AdvancedPresenceDialog(m_model, m_globalPresence, this);
+        dialog.data()->exec();
+        delete dialog.data();
+    } else if (index == count() - 1) {
         QPointer<CustomPresenceDialog> dialog = new CustomPresenceDialog(m_model, this);
         dialog.data()->exec();
         delete dialog.data();
-        onPresenceChanged(m_globalPresence->requestedPresence());
-    } else if (index == count() - 2) {
-        KSharedConfigPtr config = KSharedConfig::openConfig(QLatin1String("ktelepathyrc"));
-        KConfigGroup kdedConfig = config->group("KDED");
-
-        bool pluginEnabled = kdedConfig.readEntry("nowPlayingEnabled", false);
-
-        if (!pluginEnabled) {
-            if (KMessageBox::questionYesNo(this,
-                                           i18n("This plugin is currently disabled. Do you want to enable it and use as your presence?"),
-                                           i18n("Plugin disabled")) == KMessageBox::Yes) {
-
-                kdedConfig.writeEntry("nowPlayingEnabled", true);
-                kdedConfig.sync();
-
-                QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
-                                       QLatin1String("org.kde.Telepathy"),
-                                       QLatin1String("settingsChange"));
-                QDBusConnection::sessionBus().send(message);
-            } else {
-                onPresenceChanged(m_globalPresence->requestedPresence());
-                return;
-            }
-        }
-
-        QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
-							  QLatin1String("org.kde.Telepathy"),
-							  QLatin1String("activateNowPlaying"));
-        QDBusConnection::sessionBus().send(message);
-        onPresenceChanged(m_globalPresence->requestedPresence());
-    } else if (m_modelExtended->temporaryPresence().isValid() && index == count() - 3) {
-        //do nothing if the temporary presence is selected. This is only used for externally set presences.
-        //at which point reselecting it does nothing.
     } else {
-        QDBusMessage message = QDBusMessage::createSignal(QLatin1String("/Telepathy"),
-							  QLatin1String("org.kde.Telepathy"),
-							  QLatin1String("deactivateNowPlaying"));
-        QDBusConnection::sessionBus().send(message);
-        onPresenceChanged(m_globalPresence->requestedPresence());
-        // only set global presence on user change
         KTp::Presence presence = itemData(index, KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
         m_globalPresence->setPresence(presence);
     }
+
+    onPresenceChanged(m_globalPresence->currentPresence());
 }
 
 void GlobalPresenceChooser::onAllComboChanges(int index)
@@ -378,35 +360,32 @@ void GlobalPresenceChooser::onAllComboChanges(int index)
         }
     }
 
+    clearFocus();
 }
-
 
 void GlobalPresenceChooser::onPresenceChanged(const KTp::Presence &presence)
 {
-    if (presence.type() == Tp::ConnectionPresenceTypeUnknown) {
+    if (presence.type() == Tp::ConnectionPresenceTypeUnset) {
         setCurrentIndex(-1);
         m_busyOverlay->start();
         return;
     }
-    for (int i = 0; i < count() ; i++) {
-        KTp::Presence itemPresence = itemData(i, KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
-        if (itemPresence.type() == presence.type() && itemPresence.statusMessage() == presence.statusMessage()) {
-            setCurrentIndex(i);
-            if (itemPresence != m_modelExtended->temporaryPresence()) {
-                m_modelExtended->removeTemporaryPresence();
-            }
-            return;
-        }
+
+    const QModelIndexList &matchIndexList = m_model->match(m_model->index(0, 0), KTp::PresenceModel::PresenceRole, QVariant::fromValue<KTp::Presence>(presence));
+    if (!matchIndexList.isEmpty()) {
+        m_modelExtended->removeTemporaryPresence();
+        setCurrentIndex(matchIndexList.at(0).row());
+    } else {
+        const QModelIndex &index = m_modelExtended->addTemporaryPresence(presence);
+        setCurrentIndex(index.row());
     }
 
-    QModelIndex index = m_modelExtended->addTemporaryPresence(presence);
-    setCurrentIndex(index.row());
     m_busyOverlay->stop();
 }
 
-void GlobalPresenceChooser::onConnectionStatusChanged(Tp::ConnectionStatus connectionStatus)
+void GlobalPresenceChooser::onConnectionStatusChanged(KTp::GlobalPresence::ConnectionStatus connectionStatus)
 {
-    if (connectionStatus == Tp::ConnectionStatusConnecting) {
+    if (connectionStatus == KTp::GlobalPresence::Connecting) {
         repositionOverlays();
         m_busyOverlay->start();
     } else {
@@ -443,11 +422,11 @@ void GlobalPresenceChooser::onChangePresenceMessageClicked()
     setEditable(true);
 
     //if current presence has no presence message, delete the text
-    if (m_globalPresence->requestedPresence().statusMessage().isEmpty()) {
+    if (m_globalPresence->globalPresence().statusMessage().isEmpty()) {
         lineEdit()->clear();
+    } else {
+        lineEdit()->setText(m_globalPresence->globalPresence().statusMessage());
     }
-
-    m_lineEditContextMenu = lineEdit()->createStandardContextMenu();
 
     lineEdit()->setFocus();
 }
@@ -455,15 +434,12 @@ void GlobalPresenceChooser::onChangePresenceMessageClicked()
 void GlobalPresenceChooser::onConfirmPresenceMessageClicked()
 {
     m_changePresenceMessageButton->show();
-
     KTp::Presence presence = itemData(currentIndex(), KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
-    presence.setStatus(presence.type(), presence.status(), lineEdit()->text());
-    QModelIndex newPresence = m_model->addPresence(presence); //m_model->addPresence(presence);
-    setEditable(false);
-    setCurrentIndex(newPresence.row());
+    presence.setStatusMessage(lineEdit()->text());
 
-    onUserActivatedComboChange(newPresence.row());
-    onAllComboChanges(newPresence.row());
+    setEditable(false);
+
+    m_globalPresence->setPresence(presence);
 }
 
 

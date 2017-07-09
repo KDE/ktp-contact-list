@@ -57,7 +57,6 @@ public:
     ~MainWidget();
 
     bool isPresencePlasmoidPresent() const;
-    bool isAnyAccountOnline() const;
 
     enum SystemMessageType {
         /*
@@ -77,7 +76,6 @@ public:
 
 public Q_SLOTS:
     void showMessageToUser(const QString &text, const SystemMessageType type);
-    void goOffline();
     Q_INVOKABLE void toggleWindowVisibility();
 
 private Q_SLOTS:

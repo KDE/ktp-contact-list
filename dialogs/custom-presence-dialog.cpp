@@ -19,6 +19,7 @@
 */
 
 #include "custom-presence-dialog.h"
+#include "global-presence-chooser.h"
 
 #include <QListView>
 #include <QHBoxLayout>
@@ -97,6 +98,7 @@ void CustomPresenceDialog::setupDialog()
     m_statusMessage->show();
 
     m_statusMessage->lineEdit()->setPlaceholderText(m_statusMessage->currentText());
+    m_statusMessage->lineEdit()->setWhatsThis(KDED_STATUS_MESSAGE_PARSER_WHATSTHIS);
 
     connect(m_statusMessage, SIGNAL(editTextChanged(QString)),
             this, SLOT(presenceMessageTextChanged(QString)));
@@ -202,6 +204,9 @@ void CustomPresenceDialog::presenceViewSelectionChanged(const QModelIndex& index
     } else {
         m_removeStatus->setEnabled(false);
     }
+
+    KTp::Presence presence = index.data(KTp::PresenceModel::PresenceRole).value<KTp::Presence>();
+    m_statusMessage->lineEdit()->setText(presence.statusMessage());
 }
 
 #include "custom-presence-dialog.moc"
