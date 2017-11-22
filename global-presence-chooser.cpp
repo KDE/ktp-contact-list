@@ -50,7 +50,7 @@ extern const QString KDED_STATUS_MESSAGE_PARSER_WHATSTHIS(
         + i18n("<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;</strong> minutes. e.g. %tr+30</p>")
         + i18n("<p><strong>%time+[&lt;val&gt;]</strong>: The current local time, or if a value is specified, the local time <strong>&lt;val&gt;</strong> minutes in the future. e.g. %time+10</p>")
         + i18n("<p><strong>%utc+[&lt;val&gt;]</strong>: The current UTC time, or if a value is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the future. e.g. %utc</p>")
-        + i18n("<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. Append an initial elapsed time &quot;&lt;val&gt;&quot in minutes.; e.g. %te+5</p>")
+        + i18n("<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te+5</p>")
         + i18n("<p><strong>%title</strong>: Now Playing track title.</p>")
         + i18n("<p><strong>%artist</strong>: Now Playing track or album artist.</p>")
         + i18n("<p><strong>%album</strong>: Now Playing album.</p>")
