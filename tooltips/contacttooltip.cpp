@@ -30,6 +30,7 @@
 #include <KTp/presence.h>
 
 #include <QDesktopServices>
+#include <QIcon>
 #include <QTextDocument>
 #include <QDebug>
 
