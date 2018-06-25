@@ -29,6 +29,7 @@
 #include <QFontDatabase>
 #include <QPixmapCache>
 #include <QStyle>
+#include <QStyleOptionViewItem>
 
 #include <KIconLoader>
 
@@ -51,18 +52,18 @@ ContactDelegate::~ContactDelegate()
 
 void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyleOptionViewItemV4 optV4 = option;
-    initStyleOption(&optV4, index);
+    QStyleOptionViewItem opt = option;
+    initStyleOption(&opt, index);
 
     painter->save();
 
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
-    painter->setClipRect(optV4.rect);
+    painter->setClipRect(opt.rect);
 
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
-    QRect iconRect = optV4.rect;
+    QRect iconRect = opt.rect;
     iconRect.setSize(QSize(m_avatarSize, m_avatarSize));
     iconRect.moveTo(QPoint(iconRect.x() + m_spacing, iconRect.y() + m_spacing));
 
@@ -109,10 +110,10 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
 
     QPixmap icon = QIcon::fromTheme(index.data(KTp::ContactPresenceIconRole).toString()).pixmap(KIconLoader::SizeSmallMedium);
 
-    QRect statusIconRect = optV4.rect;
+    QRect statusIconRect = opt.rect;
     statusIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
-    statusIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
-                                 optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
+    statusIconRect.moveTo(QPoint(opt.rect.right() - rightIconsWidth,
+                                 opt.rect.top() + (opt.rect.height() - m_presenceIconSize) / 2));
 
     painter->drawPixmap(statusIconRect, icon);
 
@@ -122,14 +123,14 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
         rightIconsWidth += m_presenceIconSize + m_spacing / 2;
 
         QPixmap phone = QIcon::fromTheme("phone").pixmap(m_presenceIconSize);
-        QRect phoneIconRect = optV4.rect;
+        QRect phoneIconRect = opt.rect;
         phoneIconRect.setSize(QSize(m_presenceIconSize, m_presenceIconSize));
-        phoneIconRect.moveTo(QPoint(optV4.rect.right() - rightIconsWidth,
-                                    optV4.rect.top() + (optV4.rect.height() - m_presenceIconSize) / 2));
+        phoneIconRect.moveTo(QPoint(opt.rect.right() - rightIconsWidth,
+                                    opt.rect.top() + (opt.rect.height() - m_presenceIconSize) / 2));
         painter->drawPixmap(phoneIconRect, phone);
     }
 
-    QRect userNameRect = optV4.rect;
+    QRect userNameRect = opt.rect;
     userNameRect.setX(iconRect.x() + iconRect.width() + m_spacing);
     userNameRect.setY(userNameRect.y() + m_spacing / 2);
     userNameRect.setWidth(userNameRect.width() - rightIconsWidth);
@@ -143,11 +144,11 @@ void ContactDelegate::paintContact(QPainter *painter, const QStyleOptionViewItem
     }
 
     painter->drawText(userNameRect,
-                      nameFontMetrics.elidedText(optV4.text, Qt::ElideRight, userNameRect.width()));
+                      nameFontMetrics.elidedText(opt.text, Qt::ElideRight, userNameRect.width()));
 
     const QFontMetrics statusFontMetrics(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont));
 
-    QRect statusMsgRect = optV4.rect;
+    QRect statusMsgRect = opt.rect;
     statusMsgRect.setX(iconRect.x() + iconRect.width() + m_spacing);
     statusMsgRect.setY(userNameRect.bottom() - statusFontMetrics.height() - 4);
     statusMsgRect.setWidth(statusMsgRect.width() - rightIconsWidth);

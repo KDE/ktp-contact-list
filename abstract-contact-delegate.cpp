@@ -27,6 +27,7 @@
 #include <QHelpEvent>
 #include <QFontDatabase>
 #include <QAbstractItemView>
+#include <QStyleOptionViewItem>
 
 #include <KIconLoader>
 
@@ -65,18 +66,18 @@ QSize AbstractContactDelegate::sizeHint(const QStyleOptionViewItem &option, cons
 
 void AbstractContactDelegate::paintHeader(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    QStyleOptionViewItemV4 optV4 = option;
-    initStyleOption(&optV4, index);
+    QStyleOptionViewItem opt = option;
+    initStyleOption(&opt, index);
 
     painter->save();
 
     painter->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform | QPainter::HighQualityAntialiasing);
-    painter->setClipRect(optV4.rect);
+    painter->setClipRect(opt.rect);
 
     QStyle *style = QApplication::style();
     style->drawPrimitive(QStyle::PE_PanelItemViewItem, &option, painter);
 
-    QRect groupRect = optV4.rect;
+    QRect groupRect = opt.rect;
 
     //paint the background
     QBrush bgBrush(option.palette.color(QPalette::Active, QPalette::Button).lighter(105));
