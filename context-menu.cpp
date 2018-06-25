@@ -23,9 +23,9 @@
 #include <QMenu>
 #include <QAction>
 #include <QInputDialog>
+#include <QDesktopServices>
 
 #include <KLocalizedString>
-#include <KToolInvocation>
 #include <KMessageBox>
 
 #include <KTp/text-parser.h>
@@ -336,7 +336,7 @@ void ContextMenu::onRemoveContactFromGroupTriggered()
 
 void ContextMenu::onOpenLinkTriggered(QAction *action)
 {
-    KToolInvocation::invokeBrowser(action->data().toString());
+    QDesktopServices::openUrl(action->data().toString());
 }
 
 void ContextMenu::onShowInfoTriggered()

@@ -34,7 +34,6 @@
 
 #include <KIconLoader>
 #include <KLocalizedString>
-#include <KToolInvocation>
 
 bool contactLessThan(const QVariant &left, const QVariant &right)
 {
@@ -108,7 +107,7 @@ PersonToolTip::~PersonToolTip()
 
 void PersonToolTip::openLink(QString url)
 {
-    KToolInvocation::invokeBrowser(url);
+    QDesktopServices::openUrl(url);
     KToolTip::hideTip();
 }
 
