@@ -60,6 +60,8 @@
 #include <KNotification>
 #include <KToolInvocation>
 #include <KStandardAction>
+#include <KHelpMenu>
+#include <KAboutData>
 #include <KWindowSystem>
 #include <KLocalizedString>
 
@@ -400,8 +402,8 @@ void MainWidget::setupGlobalMenu()
     view_showGroupedMenu->addActions(m_groupContactsActionGroup->actions());
     view->addMenu(view_showGroupedMenu);
     m_globalMenu->addMenu(view);
-
-    m_globalMenu->addMenu(helpMenu());
+    KHelpMenu *helpMenu = new KHelpMenu(this, KAboutData::applicationData());
+    m_globalMenu->addMenu(helpMenu->menu());
 }
 
 void MainWidget::setupToolBar()
@@ -456,7 +458,9 @@ void MainWidget::setupToolBar()
     }
 
     settingsButtonMenu->addSeparator();
-    settingsButtonMenu->addMenu(helpMenu());
+
+    KHelpMenu *helpMenu = new KHelpMenu(this, KAboutData::applicationData());
+    settingsButtonMenu->addMenu(helpMenu->menu());
 
     settingsButton->setMenu(settingsButtonMenu);
 
