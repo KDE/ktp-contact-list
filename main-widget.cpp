@@ -310,6 +310,7 @@ void MainWidget::closeEvent(QCloseEvent* e)
                         m_presenceChooser->globalPresence()->setPresence(KTp::Presence::offline(), KTp::GlobalPresence::Session);
                         break;
                     case KMessageBox::Cancel:
+                    default:
                         e->ignore();
                         return;
                 }
