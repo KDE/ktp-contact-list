@@ -1,7 +1,6 @@
 [Desktop Entry]
 Name=IM Contacts
 Name[ar]=متراسلون ت‌م
-Name[ast]=Contautos MI
 Name[bs]=IM kontakti
 Name[ca]=Contactes de MI
 Name[ca@valencia]=Contactes de MI
@@ -42,7 +41,6 @@ Name[zh_CN]=即时通讯联系人
 Name[zh_TW]=即時訊息聯絡人
 GenericName=Instant Messenger Contacts
 GenericName[ar]=متراسلو المرسال المباشر
-GenericName[ast]=Contautos de mensaxería nel intre
 GenericName[bs]=Kontakti za instant poruke
 GenericName[ca]=Contactes de missatgeria instantània
 GenericName[ca@valencia]=Contactes de missatgeria instantània
@@ -90,7 +88,6 @@ GenericName[zh_CN]=即时通讯联系人
 GenericName[zh_TW]=即時訊息聯絡人
 Comment=Displays your instant messenger contacts
 Comment[ar]=يعرض متراسلي المرسال المباشر
-Comment[ast]=Amuesa los to contautos de mensaxería nel intre
 Comment[bs]=Prikazuje kontakte programa za instant poruke
 Comment[ca]=Mostra els vostres contactes de missatgeria instantània
 Comment[ca@valencia]=Mostra els vostres contactes de missatgeria instantània
