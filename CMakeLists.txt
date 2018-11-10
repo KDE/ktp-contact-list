@@ -3,7 +3,7 @@ project (ktp-contactlist)
 cmake_minimum_required(VERSION 2.8.12)
 
 # KDE Application Version, managed by release script
-set (KDE_APPLICATIONS_VERSION_MAJOR "18")
+set (KDE_APPLICATIONS_VERSION_MAJOR "19")
 set (KDE_APPLICATIONS_VERSION_MINOR "03")
 set (KDE_APPLICATIONS_VERSION_MICRO "70")
 
