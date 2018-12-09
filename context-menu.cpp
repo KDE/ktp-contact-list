@@ -336,7 +336,7 @@ void ContextMenu::onRemoveContactFromGroupTriggered()
 
 void ContextMenu::onOpenLinkTriggered(QAction *action)
 {
-    QDesktopServices::openUrl(action->data().toString());
+    QDesktopServices::openUrl(QUrl(action->data().toString()));
 }
 
 void ContextMenu::onShowInfoTriggered()

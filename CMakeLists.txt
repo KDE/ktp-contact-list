@@ -33,6 +33,7 @@ feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
 if (KF5People_FOUND)
     add_definitions(-DHAVE_KPEOPLE)
 endif ()
+add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
 
 set (ktp_contactlist_SRCS
      contact-list-widget.cpp

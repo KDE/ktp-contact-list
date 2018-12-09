@@ -107,7 +107,7 @@ PersonToolTip::~PersonToolTip()
 
 void PersonToolTip::openLink(QString url)
 {
-    QDesktopServices::openUrl(url);
+    QDesktopServices::openUrl(QUrl(url));
     KToolTip::hideTip();
 }
 
