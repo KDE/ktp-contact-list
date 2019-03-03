@@ -327,7 +327,7 @@ void GlobalPresenceChooser::setEditable(bool editable)
 
 void GlobalPresenceChooser::onUserActivatedComboChange(int index)
 {
-    if ((index == -1) || (index == count() - 3)) {
+    if (index == -1) {
         return;
     }
 
