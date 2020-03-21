@@ -24,6 +24,7 @@
 #include <kwindowsystem.h>
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QVBoxLayout>
 
 KToolTipWindow::KToolTipWindow(QWidget *content) :
