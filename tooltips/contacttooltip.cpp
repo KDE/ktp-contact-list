@@ -34,7 +34,6 @@
 #include <QTextDocument>
 #include <QDebug>
 
-#include <KToolInvocation>
 #include <KLocalizedString>
 #include <KIconLoader>
 
