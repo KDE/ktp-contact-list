@@ -108,3 +108,5 @@ install (PROGRAMS org.kde.ktpcontactlist.desktop
 install (FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.ktpcontactlist.service
          DESTINATION ${DBUS_SERVICES_INSTALL_DIR}
 )
+
+ki18n_install(po)
