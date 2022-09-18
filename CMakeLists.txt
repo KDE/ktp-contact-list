@@ -9,7 +9,7 @@ set(KTP_CONTACT_LIST_VERSION "${RELEASE_SERVICE_VERSION_MAJOR}.${RELEASE_SERVICE
 
 project (ktp-contactlist VERSION ${KTP_CONTACT_LIST_VERSION})
 
-find_package(ECM 1.3.0 REQUIRED NO_MODULE)
+find_package(ECM 1.6.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
 find_package (Qt5 5.0 REQUIRED COMPONENTS Widgets Xml)
@@ -98,15 +98,15 @@ configure_file(org.kde.ktpcontactlist.service.in
 
 # Install:
 install (TARGETS ktp-contactlist
-         ${INSTALL_TARGETS_DEFAULT_ARGS}
+         ${KDE_INSTALL_TARGETS_DEFAULT_ARGS}
 )
 
 install (PROGRAMS org.kde.ktpcontactlist.desktop
-         DESTINATION ${XDG_APPS_INSTALL_DIR}
+         DESTINATION ${KDE_INSTALL_APPDIR}
 )
 
 install (FILES ${CMAKE_CURRENT_BINARY_DIR}/org.kde.ktpcontactlist.service
-         DESTINATION ${DBUS_SERVICES_INSTALL_DIR}
+         DESTINATION ${KDE_INSTALL_DBUSSERVICEDIR}
 )
 
 ki18n_install(po)
