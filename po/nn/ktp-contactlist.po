@@ -1,0 +1,772 @@
+# Translation of ktp-contactlist to Norwegian Nynorsk
+#
+# Karl Ove Hufthammer <karl@huftis.org>, 2016, 2018, 2019, 2020.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-08-13 02:19+0200\n"
+"PO-Revision-Date: 2020-11-16 19:57+0100\n"
+"Last-Translator: Karl Ove Hufthammer <karl@huftis.org>\n"
+"Language-Team: Norwegian Nynorsk <l10n-no@lister.huftis.org>\n"
+"Language: nn\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 20.08.3\n"
+"X-Environment: kde\n"
+"X-Accelerator-Marker: &\n"
+"X-Text-Markup: kde4\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Karl Ove Hufthammer"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "karl@huftis.org"
+
+#: contact-list-widget.cpp:200
+#, kde-format
+msgid "You have no IM accounts configured. Would you like to do that now?"
+msgstr "Du har ikkje sett opp nokon lynmeldingskontoar. Vil du gjera det no?"
+
+#: contact-list-widget.cpp:201
+#, kde-format
+msgid "No Accounts Found"
+msgstr "Fann ingen kontoar"
+
+#: contact-list-widget.cpp:269
+#, kde-format
+msgctxt ""
+"Label of a dialog's 'OK' button; %1 is account name, eg. 'Connect account "
+"GTalk'"
+msgid "Connect account %1"
+msgstr "Kopla til konto %1"
+
+#: contact-list-widget.cpp:271
+#, kde-format
+msgid ""
+"The account for this contact is disconnected. Do you want to connect it?"
+msgstr "Kontoen for denne kontakten er fråkopla. Vil du kopla han til?"
+
+#: contact-list-widget.cpp:272
+#, kde-format
+msgid "Account offline"
+msgstr "Konto fråkopla"
+
+#: contact-list-widget.cpp:477
+#, kde-format
+msgid "Choose files to send to %1"
+msgstr "Vel filer å senda til %1"
+
+#: contact-list-widget.cpp:478
+#, kde-format
+msgid "Send"
+msgstr "Send"
+
+#: contact-list-widget.cpp:786
+#, kde-format
+msgid "Merge contacts"
+msgstr "Slå saman kontaktar"
+
+#: contact-list-widget.cpp:828
+#, kde-format
+msgid "&Move here"
+msgstr "&Flytt hit"
+
+#: contact-list-widget.cpp:832
+#, kde-format
+msgid "&Copy here"
+msgstr "&Kopier hit"
+
+#: contact-list-widget.cpp:836
+#, kde-format
+msgid "C&ancel"
+msgstr "&Avbryt"
+
+#: contact-overlays.cpp:134 contact-overlays.cpp:135
+#, kde-format
+msgid "Start Chat"
+msgstr "Start prat"
+
+#: contact-overlays.cpp:135
+#, kde-format
+msgid "Start a text chat"
+msgstr "Start tekstsamtale"
+
+#: contact-overlays.cpp:146 contact-overlays.cpp:147
+#, kde-format
+msgid "Start Audio Call"
+msgstr "Start talesamtale"
+
+#: contact-overlays.cpp:147
+#, kde-format
+msgid "Start an audio call"
+msgstr "Start talesamtale"
+
+#: contact-overlays.cpp:159 contact-overlays.cpp:160
+#, kde-format
+msgid "Start Video Call"
+msgstr "Start videosamtale"
+
+#: contact-overlays.cpp:160
+#, kde-format
+msgid "Start a video call"
+msgstr "Start videosamtale"
+
+#: contact-overlays.cpp:171 contact-overlays.cpp:172 context-menu.cpp:141
+#, kde-format
+msgid "Send File..."
+msgstr "Send fil …"
+
+#: contact-overlays.cpp:172
+#, kde-format
+msgid "Send a file"
+msgstr "Send fil"
+
+#: contact-overlays.cpp:183 contact-overlays.cpp:184
+#, kde-format
+msgid "Open Log Viewer"
+msgstr "Opna loggvisar"
+
+#: contact-overlays.cpp:184
+#, kde-format
+msgid "Show conversation logs"
+msgstr "Vis samtaleloggar"
+
+#: context-menu.cpp:111
+#, kde-format
+msgid "Start Chat..."
+msgstr "Start prat …"
+
+#: context-menu.cpp:121
+#, kde-format
+msgid "Start Audio Call..."
+msgstr "Start talesamtale …"
+
+#: context-menu.cpp:131
+#, kde-format
+msgid "Start Video Call..."
+msgstr "Start videosamtale …"
+
+#: context-menu.cpp:151
+#, kde-format
+msgid "Share my desktop..."
+msgstr "Del skrivebordet …"
+
+#: context-menu.cpp:161
+#, kde-format
+msgid "Open Log..."
+msgstr "Opna logg …"
+
+#: context-menu.cpp:174
+#, kde-format
+msgid "Configure Notifications..."
+msgstr "Set opp varslingar …"
+
+#: context-menu.cpp:191
+#, kde-format
+msgid "Presence message link"
+msgid_plural "Presence message links"
+msgstr[0] "Lenkje til nærværsmelding"
+msgstr[1] "Lenkjer til nærværsmeldingar"
+
+#: context-menu.cpp:210
+#, kde-format
+msgid "Remove Contact From This Group"
+msgstr "Fjern kontakt frå gruppa"
+
+#: context-menu.cpp:216
+#, kde-format
+msgid "Move to Group"
+msgstr "Flytt til gruppe"
+
+#: context-menu.cpp:234
+#, kde-format
+msgid "Create New Group..."
+msgstr "Lag ny gruppe …"
+
+#: context-menu.cpp:253
+#, kde-format
+msgid "Re-request Contact Authorization"
+msgstr "Be om kontaktløyve på nytt"
+
+#: context-menu.cpp:259
+#, kde-format
+msgid "Resend Contact Authorization"
+msgstr "Send kontaktløyve på nytt"
+
+#: context-menu.cpp:267
+#, kde-format
+msgid "Unblock Contact"
+msgstr "Fjern kontaktblokkering"
+
+#: context-menu.cpp:271
+#, kde-format
+msgid "Block Contact"
+msgstr "Blokker kontakt"
+
+#: context-menu.cpp:278
+#, kde-format
+msgid "Remove Contact..."
+msgstr "Fjern kontakt …"
+
+#: context-menu.cpp:284
+#, kde-format
+msgid "Show Contact Information..."
+msgstr "Vis kontaktinformasjon …"
+
+#: context-menu.cpp:305
+#, kde-format
+msgid "Rename Group..."
+msgstr "Endra namn på gruppe …"
+
+#: context-menu.cpp:311
+#, kde-format
+msgid "Delete Group"
+msgstr "Slett gruppe"
+
+#: context-menu.cpp:495 context-menu.cpp:521
+#, kde-format
+msgid "New Group Name"
+msgstr "Nytt namn på gruppe"
+
+#: context-menu.cpp:496 context-menu.cpp:522
+#, kde-format
+msgid "Please enter the new group name"
+msgstr "Skriv inn nytt gruppenamn"
+
+#: context-menu.cpp:556
+#, kde-format
+msgid ""
+"Do you really want to remove group %1?\n"
+"\n"
+"Note that all contacts will be moved to group 'Ungrouped'"
+msgstr ""
+"Er du sikker på at du vil fjerna gruppa %1?\n"
+"\n"
+"Merk at alle kontaktane då vert flytta til gruppa «Ugruppert»."
+
+#: context-menu.cpp:558
+#, kde-format
+msgid "Remove Group"
+msgstr "Fjern gruppe"
+
+#: dialogs/advanced-presence-dialog.cpp:152
+#, kde-format
+msgid "Advanced Presence Setting"
+msgstr "Avanserte innstilling for tilgjengelegstatus"
+
+#: dialogs/advanced-presence-dialog.cpp:160
+#, kde-format
+msgid "It appears that you do not have any accounts configured"
+msgstr "Det ser ut til at du ikkje har sett opp nokon kontoar"
+
+#: dialogs/advanced-presence-dialog.cpp:184
+#, kde-format
+msgid "Set a status message ..."
+msgstr "Vel statusmelding …"
+
+#: dialogs/custom-presence-dialog.cpp:72
+#, kde-format
+msgid "Edit Custom Presences"
+msgstr "Rediger sjølvvalde statusmeldingar"
+
+#: dialogs/custom-presence-dialog.cpp:92
+#, kde-format
+msgid "Set custom available message..."
+msgstr "Definer sjølvvald «tilgjengeleg»-melding …"
+
+#: dialogs/custom-presence-dialog.cpp:93
+#, kde-format
+msgid "Set custom busy message..."
+msgstr "Definer sjølvvald «oppteken»-melding …"
+
+#: dialogs/custom-presence-dialog.cpp:94
+#, kde-format
+msgid "Set custom away message..."
+msgstr "Definer sjølvvald «vekke»-melding …"
+
+#: dialogs/custom-presence-dialog.cpp:95
+#, kde-format
+msgid "Set custom extended away message..."
+msgstr "Definer sjølvvald «lenge vekke»-melding …"
+
+#: dialogs/custom-presence-dialog.cpp:106
+#, kde-format
+msgid "Add Presence"
+msgstr "Legg til statusmelding"
+
+#: dialogs/custom-presence-dialog.cpp:107
+#, kde-format
+msgid "Remove Presence"
+msgstr "Fjern statusmelding"
+
+#: dialogs/remove-contact-dialog.cpp:53
+#, kde-format
+msgid "Remove the selected contact?"
+msgstr "Vil du fjerna den valde kontakten?"
+
+#. i18n: ectx: property (windowTitle), widget (QWidget, RemoveContactDialog)
+#: dialogs/remove-contact-dialog.ui:23
+#, kde-format
+msgid "Remove contact"
+msgstr "Fjern kontakt"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel)
+#: dialogs/remove-contact-dialog.ui:47
+#, kde-format
+msgid "Message"
+msgstr "Melding"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAvatarLabel)
+#: dialogs/remove-contact-dialog.ui:124
+#, kde-format
+msgid "Avatar"
+msgstr "Avatar"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAliasLabel)
+#: dialogs/remove-contact-dialog.ui:161
+#, kde-format
+msgid "Alias"
+msgstr "Alias"
+
+#. i18n: ectx: property (text), widget (QCheckBox, blockCheckbox)
+#: dialogs/remove-contact-dialog.ui:229
+#, kde-format
+msgid "Block contact"
+msgstr "Blokker kontakt"
+
+#: filter-bar.cpp:38
+#, kde-format
+msgctxt "@info:tooltip"
+msgid "Hide Filter Bar"
+msgstr "Gøym filterlinje"
+
+#: filter-bar.cpp:42
+#, kde-format
+msgctxt "@label:textbox"
+msgid "Filter:"
+msgstr "Filter:"
+
+#: global-presence-chooser.cpp:49
+#, kde-format
+msgid ""
+"<p>Tokens can be used wherever a status message can be set to create a "
+"dynamic status message.</p>"
+msgstr ""
+"<p>Plasshaldarar kan brukast til å laga dynamiske statusmeldingar, og dei "
+"kan brukast alle stadar der du kan velja statusmelding.</p>"
+
+#: global-presence-chooser.cpp:50
+#, kde-format
+msgid ""
+"<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;"
+"</strong> minutes. e.g. %tr+30</p>"
+msgstr ""
+"<p><strong>%tr+&lt;verdi&gt;</strong>: Tel ned frå <strong>&lt;verdi&gt;</"
+"strong> til 0 minutt. Eksempel: %tr+30</p>"
+
+#: global-presence-chooser.cpp:51
+#, kde-format
+msgid ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: The current local time, or if a "
+"value is specified, the local time <strong>&lt;val&gt;</strong> minutes in "
+"the future. e.g. %time+10</p>"
+msgstr ""
+"<p><strong>%time+[&lt;verdi&gt;]</strong>: Gjeldande lokaltid eller, viss du "
+"oppgjev ein verdi, lokaltida <strong>&lt;verdi&gt;</strong> minutt inn i "
+"framtida. Eksempel: %time+10</p>"
+
+#: global-presence-chooser.cpp:52
+#, kde-format
+msgid ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: The current UTC time, or if a value "
+"is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the "
+"future. e.g. %utc</p>"
+msgstr ""
+"<p><strong>%utc+[&lt;verdi&gt;]</strong>: Gjeldande UTC-tid eller, viss du "
+"oppgjev ein verdi, UTC-tida <strong>&lt;verdi&gt;</strong> minutt inni "
+"framtida. Eksempel: %utc</p>"
+
+#: global-presence-chooser.cpp:53
+#, kde-format
+msgid ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. "
+"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
+"+5</p>"
+msgstr ""
+"<p><strong>%te+[&lt;verdi&gt;]</strong>: Tid gått sidan meldingsaktiveringa. "
+"Du kan òg leggja til eit tidstillegg på <strong>&lt;verdi&gt;</strong> "
+"minutt. Eksempel: %te+5</p>"
+
+#: global-presence-chooser.cpp:54
+#, kde-format
+msgid "<p><strong>%title</strong>: Now Playing track title.</p>"
+msgstr "<p><strong>%title</strong>: Tittelen på songen som spelar.</p>"
+
+#: global-presence-chooser.cpp:55
+#, kde-format
+msgid "<p><strong>%artist</strong>: Now Playing track or album artist.</p>"
+msgstr ""
+"<p><strong>%artist</strong>: Artisten/albumartisten til songen som spelar.</"
+"p>"
+
+#: global-presence-chooser.cpp:56
+#, kde-format
+msgid "<p><strong>%album</strong>: Now Playing album.</p>"
+msgstr "<p><strong>%album</strong>: Albumtittelen til songen som spelar.</p>"
+
+#: global-presence-chooser.cpp:57
+#, kde-format
+msgid "<p><strong>%track</strong>: Now Playing track number.</p>"
+msgstr "<p><strong>%track</strong>: Spornummeret til songen som spelar.</p>"
+
+#: global-presence-chooser.cpp:58
+#, kde-format
+msgid ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: When specified globally or in an "
+"account presence status message, overrides all automatic presence messages. "
+"When specified in an automatic presence status message, is substituted for "
+"the global or account presence status message (if specified). When "
+"<strong>val = g</strong> in an account presence status message or an "
+"automatic presence status message, overrides the account presence status "
+"message or automatic presence status message with the global presence status "
+"message. e.g. %um, %um+g</p>"
+msgstr ""
+"<p><strong>%um+[&lt;verdi&gt;]</strong>: Viss definert globalt eller i ei "
+"statusmelding for ein konto, vil meldinga overstyra alle automatiske "
+"statusmeldingar. Viss definert i ei automatisk statusmelding, vert ho brukt "
+"i staden for den globale eller kontospesifikke statusmeldinga (viss "
+"definert). Når <strong>verdi = g</strong> i ei kontospesifikk statusmelding "
+"eller ei automatisk statusmelding, overstyrer meldinga den kontospesifikke "
+"meldinga med den globale statusmeldinga. Eksempel: %um, %um+g</p>"
+
+#: global-presence-chooser.cpp:59
+#, kde-format
+msgid ""
+"<p><strong>%tu+&lt;val&gt;</strong>: Refresh the status message every "
+"<strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>"
+msgstr ""
+"<p><strong>%tu+&lt;verdi&gt;</strong>: Oppdater statusmeldinga kvart "
+"<strong>&lt;verdi&gt;</strong> minutt. Eksempel: %tu+2</p>"
+
+#: global-presence-chooser.cpp:60
+#, kde-format
+msgid ""
+"<p><strong>%tx+&lt;val&gt;</strong>: Expire the status message after "
+"<strong>&lt;val&gt;</strong> minutes, or when the Now Playing active player "
+"stops (<strong>val = np</strong>). e.g. %tx+20, %tx+np</p>"
+msgstr ""
+"<p><strong>%tx+&lt;verdi&gt;</strong>: Tømmer statusmeldinga etter "
+"<strong>&lt;verdi&gt;</strong> minutt eller når «Spelar no»-spelaren stoppar "
+"(for <strong>val = np</strong>). Eksempel: %tx+20, %tx+np</p>"
+
+#: global-presence-chooser.cpp:61
+#, kde-format
+msgid ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Specify a message to follow "
+"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
+"+&quot;Running late&quot;&quot;</p>"
+msgstr ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Definer ei melding som skal "
+"visast når plasshaldarane %tr, %time, %utc og %tx utgår på tid. Eksempel:%xm"
+"+&quot;Tilbake %time. %tx+3 %xm+&quot;Er forseinka&quot;&quot;</p>"
+
+#: global-presence-chooser.cpp:62
+#, kde-format
+msgid ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for "
+"local time using QDateTime::toString() expressions. e.g. %tf+&quot;h:mm AP "
+"t&quot;</p>"
+msgstr ""
+"<p><strong>%tf+&quot;&lt;verdi&gt;&quot;</strong>: Definer formateringa for "
+"lokaltid, i QDateTime::toString()-syntaks. Eksempel: %tf+&quot;h:mm AP "
+"t&quot;</p>"
+
+#: global-presence-chooser.cpp:63
+#, kde-format
+msgid ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for UTC "
+"time using QDateTime::toString() expressions. e.g. %uf+&quot;hh:mm t&quot;</"
+"p>"
+msgstr ""
+"<p><strong>%uf+&quot;&lt;verdi&gt;&quot;</strong>: Definer formateringa for "
+"UTC-tid, i QDateTime::toString()-syntaks. Eksempel: %uf+&quot;hh:mm t&quot;</"
+"p>"
+
+#: global-presence-chooser.cpp:64
+#, kde-format
+msgid ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Change the separator for "
+"empty fields. e.g. %sp+&quot;-&quot;</p>"
+msgstr ""
+"<p><strong>%sp+&quot;&lt;verdi&gt;&quot;</strong>: Byt skiljeteikn for tomme "
+"felt. Eksempel: %sp+&quot;-&quot;</p>"
+
+#: global-presence-chooser.cpp:65
+#, kde-format
+msgid ""
+"<p>Using tokens requires the Telepathy KDED module to be loaded. Tokens can "
+"be escaped by prepending a backslash character, e.g. &#92;%sp</p>"
+msgstr ""
+"<p>Telepathy KDED-modulen må vera lasta dersom du vil bruka plasshaldarar. "
+"Du kan bruka plasshaldarteikna bokstavleg ved å skriva ein omvend skråstrek "
+"framfor dei. Eksempel: &#92;%sp</p>"
+
+#: global-presence-chooser.cpp:118
+#, kde-format
+msgid "Configure Custom Presences..."
+msgstr "Set opp sjølvvalde statusmeldingar …"
+
+#: global-presence-chooser.cpp:125
+#, kde-format
+msgid "Advanced Presence Setting..."
+msgstr "Avansert status­innstilling …"
+
+#: global-presence-chooser.cpp:208
+#, kde-format
+msgid "Click to change your presence message"
+msgstr "Trykk for å endra statusmeldinga"
+
+#: global-presence-chooser.cpp:245
+#, kde-format
+msgctxt "Presence string when the account is connecting"
+msgid "Connecting..."
+msgstr "Koplar til …"
+
+#: main-widget.cpp:179
+#, kde-format
+msgid ""
+"Something unexpected happened to the core part of your Instant Messaging "
+"system and it couldn't be initialized. Try restarting the Contact List."
+msgstr ""
+"Det hende noko uventa med kjernedelen av lynmeldings­systemet, så det kunne "
+"ikkje gjerast klart. Prøv å starta kontaktlista på nytt."
+
+#: main-widget.cpp:181
+#, kde-format
+msgid "IM system failed to initialize"
+msgstr "Klarte ikkje starta lynmeldings­system"
+
+#: main-widget.cpp:302
+#, kde-format
+msgid ""
+"You do not have any other presence controls active (a Presence widget for "
+"example).\n"
+"Do you want to stay online or would you rather go offline?"
+msgstr ""
+"Du har ikkje fleire statusmeldings­kontrollar gåande (eit «Presence»-element, "
+"for eksempel).\n"
+"Ønskjer å verta verande tilkopla, eller vil du heller kopla frå?"
+
+#: main-widget.cpp:304
+#, kde-format
+msgid "No Other Presence Controls Found"
+msgstr "Fann ikkje andre statusmeldings­kontrollar"
+
+#: main-widget.cpp:305
+#, kde-format
+msgid "Stay Online"
+msgstr "Vert verande tilkopla"
+
+#: main-widget.cpp:306
+#, kde-format
+msgid "Go Offline"
+msgstr "Kopla frå"
+
+#: main-widget.cpp:375 tooltips/persontooltip.cpp:57
+#, kde-format
+msgid "Contacts"
+msgstr "Kontaktar"
+
+#: main-widget.cpp:391
+#, kde-format
+msgid "View"
+msgstr "Vis"
+
+#: main-widget.cpp:395 main-widget.cpp:438
+#, kde-format
+msgid "Contact List Type"
+msgstr "Kontaktlistetype"
+
+#: main-widget.cpp:398 main-widget.cpp:443
+#, kde-format
+msgid "Shown Contacts"
+msgstr "Viste kontaktar"
+
+#: main-widget.cpp:401 main-widget.cpp:448
+#, kde-format
+msgid "Contact Grouping"
+msgstr "Kontaktgruppering"
+
+#: main-widget.cpp:528
+#, kde-format
+msgid "Instant Messaging Settings..."
+msgstr "Innstillingar for lynmeldingar …"
+
+#: main-widget.cpp:533
+#, kde-format
+msgid "Join Chat Room..."
+msgstr "Vert med i praterom …"
+
+#: main-widget.cpp:535
+#, kde-format
+msgid "Make a Call..."
+msgstr "Ring opp …"
+
+#: main-widget.cpp:536
+#, kde-format
+msgid "Merge Contacts..."
+msgstr "Slå saman kontaktar …"
+
+#: main-widget.cpp:537
+#, kde-format
+msgid "Add New Contacts..."
+msgstr "Legg til nye kontaktar …"
+
+#: main-widget.cpp:538
+#, kde-format
+msgid "Find Contact"
+msgstr "Finn kontakt"
+
+#: main-widget.cpp:541
+#, kde-format
+msgid "Start a Chat..."
+msgstr "Start prat …"
+
+#: main-widget.cpp:544
+#, kde-format
+msgid "Split Selected Contacts"
+msgstr "Del opp valde kontaktar"
+
+#: main-widget.cpp:545
+#, kde-format
+msgid "Merge Selected Contacts"
+msgstr "Slå saman valde kontaktar"
+
+#: main-widget.cpp:555
+#, kde-format
+msgid "Show Contacts by Groups"
+msgstr "Grupper kontaktar"
+
+#: main-widget.cpp:559
+#, kde-format
+msgid "Do Not Group"
+msgstr "Ikkje grupper"
+
+#: main-widget.cpp:562
+#, kde-format
+msgid "Show Contacts by Accounts"
+msgstr "Vis kontaktar etter konto"
+
+#: main-widget.cpp:567
+#, kde-format
+msgid "Show Offline Contacts"
+msgstr "Vis fråkopla kontaktar"
+
+#: main-widget.cpp:568
+#, kde-format
+msgid "Hide Offline Contacts"
+msgstr "Gøym fråkopla kontaktar"
+
+#: main-widget.cpp:576
+#, kde-format
+msgid "Sort by Presence"
+msgstr "Sorter etter statusmelding"
+
+#: main-widget.cpp:577
+#, kde-format
+msgid "Sort by Name"
+msgstr "Sorter etter namn"
+
+#: main-widget.cpp:585
+#, kde-format
+msgid "Use Full List"
+msgstr "Bruk fullstendig liste"
+
+#: main-widget.cpp:587
+#, kde-format
+msgid "Use Normal List"
+msgstr "Bruk vanleg liste"
+
+#: main-widget.cpp:591
+#, kde-format
+msgid "Use Minimalistic List"
+msgstr "Bruk minimalistisk liste"
+
+#: main-widget.cpp:598
+#, kde-format
+msgid "Show All Contacts"
+msgstr "Vis alle kontaktane"
+
+#: main-widget.cpp:600
+#, kde-format
+msgid "Show Unblocked Contacts"
+msgstr "Vis ikkjeblokkerte kontaktar"
+
+#: main-widget.cpp:602
+#, kde-format
+msgid "Show Blocked Contacts"
+msgstr "Vis blokkerte kontaktar"
+
+#: main-widget.cpp:721
+#, kde-format
+msgid ""
+"Some data sources failed to initialize properly, your contact list might be "
+"incomplete."
+msgstr ""
+"Klarte ikkje klargjera alle datakjelder. Kontaktlista kan vera ufullstendig."
+
+#. i18n: ectx: property (windowTitle), widget (QMainWindow, MainWindow)
+#: main-widget.ui:14
+#, kde-format
+msgid "IM Contacts"
+msgstr "LM-kontaktar"
+
+#: main.cpp:41 main.cpp:42
+#, kde-format
+msgid "KDE Telepathy Contact List"
+msgstr "Kontaktliste for KDE Telepathy"
+
+#: main.cpp:43
+#, kde-format
+msgid "(C) 2011, Martin Klapetek"
+msgstr "© 2011 Martin Klapetek"
+
+#: main.cpp:45
+#, kde-format
+msgctxt "@info:credit"
+msgid "Martin Klapetek"
+msgstr "Martin Klapetek"
+
+#: main.cpp:45
+#, kde-format
+msgid "Developer"
+msgstr "Utviklar"
+
+#: main.cpp:55
+#, kde-format
+msgid "Show Telepathy debugging information"
+msgstr "Vis feilsøkingsinformasjon for Telepathy"
+
+#: tooltips/contacttooltip.cpp:63
+#, kde-format
+msgctxt "This is an IM user status"
+msgid "Error Getting Presence"
+msgstr "Feil ved henting av statusmelding"
+
+#: tooltips/contacttooltip.cpp:81
+#, kde-format
+msgid "Account: %1"
+msgstr "Konto: %1"
+
+#. i18n: ectx: property (text), widget (QLabel, blockedLabel)
+#: tooltips/contacttooltip.ui:126 tooltips/persontooltip.ui:33
+#, kde-format
+msgid "User is blocked"
+msgstr "Brukaren er blokkert"

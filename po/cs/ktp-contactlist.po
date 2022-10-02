@@ -1,0 +1,742 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+# Vít Pelčák <vit@pelcak.org>, 2010, 2011, 2012, 2013, 2014, 2015, 2017, 2018, 2019.
+# Tomáš Chvátal <tomas.chvatal@gmail.com>, 2012, 2013.
+# Vit Pelcak <vpelcak@suse.cz>, 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-08-13 02:19+0200\n"
+"PO-Revision-Date: 2021-08-20 12:32+0200\n"
+"Last-Translator: Vit Pelcak <vpelcak@suse.cz>\n"
+"Language-Team: Czech <kde-i18n-doc@kde.org>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 21.08.0\n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Vít Pelčák, Tomáš Chvátal"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "vit@pelcak.org, tomas.chvatal@gmail.com"
+
+#: contact-list-widget.cpp:200
+#, kde-format
+msgid "You have no IM accounts configured. Would you like to do that now?"
+msgstr "Nemáte nastaven IM účet. Přejete si jej nyní nastavit?"
+
+#: contact-list-widget.cpp:201
+#, kde-format
+msgid "No Accounts Found"
+msgstr "Účty nenalezeny"
+
+#: contact-list-widget.cpp:269
+#, kde-format
+msgctxt ""
+"Label of a dialog's 'OK' button; %1 is account name, eg. 'Connect account "
+"GTalk'"
+msgid "Connect account %1"
+msgstr "Připojit účet %1"
+
+#: contact-list-widget.cpp:271
+#, kde-format
+msgid ""
+"The account for this contact is disconnected. Do you want to connect it?"
+msgstr "Účet pro tento kontakt je odpojen. Chcete jej připojit?"
+
+#: contact-list-widget.cpp:272
+#, kde-format
+msgid "Account offline"
+msgstr "Účet je odpojený"
+
+#: contact-list-widget.cpp:477
+#, kde-format
+msgid "Choose files to send to %1"
+msgstr "Vyberte soubory pro odeslání k %1"
+
+#: contact-list-widget.cpp:478
+#, kde-format
+msgid "Send"
+msgstr "Odeslat"
+
+#: contact-list-widget.cpp:786
+#, kde-format
+msgid "Merge contacts"
+msgstr "Sloučit kontakty"
+
+#: contact-list-widget.cpp:828
+#, kde-format
+msgid "&Move here"
+msgstr "&Přesunout sem"
+
+#: contact-list-widget.cpp:832
+#, kde-format
+msgid "&Copy here"
+msgstr "&Kopírovat sem"
+
+#: contact-list-widget.cpp:836
+#, kde-format
+msgid "C&ancel"
+msgstr "Z&rušit"
+
+#: contact-overlays.cpp:134 contact-overlays.cpp:135
+#, kde-format
+msgid "Start Chat"
+msgstr "Zahájit rozhovor"
+
+#: contact-overlays.cpp:135
+#, kde-format
+msgid "Start a text chat"
+msgstr "Zahájit textový rozhovor"
+
+#: contact-overlays.cpp:146 contact-overlays.cpp:147
+#, kde-format
+msgid "Start Audio Call"
+msgstr "Zahájit zvukový hovor"
+
+#: contact-overlays.cpp:147
+#, kde-format
+msgid "Start an audio call"
+msgstr "Zahájit zvukový hovor"
+
+#: contact-overlays.cpp:159 contact-overlays.cpp:160
+#, kde-format
+msgid "Start Video Call"
+msgstr "Zahájit video hovor"
+
+#: contact-overlays.cpp:160
+#, kde-format
+msgid "Start a video call"
+msgstr "Zahájit video hovor"
+
+#: contact-overlays.cpp:171 contact-overlays.cpp:172 context-menu.cpp:141
+#, kde-format
+msgid "Send File..."
+msgstr "Odeslat soubor..."
+
+#: contact-overlays.cpp:172
+#, kde-format
+msgid "Send a file"
+msgstr "Odeslat soubor"
+
+#: contact-overlays.cpp:183 contact-overlays.cpp:184
+#, kde-format
+msgid "Open Log Viewer"
+msgstr "Otevřít prohlížeč záznamů"
+
+#: contact-overlays.cpp:184
+#, kde-format
+msgid "Show conversation logs"
+msgstr "Zobrazit záznamy rozhovoru"
+
+#: context-menu.cpp:111
+#, kde-format
+msgid "Start Chat..."
+msgstr "Zahájit rozhovor..."
+
+#: context-menu.cpp:121
+#, kde-format
+msgid "Start Audio Call..."
+msgstr "Zahájit zvukový hovor..."
+
+#: context-menu.cpp:131
+#, kde-format
+msgid "Start Video Call..."
+msgstr "Zahájit video hovor..."
+
+#: context-menu.cpp:151
+#, kde-format
+msgid "Share my desktop..."
+msgstr "Sdílet plochu..."
+
+#: context-menu.cpp:161
+#, kde-format
+msgid "Open Log..."
+msgstr "Otevřít záznam..."
+
+#: context-menu.cpp:174
+#, kde-format
+msgid "Configure Notifications..."
+msgstr "Nastavit upozornění..."
+
+#: context-menu.cpp:191
+#, kde-format
+msgid "Presence message link"
+msgid_plural "Presence message links"
+msgstr[0] "Odkaz zprávy o přítomnosti"
+msgstr[1] "Odkazy zprávy o přítomnosti"
+msgstr[2] "Odkazů zprávy o přítomnosti"
+
+#: context-menu.cpp:210
+#, kde-format
+msgid "Remove Contact From This Group"
+msgstr "Odstranit kontakt z této skupiny"
+
+#: context-menu.cpp:216
+#, kde-format
+msgid "Move to Group"
+msgstr "Přesunout do skupiny"
+
+#: context-menu.cpp:234
+#, kde-format
+msgid "Create New Group..."
+msgstr "Vytvořit novou skupinu..."
+
+#: context-menu.cpp:253
+#, kde-format
+msgid "Re-request Contact Authorization"
+msgstr "Znovu vyžádat oprávnění kontaktu"
+
+#: context-menu.cpp:259
+#, kde-format
+msgid "Resend Contact Authorization"
+msgstr "Znovu zaslat oprávnění kontaktu"
+
+#: context-menu.cpp:267
+#, kde-format
+msgid "Unblock Contact"
+msgstr "Odblokovat kontakt"
+
+#: context-menu.cpp:271
+#, kde-format
+msgid "Block Contact"
+msgstr "Blokovat kontakt"
+
+#: context-menu.cpp:278
+#, kde-format
+msgid "Remove Contact..."
+msgstr "Odstranit kontakt..."
+
+#: context-menu.cpp:284
+#, kde-format
+msgid "Show Contact Information..."
+msgstr "Zobrazit informace o kontaktu..."
+
+#: context-menu.cpp:305
+#, kde-format
+msgid "Rename Group..."
+msgstr "Přejmenovat skupinu..."
+
+#: context-menu.cpp:311
+#, kde-format
+msgid "Delete Group"
+msgstr "Smazat skupinu"
+
+#: context-menu.cpp:495 context-menu.cpp:521
+#, kde-format
+msgid "New Group Name"
+msgstr "Název nové skupiny:"
+
+#: context-menu.cpp:496 context-menu.cpp:522
+#, kde-format
+msgid "Please enter the new group name"
+msgstr "Prosím, zadejte název nové skupiny"
+
+#: context-menu.cpp:556
+#, kde-format
+msgid ""
+"Do you really want to remove group %1?\n"
+"\n"
+"Note that all contacts will be moved to group 'Ungrouped'"
+msgstr ""
+"Opravdu si přejete odstranit skupinu %1?\n"
+"\n"
+"Všechny kontakty ze skupiny budou přesunuty do skupiny 'Bez skupiny'"
+
+#: context-menu.cpp:558
+#, kde-format
+msgid "Remove Group"
+msgstr "Odstranit skupinu"
+
+#: dialogs/advanced-presence-dialog.cpp:152
+#, kde-format
+msgid "Advanced Presence Setting"
+msgstr "Pokročilá nastavení přítomnosti"
+
+#: dialogs/advanced-presence-dialog.cpp:160
+#, kde-format
+msgid "It appears that you do not have any accounts configured"
+msgstr "Vypadá to, že nemáte nastaven žádný účet"
+
+#: dialogs/advanced-presence-dialog.cpp:184
+#, kde-format
+msgid "Set a status message ..."
+msgstr "Nastavte stavovou zprávu..."
+
+#: dialogs/custom-presence-dialog.cpp:72
+#, kde-format
+msgid "Edit Custom Presences"
+msgstr "Nastavit vlastní stavy"
+
+#: dialogs/custom-presence-dialog.cpp:92
+#, kde-format
+msgid "Set custom available message..."
+msgstr "Nastavte vlastní zprávu o dostupnosti..."
+
+#: dialogs/custom-presence-dialog.cpp:93
+#, kde-format
+msgid "Set custom busy message..."
+msgstr "Nastavte vlastní zprávu zaneprázdněnosti..."
+
+#: dialogs/custom-presence-dialog.cpp:94
+#, kde-format
+msgid "Set custom away message..."
+msgstr "Nastavte vlastní zprávu o nepřítomnosti..."
+
+#: dialogs/custom-presence-dialog.cpp:95
+#, kde-format
+msgid "Set custom extended away message..."
+msgstr "Nastavte vlastní zprávu o dlouhodobé nepřítomnosti..."
+
+#: dialogs/custom-presence-dialog.cpp:106
+#, kde-format
+msgid "Add Presence"
+msgstr "Přidat stav"
+
+#: dialogs/custom-presence-dialog.cpp:107
+#, kde-format
+msgid "Remove Presence"
+msgstr "Odstranit stav"
+
+#: dialogs/remove-contact-dialog.cpp:53
+#, kde-format
+msgid "Remove the selected contact?"
+msgstr "Odstranit zvolený kontakt?"
+
+#. i18n: ectx: property (windowTitle), widget (QWidget, RemoveContactDialog)
+#: dialogs/remove-contact-dialog.ui:23
+#, kde-format
+msgid "Remove contact"
+msgstr "Odstranit kontakt"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel)
+#: dialogs/remove-contact-dialog.ui:47
+#, kde-format
+msgid "Message"
+msgstr "Zpráva"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAvatarLabel)
+#: dialogs/remove-contact-dialog.ui:124
+#, kde-format
+msgid "Avatar"
+msgstr "Avatar"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAliasLabel)
+#: dialogs/remove-contact-dialog.ui:161
+#, kde-format
+msgid "Alias"
+msgstr "Přezdívka"
+
+#. i18n: ectx: property (text), widget (QCheckBox, blockCheckbox)
+#: dialogs/remove-contact-dialog.ui:229
+#, kde-format
+msgid "Block contact"
+msgstr "Blokovat kontakt"
+
+#: filter-bar.cpp:38
+#, kde-format
+msgctxt "@info:tooltip"
+msgid "Hide Filter Bar"
+msgstr "Skrýt filtrovací panel"
+
+#: filter-bar.cpp:42
+#, kde-format
+msgctxt "@label:textbox"
+msgid "Filter:"
+msgstr "Filtr:"
+
+#: global-presence-chooser.cpp:49
+#, kde-format
+msgid ""
+"<p>Tokens can be used wherever a status message can be set to create a "
+"dynamic status message.</p>"
+msgstr ""
+"<p>Při vytváření stavové zprávy lze použít tokeny pro vytvoření dynamické "
+"stavové zprávy.</p>"
+
+#: global-presence-chooser.cpp:50
+#, kde-format
+msgid ""
+"<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;"
+"</strong> minutes. e.g. %tr+30</p>"
+msgstr ""
+"<p><strong>%tr+&lt;val&gt;</strong>: Odpočet do 0 z <strong>&lt;val&gt;</"
+"strong> minut. např. %tr+30</p>"
+
+#: global-presence-chooser.cpp:51
+#, kde-format
+msgid ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: The current local time, or if a "
+"value is specified, the local time <strong>&lt;val&gt;</strong> minutes in "
+"the future. e.g. %time+10</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:52
+#, kde-format
+msgid ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: The current UTC time, or if a value "
+"is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the "
+"future. e.g. %utc</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:53
+#, kde-format
+msgid ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. "
+"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
+"+5</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:54
+#, kde-format
+msgid "<p><strong>%title</strong>: Now Playing track title.</p>"
+msgstr "<p><strong>%title</strong>: Název přehrávané skladby.</p>"
+
+#: global-presence-chooser.cpp:55
+#, kde-format
+msgid "<p><strong>%artist</strong>: Now Playing track or album artist.</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:56
+#, kde-format
+msgid "<p><strong>%album</strong>: Now Playing album.</p>"
+msgstr "<p><strong>%album</strong>: Přehrávané album.</p>"
+
+#: global-presence-chooser.cpp:57
+#, kde-format
+msgid "<p><strong>%track</strong>: Now Playing track number.</p>"
+msgstr "<p><strong>%track</strong>: Číslo poslouchané skladby.</p>"
+
+#: global-presence-chooser.cpp:58
+#, kde-format
+msgid ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: When specified globally or in an "
+"account presence status message, overrides all automatic presence messages. "
+"When specified in an automatic presence status message, is substituted for "
+"the global or account presence status message (if specified). When "
+"<strong>val = g</strong> in an account presence status message or an "
+"automatic presence status message, overrides the account presence status "
+"message or automatic presence status message with the global presence status "
+"message. e.g. %um, %um+g</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:59
+#, kde-format
+msgid ""
+"<p><strong>%tu+&lt;val&gt;</strong>: Refresh the status message every "
+"<strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:60
+#, kde-format
+msgid ""
+"<p><strong>%tx+&lt;val&gt;</strong>: Expire the status message after "
+"<strong>&lt;val&gt;</strong> minutes, or when the Now Playing active player "
+"stops (<strong>val = np</strong>). e.g. %tx+20, %tx+np</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:61
+#, kde-format
+msgid ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Specify a message to follow "
+"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
+"+&quot;Running late&quot;&quot;</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:62
+#, kde-format
+msgid ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for "
+"local time using QDateTime::toString() expressions. e.g. %tf+&quot;h:mm AP "
+"t&quot;</p>"
+msgstr ""
+
+#: global-presence-chooser.cpp:63
+#, kde-format
+msgid ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for UTC "
+"time using QDateTime::toString() expressions. e.g. %uf+&quot;hh:mm t&quot;</"
+"p>"
+msgstr ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: Zadejte formát v čase UTC "
+"pomocí výrazů QDateTime::toString(). např. %uf+&quot;hh:mm t&quot;</p>"
+
+#: global-presence-chooser.cpp:64
+#, kde-format
+msgid ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Change the separator for "
+"empty fields. e.g. %sp+&quot;-&quot;</p>"
+msgstr ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Změňte oddělovač prázdných "
+"polí. Např. %sp+&quot;-&quot;</p>"
+
+#: global-presence-chooser.cpp:65
+#, kde-format
+msgid ""
+"<p>Using tokens requires the Telepathy KDED module to be loaded. Tokens can "
+"be escaped by prepending a backslash character, e.g. &#92;%sp</p>"
+msgstr ""
+"<p>Pro použití tokenů je potřeba načtený modul Telepathy KDED module. Tokeny "
+"lze označit zpětným lomítkem např. &#92;%sp</p>"
+
+#: global-presence-chooser.cpp:118
+#, kde-format
+msgid "Configure Custom Presences..."
+msgstr "Nastavit vlastní stavy..."
+
+#: global-presence-chooser.cpp:125
+#, kde-format
+msgid "Advanced Presence Setting..."
+msgstr "Pokročilá nastavení přítomnosti..."
+
+#: global-presence-chooser.cpp:208
+#, kde-format
+msgid "Click to change your presence message"
+msgstr "Klikněte ke změně zprávy stavu"
+
+#: global-presence-chooser.cpp:245
+#, kde-format
+msgctxt "Presence string when the account is connecting"
+msgid "Connecting..."
+msgstr "Připojuji se..."
+
+#: main-widget.cpp:179
+#, kde-format
+msgid ""
+"Something unexpected happened to the core part of your Instant Messaging "
+"system and it couldn't be initialized. Try restarting the Contact List."
+msgstr ""
+"Stalo se něco neočekávaného klíčové části vašeho IM systému a ten nemohl být "
+"inicializován. Zkuste restartovat Seznam kontaktů."
+
+#: main-widget.cpp:181
+#, kde-format
+msgid "IM system failed to initialize"
+msgstr "Selhala inicializace IM systému"
+
+#: main-widget.cpp:302
+#, kde-format
+msgid ""
+"You do not have any other presence controls active (a Presence widget for "
+"example).\n"
+"Do you want to stay online or would you rather go offline?"
+msgstr ""
+"Nemáte spuštěny žádné další ovládání stavu (např. widget stavu).\n"
+"Přejete si zůstat připojeni a nebo se odpojit?"
+
+#: main-widget.cpp:304
+#, kde-format
+msgid "No Other Presence Controls Found"
+msgstr "Žádné další ovládání stavu nenalezeno"
+
+#: main-widget.cpp:305
+#, kde-format
+msgid "Stay Online"
+msgstr "Zůstat připojen"
+
+#: main-widget.cpp:306
+#, kde-format
+msgid "Go Offline"
+msgstr "Odpojit"
+
+#: main-widget.cpp:375 tooltips/persontooltip.cpp:57
+#, kde-format
+msgid "Contacts"
+msgstr "Kontakty"
+
+#: main-widget.cpp:391
+#, kde-format
+msgid "View"
+msgstr "Pohled"
+
+#: main-widget.cpp:395 main-widget.cpp:438
+#, kde-format
+msgid "Contact List Type"
+msgstr "Typ seznamu kontaktů"
+
+#: main-widget.cpp:398 main-widget.cpp:443
+#, kde-format
+msgid "Shown Contacts"
+msgstr "Zobrazit kontakty"
+
+#: main-widget.cpp:401 main-widget.cpp:448
+#, kde-format
+msgid "Contact Grouping"
+msgstr "Seskupovaní kontaktů"
+
+#: main-widget.cpp:528
+#, kde-format
+msgid "Instant Messaging Settings..."
+msgstr "Nastavení komunikátoru..."
+
+#: main-widget.cpp:533
+#, kde-format
+msgid "Join Chat Room..."
+msgstr "Připojit se do místnosti..."
+
+#: main-widget.cpp:535
+#, kde-format
+msgid "Make a Call..."
+msgstr "Zahájit hovor..."
+
+#: main-widget.cpp:536
+#, kde-format
+msgid "Merge Contacts..."
+msgstr "Sloučit kontakty..."
+
+#: main-widget.cpp:537
+#, kde-format
+msgid "Add New Contacts..."
+msgstr "Přidat nové kontakty...."
+
+#: main-widget.cpp:538
+#, kde-format
+msgid "Find Contact"
+msgstr "Najít kontakt"
+
+#: main-widget.cpp:541
+#, kde-format
+msgid "Start a Chat..."
+msgstr "Zahájit rozhovor..."
+
+#: main-widget.cpp:544
+#, kde-format
+msgid "Split Selected Contacts"
+msgstr "Rozdělit vybrané kontakty"
+
+#: main-widget.cpp:545
+#, kde-format
+msgid "Merge Selected Contacts"
+msgstr "Sloučit vybrané kontakty"
+
+#: main-widget.cpp:555
+#, kde-format
+msgid "Show Contacts by Groups"
+msgstr "Zobrazit kontakty podle skupin"
+
+#: main-widget.cpp:559
+#, kde-format
+msgid "Do Not Group"
+msgstr "Neseskupovat"
+
+#: main-widget.cpp:562
+#, kde-format
+msgid "Show Contacts by Accounts"
+msgstr "Zobrazit kontakty podle účtů"
+
+#: main-widget.cpp:567
+#, kde-format
+msgid "Show Offline Contacts"
+msgstr "Zobrazit odpojené kontakty"
+
+#: main-widget.cpp:568
+#, kde-format
+msgid "Hide Offline Contacts"
+msgstr "Skrýt odpojené kontakty"
+
+#: main-widget.cpp:576
+#, kde-format
+msgid "Sort by Presence"
+msgstr "Seřadit podle přítomnosti"
+
+#: main-widget.cpp:577
+#, kde-format
+msgid "Sort by Name"
+msgstr "Seřadit podle názvu"
+
+#: main-widget.cpp:585
+#, kde-format
+msgid "Use Full List"
+msgstr "Použít plný seznam"
+
+#: main-widget.cpp:587
+#, kde-format
+msgid "Use Normal List"
+msgstr "Použít normální seznam"
+
+#: main-widget.cpp:591
+#, kde-format
+msgid "Use Minimalistic List"
+msgstr "Použít minimalistický seznam"
+
+#: main-widget.cpp:598
+#, kde-format
+msgid "Show All Contacts"
+msgstr "Zobrazit všechny kontakty"
+
+#: main-widget.cpp:600
+#, kde-format
+msgid "Show Unblocked Contacts"
+msgstr "Zobrazit odblokované kontakty"
+
+#: main-widget.cpp:602
+#, kde-format
+msgid "Show Blocked Contacts"
+msgstr "Zobrazit blokované kontakty"
+
+#: main-widget.cpp:721
+#, kde-format
+msgid ""
+"Some data sources failed to initialize properly, your contact list might be "
+"incomplete."
+msgstr ""
+"Některé zdroje dat nelze správně načíst. Váš seznam kontaktů může být "
+"nekompletní."
+
+#. i18n: ectx: property (windowTitle), widget (QMainWindow, MainWindow)
+#: main-widget.ui:14
+#, kde-format
+msgid "IM Contacts"
+msgstr "Kontakty IM"
+
+#: main.cpp:41 main.cpp:42
+#, kde-format
+msgid "KDE Telepathy Contact List"
+msgstr "Seznam kontaktů KDE Telepathy"
+
+#: main.cpp:43
+#, kde-format
+msgid "(C) 2011, Martin Klapetek"
+msgstr "(C) 2011, Martin Klapetek"
+
+#: main.cpp:45
+#, kde-format
+msgctxt "@info:credit"
+msgid "Martin Klapetek"
+msgstr "Martin Klapetek"
+
+#: main.cpp:45
+#, kde-format
+msgid "Developer"
+msgstr "Vývojář"
+
+#: main.cpp:55
+#, kde-format
+msgid "Show Telepathy debugging information"
+msgstr "Zobrazit ladicí informace Telepathy"
+
+#: tooltips/contacttooltip.cpp:63
+#, kde-format
+msgctxt "This is an IM user status"
+msgid "Error Getting Presence"
+msgstr "Chyba získávání stavu"
+
+#: tooltips/contacttooltip.cpp:81
+#, kde-format
+msgid "Account: %1"
+msgstr "Účet: %1"
+
+#. i18n: ectx: property (text), widget (QLabel, blockedLabel)
+#: tooltips/contacttooltip.ui:126 tooltips/persontooltip.ui:33
+#, kde-format
+msgid "User is blocked"
+msgstr "Uživatel je blokován"

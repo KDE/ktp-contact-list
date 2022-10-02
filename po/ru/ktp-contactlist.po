@@ -1,0 +1,974 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Yuri Efremov <yur.arh@gmail.com>, 2012, 2013.
+# Alexander Lakhin <exclusion@gmail.com>, 2013.
+# Alexander Potashev <aspotashev@gmail.com>, 2015, 2017.
+# Olesya Gerasimenko <translation-team@basealt.ru>, 2022.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-08-13 02:19+0200\n"
+"PO-Revision-Date: 2022-02-17 18:05+0300\n"
+"Last-Translator: Olesya Gerasimenko <translation-team@basealt.ru>\n"
+"Language-Team: Basealt Translation Team\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Lokalize 21.12.1\n"
+"Plural-Forms: nplurals=4; plural=n==1 ? 3 : n%10==1 && n%100!=11 ? 0 : n"
+"%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
+"X-Environment: kde\n"
+"X-Accelerator-Marker: &\n"
+"X-Text-Markup: kde4\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Юрий Ефремов,Олеся Герасименко"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "yur.arh@gmail.com,translation-team@basealt.ru"
+
+#: contact-list-widget.cpp:200
+#, kde-format
+msgid "You have no IM accounts configured. Would you like to do that now?"
+msgstr ""
+"У вас нет настроенных учётных записей. Настроить учётную запись сейчас?"
+
+#: contact-list-widget.cpp:201
+#, kde-format
+msgid "No Accounts Found"
+msgstr "Не найдено учётных записей"
+
+#: contact-list-widget.cpp:269
+#, kde-format
+msgctxt ""
+"Label of a dialog's 'OK' button; %1 is account name, eg. 'Connect account "
+"GTalk'"
+msgid "Connect account %1"
+msgstr "Подключить %1"
+
+#: contact-list-widget.cpp:271
+#, kde-format
+msgid ""
+"The account for this contact is disconnected. Do you want to connect it?"
+msgstr "Нет подключения для этого контакта. Вы хотите подключиться?"
+
+#: contact-list-widget.cpp:272
+#, kde-format
+msgid "Account offline"
+msgstr "Пользователь не в сети"
+
+#: contact-list-widget.cpp:477
+#, kde-format
+msgid "Choose files to send to %1"
+msgstr "Выбор файлов для отправки собеседнику %1"
+
+#: contact-list-widget.cpp:478
+#, kde-format
+msgid "Send"
+msgstr "Отправить"
+
+#: contact-list-widget.cpp:786
+#, kde-format
+msgid "Merge contacts"
+msgstr "Объединить контакты"
+
+#: contact-list-widget.cpp:828
+#, kde-format
+msgid "&Move here"
+msgstr "&Переместить сюда"
+
+#: contact-list-widget.cpp:832
+#, kde-format
+msgid "&Copy here"
+msgstr "&Скопировать сюда"
+
+#: contact-list-widget.cpp:836
+#, kde-format
+msgid "C&ancel"
+msgstr "О&тмена"
+
+#: contact-overlays.cpp:134 contact-overlays.cpp:135
+#, kde-format
+msgid "Start Chat"
+msgstr "Написать сообщение"
+
+#: contact-overlays.cpp:135
+#, kde-format
+msgid "Start a text chat"
+msgstr "Написать сообщение"
+
+#: contact-overlays.cpp:146 contact-overlays.cpp:147
+#, kde-format
+msgid "Start Audio Call"
+msgstr "Аудиовызов"
+
+#: contact-overlays.cpp:147
+#, kde-format
+msgid "Start an audio call"
+msgstr "Выполнить аудиовызов"
+
+#: contact-overlays.cpp:159 contact-overlays.cpp:160
+#, kde-format
+msgid "Start Video Call"
+msgstr "Видеовызов"
+
+#: contact-overlays.cpp:160
+#, kde-format
+msgid "Start a video call"
+msgstr "Выполнить видеовызов"
+
+#: contact-overlays.cpp:171 contact-overlays.cpp:172 context-menu.cpp:141
+#, kde-format
+msgid "Send File..."
+msgstr "Отправить файл..."
+
+#: contact-overlays.cpp:172
+#, kde-format
+msgid "Send a file"
+msgstr "Отправить файл"
+
+#: contact-overlays.cpp:183 contact-overlays.cpp:184
+#, kde-format
+msgid "Open Log Viewer"
+msgstr "Просмотр журнала"
+
+#: contact-overlays.cpp:184
+#, kde-format
+msgid "Show conversation logs"
+msgstr "Показать журнал бесед"
+
+#: context-menu.cpp:111
+#, kde-format
+msgid "Start Chat..."
+msgstr "Написать сообщение..."
+
+#: context-menu.cpp:121
+#, kde-format
+msgid "Start Audio Call..."
+msgstr "Аудиовызов..."
+
+#: context-menu.cpp:131
+#, kde-format
+msgid "Start Video Call..."
+msgstr "Видеовызов..."
+
+#: context-menu.cpp:151
+#, kde-format
+msgid "Share my desktop..."
+msgstr "Показать рабочий стол"
+
+#: context-menu.cpp:161
+#, kde-format
+msgid "Open Log..."
+msgstr "Открыть журнал..."
+
+#: context-menu.cpp:174
+#, kde-format
+msgid "Configure Notifications..."
+msgstr "Настроить уведомления..."
+
+#: context-menu.cpp:191
+#, kde-format
+msgid "Presence message link"
+msgid_plural "Presence message links"
+msgstr[0] "Ссылки сообщения статуса"
+msgstr[1] "Ссылки сообщения статуса"
+msgstr[2] "Ссылки сообщения статуса"
+msgstr[3] "Ссылка сообщения статуса"
+
+#: context-menu.cpp:210
+#, kde-format
+msgid "Remove Contact From This Group"
+msgstr "Удалить контакт из этой группы"
+
+#: context-menu.cpp:216
+#, kde-format
+msgid "Move to Group"
+msgstr "Переместить в группу"
+
+#: context-menu.cpp:234
+#, kde-format
+msgid "Create New Group..."
+msgstr "Создать новую группу..."
+
+#: context-menu.cpp:253
+#, kde-format
+msgid "Re-request Contact Authorization"
+msgstr "Повторно запросить авторизацию"
+
+#: context-menu.cpp:259
+#, kde-format
+msgid "Resend Contact Authorization"
+msgstr "Повторно авторизовать"
+
+#: context-menu.cpp:267
+#, kde-format
+msgid "Unblock Contact"
+msgstr "Разблокировать контакт"
+
+#: context-menu.cpp:271
+#, kde-format
+msgid "Block Contact"
+msgstr "Заблокировать контакт"
+
+#: context-menu.cpp:278
+#, kde-format
+msgid "Remove Contact..."
+msgstr "Удалить контакт..."
+
+#: context-menu.cpp:284
+#, kde-format
+msgid "Show Contact Information..."
+msgstr "Свойства контакта..."
+
+#: context-menu.cpp:305
+#, kde-format
+msgid "Rename Group..."
+msgstr "Переименовать группу..."
+
+#: context-menu.cpp:311
+#, kde-format
+msgid "Delete Group"
+msgstr "Удалить группу"
+
+# BUGME: please change to "Rename Group" in ContextMenu::onRenameGroupTriggered() and to "New Group" when a group is created. --aspotashev
+#: context-menu.cpp:495 context-menu.cpp:521
+#, kde-format
+msgid "New Group Name"
+msgstr "Имя новой группы"
+
+# BUGME: please split strings or change them to distinguish between renaming and creation of a group. --aspotashev
+#: context-menu.cpp:496 context-menu.cpp:522
+#, kde-format
+msgid "Please enter the new group name"
+msgstr "Введите имя новой группы"
+
+#: context-menu.cpp:556
+#, kde-format
+msgid ""
+"Do you really want to remove group %1?\n"
+"\n"
+"Note that all contacts will be moved to group 'Ungrouped'"
+msgstr ""
+"Удалить группу %1?\n"
+"\n"
+"Заметьте, что все контакты будут перемещены в группу «Без группы»."
+
+#: context-menu.cpp:558
+#, kde-format
+msgid "Remove Group"
+msgstr "Удалить группу"
+
+#: dialogs/advanced-presence-dialog.cpp:152
+#, kde-format
+msgid "Advanced Presence Setting"
+msgstr "Дополнительный параметр статуса"
+
+#: dialogs/advanced-presence-dialog.cpp:160
+#, kde-format
+msgid "It appears that you do not have any accounts configured"
+msgstr "Не настроена ни одна учётная запись."
+
+#: dialogs/advanced-presence-dialog.cpp:184
+#, kde-format
+msgid "Set a status message ..."
+msgstr "Указать сообщение для статуса…"
+
+#: dialogs/custom-presence-dialog.cpp:72
+#, kde-format
+msgid "Edit Custom Presences"
+msgstr "Изменение статуса"
+
+#: dialogs/custom-presence-dialog.cpp:92
+#, kde-format
+msgid "Set custom available message..."
+msgstr "Новое сообщение для статуса «Доступен»..."
+
+#: dialogs/custom-presence-dialog.cpp:93
+#, kde-format
+msgid "Set custom busy message..."
+msgstr "Новое сообщение для статуса «Занят»..."
+
+#: dialogs/custom-presence-dialog.cpp:94
+#, kde-format
+msgid "Set custom away message..."
+msgstr "Новое сообщение для статуса «Отсутствую»..."
+
+#: dialogs/custom-presence-dialog.cpp:95
+#, kde-format
+msgid "Set custom extended away message..."
+msgstr "Новое сообщение для статуса «Давно отсутствую»..."
+
+#: dialogs/custom-presence-dialog.cpp:106
+#, kde-format
+msgid "Add Presence"
+msgstr "Добавить статус"
+
+#: dialogs/custom-presence-dialog.cpp:107
+#, kde-format
+msgid "Remove Presence"
+msgstr "Удалить статус"
+
+#: dialogs/remove-contact-dialog.cpp:53
+#, kde-format
+msgid "Remove the selected contact?"
+msgstr "Удалить выбранные контакты?"
+
+#. i18n: ectx: property (windowTitle), widget (QWidget, RemoveContactDialog)
+#: dialogs/remove-contact-dialog.ui:23
+#, kde-format
+msgid "Remove contact"
+msgstr "Удалить контакт"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel)
+#: dialogs/remove-contact-dialog.ui:47
+#, kde-format
+msgid "Message"
+msgstr "Сообщение"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAvatarLabel)
+#: dialogs/remove-contact-dialog.ui:124
+#, kde-format
+msgid "Avatar"
+msgstr "Аватар"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAliasLabel)
+#: dialogs/remove-contact-dialog.ui:161
+#, kde-format
+msgid "Alias"
+msgstr "Псевдоним"
+
+#. i18n: ectx: property (text), widget (QCheckBox, blockCheckbox)
+#: dialogs/remove-contact-dialog.ui:229
+#, kde-format
+msgid "Block contact"
+msgstr "Заблокировать контакт"
+
+#: filter-bar.cpp:38
+#, kde-format
+msgctxt "@info:tooltip"
+msgid "Hide Filter Bar"
+msgstr "Скрыть панель фильтра"
+
+#: filter-bar.cpp:42
+#, kde-format
+msgctxt "@label:textbox"
+msgid "Filter:"
+msgstr "Фильтр:"
+
+#: global-presence-chooser.cpp:49
+#, kde-format
+msgid ""
+"<p>Tokens can be used wherever a status message can be set to create a "
+"dynamic status message.</p>"
+msgstr ""
+"<p>Для создания динамических сообщений статуса возможно использовать "
+"заменители.</p>"
+
+#: global-presence-chooser.cpp:50
+#, kde-format
+msgid ""
+"<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;"
+"</strong> minutes. e.g. %tr+30</p>"
+msgstr ""
+"<p><strong>%tr+&lt;val&gt;</strong>: обратный отсчёт от <strong>&lt;val&gt;</"
+"strong> минут до 0. Пример: %tr+30</p>"
+
+#: global-presence-chooser.cpp:51
+#, kde-format
+msgid ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: The current local time, or if a "
+"value is specified, the local time <strong>&lt;val&gt;</strong> minutes in "
+"the future. e.g. %time+10</p>"
+msgstr ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: текущее локальное время или, если "
+"указано значение, локальное время через <strong>&lt;val&gt;</strong> минут. "
+"Пример: %time+10</p>"
+
+#: global-presence-chooser.cpp:52
+#, kde-format
+msgid ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: The current UTC time, or if a value "
+"is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the "
+"future. e.g. %utc</p>"
+msgstr ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: текущее время по Гринвичу или, если "
+"указано значение, время по Гринвичу через <strong>&lt;val&gt;</strong> "
+"минут. Пример: %utc</p>"
+
+#: global-presence-chooser.cpp:53
+#, kde-format
+msgid ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. "
+"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
+"+5</p>"
+msgstr ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: время, прошедшее с момента активации "
+"сообщения. Можно добавить к начальному прошедшему времени &quot;&lt;val&gt;"
+"&quot; в минутах. Пример: %te+5</p>"
+
+#: global-presence-chooser.cpp:54
+#, kde-format
+msgid "<p><strong>%title</strong>: Now Playing track title.</p>"
+msgstr "<p><strong>%title</strong>: название воспроизводимой дорожки.</p>"
+
+#: global-presence-chooser.cpp:55
+#, kde-format
+msgid "<p><strong>%artist</strong>: Now Playing track or album artist.</p>"
+msgstr ""
+"<p><strong>%artist</strong>: исполнитель воспроизводимой дорожки или альбома."
+"</p>"
+
+#: global-presence-chooser.cpp:56
+#, kde-format
+msgid "<p><strong>%album</strong>: Now Playing album.</p>"
+msgstr "<p><strong>%album</strong>: воспроизводимый альбом.</p>"
+
+#: global-presence-chooser.cpp:57
+#, kde-format
+msgid "<p><strong>%track</strong>: Now Playing track number.</p>"
+msgstr "<p><strong>%track</strong>: номер воспроизводимой дорожки.</p>"
+
+#: global-presence-chooser.cpp:58
+#, kde-format
+msgid ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: When specified globally or in an "
+"account presence status message, overrides all automatic presence messages. "
+"When specified in an automatic presence status message, is substituted for "
+"the global or account presence status message (if specified). When "
+"<strong>val = g</strong> in an account presence status message or an "
+"automatic presence status message, overrides the account presence status "
+"message or automatic presence status message with the global presence status "
+"message. e.g. %um, %um+g</p>"
+msgstr ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: если указано глобально или в "
+"сообщении статуса учётной записи, переопределяет все автоматически "
+"установленные сообщения статуса. Если указано в автоматическом сообщении "
+"статуса, заменяется на глобальное сообщение статуса или сообщение статуса "
+"учётной записи (если они указаны). Если <strong>val = g</strong> в сообщении "
+"статуса учётной записи или в автоматическом сообщении статуса, заменяет "
+"сообщение статуса учётной записи или автоматическое сообщение статуса на "
+"глобальное сообщение статуса. Пример: %um, %um+g</p>"
+
+#: global-presence-chooser.cpp:59
+#, kde-format
+msgid ""
+"<p><strong>%tu+&lt;val&gt;</strong>: Refresh the status message every "
+"<strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>"
+msgstr ""
+"<p><strong>%tu+&lt;val&gt;</strong>: обновлять сообщение статуса "
+"каждые<strong>&lt;val&gt;</strong> мин. Пример: %tu+2</p>"
+
+#: global-presence-chooser.cpp:60
+#, kde-format
+msgid ""
+"<p><strong>%tx+&lt;val&gt;</strong>: Expire the status message after "
+"<strong>&lt;val&gt;</strong> minutes, or when the Now Playing active player "
+"stops (<strong>val = np</strong>). e.g. %tx+20, %tx+np</p>"
+msgstr ""
+"<p><strong>%tx+&lt;val&gt;</strong>: делать сообщение статуса устаревшим по "
+"истечении <strong>&lt;val&gt;</strong> минут или при остановке "
+"воспроизведения музыки (<strong>val = np</strong>). Пример: %tx+20, %tx+np</"
+"p>"
+
+#: global-presence-chooser.cpp:61
+#, kde-format
+msgid ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Specify a message to follow "
+"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
+"+&quot;Running late&quot;&quot;</p>"
+msgstr ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: указать сообщение после "
+"выполнения условия для заменителей %tr, %time, %utc и %tx. Пример: %xm+&quot;"
+"Вернусь в %time. %tx+3 %xm+&quot;Опаздываю&quot;&quot;</p>"
+
+#: global-presence-chooser.cpp:62
+#, kde-format
+msgid ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for "
+"local time using QDateTime::toString() expressions. e.g. %tf+&quot;h:mm AP "
+"t&quot;</p>"
+msgstr ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: указать формат локального "
+"времени с помощью выражений QDateTime::toString(). Пример: %tf+&quot;h:mm AP "
+"t&quot;</p>"
+
+#: global-presence-chooser.cpp:63
+#, kde-format
+msgid ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for UTC "
+"time using QDateTime::toString() expressions. e.g. %uf+&quot;hh:mm t&quot;</"
+"p>"
+msgstr ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: указать формат времени по "
+"Гринвичу с помощью выражений QDateTime::toString(). Пример: %uf+&quot;hh:mm "
+"t&quot;</p>"
+
+#: global-presence-chooser.cpp:64
+#, kde-format
+msgid ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Change the separator for "
+"empty fields. e.g. %sp+&quot;-&quot;</p>"
+msgstr ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: сменить разделитель для "
+"пустых полей. Пример: %sp+&quot;-&quot;</p>"
+
+#: global-presence-chooser.cpp:65
+#, kde-format
+msgid ""
+"<p>Using tokens requires the Telepathy KDED module to be loaded. Tokens can "
+"be escaped by prepending a backslash character, e.g. &#92;%sp</p>"
+msgstr ""
+"<p>Для использования заменителей необходимо загрузить модуль KDED Telepathy. "
+"Заменители возможно экранировать путём их предварения обратной косой чертой. "
+"Пример: &#92;%sp</p>"
+
+#: global-presence-chooser.cpp:118
+#, kde-format
+msgid "Configure Custom Presences..."
+msgstr "Другой статус..."
+
+#: global-presence-chooser.cpp:125
+#, kde-format
+msgid "Advanced Presence Setting..."
+msgstr "Дополнительный параметр статуса…"
+
+#: global-presence-chooser.cpp:208
+#, kde-format
+msgid "Click to change your presence message"
+msgstr "Нажмите, чтобы изменить сообщение статуса"
+
+#: global-presence-chooser.cpp:245
+#, kde-format
+msgctxt "Presence string when the account is connecting"
+msgid "Connecting..."
+msgstr "Подключение..."
+
+#: main-widget.cpp:179
+#, kde-format
+msgid ""
+"Something unexpected happened to the core part of your Instant Messaging "
+"system and it couldn't be initialized. Try restarting the Contact List."
+msgstr ""
+"В основном компоненте системы обмена сообщениями произошла неизвестная "
+"ошибка. По этой причине он не может быть инициализирован. Попробуйте "
+"перезапустить список контактов."
+
+#: main-widget.cpp:181
+#, kde-format
+msgid "IM system failed to initialize"
+msgstr "Ошибка инициализации системы обмена сообщениями"
+
+#: main-widget.cpp:302
+#, kde-format
+msgid ""
+"You do not have any other presence controls active (a Presence widget for "
+"example).\n"
+"Do you want to stay online or would you rather go offline?"
+msgstr ""
+"Нет активных средств управления статусом (например, виджет управления "
+"статусом).\n"
+"Оставаться в сети или выйти?"
+
+#: main-widget.cpp:304
+#, kde-format
+msgid "No Other Presence Controls Found"
+msgstr "Не найдено других средств управления статусом"
+
+#: main-widget.cpp:305
+#, kde-format
+msgid "Stay Online"
+msgstr "Оставаться в сети"
+
+#: main-widget.cpp:306
+#, kde-format
+msgid "Go Offline"
+msgstr "Выйти из сети"
+
+#: main-widget.cpp:375 tooltips/persontooltip.cpp:57
+#, kde-format
+msgid "Contacts"
+msgstr "Контакты"
+
+#: main-widget.cpp:391
+#, kde-format
+msgid "View"
+msgstr "Вид"
+
+#: main-widget.cpp:395 main-widget.cpp:438
+#, kde-format
+msgid "Contact List Type"
+msgstr "Вид списка контактов"
+
+#: main-widget.cpp:398 main-widget.cpp:443
+#, kde-format
+msgid "Shown Contacts"
+msgstr "Просмотр контактов"
+
+#: main-widget.cpp:401 main-widget.cpp:448
+#, kde-format
+msgid "Contact Grouping"
+msgstr "Группировка контактов"
+
+#: main-widget.cpp:528
+#, kde-format
+msgid "Instant Messaging Settings..."
+msgstr "Параметры мгновенных сообщений..."
+
+#: main-widget.cpp:533
+#, kde-format
+msgid "Join Chat Room..."
+msgstr "Присоединиться к чату..."
+
+#: main-widget.cpp:535
+#, kde-format
+msgid "Make a Call..."
+msgstr "Позвонить..."
+
+#: main-widget.cpp:536
+#, kde-format
+msgid "Merge Contacts..."
+msgstr "Объединить контакты..."
+
+#: main-widget.cpp:537
+#, kde-format
+msgid "Add New Contacts..."
+msgstr "Добавить контакты..."
+
+#: main-widget.cpp:538
+#, kde-format
+msgid "Find Contact"
+msgstr "Поиск контакта"
+
+#: main-widget.cpp:541
+#, kde-format
+msgid "Start a Chat..."
+msgstr "Начать разговор..."
+
+#: main-widget.cpp:544
+#, kde-format
+msgid "Split Selected Contacts"
+msgstr "Разделить выбранные контакты"
+
+#: main-widget.cpp:545
+#, kde-format
+msgid "Merge Selected Contacts"
+msgstr "Объединить выбранные контакты"
+
+#: main-widget.cpp:555
+#, kde-format
+msgid "Show Contacts by Groups"
+msgstr "Показывать контакты по группам"
+
+#: main-widget.cpp:559
+#, kde-format
+msgid "Do Not Group"
+msgstr "Не группировать"
+
+#: main-widget.cpp:562
+#, kde-format
+msgid "Show Contacts by Accounts"
+msgstr "Показывать контакты по учётным записям"
+
+#: main-widget.cpp:567
+#, kde-format
+msgid "Show Offline Contacts"
+msgstr "Показывать контакты не в сети"
+
+#: main-widget.cpp:568
+#, kde-format
+msgid "Hide Offline Contacts"
+msgstr "Скрывать контакты не в сети"
+
+#: main-widget.cpp:576
+#, kde-format
+msgid "Sort by Presence"
+msgstr "Сортировать по статусу"
+
+#: main-widget.cpp:577
+#, kde-format
+msgid "Sort by Name"
+msgstr "Сортировать по имени"
+
+#: main-widget.cpp:585
+#, kde-format
+msgid "Use Full List"
+msgstr "Полный"
+
+#: main-widget.cpp:587
+#, kde-format
+msgid "Use Normal List"
+msgstr "Обычный"
+
+#: main-widget.cpp:591
+#, kde-format
+msgid "Use Minimalistic List"
+msgstr "Компактный"
+
+#: main-widget.cpp:598
+#, kde-format
+msgid "Show All Contacts"
+msgstr "Показать все контакты"
+
+#: main-widget.cpp:600
+#, kde-format
+msgid "Show Unblocked Contacts"
+msgstr "Показать незаблокированные контакты"
+
+#: main-widget.cpp:602
+#, kde-format
+msgid "Show Blocked Contacts"
+msgstr "Показать заблокированные контакты"
+
+#: main-widget.cpp:721
+#, kde-format
+msgid ""
+"Some data sources failed to initialize properly, your contact list might be "
+"incomplete."
+msgstr ""
+"Не удалось инициализировать некоторые источники информации, поэтому список "
+"контактов может быть неполным."
+
+#. i18n: ectx: property (windowTitle), widget (QMainWindow, MainWindow)
+#: main-widget.ui:14
+#, kde-format
+msgid "IM Contacts"
+msgstr "Список контактов"
+
+#: main.cpp:41 main.cpp:42
+#, kde-format
+msgid "KDE Telepathy Contact List"
+msgstr "Список контактов KDE Telepathy"
+
+#: main.cpp:43
+#, kde-format
+msgid "(C) 2011, Martin Klapetek"
+msgstr "© Martin Klapetek, 2011"
+
+#: main.cpp:45
+#, kde-format
+msgctxt "@info:credit"
+msgid "Martin Klapetek"
+msgstr "Martin Klapetek"
+
+#: main.cpp:45
+#, kde-format
+msgid "Developer"
+msgstr "Разработчик"
+
+#: main.cpp:55
+#, kde-format
+msgid "Show Telepathy debugging information"
+msgstr "Показать подробности отладки Telepathy"
+
+#: tooltips/contacttooltip.cpp:63
+#, kde-format
+msgctxt "This is an IM user status"
+msgid "Error Getting Presence"
+msgstr "Ошибка получения статуса"
+
+#: tooltips/contacttooltip.cpp:81
+#, kde-format
+msgid "Account: %1"
+msgstr "Учётная запись: %1"
+
+#. i18n: ectx: property (text), widget (QLabel, blockedLabel)
+#: tooltips/contacttooltip.ui:126 tooltips/persontooltip.ui:33
+#, kde-format
+msgid "User is blocked"
+msgstr "Пользователь заблокирован"
+
+#~ msgid "Now listening to..."
+#~ msgstr "Сейчас слушаю..."
+
+#~ msgid ""
+#~ "This plugin is currently disabled. Do you want to enable it and use as "
+#~ "your presence?"
+#~ msgstr ""
+#~ "Этот модуль отключён. Хотите включить его и использовать в качестве "
+#~ "вашего статуса?"
+
+#~ msgid "Plugin disabled"
+#~ msgstr "Модуль отключён"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Available"
+#~ msgstr "Доступен"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Away"
+#~ msgstr "Отсутствую"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Be right back"
+#~ msgstr "Скоро вернусь"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Busy"
+#~ msgstr "Занят"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Do not disturb"
+#~ msgstr "Не беспокоить"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Extended Away"
+#~ msgstr "Давно отсутствую"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Invisible"
+#~ msgstr "Невидимый"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Offline"
+#~ msgstr "Не в сети"
+
+#~ msgctxt "@action:inmenu This is the IM presence message"
+#~ msgid "Set message..."
+#~ msgstr "Установить сообщение..."
+
+#~ msgid ""
+#~ "It appears you do not have the IM Accounts control module installed. "
+#~ "Please install ktp-accounts-kcm package."
+#~ msgstr ""
+#~ "Похоже, в вашей системе не установлен модуль управления учётными записями "
+#~ "системы обмена сообщениями. Установите пакет ktp-accounts-kcm."
+
+#~ msgid "IM Accounts KCM Plugin Is Not Installed"
+#~ msgstr "Не установлен модуль управления учётными записями"
+
+#~ msgid "Notifications"
+#~ msgstr "Уведомления"
+
+#~ msgid "Share My Desktop"
+#~ msgstr "Показать рабочий стол"
+
+#~ msgid "Share desktop using RFB"
+#~ msgstr "Показать рабочий стол, используя RFB"
+
+#, fuzzy
+#~ msgid "Settings..."
+#~ msgstr "Настройка"
+
+#~ msgid "Contacts are shown by accounts. Click to show them in groups."
+#~ msgstr ""
+#~ "Контакты показаны по учётным записям. Нажмите, чтобы изменить отображение "
+#~ "по группам."
+
+#~ msgid "Contacts are shown in groups. Click to show them in accounts."
+#~ msgstr ""
+#~ "Контакты показаны по группам. Нажмите, чтобы изменить отображение по "
+#~ "учётным записям."
+
+#~ msgid "Offline contacts are hidden. Click to show them."
+#~ msgstr "Контакты, которых нет в сети, скрыты. Нажмите, чтобы показать их."
+
+#~ msgid "Offline contacts are shown. Click to hide them."
+#~ msgstr "Контакты, которых нет в сети, показаны. Нажмите, чтобы скрыть их."
+
+#~ msgid "List is sorted by name. Click to sort by presence."
+#~ msgstr ""
+#~ "Список сортируется по имени. Нажмите, чтобы сортировать по статусу "
+#~ "присутствия."
+
+#~ msgid "List is sorted by presence. Click to sort by name."
+#~ msgstr ""
+#~ "Список сортируется по статусу присутствия. Нажмите, чтобы сортировать по "
+#~ "имени."
+
+#~ msgctxt "This is an IM user status"
+#~ msgid "Unknown"
+#~ msgstr "Неизвестно"
+
+#~ msgid "Dialog"
+#~ msgstr "Диалоговое окно"
+
+#~ msgid "Avatar Here"
+#~ msgstr "Аватор"
+
+#~ msgid "Contact Display Name"
+#~ msgstr "Показываемое имя собеседника"
+
+#~ msgid "Contact can see when you are online:"
+#~ msgstr "Собеседник может видеть, когда вы в сети:"
+
+#~ msgid "TextLabel"
+#~ msgstr "Текстовая метка"
+
+#~ msgid "You can see when the contact is online:"
+#~ msgstr "Вы можете видеть, когда собеседник в сети:"
+
+#~ msgid "Contact is blocked:"
+#~ msgstr "Контакт заблокирован:"
+
+#~ msgid "This room is already in your favorites."
+#~ msgstr "Канал уже в избранном."
+
+#~ msgid "Add room"
+#~ msgstr "Добавить канал"
+
+#~ msgid "Name"
+#~ msgstr "Имя"
+
+#~ msgid "Join Chatroom"
+#~ msgstr "Войти на канал"
+
+#~ msgid "Enter chat room:"
+#~ msgstr "Введите имя канал:"
+
+#~ msgid "Favorites"
+#~ msgstr "Избранное"
+
+#~ msgid "Add Room"
+#~ msgstr "Добавить канал"
+
+#~ msgid "Remove Room"
+#~ msgstr "Удалить канал"
+
+#~ msgid "Recent"
+#~ msgstr "Последние"
+
+#~ msgid "Remove"
+#~ msgstr "Удалить"
+
+#~ msgid "Clear list"
+#~ msgstr "Очистить список"
+
+#~ msgid "Query"
+#~ msgstr "Запрос"
+
+#~ msgid "Server to be queried:"
+#~ msgstr "Сервер для запросов:"
+
+#~ msgid "Leave blank for the selected account's default server"
+#~ msgstr "Оставьте пустым, по умолчанию сервер выбранной учётной записи"
+
+#~ msgid "Stop"
+#~ msgstr "Остановить"
+
+#~ msgid "Search rooms"
+#~ msgstr "Поиск каналов"
+
+#~ msgid "Password required"
+#~ msgstr "Требуется пароль"
+
+#~ msgid "No password required"
+#~ msgstr "Не требуется пароль"
+
+#~ msgid "Member count"
+#~ msgstr "Количество участников"
+
+#~ msgctxt "Chatrooms name"
+#~ msgid "Name"
+#~ msgstr "Имя"
+
+#~ msgctxt "Chatrooms description"
+#~ msgid "Description"
+#~ msgstr "Описание"

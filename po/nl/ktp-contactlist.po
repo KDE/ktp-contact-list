@@ -1,0 +1,986 @@
+# Copyright (C) YEAR This_file_is_part_of_KDE
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Freek de Kruijf <freekdekruijf@kde.nl>, 2012, 2013, 2014, 2015, 2017, 2018.
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: https://bugs.kde.org\n"
+"POT-Creation-Date: 2020-08-13 02:19+0200\n"
+"PO-Revision-Date: 2018-11-19 12:13+0100\n"
+"Last-Translator: Freek de Kruijf <freekdekruijf@kde.nl>\n"
+"Language-Team: Dutch <kde-i18n-nl@kde.org>\n"
+"Language: nl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Lokalize 2.0\n"
+
+#, kde-format
+msgctxt "NAME OF TRANSLATORS"
+msgid "Your names"
+msgstr "Freek de Kruijf"
+
+#, kde-format
+msgctxt "EMAIL OF TRANSLATORS"
+msgid "Your emails"
+msgstr "freekdekruijf@kde.nl"
+
+#: contact-list-widget.cpp:200
+#, kde-format
+msgid "You have no IM accounts configured. Would you like to do that now?"
+msgstr "U hebt geen IM-account ingesteld. Wilt u dat nu doen?"
+
+#: contact-list-widget.cpp:201
+#, kde-format
+msgid "No Accounts Found"
+msgstr "Geen accounts gevonden"
+
+#: contact-list-widget.cpp:269
+#, kde-format
+msgctxt ""
+"Label of a dialog's 'OK' button; %1 is account name, eg. 'Connect account "
+"GTalk'"
+msgid "Connect account %1"
+msgstr "Account %1 verbinden"
+
+#: contact-list-widget.cpp:271
+#, kde-format
+msgid ""
+"The account for this contact is disconnected. Do you want to connect it?"
+msgstr ""
+"Het account voor deze contactpersoon is niet verbonden. Wilt u het verbinden?"
+
+#: contact-list-widget.cpp:272
+#, kde-format
+msgid "Account offline"
+msgstr "Account offline"
+
+#: contact-list-widget.cpp:477
+#, kde-format
+msgid "Choose files to send to %1"
+msgstr "De te verzenden bestanden naar %1 kiezen"
+
+#: contact-list-widget.cpp:478
+#, kde-format
+msgid "Send"
+msgstr "Verzenden"
+
+#: contact-list-widget.cpp:786
+#, kde-format
+msgid "Merge contacts"
+msgstr "Contactpersonen samenvoegen"
+
+#: contact-list-widget.cpp:828
+#, kde-format
+msgid "&Move here"
+msgstr "Hierheen &verplaatsen"
+
+#: contact-list-widget.cpp:832
+#, kde-format
+msgid "&Copy here"
+msgstr "Hierheen &kopiëren"
+
+#: contact-list-widget.cpp:836
+#, kde-format
+msgid "C&ancel"
+msgstr "&Annuleren"
+
+#: contact-overlays.cpp:134 contact-overlays.cpp:135
+#, kde-format
+msgid "Start Chat"
+msgstr "Chat starten"
+
+#: contact-overlays.cpp:135
+#, kde-format
+msgid "Start a text chat"
+msgstr "Een tekst-chat starten"
+
+#: contact-overlays.cpp:146 contact-overlays.cpp:147
+#, kde-format
+msgid "Start Audio Call"
+msgstr "Geluidsoproep starten"
+
+#: contact-overlays.cpp:147
+#, kde-format
+msgid "Start an audio call"
+msgstr "Een geluidsoproep starten"
+
+#: contact-overlays.cpp:159 contact-overlays.cpp:160
+#, kde-format
+msgid "Start Video Call"
+msgstr "Een video-oproep starten"
+
+#: contact-overlays.cpp:160
+#, kde-format
+msgid "Start a video call"
+msgstr "Een video-oproep starten"
+
+#: contact-overlays.cpp:171 contact-overlays.cpp:172 context-menu.cpp:141
+#, kde-format
+msgid "Send File..."
+msgstr "Bestand verzenden..."
+
+#: contact-overlays.cpp:172
+#, kde-format
+msgid "Send a file"
+msgstr "Een bestand verzenden"
+
+#: contact-overlays.cpp:183 contact-overlays.cpp:184
+#, kde-format
+msgid "Open Log Viewer"
+msgstr "Logweergave openen"
+
+#: contact-overlays.cpp:184
+#, kde-format
+msgid "Show conversation logs"
+msgstr "Conversatielogs tonen"
+
+#: context-menu.cpp:111
+#, kde-format
+msgid "Start Chat..."
+msgstr "&Chat starten..."
+
+#: context-menu.cpp:121
+#, kde-format
+msgid "Start Audio Call..."
+msgstr "Start een geluidsoproep..."
+
+#: context-menu.cpp:131
+#, kde-format
+msgid "Start Video Call..."
+msgstr "Start een video-oproep..."
+
+#: context-menu.cpp:151
+#, kde-format
+msgid "Share my desktop..."
+msgstr "Mijn bureaublad delen..."
+
+#: context-menu.cpp:161
+#, kde-format
+msgid "Open Log..."
+msgstr "Log openen..."
+
+#: context-menu.cpp:174
+#, kde-format
+msgid "Configure Notifications..."
+msgstr "Meldingen instellen..."
+
+#: context-menu.cpp:191
+#, kde-format
+msgid "Presence message link"
+msgid_plural "Presence message links"
+msgstr[0] "Koppeling naar aanwezigheidsboodschap"
+msgstr[1] "Koppelingen naar aanwezigheidsboodschappen"
+
+#: context-menu.cpp:210
+#, kde-format
+msgid "Remove Contact From This Group"
+msgstr "Contactpersoon uit deze groep verwijderen"
+
+#: context-menu.cpp:216
+#, kde-format
+msgid "Move to Group"
+msgstr "Naar groep verplaatsen"
+
+#: context-menu.cpp:234
+#, kde-format
+msgid "Create New Group..."
+msgstr "Nieuwe groep aanmaken..."
+
+#: context-menu.cpp:253
+#, kde-format
+msgid "Re-request Contact Authorization"
+msgstr "Contactautorisatie opnieuw verzoeken"
+
+#: context-menu.cpp:259
+#, kde-format
+msgid "Resend Contact Authorization"
+msgstr "Contactautorisatie opnieuw verzenden"
+
+#: context-menu.cpp:267
+#, kde-format
+msgid "Unblock Contact"
+msgstr "Blokkering van contactpersoon opheffen"
+
+#: context-menu.cpp:271
+#, kde-format
+msgid "Block Contact"
+msgstr "Contactpersoon blokkeren"
+
+#: context-menu.cpp:278
+#, kde-format
+msgid "Remove Contact..."
+msgstr "Contactpersoon verwijderen..."
+
+#: context-menu.cpp:284
+#, kde-format
+msgid "Show Contact Information..."
+msgstr "Contactpersooninformatie tonen..."
+
+#: context-menu.cpp:305
+#, kde-format
+msgid "Rename Group..."
+msgstr "Groep hernoemen..."
+
+#: context-menu.cpp:311
+#, kde-format
+msgid "Delete Group"
+msgstr "Groep verwijderen"
+
+#: context-menu.cpp:495 context-menu.cpp:521
+#, kde-format
+msgid "New Group Name"
+msgstr "Nieuwe groepsnaam"
+
+#: context-menu.cpp:496 context-menu.cpp:522
+#, kde-format
+msgid "Please enter the new group name"
+msgstr "Gaarne een nieuwe groepsnaam invoeren"
+
+#: context-menu.cpp:556
+#, kde-format
+msgid ""
+"Do you really want to remove group %1?\n"
+"\n"
+"Note that all contacts will be moved to group 'Ungrouped'"
+msgstr ""
+"Wilt u werkelijk groep %1 verwijderen?\n"
+"\n"
+"Merk op dat alle contactpersonen naar de groep 'Niet-gegroepeerd' gaan"
+
+#: context-menu.cpp:558
+#, kde-format
+msgid "Remove Group"
+msgstr "Groep verwijderen"
+
+#: dialogs/advanced-presence-dialog.cpp:152
+#, kde-format
+msgid "Advanced Presence Setting"
+msgstr "Geavanceerde instelling van aanwezigheid"
+
+#: dialogs/advanced-presence-dialog.cpp:160
+#, kde-format
+msgid "It appears that you do not have any accounts configured"
+msgstr "Het lijkt erop dat u geen enkel account hebt geconfigureerd"
+
+#: dialogs/advanced-presence-dialog.cpp:184
+#, kde-format
+msgid "Set a status message ..."
+msgstr "Stel een statusbericht in ..."
+
+#: dialogs/custom-presence-dialog.cpp:72
+#, kde-format
+msgid "Edit Custom Presences"
+msgstr "Eigen aanwezigheden bewerken"
+
+#: dialogs/custom-presence-dialog.cpp:92
+#, kde-format
+msgid "Set custom available message..."
+msgstr "Plaats uw eigen bericht van beschikbaarheid hier..."
+
+#: dialogs/custom-presence-dialog.cpp:93
+#, kde-format
+msgid "Set custom busy message..."
+msgstr "Plaats uw eigen bericht van bezet hier..."
+
+#: dialogs/custom-presence-dialog.cpp:94
+#, kde-format
+msgid "Set custom away message..."
+msgstr "Plaats uw eigen bericht van afwezig hier..."
+
+#: dialogs/custom-presence-dialog.cpp:95
+#, kde-format
+msgid "Set custom extended away message..."
+msgstr "Plaats uw eigen uitgebreide bericht van afwezig hier..."
+
+#: dialogs/custom-presence-dialog.cpp:106
+#, kde-format
+msgid "Add Presence"
+msgstr "Aanwezigheid toevoegen"
+
+#: dialogs/custom-presence-dialog.cpp:107
+#, kde-format
+msgid "Remove Presence"
+msgstr "Aanwezigheid verwijderen"
+
+#: dialogs/remove-contact-dialog.cpp:53
+#, kde-format
+msgid "Remove the selected contact?"
+msgstr "De geselecteerde contactpersoon verwijderen?"
+
+#. i18n: ectx: property (windowTitle), widget (QWidget, RemoveContactDialog)
+#: dialogs/remove-contact-dialog.ui:23
+#, kde-format
+msgid "Remove contact"
+msgstr "Contactpersoon verwijderen"
+
+#. i18n: ectx: property (text), widget (QLabel, textLabel)
+#: dialogs/remove-contact-dialog.ui:47
+#, kde-format
+msgid "Message"
+msgstr "Bericht"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAvatarLabel)
+#: dialogs/remove-contact-dialog.ui:124
+#, kde-format
+msgid "Avatar"
+msgstr "Avatar"
+
+#. i18n: ectx: property (text), widget (QLabel, contactAliasLabel)
+#: dialogs/remove-contact-dialog.ui:161
+#, kde-format
+msgid "Alias"
+msgstr "Alias"
+
+#. i18n: ectx: property (text), widget (QCheckBox, blockCheckbox)
+#: dialogs/remove-contact-dialog.ui:229
+#, kde-format
+msgid "Block contact"
+msgstr "Contactpersoon blokkeren"
+
+#: filter-bar.cpp:38
+#, kde-format
+msgctxt "@info:tooltip"
+msgid "Hide Filter Bar"
+msgstr "Filterbalk verbergen"
+
+#: filter-bar.cpp:42
+#, kde-format
+msgctxt "@label:textbox"
+msgid "Filter:"
+msgstr "Filter:"
+
+#: global-presence-chooser.cpp:49
+#, kde-format
+msgid ""
+"<p>Tokens can be used wherever a status message can be set to create a "
+"dynamic status message.</p>"
+msgstr ""
+"<p>Er kunnen tokens gebruikt worden overal waar een statusbericht ingesteld "
+"kan worden om een dynamisch statusbericht aan te maken.</p>"
+
+#: global-presence-chooser.cpp:50
+#, kde-format
+msgid ""
+"<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;"
+"</strong> minutes. e.g. %tr+30</p>"
+msgstr ""
+"<p><strong>%tr+&lt;val&gt;</strong>: terugtellen naar 0 vanaf <strong>&lt;"
+"val&gt;</strong> minuten. e.g. %tr+30</p>"
+
+#: global-presence-chooser.cpp:51
+#, kde-format
+msgid ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: The current local time, or if a "
+"value is specified, the local time <strong>&lt;val&gt;</strong> minutes in "
+"the future. e.g. %time+10</p>"
+msgstr ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: de huidige lokale tijd of als een "
+"waarde is gespecificeerd, de lokale tijd plus <strong>&lt;val&gt;</strong> "
+"minuten in de toekomst. e.g. %time+10</p>"
+
+#: global-presence-chooser.cpp:52
+#, kde-format
+msgid ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: The current UTC time, or if a value "
+"is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the "
+"future. e.g. %utc</p>"
+msgstr ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: de huidige UTC-tijd of als een "
+"waarde is gespecificeerd, de UTC-tijd plus <strong>&lt;val&gt;</strong> "
+"minuten in de toekomst. e.g. %utc</p>"
+
+#: global-presence-chooser.cpp:53
+#, kde-format
+msgid ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. "
+"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
+"+5</p>"
+msgstr ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: de verstreken tijd vanaf "
+"berichtactivatie. Voegt een initiële verstreken tijd &quot;&lt;val&gt;&quot; "
+"in minuten achteraan. bijv. %te+5</p>"
+
+#: global-presence-chooser.cpp:54
+#, kde-format
+msgid "<p><strong>%title</strong>: Now Playing track title.</p>"
+msgstr "<p><strong>%title</strong>: speelt nu track met titel.</p>"
+
+#: global-presence-chooser.cpp:55
+#, kde-format
+msgid "<p><strong>%artist</strong>: Now Playing track or album artist.</p>"
+msgstr "<p><strong>%artist</strong>: speelt nu track of artiest van album.</p>"
+
+#: global-presence-chooser.cpp:56
+#, kde-format
+msgid "<p><strong>%album</strong>: Now Playing album.</p>"
+msgstr "<p><strong>%album</strong>: speelt nu album.</p>"
+
+#: global-presence-chooser.cpp:57
+#, kde-format
+msgid "<p><strong>%track</strong>: Now Playing track number.</p>"
+msgstr "<p><strong>%track</strong>: speelt nu tracknummer.</p>"
+
+#: global-presence-chooser.cpp:58
+#, kde-format
+msgid ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: When specified globally or in an "
+"account presence status message, overrides all automatic presence messages. "
+"When specified in an automatic presence status message, is substituted for "
+"the global or account presence status message (if specified). When "
+"<strong>val = g</strong> in an account presence status message or an "
+"automatic presence status message, overrides the account presence status "
+"message or automatic presence status message with the global presence status "
+"message. e.g. %um, %um+g</p>"
+msgstr ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: wanneer globaal gespecificeerd of in "
+"een statusbericht account aanwezig, gaat boven alle automatische berichten "
+"van aanwezigheid. Wanneer gespecificeerd in een automatisch statusbericht "
+"van aanwezigheid, wordt het gesubstitueerd door het globale of het "
+"statusbericht van aanwezigheid (indien gespecificeerd). Wanneer <strong>val "
+"= g</strong> in een statusbericht van aanwezigheid of een automatisch "
+"statusbericht van aanwezigheid zal het statusbericht van aanwezigheid van "
+"het account of het automatische statusbericht van aanwezigheid overschreven "
+"worden door het globale statusbericht van aanwezigheid. bijv. %um, %um+g</p>"
+
+#: global-presence-chooser.cpp:59
+#, kde-format
+msgid ""
+"<p><strong>%tu+&lt;val&gt;</strong>: Refresh the status message every "
+"<strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>"
+msgstr ""
+"<p><strong>%tu+&lt;val&gt;</strong>: vernieuw het statusbericht elke "
+"<strong>&lt;val&gt;</strong> minuten. bijv. %tu+2</p>"
+
+#: global-presence-chooser.cpp:60
+#, kde-format
+msgid ""
+"<p><strong>%tx+&lt;val&gt;</strong>: Expire the status message after "
+"<strong>&lt;val&gt;</strong> minutes, or when the Now Playing active player "
+"stops (<strong>val = np</strong>). e.g. %tx+20, %tx+np</p>"
+msgstr ""
+"<p><strong>%tx+&lt;val&gt;</strong>: laat het statusbericht vervallen na "
+"<strong>&lt;val&gt;</strong> minuten of wanneer de Nu sPelende actieve "
+"speler stopt (<strong>val = np</strong>). bijv. %tx+20, %tx+np</p>"
+
+#: global-presence-chooser.cpp:61
+#, kde-format
+msgid ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Specify a message to follow "
+"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
+"+&quot;Running late&quot;&quot;</p>"
+msgstr ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: specificeer een bericht "
+"volgend op vervallen van tokens %tr, %time, %utc en %tx. bijv. %xm+&quot;"
+"Terug %time. %tx+3 %xm+&quot;het wordt laat&quot;&quot;</p>"
+
+#: global-presence-chooser.cpp:62
+#, kde-format
+msgid ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for "
+"local time using QDateTime::toString() expressions. e.g. %tf+&quot;h:mm AP "
+"t&quot;</p>"
+msgstr ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: specificeer het formaat "
+"voor de lokale tijd met expressies QDateTime::toString(). bijv. %tf+&quot;h:"
+"mm AP t&quot;</p>"
+
+#: global-presence-chooser.cpp:63
+#, kde-format
+msgid ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: Specify the format for UTC "
+"time using QDateTime::toString() expressions. e.g. %uf+&quot;hh:mm t&quot;</"
+"p>"
+msgstr ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: specificeer het formaat "
+"voor UTC-tijd met expressies QDateTime::toString(). bijv. %uf+&quot;hh:mm "
+"t&quot;</p>"
+
+#: global-presence-chooser.cpp:64
+#, kde-format
+msgid ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Change the separator for "
+"empty fields. e.g. %sp+&quot;-&quot;</p>"
+msgstr ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: wijzig het scheidingsteken "
+"voor lege velden. bijv. %sp+&quot;-&quot;</p>"
+
+#: global-presence-chooser.cpp:65
+#, kde-format
+msgid ""
+"<p>Using tokens requires the Telepathy KDED module to be loaded. Tokens can "
+"be escaped by prepending a backslash character, e.g. &#92;%sp</p>"
+msgstr ""
+"<p>Gebruik van tokens vereist dat de module Telepathy KDED is geladen. "
+"Tokens kunnen escaped worden door er een backslash-teken aan vooraf te laten "
+"gaan, bijv. &#92;%sp</p>"
+
+#: global-presence-chooser.cpp:118
+#, kde-format
+msgid "Configure Custom Presences..."
+msgstr "Eigen aanwezigheden instellen..."
+
+#: global-presence-chooser.cpp:125
+#, kde-format
+msgid "Advanced Presence Setting..."
+msgstr "Geavanceerde instellingen voor aanwezigheid..."
+
+#: global-presence-chooser.cpp:208
+#, kde-format
+msgid "Click to change your presence message"
+msgstr "Klik om uw aanwezigheidsbericht te wijzigen"
+
+#: global-presence-chooser.cpp:245
+#, kde-format
+msgctxt "Presence string when the account is connecting"
+msgid "Connecting..."
+msgstr "Verbinden..."
+
+#: main-widget.cpp:179
+#, kde-format
+msgid ""
+"Something unexpected happened to the core part of your Instant Messaging "
+"system and it couldn't be initialized. Try restarting the Contact List."
+msgstr ""
+"Er is iets onverwachts gebeurd om het kerngedeelte van uw Instant Messaging "
+"systeem en het kon niet worden geïnitialiseerd. Probeer de contactenlijst te "
+"herstarten."
+
+#: main-widget.cpp:181
+#, kde-format
+msgid "IM system failed to initialize"
+msgstr "Initialisatie van IM is mislukt"
+
+#: main-widget.cpp:302
+#, kde-format
+msgid ""
+"You do not have any other presence controls active (a Presence widget for "
+"example).\n"
+"Do you want to stay online or would you rather go offline?"
+msgstr ""
+"Hebt u geen andere besturing van aanwezigheid actief (bijv. een "
+"Aanwezigheidswidget).\n"
+"Wilt u online blijven of wilt u liever offline gaan?"
+
+#: main-widget.cpp:304
+#, kde-format
+msgid "No Other Presence Controls Found"
+msgstr "Geen andere besturing van aanwezigheid gevonden"
+
+#: main-widget.cpp:305
+#, kde-format
+msgid "Stay Online"
+msgstr "Online blijven"
+
+#: main-widget.cpp:306
+#, kde-format
+msgid "Go Offline"
+msgstr "Offline gaan"
+
+#: main-widget.cpp:375 tooltips/persontooltip.cpp:57
+#, kde-format
+msgid "Contacts"
+msgstr "Contactpersonen"
+
+#: main-widget.cpp:391
+#, kde-format
+msgid "View"
+msgstr "Beeld"
+
+#: main-widget.cpp:395 main-widget.cpp:438
+#, kde-format
+msgid "Contact List Type"
+msgstr "Type contactenlijst"
+
+#: main-widget.cpp:398 main-widget.cpp:443
+#, kde-format
+msgid "Shown Contacts"
+msgstr "Getoonde contactpersoon"
+
+#: main-widget.cpp:401 main-widget.cpp:448
+#, kde-format
+msgid "Contact Grouping"
+msgstr "Groepering van contactpersonen"
+
+#: main-widget.cpp:528
+#, kde-format
+msgid "Instant Messaging Settings..."
+msgstr "Instellingen voor Instant Messaging..."
+
+#: main-widget.cpp:533
+#, kde-format
+msgid "Join Chat Room..."
+msgstr "Aan chatroom deelnemen"
+
+#: main-widget.cpp:535
+#, kde-format
+msgid "Make a Call..."
+msgstr "Start een oproep..."
+
+#: main-widget.cpp:536
+#, kde-format
+msgid "Merge Contacts..."
+msgstr "Contactpersonen samenvoegen..."
+
+#: main-widget.cpp:537
+#, kde-format
+msgid "Add New Contacts..."
+msgstr "Nieuwe contactpersonen toevoegen..."
+
+#: main-widget.cpp:538
+#, kde-format
+msgid "Find Contact"
+msgstr "Contactpersoon zoeken"
+
+#: main-widget.cpp:541
+#, kde-format
+msgid "Start a Chat..."
+msgstr "Een chat starten..."
+
+#: main-widget.cpp:544
+#, kde-format
+msgid "Split Selected Contacts"
+msgstr "Geselecteerde contactpersonen opsplitsen"
+
+#: main-widget.cpp:545
+#, kde-format
+msgid "Merge Selected Contacts"
+msgstr "Geselecteerde contactpersonen samenvoegen"
+
+#: main-widget.cpp:555
+#, kde-format
+msgid "Show Contacts by Groups"
+msgstr "Contactpersonen per groep tonen"
+
+#: main-widget.cpp:559
+#, kde-format
+msgid "Do Not Group"
+msgstr "Niet groeperen"
+
+#: main-widget.cpp:562
+#, kde-format
+msgid "Show Contacts by Accounts"
+msgstr "Contactpersonen per account tonen"
+
+#: main-widget.cpp:567
+#, kde-format
+msgid "Show Offline Contacts"
+msgstr "Contactpersonen die offline zijn tonen"
+
+#: main-widget.cpp:568
+#, kde-format
+msgid "Hide Offline Contacts"
+msgstr "Contactpersonen die offline zijn verbergen"
+
+#: main-widget.cpp:576
+#, kde-format
+msgid "Sort by Presence"
+msgstr "Sorteren op aanwezigheid"
+
+#: main-widget.cpp:577
+#, kde-format
+msgid "Sort by Name"
+msgstr "Op naam sorteren"
+
+#: main-widget.cpp:585
+#, kde-format
+msgid "Use Full List"
+msgstr "Volledige lijst gebruiken"
+
+#: main-widget.cpp:587
+#, kde-format
+msgid "Use Normal List"
+msgstr "Normale lijst gebruiken"
+
+#: main-widget.cpp:591
+#, kde-format
+msgid "Use Minimalistic List"
+msgstr "Minimale lijst gebruiken"
+
+#: main-widget.cpp:598
+#, kde-format
+msgid "Show All Contacts"
+msgstr "Alle contactpersoon tonen"
+
+#: main-widget.cpp:600
+#, kde-format
+msgid "Show Unblocked Contacts"
+msgstr "Niet geblokkeerde contactpersonen tonen"
+
+#: main-widget.cpp:602
+#, kde-format
+msgid "Show Blocked Contacts"
+msgstr "Geblokkeerde contactpersonen tonen"
+
+#: main-widget.cpp:721
+#, kde-format
+msgid ""
+"Some data sources failed to initialize properly, your contact list might be "
+"incomplete."
+msgstr ""
+"Op de juiste manier initialiseren van enkele gegevensbronnen is mislukt, uw "
+"lijst met contactpersonen kan onvolledig zijn."
+
+#. i18n: ectx: property (windowTitle), widget (QMainWindow, MainWindow)
+#: main-widget.ui:14
+#, kde-format
+msgid "IM Contacts"
+msgstr "IM-contactpersonen"
+
+#: main.cpp:41 main.cpp:42
+#, kde-format
+msgid "KDE Telepathy Contact List"
+msgstr "KDE contactenlijst van Telepathy"
+
+#: main.cpp:43
+#, kde-format
+msgid "(C) 2011, Martin Klapetek"
+msgstr "(C) 2011, Martin Klapetek"
+
+#: main.cpp:45
+#, kde-format
+msgctxt "@info:credit"
+msgid "Martin Klapetek"
+msgstr "Martin Klapetek"
+
+#: main.cpp:45
+#, kde-format
+msgid "Developer"
+msgstr "Ontwikkelaar"
+
+#: main.cpp:55
+#, kde-format
+msgid "Show Telepathy debugging information"
+msgstr "Informatie voor debugging van Telepathy tonen"
+
+#: tooltips/contacttooltip.cpp:63
+#, kde-format
+msgctxt "This is an IM user status"
+msgid "Error Getting Presence"
+msgstr "Fout bij ophalen van aanwezigheid"
+
+#: tooltips/contacttooltip.cpp:81
+#, kde-format
+msgid "Account: %1"
+msgstr "Account: %1"
+
+#. i18n: ectx: property (text), widget (QLabel, blockedLabel)
+#: tooltips/contacttooltip.ui:126 tooltips/persontooltip.ui:33
+#, kde-format
+msgid "User is blocked"
+msgstr "Gebruiker is geblokkeerd"
+
+#~ msgid "Now listening to..."
+#~ msgstr "Luistert nu naar..."
+
+#~ msgid ""
+#~ "This plugin is currently disabled. Do you want to enable it and use as "
+#~ "your presence?"
+#~ msgstr ""
+#~ "Deze plug-in is nu uitgeschakeld. Wilt u het inschakelen en gebruiken als "
+#~ "uw aanwezigheid?"
+
+#~ msgid "Plugin disabled"
+#~ msgstr "Plug-in uitgeschakeld"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Available"
+#~ msgstr "Beschikbaar"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Away"
+#~ msgstr "Afwezig"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Be right back"
+#~ msgstr "Kom zo terug"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Busy"
+#~ msgstr "Bezet"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Do not disturb"
+#~ msgstr "Niet storen"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Extended Away"
+#~ msgstr "Langdurig afwezig"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Invisible"
+#~ msgstr "Onzichtbaar"
+
+#~ msgctxt "@action:inmenu This is an IM user status"
+#~ msgid "Offline"
+#~ msgstr "Offline"
+
+#~ msgctxt "@action:inmenu This is the IM presence message"
+#~ msgid "Set message..."
+#~ msgstr "Bericht instellen..."
+
+#~ msgid ""
+#~ "It appears you do not have the IM Accounts control module installed. "
+#~ "Please install ktp-accounts-kcm package."
+#~ msgstr ""
+#~ "Het lijkt er op dat u de besturingsmodule van IM-accounts niet hebt "
+#~ "geïnstalleerd. Gaarne het pakket ktp-accounts-kcm installeren."
+
+#~ msgid "IM Accounts KCM Plugin Is Not Installed"
+#~ msgstr "KCM-plug-in van IM-accounts is niet geïnstalleerd"
+
+#~ msgid "Notifications"
+#~ msgstr "Meldingen"
+
+#~ msgid "Share My Desktop"
+#~ msgstr "Mijn bureaublad delen"
+
+#~ msgid "Share desktop using RFB"
+#~ msgstr "Bureaublad delen met behulp van RFB"
+
+#~| msgid "Settings"
+#~ msgid "Settings..."
+#~ msgstr "Instellingen..."
+
+#~ msgid "Contacts are shown by accounts. Click to show them in groups."
+#~ msgstr ""
+#~ "Contacten worden getoond door accounts. Klik om ze in groepen te tonen."
+
+#~ msgid "Contacts are shown in groups. Click to show them in accounts."
+#~ msgstr ""
+#~ "Contacten worden getoond in groepen. Klik om ze in accounts te tonen."
+
+#~ msgid "Offline contacts are hidden. Click to show them."
+#~ msgstr "Contacten die offline zijn zijn verborgen. Klik om ze te tonen."
+
+#~ msgid "Offline contacts are shown. Click to hide them."
+#~ msgstr "Contacten die offline zijn worden getoond. Klik om ze te verbergen."
+
+#~ msgid "List is sorted by name. Click to sort by presence."
+#~ msgstr ""
+#~ "De lijst is gesorteerd op naam. Klik om op aanwezigheid te sorteren."
+
+#~ msgid "List is sorted by presence. Click to sort by name."
+#~ msgstr ""
+#~ "De lijst is gesorteerd op aanwezigheid. Klik om op naam te sorteren."
+
+#~ msgctxt "This is an IM user status"
+#~ msgid "Unknown"
+#~ msgstr "Onbekend"
+
+#~ msgid "Dialog"
+#~ msgstr "Dialoog"
+
+#~ msgid "Avatar Here"
+#~ msgstr "Hier avatar"
+
+#~ msgid "Contact Display Name"
+#~ msgstr "Weergavenaam voor contactpersoon"
+
+#~ msgid "Contact can see when you are online:"
+#~ msgstr "Contactpersoon kan zien wanneer u online bent gegaan:"
+
+#~ msgid "TextLabel"
+#~ msgstr "TekstLabel"
+
+#~ msgid "You can see when the contact is online:"
+#~ msgstr "U kunt zien wanneer de contactpersoon online is gegaan:"
+
+#~ msgid "Contact is blocked:"
+#~ msgstr "Contactpersoon is geblokkeerd"
+
+#~ msgid "This room is already in your favorites."
+#~ msgstr "Deze kamer zit al bij uw favorieten."
+
+#~ msgid "Add room"
+#~ msgstr "Kamer toevoegen"
+
+#~ msgid "Name"
+#~ msgstr "Naam"
+
+#~ msgid "Join Chatroom"
+#~ msgstr "Aan chatroom deelnemen"
+
+#~ msgid "Enter chat room:"
+#~ msgstr "Chatroom ingaan:"
+
+#~ msgid "Favorites"
+#~ msgstr "Favorieten"
+
+#~ msgid "Add Room"
+#~ msgstr "Kamer toevoegen"
+
+#~ msgid "Remove Room"
+#~ msgstr "Kamer verwijderen"
+
+#~ msgid "Recent"
+#~ msgstr "Recent"
+
+#~ msgid "Remove"
+#~ msgstr "Verwijderen"
+
+#~ msgid "Clear list"
+#~ msgstr "Lijst wissen"
+
+#~ msgid "Query"
+#~ msgstr "Query"
+
+#~ msgid "Server to be queried:"
+#~ msgstr "Af te vragen server"
+
+#~ msgid "Leave blank for the selected account's default server"
+#~ msgstr "Leeg laten voor de standaard server van het geselecteerde account"
+
+#~ msgid "Stop"
+#~ msgstr "Stoppen"
+
+#~ msgid "Search rooms"
+#~ msgstr "Rooms zoeken"
+
+#~ msgid "Password required"
+#~ msgstr "Wachtwoord vereist"
+
+#~ msgid "No password required"
+#~ msgstr "Geen wachtwoord vereist"
+
+#~ msgid "Member count"
+#~ msgstr "Aantal leden"
+
+#~ msgctxt "Chatrooms name"
+#~ msgid "Name"
+#~ msgstr "Naam"
+
+#~ msgctxt "Chatrooms description"
+#~ msgid "Description"
+#~ msgstr "Beschrijving"
+
+#~ msgid "Show/Hide Groups"
+#~ msgstr "Groepen tonen/verbergen"
+
+#~ msgid "Hide/Show Offline Users"
+#~ msgstr "Offline-gebruikers verbergen/tonen "
+
+#~ msgid ""
+#~ "Seems like you forgot to select an account. Also do not forget to connect "
+#~ "it first."
+#~ msgstr ""
+#~ "Het lijkt er op dat u vergeten bent een account te selecteren. Vergeet "
+#~ "ook niet om het eerst te verbinden."
+
+#~ msgid "No Account Selected"
+#~ msgstr "Geen account geselecteerd"
+
+#~ msgid ""
+#~ "An error we did not anticipate just happened and so the contact could not "
+#~ "be added. Sorry."
+#~ msgstr ""
+#~ "Er deed zich zojuist een fout voor die we niet hadden verwacht, daarom "
+#~ "kon de contactpersoon niet worden toegevoegd."
+
+#~ msgid "Screen Name:"
+#~ msgstr "Schermnaam:"
+
+#~ msgid "Join chat room"
+#~ msgstr "Aan chatroom deelnemen"
