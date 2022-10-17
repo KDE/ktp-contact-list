@@ -63,7 +63,7 @@ msgstr "Compte desconnectat"
 #: contact-list-widget.cpp:477
 #, kde-format
 msgid "Choose files to send to %1"
-msgstr "Seleccioneu els fitxers que s'enviaran a %1"
+msgstr "Seleccioneu els fitxers que s'han d'enviar a %1"
 
 #: contact-list-widget.cpp:478
 #, kde-format
@@ -469,7 +469,7 @@ msgid ""
 msgstr ""
 "<p><strong>%tx+&lt;val&gt;</strong>: Venç el missatge d'estat després de "
 "<strong>&lt;val&gt;</strong> minuts, o quan el reproductor actiu de peça en "
-"reproducció s'para (<strong>val = np</strong>). P. ex. %tx+20, %tx+np</p>"
+"reproducció es para (<strong>val = np</strong>). P. ex. %tx+20, %tx+np</p>"
 
 #: global-presence-chooser.cpp:61
 #, kde-format
