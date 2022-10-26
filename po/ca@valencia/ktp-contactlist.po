@@ -225,7 +225,7 @@ msgstr "Mostra la informació del contacte..."
 #: context-menu.cpp:305
 #, kde-format
 msgid "Rename Group..."
-msgstr "Canvia el nom el grup..."
+msgstr "Canvia el nom del grup..."
 
 #: context-menu.cpp:311
 #, kde-format
