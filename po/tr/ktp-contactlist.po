@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: extragear-network-kde4\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-08-13 02:19+0200\n"
-"PO-Revision-Date: 2022-06-23 11:20+0300\n"
+"PO-Revision-Date: 2022-11-24 17:05+0300\n"
 "Last-Translator: Emir SARI <emir_sari@icloud.com>\n"
 "Language-Team: Turkish <kde-l10n-tr@kde.org>\n"
 "Language: tr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Lokalize 22.04.2\n"
+"X-Generator: Lokalize 22.08.3\n"
 
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
@@ -84,7 +84,7 @@ msgstr "Buraya &taşı"
 #: contact-list-widget.cpp:832
 #, kde-format
 msgid "&Copy here"
-msgstr "Buraya &kopyala"
+msgstr "Buraya ko&pyala"
 
 #: contact-list-widget.cpp:836
 #, kde-format
