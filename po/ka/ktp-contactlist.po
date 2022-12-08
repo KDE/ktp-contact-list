@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ktp-contact-list\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-08-13 02:19+0200\n"
-"PO-Revision-Date: 2022-09-27 16:45+0200\n"
+"PO-Revision-Date: 2022-12-07 16:03+0100\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <kde-i18n-doc@kde.org>\n"
 "Language: ka\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
@@ -177,7 +177,7 @@ msgstr[1] ""
 #: context-menu.cpp:210
 #, kde-format
 msgid "Remove Contact From This Group"
-msgstr ""
+msgstr "კონტაქტის ამ ჯგუფიდან წაშლა"
 
 #: context-menu.cpp:216
 #, kde-format
@@ -192,12 +192,12 @@ msgstr "ახალი ჯგუფის შექმნა..."
 #: context-menu.cpp:253
 #, kde-format
 msgid "Re-request Contact Authorization"
-msgstr ""
+msgstr "კონტაქტის ავტორიზაციის ხელახლა მოთხოვნა"
 
 #: context-menu.cpp:259
 #, kde-format
 msgid "Resend Contact Authorization"
-msgstr ""
+msgstr "კონტაქტის ავტორიზაციის ხელახლა გაგზავნა"
 
 #: context-menu.cpp:267
 #, kde-format
@@ -212,12 +212,12 @@ msgstr "კონტაქტის დაბლოკვა"
 #: context-menu.cpp:278
 #, kde-format
 msgid "Remove Contact..."
-msgstr ""
+msgstr "კონტაქტის წაშლა..."
 
 #: context-menu.cpp:284
 #, kde-format
 msgid "Show Contact Information..."
-msgstr ""
+msgstr "საკონტაქტო ინფორმაციის ჩვენება…"
 
 #: context-menu.cpp:305
 #, kde-format
@@ -237,7 +237,7 @@ msgstr "ახალი ჯგუფის სახელი"
 #: context-menu.cpp:496 context-menu.cpp:522
 #, kde-format
 msgid "Please enter the new group name"
-msgstr ""
+msgstr "შეიყვანეთ ახალი ჯგუფის სახელი"
 
 #: context-menu.cpp:556
 #, kde-format
@@ -260,12 +260,12 @@ msgstr ""
 #: dialogs/advanced-presence-dialog.cpp:160
 #, kde-format
 msgid "It appears that you do not have any accounts configured"
-msgstr ""
+msgstr "როგორც ჩანს, არც ერთი ანგარიში მორგებული არ გაქვთ"
 
 #: dialogs/advanced-presence-dialog.cpp:184
 #, kde-format
 msgid "Set a status message ..."
-msgstr ""
+msgstr "სტატუსის შეტყობინების დაყენება ..."
 
 #: dialogs/custom-presence-dialog.cpp:72
 #, kde-format
@@ -305,7 +305,7 @@ msgstr ""
 #: dialogs/remove-contact-dialog.cpp:53
 #, kde-format
 msgid "Remove the selected contact?"
-msgstr ""
+msgstr "წავშალო მონიშნული კონტაქტი?"
 
 #. i18n: ectx: property (windowTitle), widget (QWidget, RemoveContactDialog)
 #: dialogs/remove-contact-dialog.ui:23
@@ -335,7 +335,7 @@ msgstr "სინონიმი"
 #: dialogs/remove-contact-dialog.ui:229
 #, kde-format
 msgid "Block contact"
-msgstr ""
+msgstr "კონტაქტის დაბლოკვა"
 
 #: filter-bar.cpp:38
 #, kde-format
@@ -354,7 +354,7 @@ msgstr "ფილტრი:"
 msgid ""
 "<p>Tokens can be used wherever a status message can be set to create a "
 "dynamic status message.</p>"
-msgstr ""
+msgstr "s"
 
 #: global-presence-chooser.cpp:50
 #, kde-format
@@ -390,22 +390,23 @@ msgstr ""
 #: global-presence-chooser.cpp:54
 #, kde-format
 msgid "<p><strong>%title</strong>: Now Playing track title.</p>"
-msgstr ""
+msgstr "<p><strong>%title</strong>: ახლა დაკვრადი ტრეკის სათაური.</p>"
 
 #: global-presence-chooser.cpp:55
 #, kde-format
 msgid "<p><strong>%artist</strong>: Now Playing track or album artist.</p>"
 msgstr ""
+"<p><strong>%artist</strong>: ახლა დაკვრადი ტრეკი ან ალბომის შემსრულებელი.</p>"
 
 #: global-presence-chooser.cpp:56
 #, kde-format
 msgid "<p><strong>%album</strong>: Now Playing album.</p>"
-msgstr ""
+msgstr "<p><strong>%album</strong>: ახლა დაკვრადი ალბომი.</p>"
 
 #: global-presence-chooser.cpp:57
 #, kde-format
 msgid "<p><strong>%track</strong>: Now Playing track number.</p>"
-msgstr ""
+msgstr "<p><strong>%track</strong>: ახლა დაკვრადი ტრეკის ნომერი.</p>"
 
 #: global-presence-chooser.cpp:58
 #, kde-format
@@ -504,7 +505,7 @@ msgstr ""
 #: main-widget.cpp:181
 #, kde-format
 msgid "IM system failed to initialize"
-msgstr ""
+msgstr "IM სისტემის ინიციალიზაციისშეცდომა"
 
 #: main-widget.cpp:302
 #, kde-format
