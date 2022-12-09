@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ktp-contact-list\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-08-13 02:19+0200\n"
-"PO-Revision-Date: 2022-12-07 16:03+0100\n"
+"PO-Revision-Date: 2022-12-08 08:28+0100\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <kde-i18n-doc@kde.org>\n"
 "Language: ka\n"
@@ -31,7 +31,7 @@ msgstr "Temuri.doghonadze@gmail.com"
 #: contact-list-widget.cpp:200
 #, kde-format
 msgid "You have no IM accounts configured. Would you like to do that now?"
-msgstr ""
+msgstr "IM-ის ანგარიშები მორგებული არ გაქვთ. გნებავთ, ახლა გააკეთოთ ეს?"
 
 #: contact-list-widget.cpp:201
 #, kde-format
@@ -50,7 +50,7 @@ msgstr "ანგარიშის შეერთება: %1"
 #, kde-format
 msgid ""
 "The account for this contact is disconnected. Do you want to connect it?"
-msgstr ""
+msgstr "ანგარიში ამ კონტაქტისთვის მიერთებული არაა. გნებავთმიერთება?"
 
 #: contact-list-widget.cpp:272
 #, kde-format
@@ -246,6 +246,9 @@ msgid ""
 "\n"
 "Note that all contacts will be moved to group 'Ungrouped'"
 msgstr ""
+"მართლა გნებავთ %1 ჯგუფის წაშლა?\n"
+"\n"
+"გახსოვდეთ, რომ ყველა კონტაქტი გადატანილი იქნება ჯგუფში 'ჯგუფის გარეშე'"
 
 #: context-menu.cpp:558
 #, kde-format
@@ -275,22 +278,22 @@ msgstr ""
 #: dialogs/custom-presence-dialog.cpp:92
 #, kde-format
 msgid "Set custom available message..."
-msgstr ""
+msgstr "ხელმისაწვდომობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:93
 #, kde-format
 msgid "Set custom busy message..."
-msgstr ""
+msgstr "დაკავებულობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:94
 #, kde-format
 msgid "Set custom away message..."
-msgstr ""
+msgstr "გასულობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:95
 #, kde-format
 msgid "Set custom extended away message..."
-msgstr ""
+msgstr "გაფართოებული გასულობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:106
 #, kde-format
