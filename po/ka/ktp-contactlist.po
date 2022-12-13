@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ktp-contact-list\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-08-13 02:19+0200\n"
-"PO-Revision-Date: 2022-09-27 16:45+0200\n"
+"PO-Revision-Date: 2022-12-12 09:58+0100\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <kde-i18n-doc@kde.org>\n"
 "Language: ka\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.1.1\n"
+"X-Generator: Poedit 3.2.2\n"
 
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
@@ -31,7 +31,7 @@ msgstr "Temuri.doghonadze@gmail.com"
 #: contact-list-widget.cpp:200
 #, kde-format
 msgid "You have no IM accounts configured. Would you like to do that now?"
-msgstr ""
+msgstr "IM-ის ანგარიშები მორგებული არ გაქვთ. გნებავთ, ახლა გააკეთოთ ეს?"
 
 #: contact-list-widget.cpp:201
 #, kde-format
@@ -50,7 +50,7 @@ msgstr "ანგარიშის შეერთება: %1"
 #, kde-format
 msgid ""
 "The account for this contact is disconnected. Do you want to connect it?"
-msgstr ""
+msgstr "ანგარიში ამ კონტაქტისთვის მიერთებული არაა. გნებავთმიერთება?"
 
 #: contact-list-widget.cpp:272
 #, kde-format
@@ -177,7 +177,7 @@ msgstr[1] ""
 #: context-menu.cpp:210
 #, kde-format
 msgid "Remove Contact From This Group"
-msgstr ""
+msgstr "კონტაქტის ამ ჯგუფიდან წაშლა"
 
 #: context-menu.cpp:216
 #, kde-format
@@ -192,12 +192,12 @@ msgstr "ახალი ჯგუფის შექმნა..."
 #: context-menu.cpp:253
 #, kde-format
 msgid "Re-request Contact Authorization"
-msgstr ""
+msgstr "კონტაქტის ავტორიზაციის ხელახლა მოთხოვნა"
 
 #: context-menu.cpp:259
 #, kde-format
 msgid "Resend Contact Authorization"
-msgstr ""
+msgstr "კონტაქტის ავტორიზაციის ხელახლა გაგზავნა"
 
 #: context-menu.cpp:267
 #, kde-format
@@ -212,12 +212,12 @@ msgstr "კონტაქტის დაბლოკვა"
 #: context-menu.cpp:278
 #, kde-format
 msgid "Remove Contact..."
-msgstr ""
+msgstr "კონტაქტის წაშლა..."
 
 #: context-menu.cpp:284
 #, kde-format
 msgid "Show Contact Information..."
-msgstr ""
+msgstr "საკონტაქტო ინფორმაციის ჩვენება…"
 
 #: context-menu.cpp:305
 #, kde-format
@@ -237,7 +237,7 @@ msgstr "ახალი ჯგუფის სახელი"
 #: context-menu.cpp:496 context-menu.cpp:522
 #, kde-format
 msgid "Please enter the new group name"
-msgstr ""
+msgstr "შეიყვანეთ ახალი ჯგუფის სახელი"
 
 #: context-menu.cpp:556
 #, kde-format
@@ -246,6 +246,9 @@ msgid ""
 "\n"
 "Note that all contacts will be moved to group 'Ungrouped'"
 msgstr ""
+"მართლა გნებავთ %1 ჯგუფის წაშლა?\n"
+"\n"
+"გახსოვდეთ, რომ ყველა კონტაქტი გადატანილი იქნება ჯგუფში 'ჯგუფის გარეშე'"
 
 #: context-menu.cpp:558
 #, kde-format
@@ -260,12 +263,12 @@ msgstr ""
 #: dialogs/advanced-presence-dialog.cpp:160
 #, kde-format
 msgid "It appears that you do not have any accounts configured"
-msgstr ""
+msgstr "როგორც ჩანს, არც ერთი ანგარიში მორგებული არ გაქვთ"
 
 #: dialogs/advanced-presence-dialog.cpp:184
 #, kde-format
 msgid "Set a status message ..."
-msgstr ""
+msgstr "სტატუსის შეტყობინების დაყენება ..."
 
 #: dialogs/custom-presence-dialog.cpp:72
 #, kde-format
@@ -275,22 +278,22 @@ msgstr ""
 #: dialogs/custom-presence-dialog.cpp:92
 #, kde-format
 msgid "Set custom available message..."
-msgstr ""
+msgstr "ხელმისაწვდომობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:93
 #, kde-format
 msgid "Set custom busy message..."
-msgstr ""
+msgstr "დაკავებულობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:94
 #, kde-format
 msgid "Set custom away message..."
-msgstr ""
+msgstr "გასულობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:95
 #, kde-format
 msgid "Set custom extended away message..."
-msgstr ""
+msgstr "გაფართოებული გასულობის შეტყობინების დაყენება..."
 
 #: dialogs/custom-presence-dialog.cpp:106
 #, kde-format
@@ -305,7 +308,7 @@ msgstr ""
 #: dialogs/remove-contact-dialog.cpp:53
 #, kde-format
 msgid "Remove the selected contact?"
-msgstr ""
+msgstr "წავშალო მონიშნული კონტაქტი?"
 
 #. i18n: ectx: property (windowTitle), widget (QWidget, RemoveContactDialog)
 #: dialogs/remove-contact-dialog.ui:23
@@ -335,7 +338,7 @@ msgstr "სინონიმი"
 #: dialogs/remove-contact-dialog.ui:229
 #, kde-format
 msgid "Block contact"
-msgstr ""
+msgstr "კონტაქტის დაბლოკვა"
 
 #: filter-bar.cpp:38
 #, kde-format
@@ -355,6 +358,8 @@ msgid ""
 "<p>Tokens can be used wherever a status message can be set to create a "
 "dynamic status message.</p>"
 msgstr ""
+"<p>კოდების გამოყენება შეგიძლიათ, თუ სტატუსის შეტყობინება შეიძლება დინამიკურ "
+"სტატუსის შეტყობინებაზე დააყენოთ.</p>"
 
 #: global-presence-chooser.cpp:50
 #, kde-format
@@ -362,6 +367,8 @@ msgid ""
 "<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;"
 "</strong> minutes. e.g. %tr+30</p>"
 msgstr ""
+"<p><strong>%tr+&lt;val&gt;</strong>: ათვლა 0დან <strong>&lt;val&gt;</strong>-"
+"მდე წუთი. მაგ: %tr+30</p>"
 
 #: global-presence-chooser.cpp:51
 #, kde-format
@@ -370,6 +377,9 @@ msgid ""
 "value is specified, the local time <strong>&lt;val&gt;</strong> minutes in "
 "the future. e.g. %time+10</p>"
 msgstr ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: მიმდინარე ლოკალური დრო, ან, თუ "
+"მნიშვნელობა მითითებულია, ლოკალური დრო<strong>&lt;val&gt;</strong> წუთი "
+"მომავალში. მაგ: %time+10</p>"
 
 #: global-presence-chooser.cpp:52
 #, kde-format
@@ -378,6 +388,9 @@ msgid ""
 "is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the "
 "future. e.g. %utc</p>"
 msgstr ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: მიმდინარე UTC დრო, ან, თუ "
+"მნიშვნელობა მითითებულია, UTC დრო <strong>&lt;val&gt;</strong> წუთებში, "
+"მომავალში. მაგ: %utc</p>"
 
 #: global-presence-chooser.cpp:53
 #, kde-format
@@ -386,26 +399,30 @@ msgid ""
 "Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
 "+5</p>"
 msgstr ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: შეტყობინების აქტივაციის შემდეგ გასული "
+"დრო. საწყისი გასუი დროისთვის მიწერა &quot;&lt;val&gt;&quot; წუთებში. მაგ: %te"
+"+5</p>"
 
 #: global-presence-chooser.cpp:54
 #, kde-format
 msgid "<p><strong>%title</strong>: Now Playing track title.</p>"
-msgstr ""
+msgstr "<p><strong>%title</strong>: ახლა დაკვრადი ტრეკის სათაური.</p>"
 
 #: global-presence-chooser.cpp:55
 #, kde-format
 msgid "<p><strong>%artist</strong>: Now Playing track or album artist.</p>"
 msgstr ""
+"<p><strong>%artist</strong>: ახლა დაკვრადი ტრეკი ან ალბომის შემსრულებელი.</p>"
 
 #: global-presence-chooser.cpp:56
 #, kde-format
 msgid "<p><strong>%album</strong>: Now Playing album.</p>"
-msgstr ""
+msgstr "<p><strong>%album</strong>: ახლა დაკვრადი ალბომი.</p>"
 
 #: global-presence-chooser.cpp:57
 #, kde-format
 msgid "<p><strong>%track</strong>: Now Playing track number.</p>"
-msgstr ""
+msgstr "<p><strong>%track</strong>: ახლა დაკვრადი ტრეკის ნომერი.</p>"
 
 #: global-presence-chooser.cpp:58
 #, kde-format
@@ -419,6 +436,13 @@ msgid ""
 "message or automatic presence status message with the global presence status "
 "message. e.g. %um, %um+g</p>"
 msgstr ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: როცა მითითებულია გლობალურად ან "
+"ანგარიშის სტატუსის შეტყობინებაში, გადაფარავს ყველა ავტომატურ შეტყობინებას. "
+"როცა მითითებულია ავტომატურ სტატუსის შეტყობინებაში, ის ანაცვლებს გლობალურ ან "
+"ანგარიშის სტატუსის შეტყობინებას (თუ მითითებულია). როცა <strong>val = g</"
+"strong> ანგარიშის სტატუსის შეტყობინებაში ან ავტომატური სტატუსის "
+"შეტყობინებაში, გადაფარავს ანგარიშის სტატუსის შეტყობინებას გლობალური სტატუსის "
+"შეტყობინებით. მაგ: %um, %um+g</p>"
 
 #: global-presence-chooser.cpp:59
 #, kde-format
@@ -426,6 +450,8 @@ msgid ""
 "<p><strong>%tu+&lt;val&gt;</strong>: Refresh the status message every "
 "<strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>"
 msgstr ""
+"<p><strong>%tu+&lt;val&gt;</strong>: სტატუსის შეტყობინების ყოველ <strong>&lt;"
+"val&gt;</strong> წუთში განახლება. მაგ: %tu+2</p>"
 
 #: global-presence-chooser.cpp:60
 #, kde-format
@@ -434,6 +460,9 @@ msgid ""
 "<strong>&lt;val&gt;</strong> minutes, or when the Now Playing active player "
 "stops (<strong>val = np</strong>). e.g. %tx+20, %tx+np</p>"
 msgstr ""
+"<p><strong>%tx+&lt;val&gt;</strong>: სტატუსის შეტყობინებას ვადა <strong>&lt;"
+"val&gt;</strong> წუთში, ან მაშინ, როცა მომხმარებელი, რომელიც თამაშობს, "
+"შეწყვეტს.(<strong>val = np</strong>). მაგ: %tx+20, %tx+np</p>"
 
 #: global-presence-chooser.cpp:61
 #, kde-format
@@ -442,6 +471,9 @@ msgid ""
 "%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
 "+&quot;Running late&quot;&quot;</p>"
 msgstr ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: მიუთითეთ შეტყობინება, "
+"რომელიც %tr, %time, %utc, და %tx კოდის ვადას მისდევს. მაგ: . %xm+&quot;Back "
+"%time. %tx+3 %xm+&quot;აგვიანებთ&quot;&quot;</p>"
 
 #: global-presence-chooser.cpp:62
 #, kde-format
@@ -450,6 +482,9 @@ msgid ""
 "local time using QDateTime::toString() expressions. e.g. %tf+&quot;h:mm AP "
 "t&quot;</p>"
 msgstr ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: მიუთითეთ ლოკალური დრის "
+"ფორმატი QDateTime::toString() გამოსახულებებით. მაგ: %tf+&quot;h:mm AP t&quot;"
+"</p>"
 
 #: global-presence-chooser.cpp:63
 #, kde-format
@@ -458,6 +493,8 @@ msgid ""
 "time using QDateTime::toString() expressions. e.g. %uf+&quot;hh:mm t&quot;</"
 "p>"
 msgstr ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: მიუთითეთ UTC დროის ფორმატი "
+"QDateTime::toString() გამოსახულებით. მაგ: %uf+&quot;hh:mm t&quot;</p>"
 
 #: global-presence-chooser.cpp:64
 #, kde-format
@@ -465,6 +502,8 @@ msgid ""
 "<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Change the separator for "
 "empty fields. e.g. %sp+&quot;-&quot;</p>"
 msgstr ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: ცარიელი ველების გამყოფის "
+"შეცვლა. მაგ: %sp+&quot;-&quot;</p>"
 
 #: global-presence-chooser.cpp:65
 #, kde-format
@@ -472,6 +511,8 @@ msgid ""
 "<p>Using tokens requires the Telepathy KDED module to be loaded. Tokens can "
 "be escaped by prepending a backslash character, e.g. &#92;%sp</p>"
 msgstr ""
+"<p>კოდების გამოყენება მოითხოვს Telepathy KDED მოდულის ჩატვირთვას. კოდების "
+"დაცვა ბოლოში უკუღმა დახრილი ხაზის სიმბოლოთი შეგიძლიათ. მაგ: &#92;%sp</p>"
 
 #: global-presence-chooser.cpp:118
 #, kde-format
@@ -504,7 +545,7 @@ msgstr ""
 #: main-widget.cpp:181
 #, kde-format
 msgid "IM system failed to initialize"
-msgstr ""
+msgstr "IM სისტემის ინიციალიზაციისშეცდომა"
 
 #: main-widget.cpp:302
 #, kde-format
