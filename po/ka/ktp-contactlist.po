@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ktp-contact-list\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-08-13 02:19+0200\n"
-"PO-Revision-Date: 2022-12-08 08:28+0100\n"
+"PO-Revision-Date: 2022-12-16 07:02+0100\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <kde-i18n-doc@kde.org>\n"
 "Language: ka\n"
@@ -171,8 +171,8 @@ msgstr "შეტყობინებების მორგება…"
 #, kde-format
 msgid "Presence message link"
 msgid_plural "Presence message links"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "სტატუსის შეტყობინების ბმული"
+msgstr[1] "სტატუსის შეტყობინების ბმულები"
 
 #: context-menu.cpp:210
 #, kde-format
@@ -258,7 +258,7 @@ msgstr "ჯგუფის წაშლა"
 #: dialogs/advanced-presence-dialog.cpp:152
 #, kde-format
 msgid "Advanced Presence Setting"
-msgstr ""
+msgstr "დამატებითი სტატუსის პარამეტრი"
 
 #: dialogs/advanced-presence-dialog.cpp:160
 #, kde-format
@@ -273,7 +273,7 @@ msgstr "სტატუსის შეტყობინების დაყ�
 #: dialogs/custom-presence-dialog.cpp:72
 #, kde-format
 msgid "Edit Custom Presences"
-msgstr ""
+msgstr "ხელით მითითებული სტატუსების ჩასწორება"
 
 #: dialogs/custom-presence-dialog.cpp:92
 #, kde-format
@@ -298,12 +298,12 @@ msgstr "გაფართოებული გასულობის შე�
 #: dialogs/custom-presence-dialog.cpp:106
 #, kde-format
 msgid "Add Presence"
-msgstr ""
+msgstr "სტატუსის დამატება"
 
 #: dialogs/custom-presence-dialog.cpp:107
 #, kde-format
 msgid "Remove Presence"
-msgstr ""
+msgstr "სტატუსის წაშლა"
 
 #: dialogs/remove-contact-dialog.cpp:53
 #, kde-format
@@ -357,7 +357,9 @@ msgstr "ფილტრი:"
 msgid ""
 "<p>Tokens can be used wherever a status message can be set to create a "
 "dynamic status message.</p>"
-msgstr "s"
+msgstr ""
+"<p>კოდების გამოყენება შეგიძლიათ, თუ სტატუსის შეტყობინება შეიძლება დინამიკურ "
+"სტატუსის შეტყობინებაზე დააყენოთ.</p>"
 
 #: global-presence-chooser.cpp:50
 #, kde-format
@@ -365,6 +367,8 @@ msgid ""
 "<p><strong>%tr+&lt;val&gt;</strong>: Countdown to 0 from <strong>&lt;val&gt;"
 "</strong> minutes. e.g. %tr+30</p>"
 msgstr ""
+"<p><strong>%tr+&lt;val&gt;</strong>: ათვლა 0დან <strong>&lt;val&gt;</strong>-"
+"მდე წუთი. მაგ: %tr+30</p>"
 
 #: global-presence-chooser.cpp:51
 #, kde-format
@@ -373,6 +377,9 @@ msgid ""
 "value is specified, the local time <strong>&lt;val&gt;</strong> minutes in "
 "the future. e.g. %time+10</p>"
 msgstr ""
+"<p><strong>%time+[&lt;val&gt;]</strong>: მიმდინარე ლოკალური დრო, ან, თუ "
+"მნიშვნელობა მითითებულია, ლოკალური დრო<strong>&lt;val&gt;</strong> წუთი "
+"მომავალში. მაგ: %time+10</p>"
 
 #: global-presence-chooser.cpp:52
 #, kde-format
@@ -381,6 +388,9 @@ msgid ""
 "is specified, the UTC time <strong>&lt;val&gt;</strong> minutes into the "
 "future. e.g. %utc</p>"
 msgstr ""
+"<p><strong>%utc+[&lt;val&gt;]</strong>: მიმდინარე UTC დრო, ან, თუ "
+"მნიშვნელობა მითითებულია, UTC დრო <strong>&lt;val&gt;</strong> წუთებში, "
+"მომავალში. მაგ: %utc</p>"
 
 #: global-presence-chooser.cpp:53
 #, kde-format
@@ -389,6 +399,9 @@ msgid ""
 "Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
 "+5</p>"
 msgstr ""
+"<p><strong>%te+[&lt;val&gt;]</strong>: შეტყობინების აქტივაციის შემდეგ გასული "
+"დრო. საწყისი გასუი დროისთვის მიწერა &quot;&lt;val&gt;&quot; წუთებში. მაგ: %te"
+"+5</p>"
 
 #: global-presence-chooser.cpp:54
 #, kde-format
@@ -423,6 +436,13 @@ msgid ""
 "message or automatic presence status message with the global presence status "
 "message. e.g. %um, %um+g</p>"
 msgstr ""
+"<p><strong>%um+[&lt;val&gt;]</strong>: როცა მითითებულია გლობალურად ან "
+"ანგარიშის სტატუსის შეტყობინებაში, გადაფარავს ყველა ავტომატურ შეტყობინებას. "
+"როცა მითითებულია ავტომატურ სტატუსის შეტყობინებაში, ის ანაცვლებს გლობალურ ან "
+"ანგარიშის სტატუსის შეტყობინებას (თუ მითითებულია). როცა <strong>val = g</"
+"strong> ანგარიშის სტატუსის შეტყობინებაში ან ავტომატური სტატუსის "
+"შეტყობინებაში, გადაფარავს ანგარიშის სტატუსის შეტყობინებას გლობალური სტატუსის "
+"შეტყობინებით. მაგ: %um, %um+g</p>"
 
 #: global-presence-chooser.cpp:59
 #, kde-format
@@ -430,6 +450,8 @@ msgid ""
 "<p><strong>%tu+&lt;val&gt;</strong>: Refresh the status message every "
 "<strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>"
 msgstr ""
+"<p><strong>%tu+&lt;val&gt;</strong>: სტატუსის შეტყობინების ყოველ <strong>&lt;"
+"val&gt;</strong> წუთში განახლება. მაგ: %tu+2</p>"
 
 #: global-presence-chooser.cpp:60
 #, kde-format
@@ -438,6 +460,9 @@ msgid ""
 "<strong>&lt;val&gt;</strong> minutes, or when the Now Playing active player "
 "stops (<strong>val = np</strong>). e.g. %tx+20, %tx+np</p>"
 msgstr ""
+"<p><strong>%tx+&lt;val&gt;</strong>: სტატუსის შეტყობინებას ვადა <strong>&lt;"
+"val&gt;</strong> წუთში, ან მაშინ, როცა მომხმარებელი, რომელიც თამაშობს, "
+"შეწყვეტს.(<strong>val = np</strong>). მაგ: %tx+20, %tx+np</p>"
 
 #: global-presence-chooser.cpp:61
 #, kde-format
@@ -446,6 +471,9 @@ msgid ""
 "%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
 "+&quot;Running late&quot;&quot;</p>"
 msgstr ""
+"<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: მიუთითეთ შეტყობინება, "
+"რომელიც %tr, %time, %utc, და %tx კოდის ვადას მისდევს. მაგ: . %xm+&quot;Back "
+"%time. %tx+3 %xm+&quot;აგვიანებთ&quot;&quot;</p>"
 
 #: global-presence-chooser.cpp:62
 #, kde-format
@@ -454,6 +482,9 @@ msgid ""
 "local time using QDateTime::toString() expressions. e.g. %tf+&quot;h:mm AP "
 "t&quot;</p>"
 msgstr ""
+"<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: მიუთითეთ ლოკალური დრის "
+"ფორმატი QDateTime::toString() გამოსახულებებით. მაგ: %tf+&quot;h:mm AP t&quot;"
+"</p>"
 
 #: global-presence-chooser.cpp:63
 #, kde-format
@@ -462,6 +493,8 @@ msgid ""
 "time using QDateTime::toString() expressions. e.g. %uf+&quot;hh:mm t&quot;</"
 "p>"
 msgstr ""
+"<p><strong>%uf+&quot;&lt;val&gt;&quot;</strong>: მიუთითეთ UTC დროის ფორმატი "
+"QDateTime::toString() გამოსახულებით. მაგ: %uf+&quot;hh:mm t&quot;</p>"
 
 #: global-presence-chooser.cpp:64
 #, kde-format
@@ -469,6 +502,8 @@ msgid ""
 "<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Change the separator for "
 "empty fields. e.g. %sp+&quot;-&quot;</p>"
 msgstr ""
+"<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: ცარიელი ველების გამყოფის "
+"შეცვლა. მაგ: %sp+&quot;-&quot;</p>"
 
 #: global-presence-chooser.cpp:65
 #, kde-format
@@ -476,21 +511,23 @@ msgid ""
 "<p>Using tokens requires the Telepathy KDED module to be loaded. Tokens can "
 "be escaped by prepending a backslash character, e.g. &#92;%sp</p>"
 msgstr ""
+"<p>კოდების გამოყენება მოითხოვს Telepathy KDED მოდულის ჩატვირთვას. კოდების "
+"დაცვა ბოლოში უკუღმა დახრილი ხაზის სიმბოლოთი შეგიძლიათ. მაგ: &#92;%sp</p>"
 
 #: global-presence-chooser.cpp:118
 #, kde-format
 msgid "Configure Custom Presences..."
-msgstr ""
+msgstr "ხელით მითითებული სტატუსების მორგება..."
 
 #: global-presence-chooser.cpp:125
 #, kde-format
 msgid "Advanced Presence Setting..."
-msgstr ""
+msgstr "დამატებითი სტატუსის პარამეტრი..."
 
 #: global-presence-chooser.cpp:208
 #, kde-format
 msgid "Click to change your presence message"
-msgstr ""
+msgstr "დააწკაპუნეთ თქვენი სტატუსის შეტყობინების შესაცვლელად"
 
 #: global-presence-chooser.cpp:245
 #, kde-format
@@ -504,6 +541,8 @@ msgid ""
 "Something unexpected happened to the core part of your Instant Messaging "
 "system and it couldn't be initialized. Try restarting the Contact List."
 msgstr ""
+"რაღაც მოულოდნელი მოუვიდა თქვენი ჩატის ბირთვს და მისი ინიციალიზაცია "
+"შეუძლებელია. სცადეთ, გადატვირთოთ კონტაქტების სია."
 
 #: main-widget.cpp:181
 #, kde-format
@@ -517,11 +556,13 @@ msgid ""
 "example).\n"
 "Do you want to stay online or would you rather go offline?"
 msgstr ""
+"სტატუსის კონტროლი აქტიური არ გაქვთ (მაგალითად, სტატუსის ვიჯეტი).\n"
+"გნებავთ, დარჩეთ ხაზზე, თუ გახვალთ?"
 
 #: main-widget.cpp:304
 #, kde-format
 msgid "No Other Presence Controls Found"
-msgstr ""
+msgstr "სტატუსის სხვა კონტროლები არ არსებობს"
 
 #: main-widget.cpp:305
 #, kde-format
@@ -631,7 +672,7 @@ msgstr "ოფლაინ კონტაქტების დამალვ�
 #: main-widget.cpp:576
 #, kde-format
 msgid "Sort by Presence"
-msgstr ""
+msgstr "სტატუსით დალაგება"
 
 #: main-widget.cpp:577
 #, kde-format
@@ -674,6 +715,8 @@ msgid ""
 "Some data sources failed to initialize properly, your contact list might be "
 "incomplete."
 msgstr ""
+"ზოგიერთი მონაცემების წყაროს ინიციალიზაცია შეუძლებელია. თქვენი კონტაქტების "
+"სია არასრულია."
 
 #. i18n: ectx: property (windowTitle), widget (QMainWindow, MainWindow)
 #: main-widget.ui:14
@@ -711,7 +754,7 @@ msgstr "Telepathy -ის გამართვის ინფორმაც�
 #, kde-format
 msgctxt "This is an IM user status"
 msgid "Error Getting Presence"
-msgstr ""
+msgstr "სტატუსის მიღების შეცდომა"
 
 #: tooltips/contacttooltip.cpp:81
 #, kde-format
