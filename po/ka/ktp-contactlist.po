@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ktp-contact-list\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-08-13 02:19+0200\n"
-"PO-Revision-Date: 2022-12-12 09:58+0100\n"
+"PO-Revision-Date: 2022-12-24 07:08+0100\n"
 "Last-Translator: Temuri Doghonadze <temuri.doghonadze@gmail.com>\n"
 "Language-Team: Georgian <kde-i18n-doc@kde.org>\n"
 "Language: ka\n"
@@ -171,8 +171,8 @@ msgstr "შეტყობინებების მორგება…"
 #, kde-format
 msgid "Presence message link"
 msgid_plural "Presence message links"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "სტატუსის შეტყობინების ბმული"
+msgstr[1] "სტატუსის შეტყობინების ბმულები"
 
 #: context-menu.cpp:210
 #, kde-format
@@ -258,7 +258,7 @@ msgstr "ჯგუფის წაშლა"
 #: dialogs/advanced-presence-dialog.cpp:152
 #, kde-format
 msgid "Advanced Presence Setting"
-msgstr ""
+msgstr "დამატებითი სტატუსის პარამეტრი"
 
 #: dialogs/advanced-presence-dialog.cpp:160
 #, kde-format
@@ -273,7 +273,7 @@ msgstr "სტატუსის შეტყობინების დაყ�
 #: dialogs/custom-presence-dialog.cpp:72
 #, kde-format
 msgid "Edit Custom Presences"
-msgstr ""
+msgstr "ხელით მითითებული სტატუსების ჩასწორება"
 
 #: dialogs/custom-presence-dialog.cpp:92
 #, kde-format
@@ -298,12 +298,12 @@ msgstr "გაფართოებული გასულობის შე�
 #: dialogs/custom-presence-dialog.cpp:106
 #, kde-format
 msgid "Add Presence"
-msgstr ""
+msgstr "სტატუსის დამატება"
 
 #: dialogs/custom-presence-dialog.cpp:107
 #, kde-format
 msgid "Remove Presence"
-msgstr ""
+msgstr "სტატუსის წაშლა"
 
 #: dialogs/remove-contact-dialog.cpp:53
 #, kde-format
@@ -517,17 +517,17 @@ msgstr ""
 #: global-presence-chooser.cpp:118
 #, kde-format
 msgid "Configure Custom Presences..."
-msgstr ""
+msgstr "ხელით მითითებული სტატუსების მორგება..."
 
 #: global-presence-chooser.cpp:125
 #, kde-format
 msgid "Advanced Presence Setting..."
-msgstr ""
+msgstr "დამატებითი სტატუსის პარამეტრი..."
 
 #: global-presence-chooser.cpp:208
 #, kde-format
 msgid "Click to change your presence message"
-msgstr ""
+msgstr "დააწკაპუნეთ თქვენი სტატუსის შეტყობინების შესაცვლელად"
 
 #: global-presence-chooser.cpp:245
 #, kde-format
@@ -541,6 +541,8 @@ msgid ""
 "Something unexpected happened to the core part of your Instant Messaging "
 "system and it couldn't be initialized. Try restarting the Contact List."
 msgstr ""
+"რაღაც მოულოდნელი მოუვიდა თქვენი ჩატის ბირთვს და მისი ინიციალიზაცია "
+"შეუძლებელია. სცადეთ, გადატვირთოთ კონტაქტების სია."
 
 #: main-widget.cpp:181
 #, kde-format
@@ -554,11 +556,13 @@ msgid ""
 "example).\n"
 "Do you want to stay online or would you rather go offline?"
 msgstr ""
+"სტატუსის კონტროლი აქტიური არ გაქვთ (მაგალითად, სტატუსის ვიჯეტი).\n"
+"გნებავთ, დარჩეთ ხაზზე, თუ გახვალთ?"
 
 #: main-widget.cpp:304
 #, kde-format
 msgid "No Other Presence Controls Found"
-msgstr ""
+msgstr "სტატუსის სხვა კონტროლები არ არსებობს"
 
 #: main-widget.cpp:305
 #, kde-format
@@ -668,7 +672,7 @@ msgstr "ოფლაინ კონტაქტების დამალვ�
 #: main-widget.cpp:576
 #, kde-format
 msgid "Sort by Presence"
-msgstr ""
+msgstr "სტატუსით დალაგება"
 
 #: main-widget.cpp:577
 #, kde-format
@@ -711,6 +715,8 @@ msgid ""
 "Some data sources failed to initialize properly, your contact list might be "
 "incomplete."
 msgstr ""
+"ზოგიერთი მონაცემების წყაროს ინიციალიზაცია შეუძლებელია. თქვენი კონტაქტების "
+"სია არასრულია."
 
 #. i18n: ectx: property (windowTitle), widget (QMainWindow, MainWindow)
 #: main-widget.ui:14
@@ -748,7 +754,7 @@ msgstr "Telepathy -ის გამართვის ინფორმაც�
 #, kde-format
 msgctxt "This is an IM user status"
 msgid "Error Getting Presence"
-msgstr ""
+msgstr "სტატუსის მიღების შეცდომა"
 
 #: tooltips/contacttooltip.cpp:81
 #, kde-format
