@@ -612,7 +612,7 @@ msgstr "Agrupament dels contactes"
 #: main-widget.cpp:528
 #, kde-format
 msgid "Instant Messaging Settings..."
-msgstr "Configuració de la missatgeria instantània..."
+msgstr "Configureu la missatgeria instantània..."
 
 #: main-widget.cpp:533
 #, kde-format
