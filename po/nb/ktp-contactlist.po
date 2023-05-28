@@ -387,8 +387,8 @@ msgstr ""
 #, kde-format
 msgid ""
 "<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. "
-"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
-"+5</p>"
+"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. "
+"%te+5</p>"
 msgstr ""
 
 #: global-presence-chooser.cpp:54
@@ -443,8 +443,8 @@ msgstr ""
 #, kde-format
 msgid ""
 "<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Specify a message to follow "
-"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
-"+&quot;Running late&quot;&quot;</p>"
+"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 "
+"%xm+&quot;Running late&quot;&quot;</p>"
 msgstr ""
 
 #: global-presence-chooser.cpp:62
