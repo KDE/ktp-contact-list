@@ -397,8 +397,8 @@ msgstr ""
 #, kde-format
 msgid ""
 "<p><strong>%te+[&lt;val&gt;]</strong>: Time elapsed from message activation. "
-"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. %te"
-"+5</p>"
+"Append an initial elapsed time &quot;&lt;val&gt;&quot; in minutes. e.g. "
+"%te+5</p>"
 msgstr ""
 "<p><strong>%te+[&lt;verdi&gt;]</strong>: Tid gått sidan meldingsaktiveringa. "
 "Du kan òg leggja til eit tidstillegg på <strong>&lt;verdi&gt;</strong> "
@@ -470,12 +470,12 @@ msgstr ""
 #, kde-format
 msgid ""
 "<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Specify a message to follow "
-"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 %xm"
-"+&quot;Running late&quot;&quot;</p>"
+"%tr, %time, %utc, and %tx token expiry. e.g. %xm+&quot;Back %time. %tx+3 "
+"%xm+&quot;Running late&quot;&quot;</p>"
 msgstr ""
 "<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Definer ei melding som skal "
-"visast når plasshaldarane %tr, %time, %utc og %tx utgår på tid. Eksempel:%xm"
-"+&quot;Tilbake %time. %tx+3 %xm+&quot;Er forseinka&quot;&quot;</p>"
+"visast når plasshaldarane %tr, %time, %utc og %tx utgår på tid. Eksempel:"
+"%xm+&quot;Tilbake %time. %tx+3 %xm+&quot;Er forseinka&quot;&quot;</p>"
 
 #: global-presence-chooser.cpp:62
 #, kde-format
