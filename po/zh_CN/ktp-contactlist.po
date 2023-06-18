@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: kdeorg\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2020-08-13 02:19+0200\n"
-"PO-Revision-Date: 2023-05-22 14:03\n"
+"PO-Revision-Date: 2023-06-17 04:13\n"
 "Last-Translator: \n"
 "Language-Team: Chinese Simplified\n"
 "Language: zh_CN\n"
@@ -528,7 +528,7 @@ msgstr "正在连接..."
 msgid ""
 "Something unexpected happened to the core part of your Instant Messaging "
 "system and it couldn't be initialized. Try restarting the Contact List."
-msgstr "即时通讯系统的核心发生未预期的错误，无法初始化。请尝试重启联系人列表。"
+msgstr "即时通讯系统的核心发生了意外错误，无法初始化。请尝试重启联系人列表。"
 
 #: main-widget.cpp:181
 #, kde-format
