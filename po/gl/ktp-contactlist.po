@@ -139,7 +139,7 @@ msgstr "Abrir o visor do historial"
 #: contact-overlays.cpp:184
 #, kde-format
 msgid "Show conversation logs"
-msgstr "Mostrar o historial de conversas"
+msgstr "Amosar o historial de conversas"
 
 #: context-menu.cpp:111
 #, kde-format
@@ -221,7 +221,7 @@ msgstr "Retirar o contacto…"
 #: context-menu.cpp:284
 #, kde-format
 msgid "Show Contact Information..."
-msgstr "Mostrar información do contacto…"
+msgstr "Amosar información do contacto…"
 
 #: context-menu.cpp:305
 #, kde-format
@@ -272,7 +272,7 @@ msgstr "Parece que non ten ningunha conta configurada."
 #: dialogs/advanced-presence-dialog.cpp:184
 #, kde-format
 msgid "Set a status message ..."
-msgstr "Estabelecer unha mensaxe de estado…"
+msgstr "Definir unha mensaxe de estado…"
 
 #: dialogs/custom-presence-dialog.cpp:72
 #, kde-format
@@ -362,7 +362,7 @@ msgid ""
 "<p>Tokens can be used wherever a status message can be set to create a "
 "dynamic status message.</p>"
 msgstr ""
-"<p>Poden usarse marcas de posición cando se pode estabelecer unha mensaxe de "
+"<p>Poden usarse marcas de posición cando se pode definir unha mensaxe de "
 "estado, para crear unha mensaxe de estado dinámica.</p>"
 
 #: global-presence-chooser.cpp:50
@@ -606,7 +606,7 @@ msgstr "Tipo de lista de contactos"
 #: main-widget.cpp:398 main-widget.cpp:443
 #, kde-format
 msgid "Shown Contacts"
-msgstr "Mostrar os contactos"
+msgstr "Amosar os contactos"
 
 #: main-widget.cpp:401 main-widget.cpp:448
 #, kde-format
@@ -661,7 +661,7 @@ msgstr "Xuntar os contactos escollidos"
 #: main-widget.cpp:555
 #, kde-format
 msgid "Show Contacts by Groups"
-msgstr "Mostrar os contactos en grupos"
+msgstr "Amosar os contactos en grupos"
 
 #: main-widget.cpp:559
 #, kde-format
@@ -671,12 +671,12 @@ msgstr "Non agrupar"
 #: main-widget.cpp:562
 #, kde-format
 msgid "Show Contacts by Accounts"
-msgstr "Mostrar os contactos por contas"
+msgstr "Amosar os contactos por contas"
 
 #: main-widget.cpp:567
 #, kde-format
 msgid "Show Offline Contacts"
-msgstr "Mostrar os contactos desconectados"
+msgstr "Amosar os contactos desconectados"
 
 #: main-widget.cpp:568
 #, kde-format
@@ -696,32 +696,32 @@ msgstr "Ordenar polo nome"
 #: main-widget.cpp:585
 #, kde-format
 msgid "Use Full List"
-msgstr "Empregar a lista completa"
+msgstr "Usar a lista completa"
 
 #: main-widget.cpp:587
 #, kde-format
 msgid "Use Normal List"
-msgstr "Empregar unha lista normal"
+msgstr "Usar unha lista normal"
 
 #: main-widget.cpp:591
 #, kde-format
 msgid "Use Minimalistic List"
-msgstr "Empregar unha lista minimalista"
+msgstr "Usar unha lista minimalista"
 
 #: main-widget.cpp:598
 #, kde-format
 msgid "Show All Contacts"
-msgstr "Mostrar todos os contactos"
+msgstr "Amosar todos os contactos"
 
 #: main-widget.cpp:600
 #, kde-format
 msgid "Show Unblocked Contacts"
-msgstr "Mostrar os contactos desbloqueados"
+msgstr "Amosar os contactos desbloqueados"
 
 #: main-widget.cpp:602
 #, kde-format
 msgid "Show Blocked Contacts"
-msgstr "Mostrar os contactos bloqueados"
+msgstr "Amosar os contactos bloqueados"
 
 #: main-widget.cpp:721
 #, kde-format
@@ -762,7 +762,7 @@ msgstr "Desenvolvedor"
 #: main.cpp:55
 #, kde-format
 msgid "Show Telepathy debugging information"
-msgstr "Mostrar a información de depuración do Telepathy"
+msgstr "Amosar a información de depuración do Telepathy"
 
 #: tooltips/contacttooltip.cpp:63
 #, kde-format
