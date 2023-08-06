@@ -35,7 +35,7 @@ msgstr "xosecalvo@gmail.com"
 #, kde-format
 msgid "You have no IM accounts configured. Would you like to do that now?"
 msgstr ""
-"Non ten configuradas contas de mensaxería instantánea. Desexas facelo agora?"
+"Non ten configuradas contas de mensaxaría instantánea. Desexas facelo agora?"
 
 #: contact-list-widget.cpp:201
 #, kde-format
@@ -94,12 +94,12 @@ msgstr "C&ancelar"
 #: contact-overlays.cpp:134 contact-overlays.cpp:135
 #, kde-format
 msgid "Start Chat"
-msgstr "Iniciar unha conversa"
+msgstr "Iniciar unha charla"
 
 #: contact-overlays.cpp:135
 #, kde-format
 msgid "Start a text chat"
-msgstr "Iniciar unha conversa de texto"
+msgstr "Iniciar unha charla de texto"
 
 #: contact-overlays.cpp:146 contact-overlays.cpp:147
 #, kde-format
@@ -144,7 +144,7 @@ msgstr "Amosar o historial de conversas"
 #: context-menu.cpp:111
 #, kde-format
 msgid "Start Chat..."
-msgstr "Iniciar unha conversa…"
+msgstr "Iniciar unha charla…"
 
 #: context-menu.cpp:121
 #, kde-format
@@ -554,13 +554,13 @@ msgid ""
 "Something unexpected happened to the core part of your Instant Messaging "
 "system and it couldn't be initialized. Try restarting the Contact List."
 msgstr ""
-"Ocorreu algo inesperado á parte nuclear do sistema de mensaxería instantánea "
+"Ocorreu algo inesperado á parte nuclear do sistema de mensaxaría instantánea "
 "e non se puido inicializar. Intente reiniciando a lista de contactos."
 
 #: main-widget.cpp:181
 #, kde-format
 msgid "IM system failed to initialize"
-msgstr "Non se puido inicializar o sistema de mensaxería instantánea"
+msgstr "Non se puido inicializar o sistema de mensaxaría instantánea"
 
 #: main-widget.cpp:302
 #, kde-format
@@ -616,12 +616,12 @@ msgstr "Agrupación dos contactos"
 #: main-widget.cpp:528
 #, kde-format
 msgid "Instant Messaging Settings..."
-msgstr "Configuración da mensaxería instantánea…"
+msgstr "Configuración da mensaxaría instantánea…"
 
 #: main-widget.cpp:533
 #, kde-format
 msgid "Join Chat Room..."
-msgstr "Entrar unha sala de conversas…"
+msgstr "Entrar unha sala de charlas…"
 
 #: main-widget.cpp:535
 #, kde-format
@@ -646,7 +646,7 @@ msgstr "Atopar un contacto"
 #: main-widget.cpp:541
 #, kde-format
 msgid "Start a Chat..."
-msgstr "Comezar unha conversa…"
+msgstr "Comezar unha charla…"
 
 #: main-widget.cpp:544
 #, kde-format
