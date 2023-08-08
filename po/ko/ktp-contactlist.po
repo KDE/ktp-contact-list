@@ -709,8 +709,8 @@ msgid ""
 "Some data sources failed to initialize properly, your contact list might be "
 "incomplete."
 msgstr ""
-"일부 데이터 자원을 초기화할 수 없어서 대화 상대 목록이 완전하지 않을 수도 있"
-"습니다."
+"일부 데이터 리소스를 초기화할 수 없어서 대화 상대 목록이 완전하지 않을 수도 "
+"있습니다."
 
 #. i18n: ectx: property (windowTitle), widget (QMainWindow, MainWindow)
 #: main-widget.ui:14
