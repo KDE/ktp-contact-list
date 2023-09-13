@@ -371,7 +371,7 @@ msgid ""
 "</strong> minutes. e.g. %tr+30</p>"
 msgstr ""
 "<p><strong>%tr+&lt;val&gt;</strong>: Compte arrere fins a 0 des de "
-"<strong>&lt;val&gt;</strong> minuts. P. ex. %tr+30</p>"
+"<strong>&lt;val&gt;</strong> minuts. P. ex., %tr+30</p>"
 
 #: global-presence-chooser.cpp:51
 #, kde-format
@@ -382,7 +382,7 @@ msgid ""
 msgstr ""
 "<p><strong>%time+[&lt;val&gt;]</strong>: L'hora local actual, o si "
 "s'especifica un valor, l'hora local més <strong>&lt;val&gt;</strong> minuts "
-"en el futur. P. ex. %time+10</p>"
+"en el futur. P. ex., %time+10</p>"
 
 #: global-presence-chooser.cpp:52
 #, kde-format
@@ -393,7 +393,7 @@ msgid ""
 msgstr ""
 "<p><strong>%utc+[&lt;val&gt;]</strong>: L'hora UTC actual, o si s'especifica "
 "un valor, l'hora UTC més <strong>&lt;val&gt;</strong> minuts en el futur. P. "
-"ex. %utc</p>"
+"ex., %utc</p>"
 
 # skip-rule: da-te
 #: global-presence-chooser.cpp:53
@@ -405,7 +405,7 @@ msgid ""
 msgstr ""
 "<p><strong>%te+[&lt;val&gt;]</strong>: Temps transcorregut des de "
 "l'activació del missatge. Afig un temps transcorregut inicial &quot;&lt;"
-"val&gt;&quot; en minuts. P. ex. %te+5</p>"
+"val&gt;&quot; en minuts. P. ex., %te+5</p>"
 
 #: global-presence-chooser.cpp:54
 #, kde-format
@@ -449,7 +449,7 @@ msgstr ""
 "d'estat de presència de compte o un missatge automàtic d'estat de presència, "
 "substituïx el missatge d'estat de presència de compte o el missatge "
 "automàtic d'estat de presència per al missatge d'estat de presència global. "
-"P. ex. %um, %um+g</p>"
+"P. ex., %um, %um+g</p>"
 
 #: global-presence-chooser.cpp:59
 #, kde-format
@@ -458,7 +458,7 @@ msgid ""
 "<strong>&lt;val&gt;</strong> minutes. e.g. %tu+2</p>"
 msgstr ""
 "<p><strong>%tu+&lt;val&gt;</strong>: Actualitza el missatge d'estat cada "
-"<strong>&lt;val&gt;</strong> minuts. P. ex. %tu+2</p>"
+"<strong>&lt;val&gt;</strong> minuts. P. ex., %tu+2</p>"
 
 #: global-presence-chooser.cpp:60
 #, kde-format
@@ -469,7 +469,7 @@ msgid ""
 msgstr ""
 "<p><strong>%tx+&lt;val&gt;</strong>: Venç el missatge d'estat després de "
 "<strong>&lt;val&gt;</strong> minuts, o quan el reproductor actiu de peça en "
-"reproducció es para (<strong>val = np</strong>). P. ex. %tx+20, %tx+np</p>"
+"reproducció es para (<strong>val = np</strong>). P. ex., %tx+20, %tx+np</p>"
 
 #: global-presence-chooser.cpp:61
 #, kde-format
@@ -479,8 +479,8 @@ msgid ""
 "+&quot;Running late&quot;&quot;</p>"
 msgstr ""
 "<p><strong>%xm+&quot;&lt;val&gt;&quot;</strong>: Especifica un missatge que "
-"seguisca el venciment dels símbols %tr, %time, %utc, i %tx. P. ex. %xm+&quot;"
-"Tornaré %time. %tx+3 %xm+&quot;Faç tard&quot;&quot;</p>"
+"seguisca el venciment dels símbols %tr, %time, %utc, i %tx. P. ex., %xm"
+"+&quot;Tornaré %time. %tx+3 %xm+&quot;Faç tard&quot;&quot;</p>"
 
 #: global-presence-chooser.cpp:62
 #, kde-format
@@ -490,7 +490,7 @@ msgid ""
 "t&quot;</p>"
 msgstr ""
 "<p><strong>%tf+&quot;&lt;val&gt;&quot;</strong>: Especifica el format per a "
-"l'hora local utilitzant les expressions de QDateTime::toString(). P. ex. %tf"
+"l'hora local utilitzant les expressions de QDateTime::toString(). P. ex., %tf"
 "+&quot;h:mm AP t&quot;</p>"
 
 #: global-presence-chooser.cpp:63
@@ -501,7 +501,7 @@ msgid ""
 "p>"
 msgstr ""
 "<p><strong>%uf+&lt;val&gt;</strong>: Especifica el format per a l'hora UTC "
-"utilitzant les expressions de QDateTime::toString(). P. ex. %uf+&quot;h:mm "
+"utilitzant les expressions de QDateTime::toString(). P. ex., %uf+&quot;h:mm "
 "AP t&quot;</p>"
 
 #: global-presence-chooser.cpp:64
@@ -511,7 +511,7 @@ msgid ""
 "empty fields. e.g. %sp+&quot;-&quot;</p>"
 msgstr ""
 "<p><strong>%sp+&quot;&lt;val&gt;&quot;</strong>: Canvia el separador dels "
-"camps buits. P. ex. %sp+&quot;-&quot;</p>"
+"camps buits. P. ex., %sp+&quot;-&quot;</p>"
 
 #: global-presence-chooser.cpp:65
 #, kde-format
@@ -520,8 +520,8 @@ msgid ""
 "be escaped by prepending a backslash character, e.g. &#92;%sp</p>"
 msgstr ""
 "<p>L'ús de símbols requerix carregar el mòdul KDED de Telepathy. Els símbols "
-"es poden escapar precedint-los per un caràcter de barra inversa. P. ex. &#92;"
-"%sp</p>"
+"es poden escapar precedint-los per un caràcter de barra inversa. P. ex., "
+"&#92;%sp</p>"
 
 #: global-presence-chooser.cpp:118
 #, kde-format
@@ -566,7 +566,8 @@ msgid ""
 "example).\n"
 "Do you want to stay online or would you rather go offline?"
 msgstr ""
-"No teniu altres controls actius de presència (p. ex. un giny de Presència).\n"
+"No teniu altres controls actius de presència (p. ex., un giny de "
+"Presència).\n"
 "Preferiu estar connectat o desconnectat?"
 
 #: main-widget.cpp:304
